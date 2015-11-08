@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self'; object-src 'none'">
+      <link rel="stylesheet" href="css/app.min.css">
+    <link rel="stylesheet" href="css/paddler.css">
+    <style>
+      /* TODO */
+    </style>
+  </head>
+
+  <body>
+    <div class="app-page" data-page="home">
+      <!--div class="app-topbar">
+        <div class="app-title">Home page</div>
+      </div-->
+      <div class="app-content" data-no-scroll="true">
+          <div class="home-sessions-btn" id="btn-sessions">
+              <div class="home-sessions-title" >Sessions</div>
+          </div>
+          <div class="home-start-session-btn" id="btn-session">
+              <div class="home-sessions-title"><b>Start Session</b></div>
+          </div>
+          <div class="home-settings-btn" id="btn-settings">
+              <div class="home-sessions-title">Settings</div>
+          </div>
+      </div>
+    </div>
+
+    <div class="app-page" data-page="sessions">
+        <!--div class="app-topbar">
+            <div class="app-button left" data-back data-autotitle></div>
+            <div class="app-title">Sessions</div>
+        </div-->
+        <div class="app-content" style="height:100%;overflow: hidden" data-no-scroll="true">
+            <div class="back-button"></div>
+            <div class="view-content">
+                <div class="sessions-header">
+                    <span class="sessions-header-title">All time</span>
+                </div>
+                <div class="sessions-content">
+                    <div class="sessions-summary">
+                        <div>
+                            <div class="sessions-summary-label">
+                                Total Distance (km)
+                            </div>
+                            <div class="sessions-summary-value">
+                                0.0
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="sessions-summary-label">
+                                Top speed (km/h)
+                            </div>
+                            <div class="sessions-summary-value">
+                                0.0
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="sessions-summary-label">
+                                Total Time
+                            </div>
+                            <div class="sessions-summary-value">
+                                00:00:00
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sessions-details app-content" >
+                        <ul class="session-row">
+                            <li>Not</li>
+                            <li>working</li>
+                            <li>yet</li>
+                        </ul>
+
+                        <!--ul class="session-row">
+                            <li>May 22</li>
+                            <li><b>18:26:32</b></li>
+                            <li><b>72</b> SPM</li>
+                            <li><b>8.5</b>km</li>
+                        </ul>
+
+                        <ul class="session-row">
+                            <li>May 22</li>
+                            <li><b>18:26:32</b></li>
+                            <li><b>72</b> SPM</li>
+                            <li><b>8.5</b>km</li>
+                        </ul>
+
+                        <ul class="session-row">
+                            <li>May 22</li>
+                            <li><b>18:26:32</b></li>
+                            <li><b>72</b> SPM</li>
+                            <li><b>8.5</b>km</li>
+                        </ul>
+
+                        <ul class="session-row">
+                            <li>May 22</li>
+                            <li><b>18:26:32</b></li>
+                            <li><b>72</b> SPM</li>
+                            <li><b>8.5</b>km</li>
+                        </ul>
+
+                        <ul class="session-row">
+                            <li>May 22</li>
+                            <li><b>18:26:32</b></li>
+                            <li><b>72</b> SPM</li>
+                            <li><b>8.5</b>km</li>
+                        </ul>
+                        <ul class="session-row">
+                            <li>May 22</li>
+                            <li><b>18:26:32</b></li>
+                            <li><b>72</b> SPM</li>
+                            <li><b>8.5</b>km</li>
+                        </ul>
+                        <ul class="session-row">
+                            <li>May 22</li>
+                            <li><b>18:26:32</b></li>
+                            <li><b>72</b> SPM</li>
+                            <li><b>8.5</b>km</li>
+                        </ul-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-page" data-page="session">
+        <!--div class="app-topbar">
+            <div class="app-button left" data-back data-autotitle></div>
+            <div class="app-title">Sessions</div>
+        </div-->
+        <div class="app-content" data-no-scroll="true" id="session">
+            <div class="session-left">
+                <div class="session-big-measure">
+                    86
+                </div>
+            </div>
+            <div class="session-right">
+                <div class="session-small-measure yellow">
+                    <div class="small-measure-header">
+                        <div class="small-measure-label">Duration</div>
+                        <div class="small-measure-units"></div>
+                    </div>
+                    <div class="small-measure-value">00:00:00</div>
+                </div>
+                <div class="session-small-measure blue">
+                    <div class="small-measure-header">
+                        <div class="small-measure-label">Speed</div>
+                        <div class="small-measure-units">km/h</div>
+                    </div>
+                    <div class="small-measure-value">0</div>
+                </div>
+                <div class="session-small-measure red">
+                    <div class="small-measure-header">
+                        <div class="small-measure-label">Distance</div>
+                        <div class="small-measure-units">Km</div>
+                    </div>
+                    <div class="small-measure-value">0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-page" data-page="settings">
+        <div class="app-content" style="height:100%" data-no-scroll="true">
+            <div class="back-button"></div>
+            <div class="view-content">
+                <div class="settings-row">
+                    <span class="settings-header-title">Settings</span>
+                </div>
+                <div class="app-button settings-row" id="calibration">
+                    <div class="settings-calibrate">
+                        Calibrate
+                    </div>
+                </div>
+                <div class="app-button settings-row" id="units">
+                    <div class="settings-units disabled">
+                        Units
+                    </div>
+                </div>
+                <div class="app-button settings-row" id="gmail">
+                    <div class="settings-gmail disabled">
+                        Sign-in with Gmail
+                    </div>
+                </div>
+                <div class="app-button settings-row" id="facebook">
+                    <div class="settings-facebook disabled">
+                        Sign-in with Facebook
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-page" data-page="calibration">
+        <div class="app-content" style="height:100%;line-height: 100%;vertical-align: middle;text-align: center" data-no-scroll="true">
+            <div class="calibrate listening blink">Calibrating...</div>
+        </div>
+    </div>
+
+    <div class="template" id="measure">
+        <div class="small-measure-header">
+            <div class="small-measure-label"></div>
+            <div class="small-measure-units"></div>
+        </div>
+        <div class="small-measure-value"></div>
+    </div>
+
+    <script src="cordova.js"></script>
+    <script src="lib/zepto.js"></script>
+    <script src="lib/touch.js"></script>
+    <script src="lib/animate.js"></script>
+    <script src="lib/swiped.js"></script>
+    <script src="lib/app.min.js"></script>
+    <!--script src="lib/fastclick.js"></script-->
+
+    <script src="js/global.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/gps.js"></script>
+    <script src="js/measure.js"></script>
+    <script src="js/calibration.js"></script>
+    <script src="js/stroke-detector.js"></script>
+
+
+    <script src="js/session.js"></script>
+    <script src="js/measures/timer.js"></script>
+    <script src="js/measures/distance.js"></script>
+    <script src="js/measures/speed.js"></script>
+    <script src="js/measures/strokrate.js"></script>
+
+    <script src="js/main.js"></script>
+
+  </body>
+</html>

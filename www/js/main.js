@@ -3,10 +3,19 @@ App.controller('session', function (page) {
     new Session(page);
 });
 
+
 App.controller('settings', function (page) {
-    var $calibration = $('#calibration', page), $back = $('.back-button', page);
+
+    var $calibration = $('#calibration', page),
+        $back = $('.back-button', page),
+        $login = $('#facebook', page);
+
     $calibration.on('touchstart', function () {
         App.load('calibration');
+    });
+
+    $login.on('touchstart', function () {
+        App.load('login');
     });
 
     $back.on('touchstart', function () {
@@ -19,7 +28,9 @@ App.controller('settings', function (page) {
     });
 });
 
+
 App.controller('sessions', function (page) {
+
     var $back = $('.back-button', page), $page = $(page);
 
     $back.on('touchstart', function () {
@@ -31,7 +42,31 @@ App.controller('sessions', function (page) {
     });
 
 
+    // get training sessions
+    api.get('/training-sessions', new api.Options(true)).done(function(response) {
+        console.log(response.data);
+    });
+
+
+    // save training session
+    api.post('/training-sessions', {
+        date: '',
+        description: '',
+        training_session_data: [
+            {
+                timestamp: 148912491,
+                distance: 10,
+                speed: 40,
+                spm: 60,
+                spm_efficiency: 10
+            }
+        ]
+
+    }, new api.Options(true));
+
+
     var $row, $rows = $('.session-row', page), width, baseWidth;
+
     $rows.on('touchend', function (e) {
         if ($row) {
             $row.animate({left: 0}, 200);
@@ -78,6 +113,36 @@ App.controller('sessions', function (page) {
 
 });
 
+
+App.controller('login', function (page) {
+
+    var $loginForm = $('#login-form', page),
+        $btCreateAccount = $('#create-account', page);
+
+    $loginForm.on('submit', function(e) {
+
+        var username = $('#username', page).val(),
+            password = $('#password', page).val();
+
+        authentication.login(username, password).done(function() {
+
+            App.back();
+
+        }).fail(function(response) {
+
+            if(response.error && response.error.non_field_errors) {
+                alert(response.error.non_field_errors[0]);
+            }
+        });
+
+        e.stopPropagation();
+        e.preventDefault();
+    });
+
+    $btCreateAccount.on('touchend', function() {
+        cordova.InAppBrowser.open('http://paddler.snaptag.net/home#/registration', '_system');
+    });
+});
 
 App.controller('calibration', function (page) {
     var $page = $(page)
@@ -140,6 +205,9 @@ document.addEventListener('deviceready', function () {
 
 
 App.load('home', function () {
+
+    authentication.autoLogin();
+
     $('#btn-sessions').on('touchend', function () {
         App.load('sessions');
     });

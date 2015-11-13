@@ -197,6 +197,36 @@
         </div>
     </div>
 
+    <div class="app-page" data-page="login">
+
+        <div class="app-content" style="height:100%" data-no-scroll="true">
+
+            <form id="login-form" class="form-validation mt-20 ng-valid ng-dirty ng-valid-parse">
+
+                <div class="form-group">
+                    <input type="text" id="username" class="form-control underline-input ng-untouched ng-valid ng-dirty ng-valid-parse" placeholder="Username">
+                    <span class="error-message ng-binding ng-hide"></span>
+                </div>
+
+                <div class="form-group">
+                    <input type="password" id="password" class="form-control underline-input ng-untouched ng-valid ng-dirty ng-valid-parse" placeholder="Password">
+                    <span class="error-message ng-binding ng-hide"></span>
+                </div>
+
+                <div class="form-group text-left mt-20">
+                    <button type="submit" id="bt-login" class="btn btn-greensea b-0 br-2 mr-5 ng-binding">Sign In</button>
+                </div>
+
+                <a href="#" id="create-account">Create Account</a>
+
+                <div class="error-message ng-binding ng-hide"></div>
+
+            </form>
+
+        </div>
+
+    </div>
+
     <div class="app-page" data-page="calibration">
         <div class="app-content" style="height:100%;line-height: 100%;vertical-align: middle;text-align: center" data-no-scroll="true">
             <div class="calibrate listening blink">Calibrating...</div>
@@ -213,6 +243,8 @@
 
     <script src="cordova.js"></script>
     <script src="lib/zepto.js"></script>
+    <script src="lib/zepto.callbacks.js"></script>
+    <script src="lib/zepto.deferred.js"></script>
     <script src="lib/touch.js"></script>
     <script src="lib/animate.js"></script>
     <script src="lib/swiped.js"></script>
@@ -232,6 +264,11 @@
     <script src="js/measures/distance.js"></script>
     <script src="js/measures/speed.js"></script>
     <script src="js/measures/strokrate.js"></script>
+
+    <script src="js/api/user.js"></script>
+    <script src="js/api/api.js"></script>
+    <script src="js/api/session.js"></script>
+    <script src="js/api/authentication.js"></script>
 
     <script src="js/main.js"></script>
 

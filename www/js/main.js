@@ -43,13 +43,14 @@ App.controller('sessions', function (page) {
 
 
     // get training sessions
-    api.get('/training-sessions', new api.Options(true)).done(function(response) {
+    Paddler.Remote.get('/training-sessions').done(function(response) {
         console.log(response.data);
     });
 
 
     // save training session
-    api.post('/training-sessions', {
+    /*
+    Paddler.Remote.post('/training-sessions', {
         date: '',
         description: '',
         training_session_data: [
@@ -62,8 +63,8 @@ App.controller('sessions', function (page) {
             }
         ]
 
-    }, new api.Options(true));
-
+    });
+    */
 
     var $row, $rows = $('.session-row', page), width, baseWidth;
 
@@ -124,7 +125,7 @@ App.controller('login', function (page) {
         var username = $('#username', page).val(),
             password = $('#password', page).val();
 
-        authentication.login(username, password).done(function() {
+        Paddler.Authentication.login(username, password).done(function() {
 
             App.back();
 
@@ -206,7 +207,7 @@ document.addEventListener('deviceready', function () {
 
 App.load('home', function () {
 
-    authentication.autoLogin();
+    Paddler.Authentication.autoLogin();
 
     $('#btn-sessions').on('touchend', function () {
         App.load('sessions');

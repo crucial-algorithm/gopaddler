@@ -43,28 +43,33 @@ App.controller('sessions', function (page) {
 
 
     // get training sessions
-    Paddler.Remote.get('/training-sessions').done(function(response) {
-        console.log(response.data);
+    Paddler.TrainingSessions.get('2016f4e0-6ecb-11e5-a837-0800200c9a66').done(function(trainingSession) {
+        console.log(trainingSession);
     });
 
 
     // save training session
     /*
-    Paddler.Remote.post('/training-sessions', {
-        date: '',
-        description: '',
-        training_session_data: [
-            {
-                timestamp: 148912491,
-                distance: 10,
-                speed: 40,
-                spm: 60,
-                spm_efficiency: 10
-            }
-        ]
+     var trainingSessionDataPoints = [];
 
-    });
-    */
+     var trainingSessionData = new Paddler.TrainingSessionData();
+
+     trainingSessionData.setTimestamp((new Date()).getTime());
+     trainingSessionData.setDistance(0);
+     trainingSessionData.setSpeed(0);
+     trainingSessionData.setSpm(0);
+     trainingSessionData.setSpmEfficiency(0);
+
+     trainingSessionDataPoints.push(trainingSessionData);
+
+     var trainingSession = new Paddler.TrainingSession();
+
+     trainingSession.setDate(new Date());
+     trainingSession.setDescription('My Training Session');
+     trainingSession.setData(trainingSessionDataPoints);
+
+     Paddler.TrainingSessions.save(trainingSession);
+     */
 
     var $row, $rows = $('.session-row', page), width, baseWidth;
 

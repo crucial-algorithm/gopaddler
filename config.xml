@@ -35,7 +35,9 @@
 
     <platform name="android">
         <preference name="AndroidLaunchMode" value="singleTop"/>
-        <preference name="android-minSdkVersion" value="19" />
     </platform>
 
+
+    <preference name="android-minSdkVersion" value="15" />
+    <preference name="android-targetSdkVersion" value="19" />
 </widget>

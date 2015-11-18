@@ -3,10 +3,19 @@ App.controller('session', function (page) {
     new Session(page);
 });
 
+
 App.controller('settings', function (page) {
-    var $calibration = $('#calibration', page), $back = $('.back-button', page);
+
+    var $calibration = $('#calibration', page),
+        $back = $('.back-button', page),
+        $login = $('#facebook', page);
+
     $calibration.on('touchstart', function () {
         App.load('calibration');
+    });
+
+    $login.on('touchstart', function () {
+        App.load('login');
     });
 
     $back.on('touchstart', function () {
@@ -19,7 +28,9 @@ App.controller('settings', function (page) {
     });
 });
 
+
 App.controller('sessions', function (page) {
+
     var $back = $('.back-button', page), $page = $(page);
 
     $back.on('touchstart', function () {
@@ -31,7 +42,37 @@ App.controller('sessions', function (page) {
     });
 
 
+    // get training sessions
+    Paddler.TrainingSessions.get('2016f4e0-6ecb-11e5-a837-0800200c9a66').done(function(trainingSession) {
+        console.log(trainingSession);
+    });
+
+
+    // save training session
+    /*
+     var trainingSessionDataPoints = [];
+
+     var trainingSessionData = new Paddler.TrainingSessionData();
+
+     trainingSessionData.setTimestamp((new Date()).getTime());
+     trainingSessionData.setDistance(0);
+     trainingSessionData.setSpeed(0);
+     trainingSessionData.setSpm(0);
+     trainingSessionData.setSpmEfficiency(0);
+
+     trainingSessionDataPoints.push(trainingSessionData);
+
+     var trainingSession = new Paddler.TrainingSession();
+
+     trainingSession.setDate(new Date());
+     trainingSession.setDescription('My Training Session');
+     trainingSession.setData(trainingSessionDataPoints);
+
+     Paddler.TrainingSessions.save(trainingSession);
+     */
+
     var $row, $rows = $('.session-row', page), width, baseWidth;
+
     $rows.on('touchend', function (e) {
         if ($row) {
             $row.animate({left: 0}, 200);
@@ -78,6 +119,36 @@ App.controller('sessions', function (page) {
 
 });
 
+
+App.controller('login', function (page) {
+
+    var $loginForm = $('#login-form', page),
+        $btCreateAccount = $('#create-account', page);
+
+    $loginForm.on('submit', function(e) {
+
+        var username = $('#username', page).val(),
+            password = $('#password', page).val();
+
+        Paddler.Authentication.login(username, password).done(function() {
+
+            App.back();
+
+        }).fail(function(response) {
+
+            if(response.error && response.error.non_field_errors) {
+                alert(response.error.non_field_errors[0]);
+            }
+        });
+
+        e.stopPropagation();
+        e.preventDefault();
+    });
+
+    $btCreateAccount.on('touchend', function() {
+        cordova.InAppBrowser.open('http://paddler.snaptag.net/home#/registration', '_system');
+    });
+});
 
 App.controller('calibration', function (page) {
     var $page = $(page)
@@ -140,6 +211,9 @@ document.addEventListener('deviceready', function () {
 
 
 App.load('home', function () {
+
+    Paddler.Authentication.autoLogin();
+
     $('#btn-sessions').on('touchend', function () {
         App.load('sessions');
     });

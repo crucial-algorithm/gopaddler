@@ -19,28 +19,28 @@ Timer.prototype.start = function() {
 
 Timer.prototype.stop = function() {
     var self = this;
-    clearTimeout(self.timeout);
+    clearInterval(self.intervalId);
 }
 
 Timer.prototype.timer = function() {
-    var self = this;
-    this.timeout = setTimeout(function () {
-        self.add();
-    }, 1000);
-}
+    var self = this
+        , start, time, elapsed;
 
-Timer.prototype.add = function () {
-    this.second++;
-    if (this.second >= 60) {
-        this.second = 0;
-        this.minute++;
-        if (this.minute >= 60) {
-            this.minute = 0;
-            this.hour++;
+    start = new Date().getTime();;
+    this.intervalId = setInterval(function () {
+        time = new Date().getTime() - start;
+        elapsed = Math.round(time / 1000);
+
+        self.minute = Math.floor(elapsed / 60);
+        self.second = elapsed - self.minute * 60;
+
+        if (self.minute > 0) {
+            self.hour = Math.floor(self.minute / 60);
+            self.minute = self.minute - self.hour * 60;
         }
-    }
-    this.measure.setValue(this.toString());
-    this.timer();
+
+        self.measure.setValue(self.toString());
+    }, 1000);
 }
 
 Timer.prototype.zeroPad = function (value) {

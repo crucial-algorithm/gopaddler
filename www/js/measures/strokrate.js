@@ -14,12 +14,14 @@ StrokeRate.prototype.render = function() {
 StrokeRate.prototype.start = function () {
     var self = this;
 
-    this.strokeDetector.listen(function (spm) {
+    this.strokeDetector.onStrokeRateChanged(function (spm) {
         if (!isNaN(spm)) {
             self.measure.setValue(spm);
             self.value = spm;
         }
     });
+
+    this.strokeDetector.start();
 };
 
 StrokeRate.prototype.reset = function () {

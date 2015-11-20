@@ -1,6 +1,6 @@
 'use strict'
 
-function StrokeDetector(sessionId, calibration) {
+function StrokeDetector(sessionId, calibration, onStrokeDetected) {
     var self = this;
     self.listeners = [];
     self.watchId = undefined;
@@ -29,16 +29,21 @@ function StrokeDetector(sessionId, calibration) {
     self.debugAcceleration = [];
     this.db = window.localStorage;
     self.calibration = calibration;
+
+    // used in simulation, to represent strokes in chart
+    self.onStrokeDetectedListener = onStrokeDetected || function () {};
+    self.onStrokeRateChangedListener = function () {};
+
+    initilizeLog();
 }
 
 StrokeDetector.exceptions = {
     SD_EXCP_STALLED:  "STALLED"
 }
 
-StrokeDetector.prototype.listen = function (callback) {
+StrokeDetector.prototype.onStrokeRateChanged = function (callback) {
     var self = this;
-    self.listeners.push(callback);
-    self.start();
+    self.onStrokeRateChangedListener = callback;
 }
 
 StrokeDetector.prototype.stop = function () {
@@ -56,17 +61,21 @@ StrokeDetector.prototype.notify = function (value) {
 }
 
 StrokeDetector.prototype.start = function () {
-    var self = this;
+    var self = this, value;
     function onSuccess(acceleration) {
-        // for debug only
-        self.debugAcceleration.push(acceleration);
-        if (self.debugAcceleration.length > 1000) {
-            self.persist(self.debugAcceleration);
-            self.debugAcceleration = [];
-        }
+
+        // filter
+        value = self.filter(acceleration);
 
         // call event handler
-        self.onAccelerationTriggered(acceleration);
+        self.onAccelerationTriggered(acceleration, value);
+
+        // for debug only
+        self.debugAcceleration.push([acceleration.timestamp, acceleration.x, acceleration.y, acceleration.z, value, self.calibration.getPredominant(), self.calibration.getAngleZ(), self.calibration.getFactorX(), self.calibration.getNoiseX(), self.calibration.getFactorZ(), self.calibration.getNoiseZ(), "\n"].join(','));
+        if (self.debugAcceleration.length > 1000) {
+            debug(self.debugAcceleration);
+            self.debugAcceleration = [];
+        }
     }
 
     function onError() {
@@ -86,20 +95,22 @@ StrokeDetector.prototype.start = function () {
         console.log('hmmm... no navigator.accelerometer found?!?!');
     }
 
+    self.intervalId = setInterval(self.refreshSPM.bind(self), 1500);
+}
 
-    var strokeRate, range;
-    self.intervalId = setInterval(function () {
-        try {
-            range = self.strokes.slice(-5);
-            strokeRate = self.calculateSPM(range);
-            self.notify(strokeRate);
-            self.strokes = range;
-        } catch(e) {
-            console.log(e);
-            self.notify(0);
-            self.strokes = [];
-        }
-    }, 1500);
+
+StrokeDetector.prototype.refreshSPM = function () {
+    var self = this, range, strokeRate;
+    range = self.strokes.slice(-5);
+    strokeRate = self.calculateSPM(range);
+    self.notify(strokeRate);
+    self.strokes = range;
+
+    if (strokeRate === 0) {
+        self.notify(0);
+        self.strokes = [];
+    }
+    return strokeRate;
 }
 
 
@@ -107,11 +118,10 @@ StrokeDetector.prototype.start = function () {
  * Process events comming from accelerometer
  *
  * @param acceleration
+ * @param value
  */
-StrokeDetector.prototype.onAccelerationTriggered = function (acceleration) {
-    var self = this, value, current, stroke;
-
-    value = self.filter(acceleration);
+StrokeDetector.prototype.onAccelerationTriggered = function (acceleration, value) {
+    var self = this, current, stroke;
 
     if (self.checkpoint === undefined)
         self.checkpoint = acceleration.timestamp;
@@ -162,7 +172,7 @@ StrokeDetector.prototype.onAccelerationTriggered = function (acceleration) {
             self.counter++;
             stroke.setStroke(self.counter);
             self.strokes.push(stroke);
-//            console.log(self.counter, stroke.getSampleAt());
+            self.onStrokeDetectedListener(stroke);
 
             self.lastStroke = stroke;
         }
@@ -173,13 +183,13 @@ StrokeDetector.prototype.onAccelerationTriggered = function (acceleration) {
             self.counter++;
             lost.setStroke(self.counter);
             self.strokes.push(lost);
-//            console.log(self.counter, lost.getSampleAt());
+            self.onStrokeDetectedListener(lost);
 
             // add current
             self.counter++;
             stroke.setStroke(self.counter);
             self.strokes.push(stroke);
-//            console.log(self.counter, stroke.getSampleAt());
+            self.onStrokeDetectedListener(stroke);
 
             self.lastStroke = stroke;
 
@@ -190,13 +200,13 @@ StrokeDetector.prototype.onAccelerationTriggered = function (acceleration) {
             self.counter++;
             stroke.setStroke(self.counter);
             self.strokes.push(stroke);
-//            console.log(self.counter, stroke.getSampleAt());
+            self.onStrokeDetectedListener(stroke);
 
             // add lost
             self.counter++;
             lost.setStroke(self.counter);
             self.strokes.push(lost);
-//            console.log(self.counter, lost.getSampleAt());
+            self.onStrokeDetectedListener(lost);
 
             self.lastStroke = lost;
         }
@@ -269,7 +279,7 @@ StrokeDetector.prototype.didWeLostOne = function (events, current, last) {
     var cadence = self.strokes.cadence();
 
     // check if either the interval between last stroke and current one is close to cadence or if the duration of current stroke (detect - max) is close to cadence
-    if (Math.round(((current.getSampleAt() - last.getSampleAt()) / cadence) * 10 / 10) < 1.7 && Math.round(((current.getDetected().getSampleAt() - current.getSampleAt()) / cadence) * 10 / 10) < 1.7) return undefined;
+//    if (Math.round2((current.getSampleAt() - last.getSampleAt()) / cadence) < 1.7 && Math.round2((current.getDetected().getSampleAt() - current.getSampleAt()) / cadence) < 1.7) return undefined;
 
     // Search for stroke before max
     var data = events.slice(0, events.indexOf(current));
@@ -308,37 +318,56 @@ StrokeDetector.prototype.findFuzzyStroke = function (data, current, last, cadenc
 
         if (data[i].getAcceleration() > max.getAcceleration()) {
             max = data[i];
-            min = max; // we want to find min that happens after max!
         }
 
         if (data[i].getAcceleration() < min.getAcceleration()) {
             min = data[i];
         }
+
     }
 
 //    if (max == min) return undefined;
 
+    if (min.getSampleAt() > max.getSampleAt()) {
+        // not supported!!
+        return undefined;
+    }
+
     max.setDetected(min);
 
+    var newCurrent = new Event(current.getSampleAt(), current.getAcceleration(), current.positiveThreshold, current.negativeThreshold, min);
+    max.setDetected(current.getDetected());
+
+    if (self.isValidStroke(newCurrent, self.lastStroke, cadence, max) && self.isValidStroke(max, newCurrent, cadence, undefined)) {
+        current.setDetected(min);
+        return max;
+    }
+
+    return undefined;
+}
+
+
+StrokeDetector.prototype.isValidStroke = function(stroke, before, cadence, after) {
+    var self = this;
     if (cadence
-        // its within acceptable differance to current cadence
-        && ((cadence - (max.getSampleAt() - self.lastStroke.getSampleAt())) / cadence) <= .4
+        // its within acceptable difference to current cadence
+        && ((cadence - (stroke.getSampleAt() - before.getSampleAt())) / cadence) <= .4
 
         // does not create a stroke whose interval is less than 300 milis
-        && max.getSampleAt() - last.getSampleAt() > 300 && Math.abs(current.getSampleAt() - max.getSampleAt()) > 300
+        && stroke.getSampleAt() - before.getSampleAt() > 300 && (!after || Math.abs(stroke.getSampleAt() - after.getSampleAt()) > 300)
 
         // interval between detected must also be > 300
-        && current.getDetected().getSampleAt() - max.getDetected().getSampleAt() > 300
+        && stroke.getDetected().getSampleAt() - before.getDetected().getSampleAt() > 300
 
         // interval between max and detection (min) must be at least half of what we consider the fastest stroke
-        && max.getSampleAt() - min.getSampleAt() > 300/2
+        && stroke.getDetected().getSampleAt() - stroke.getSampleAt() > 300/2
 
         ) {
 
         // TODO: Check if this is the proper point for detected!
-        return max;
+        return true;
     }
-    return undefined;
+    return false;
 }
 
 /**
@@ -367,8 +396,9 @@ StrokeDetector.prototype.calculateSPM = function (strokes) {
     var self = this;
 
     // if we don't have strokes in the past 3 seconds, set it to zero
-    if (self.lastStroke && (new Date()).getTime() - self.lastStroke.getSampleAt() > 3000) {
-        throw StrokeDetector.exceptions.STALLED;
+    if (self.lastStroke && self.lastEvent && (self.lastEvent.getSampleAt() - self.lastStroke.getSampleAt() > 3000)) {
+        log([(new Date).getTime(), 0, "\n"].join(','));
+        return 0;
     }
 
     if (strokes.length < 5)
@@ -380,14 +410,16 @@ StrokeDetector.prototype.calculateSPM = function (strokes) {
     var updated = false;
     var interval;
 
+    var logA = intervals.join(','), logB;
     for (var i = 0; i < intervals.length; i++) {
-        if (intervals[i] / avg < .7) {
-            console.log('looks liks ', strokes[i+1].getStroke(), ' is out of sync');
+        if (intervals[i] / avg < .7 || intervals[i] / avg > 1.6) {
+//            console.log('looks liks ', strokes[i + 1].getStroke(), ' is out of sync');
             updated = true;
             interval = Math.round(avg);
+            intervals[i] = interval;
         }
-        intervals[i] = interval;
     }
+    logB = intervals.join(',');
 
     if (updated)
         avg = intervals.avg();
@@ -396,6 +428,7 @@ StrokeDetector.prototype.calculateSPM = function (strokes) {
     // avg interval between strokes in mili seconds (thus the division by 1000)
     var strokeRate = 60 / (avg / 1000);
 
+    log([new Date().getTime(), Math.round(strokeRate), logA, '-', logB, "\n"].join(','));
     return Math.round(strokeRate);
 }
 
@@ -410,18 +443,6 @@ StrokeDetector.prototype.calculateIntervals = function (strokes) {
     return intervals;
 }
 
-StrokeDetector.prototype.persist = function(values) {
-    var data = JSON.parse(this.db.getItem(this.sessionId));
-
-    if (!data) data = [];
-
-    data = data.concat(values);
-
-    try {
-        this.db.setItem(this.sessionId, JSON.stringify(data));
-    } catch (e) {
-    }
-}
 
 
 
@@ -469,4 +490,63 @@ Event.prototype.setStroke = function (stroke) {
 
 Event.prototype.getStroke = function() {
     return this.stroke;
+}
+
+
+var fsFail = function(err) {
+    console.log('fs fail', err);
+}
+
+var debugFile, logFile;
+function initilizeLog() {
+
+    var success = function (dir) {
+        var ts = new Date().getTime();
+        dir.getFile("debug-" + ts, {create: true}, function (file) {
+            debugFile = file;
+        });
+        dir.getFile("sr-" + ts, {create: true}, function (file) {
+            logFile = file;
+        });
+    };
+
+    if (window.resolveLocalFileSystemURL)
+        window.resolveLocalFileSystemURL("cdvfile://localhost/sdcard/paddler/", success, function fail() {
+            createDirectory(initilizeLog);
+        });
+}
+
+
+function createDirectory(callback) {
+    var root;
+    var gotFS = function (fileSystem) {
+        root = fileSystem.root;
+        root.getDirectory("paddler", {create: true}, callback, fsFail);
+    };
+
+    var SD_CARD = 7;
+    window.requestFileSystem(SD_CARD, 0, gotFS, fsFail);
+}
+
+
+function write(file, str) {
+    if(!file) return;
+    console.log("going to log " + str);
+    file.createWriter(function (fileWriter) {
+
+        fileWriter.seek(fileWriter.length);
+
+        var blob = new Blob([str], {type: 'text/plain'});
+        fileWriter.write(blob);
+    }, function fail() {
+        console.log("write to log failed");
+    });
+}
+
+function debug(str) {
+    write(debugFile, str);
+}
+
+function log(str) {
+    write(logFile, str);
 }

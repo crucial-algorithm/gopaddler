@@ -1,10 +1,3 @@
-@font-face {
-    font-family: 'Roboto';
-    font-style: normal;
-    font-weight: 400;
-    src: local('Roboto'), local('Roboto-Regular'), url(https://fonts.gstatic.com/s/roboto/v15/QHD8zigcbDB8aPfIoaupKOvvDin1pK8aKteLpeZ5c0A.ttf) format('truetype');
-}
-
 body {
     font-family: 'Roboto', sans-serif;
 }
@@ -31,6 +24,26 @@ body {
     vertical-align: middle;
     font-size: 14vh;
     margin: 3%;
+}
+
+.home-icon {
+    float:left;
+    height: 100%;
+    width: 20%;
+    vertical-align: middle;
+    background-repeat: no-repeat;
+}
+
+.sessions-icon {
+    background-image: url(../images/sessions.svg);
+}
+
+.start-icon {
+    background-image: url(../images/start.svg);
+}
+
+.settings-icon {
+    background-image: url(../images/settings.svg);
 }
 
 .session-left {
@@ -120,7 +133,7 @@ body {
     background-color: #3B539B;
 }
 
-.settings-row, .sessions-header {
+.settings-header, .sessions-header, .settings-row {
     height: 20%!important;
     display: table;
     width: 100%;
@@ -128,15 +141,17 @@ body {
     text-transform: uppercase;
 }
 
+.settings-header {
+    background-color: #FF8B2E;
+}
+
 .settings-header-title {
     display: table-cell;
-    width: 100%;
     height: 100%;
     vertical-align: middle;
     text-align: right;
     padding-right: 4%;
 
-    background-color: #FF8B2E;
     font-size: 10vh;
 }
 
@@ -202,15 +217,17 @@ body {
     background-color: #FF483C;
 }
 
+.sessions-header {
+    background-color: #3E3964;
+}
 .sessions-header-title {
     display: table-cell;
-    width: 100%;
+    width: 60%;
     height: 100%;
     vertical-align: middle;
     text-align: right;
     padding-right: 4%;
 
-    background-color: #3E3964;
     font-size: 10vh;
 }
 

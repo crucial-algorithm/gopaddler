@@ -68,6 +68,14 @@ App.controller('sessions', function (page) {
      trainingSession.setDescription('My Training Session');
      trainingSession.setData(trainingSessionDataPoints);
 
+     // calibration details
+     trainingSession.setAngleZ(0.2);
+     trainingSession.setNoiseX(0.2);
+     trainingSession.setNoiseZ(0.2);
+     trainingSession.setFactorX(0.2);
+     trainingSession.setFactorZ(0.2);
+     trainingSession.setAxis(2);
+
      Paddler.TrainingSessions.save(trainingSession);
      */
 

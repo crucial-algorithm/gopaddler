@@ -2,7 +2,6 @@
 
 function StrokeDetector(sessionId, calibration, onStrokeDetected) {
     var self = this;
-    self.listeners = [];
     self.watchId = undefined;
 
     self.acceleration = [];
@@ -52,14 +51,6 @@ StrokeDetector.prototype.stop = function () {
     clearInterval(self.intervalId);
 }
 
-StrokeDetector.prototype.notify = function (value) {
-    var self = this;
-
-    for (var i = 0; i < self.listeners.length; i++) {
-        self.listeners[i].apply(undefined, [value]);
-    }
-}
-
 StrokeDetector.prototype.start = function () {
     var self = this, value;
     function onSuccess(acceleration) {
@@ -103,11 +94,11 @@ StrokeDetector.prototype.refreshSPM = function () {
     var self = this, range, strokeRate;
     range = self.strokes.slice(-5);
     strokeRate = self.calculateSPM(range);
-    self.notify(strokeRate);
+    self.onStrokeRateChangedListener(strokeRate);
     self.strokes = range;
 
     if (strokeRate === 0) {
-        self.notify(0);
+        self.onStrokeRateChangedListener(0);
         self.strokes = [];
     }
     return strokeRate;
@@ -329,7 +320,7 @@ StrokeDetector.prototype.findFuzzyStroke = function (data, current, last, cadenc
 //    if (max == min) return undefined;
 
     if (min.getSampleAt() > max.getSampleAt()) {
-        // not supported!!
+        // we may have lost a full stroke!!!!
         return undefined;
     }
 

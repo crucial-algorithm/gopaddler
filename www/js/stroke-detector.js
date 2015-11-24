@@ -317,21 +317,24 @@ StrokeDetector.prototype.findFuzzyStroke = function (data, current, last, cadenc
 
     }
 
-//    if (max == min) return undefined;
+    if (min.getSampleAt() > max.getSampleAt()) { // lost a full stroke!!
 
-    if (min.getSampleAt() > max.getSampleAt()) {
-        // we may have lost a full stroke!!!!
-        return undefined;
-    }
+        max.setDetected(min);
+        if (self.isValidStroke(max, self.lastStroke, cadence, current)) {
+            return max;
+        }
 
-    max.setDetected(min);
+    } else { // we probably have two split current in two!
 
-    var newCurrent = new Event(current.getSampleAt(), current.getAcceleration(), current.positiveThreshold, current.negativeThreshold, min);
-    max.setDetected(current.getDetected());
+        var first = new Event(current.getSampleAt(), current.getAcceleration(), current.positiveThreshold, current.negativeThreshold, min);
+        var second = max;
+        second.setDetected(current.getDetected());
 
-    if (self.isValidStroke(newCurrent, self.lastStroke, cadence, max) && self.isValidStroke(max, newCurrent, cadence, undefined)) {
-        current.setDetected(min);
-        return max;
+        if (self.isValidStroke(first, self.lastStroke, cadence, second) && self.isValidStroke(second, first, cadence, undefined)) {
+            current.setDetected(min);
+            return max;
+        }
+
     }
 
     return undefined;
@@ -354,8 +357,6 @@ StrokeDetector.prototype.isValidStroke = function(stroke, before, cadence, after
         && stroke.getDetected().getSampleAt() - stroke.getSampleAt() > 300/2
 
         ) {
-
-        // TODO: Check if this is the proper point for detected!
         return true;
     }
     return false;

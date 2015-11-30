@@ -58,14 +58,38 @@ body {
 
 }
 
-.session-big-measure {
+.session-big-meaure-container {
+    display: table;
     height: 100%;
     width: 100%;
-    color:#fff;
+    color: #fff;
     background-color: #3B3D62;
     vertical-align: middle;
     text-align: center;
-    font-size: 65vh;
+}
+
+.session-big-measure {
+    display: table-cell;
+    vertical-align: middle;
+    font-size: 40vw;
+}
+
+.big-measure-label {
+    position: absolute;
+    text-align: center;
+    width: 50%;
+    color: #B8B5C1;
+    height: 100vh;
+    top: 85vh;
+    padding-bottom: 68vh;
+}
+
+.big-measure-units {
+    position: absolute;
+    text-align: center;
+    width: 50%;
+    padding-top: 10vh;
+    color: #B8B5C1;
 }
 
 .session-small-measure {
@@ -104,7 +128,7 @@ body {
     width: 96%;
     height: 70%;
     text-align: right;
-    font-size: 10vh;
+    font-size: 15vh;
     font-weight: bold;
     display: inline-block;
 }

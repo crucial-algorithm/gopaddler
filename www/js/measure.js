@@ -38,6 +38,14 @@ LargeMeasure.prototype.render = function () {
 }
 
 LargeMeasure.prototype.setValue = function (value) {
+    if (value >= 100) {
+        this.$value.css({"font-size": "30vw"});
+        this.fontSizeChanged = true;
+    } else if (value < 100 && this.fontSizeChanged) {
+        this.$value.css({"font-size": null});
+        this.fontSizeChanged = false;
+    }
+
     this.$value.html(value);
 }
 

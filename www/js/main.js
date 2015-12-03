@@ -1,25 +1,53 @@
+/**
+ * Splash screen / login page.
+ */
+App.controller('login', function (page) {
 
+    var $login = $('#facebook', page);
+
+    $login.on('touchstart', function () {
+
+        FB.login().done(function () {
+
+            // successful login navigates to home page
+            App.load('home');
+
+        }).fail(function (err) {
+
+            if (err && err.message) {
+
+                // show error message
+                alert(err.message);
+            }
+        });
+    });
+});
+
+
+/**
+ * New session page.
+ */
 App.controller('session', function (page) {
     new Session(page);
 });
 
 
+/**
+ * Settings page.
+ */
 App.controller('settings', function (page) {
 
     var $calibration = $('#calibration', page),
-        $back = $('.back-button', page),
-        $login = $('#facebook', page);
+        $back = $('.back-button', page);
 
     $calibration.on('touchstart', function () {
         App.load('calibration');
     });
 
-    $login.on('touchstart', function () {
-        App.load('login');
-    });
 
     $back.on('touchstart', function () {
-        App.back('home', function () {});
+        App.back('home', function () {
+        });
     });
 
     $(page).on('appDestroy', function () {
@@ -29,12 +57,16 @@ App.controller('settings', function (page) {
 });
 
 
+/**
+ * Session list page.
+ */
 App.controller('sessions', function (page) {
 
     var $back = $('.back-button', page), $page = $(page);
 
     $back.on('touchstart', function () {
-        App.back('home', function () {});
+        App.back('home', function () {
+        });
     });
 
     $page.on('appDestroy', function () {
@@ -43,7 +75,7 @@ App.controller('sessions', function (page) {
 
 
     // get training sessions
-    Paddler.TrainingSessions.get('2016f4e0-6ecb-11e5-a837-0800200c9a66').done(function(trainingSession) {
+    Paddler.TrainingSessions.get('2016f4e0-6ecb-11e5-a837-0800200c9a66').done(function (trainingSession) {
         console.log(trainingSession);
     });
 
@@ -121,44 +153,17 @@ App.controller('sessions', function (page) {
 //        $rows.parent().css({'overflow': 'hidden'});
 //    }, 0);
 
-    $page.on('appShow', function() {
+    $page.on('appShow', function () {
         $page.find('.sessions-details').css({'overflow': 'hidden'});
     });
-
 });
 
 
-App.controller('login', function (page) {
-
-    var $loginForm = $('#login-form', page),
-        $btCreateAccount = $('#create-account', page);
-
-    $loginForm.on('submit', function(e) {
-
-        var username = $('#username', page).val(),
-            password = $('#password', page).val();
-
-        Paddler.Authentication.login(username, password).done(function() {
-
-            App.back();
-
-        }).fail(function(response) {
-
-            if(response.error && response.error.non_field_errors) {
-                alert(response.error.non_field_errors[0]);
-            }
-        });
-
-        e.stopPropagation();
-        e.preventDefault();
-    });
-
-    $btCreateAccount.on('touchend', function() {
-        cordova.InAppBrowser.open('http://paddler.snaptag.net/home#/registration', '_system');
-    });
-});
-
+/**
+ * Calibration page.
+ */
 App.controller('calibration', function (page) {
+
     var $page = $(page)
         , $content = $page.find('.app-content')
         , $calibrate = $page.find('.calibrate');
@@ -184,6 +189,7 @@ App.controller('calibration', function (page) {
 
 document.pd_device_ready = false;
 document.addEventListener('deviceready', function () {
+
     document.pd_device_ready = true;
 
     // Override default HTML alert with native dialog
@@ -202,7 +208,7 @@ document.addEventListener('deviceready', function () {
         }
     }
 
-    document.addEventListener("backbutton", function(e){
+    document.addEventListener("backbutton", function (e) {
         try {
             App.back();
         } catch (te) {
@@ -218,15 +224,13 @@ document.addEventListener('deviceready', function () {
 }, false);
 
 
-App.load('home', function () {
+App.controller('home', function (page) {
 
-    Paddler.Authentication.autoLogin();
-
-    $('#btn-sessions').on('touchend', function () {
+    $('#btn-sessions', page).on('touchend', function () {
         App.load('sessions');
     });
 
-    $('#btn-session').on('touchend', function () {
+    $('#btn-session', page).on('touchend', function () {
         var calibration = Calibrate.load();
         if (calibration === undefined) {
             alert("No calibration: Got to Settings > Calibrate");
@@ -235,9 +239,16 @@ App.load('home', function () {
         App.load('session');
     });
 
-    $('#btn-settings').on('touchend', function () {
+    $('#btn-settings', page).on('touchend', function () {
         App.load('settings');
     });
 });
+
+
+
+/**
+ * Home screen.
+ */
+App.load('login');
 
 

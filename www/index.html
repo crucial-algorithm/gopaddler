@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
+
     <title>My App</title>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="Content-Security-Policy" content="script-src 'self'; object-src 'none'">
-      <link rel="stylesheet" href="css/app.min.css">
+
+    <link rel="stylesheet" href="css/app.min.css">
+    <link rel="stylesheet" href="css/auth-buttons.css">
     <link rel="stylesheet" href="css/paddler.css">
-    <style>
-      /* TODO */
-    </style>
-  </head>
+
+</head>
 
   <body>
     <div class="app-page" data-page="home">
@@ -195,7 +197,7 @@
                         Sign-in with Gmail
                     </div>
                 </div>
-                <div class="app-button settings-row" id="facebook">
+                <div class="app-button settings-row"><!-- id="facebook">-->
                     <div class="settings-facebook disabled">
                         Sign-in with Facebook
                     </div>
@@ -206,30 +208,8 @@
 
     <div class="app-page" data-page="login">
 
-        <div class="app-content" style="height:100%" data-no-scroll="true">
-
-            <form id="login-form" class="form-validation mt-20 ng-valid ng-dirty ng-valid-parse">
-
-                <div class="form-group">
-                    <input type="text" id="username" class="form-control underline-input ng-untouched ng-valid ng-dirty ng-valid-parse" placeholder="Username">
-                    <span class="error-message ng-binding ng-hide"></span>
-                </div>
-
-                <div class="form-group">
-                    <input type="password" id="password" class="form-control underline-input ng-untouched ng-valid ng-dirty ng-valid-parse" placeholder="Password">
-                    <span class="error-message ng-binding ng-hide"></span>
-                </div>
-
-                <div class="form-group text-left mt-20">
-                    <button type="submit" id="bt-login" class="btn btn-greensea b-0 br-2 mr-5 ng-binding">Sign In</button>
-                </div>
-
-                <a href="#" id="create-account">Create Account</a>
-
-                <div class="error-message ng-binding ng-hide"></div>
-
-            </form>
-
+        <div style="margin:0 auto;text-align:center;padding:30px 0;">
+            <a id="facebook" class="btn-auth btn-facebook large" href="#">Sign in with <b>Facebook</b></a>
         </div>
 
     </div>
@@ -272,6 +252,7 @@
     <script src="js/measures/speed.js"></script>
     <script src="js/measures/strokrate.js"></script>
 
+    <script src="js/fb.js"></script>
     <script src="lib/paddler-api.min.js"></script>
 
     <script src="js/main.js"></script>

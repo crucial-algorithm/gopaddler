@@ -24,6 +24,29 @@ App.controller('login', function (page) {
 });
 
 
+App.controller('home', function (page) {
+
+    $('#btn-sessions', page).on('touchend', function () {
+        App.load('sessions');
+    });
+
+    $('#btn-session', page).on('touchend', function () {
+        var calibration = Calibrate.load();
+        if (calibration === undefined) {
+            alert("No calibration: Got to Settings > Calibrate");
+            return;
+        }
+        App.load('session');
+    });
+
+    $('#btn-settings', page).on('touchend', function () {
+        App.load('settings');
+    });
+
+    $('.home-username', page).html('Hi, ' + Paddler.Session.getUser().getFullName());
+});
+
+
 /**
  * New session page.
  */
@@ -222,28 +245,6 @@ document.addEventListener('deviceready', function () {
     window.powermanagement.acquire();
 
 }, false);
-
-
-App.controller('home', function (page) {
-
-    $('#btn-sessions', page).on('touchend', function () {
-        App.load('sessions');
-    });
-
-    $('#btn-session', page).on('touchend', function () {
-        var calibration = Calibrate.load();
-        if (calibration === undefined) {
-            alert("No calibration: Got to Settings > Calibrate");
-            return;
-        }
-        App.load('session');
-    });
-
-    $('#btn-settings', page).on('touchend', function () {
-        App.load('settings');
-    });
-});
-
 
 
 /**

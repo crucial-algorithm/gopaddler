@@ -13,10 +13,9 @@ Speed.prototype.render = function() {
 
 Speed.prototype.start = function () {
     var self = this;
-
-    this.gps.listen(function (position) {
+    self.gps.listen(function (position) {
         self.value = Math.round2(position.coords.speed * 3.6);
-        self.measure.setValue(self.value);
+        self.measure.setValue(self.value < 0 ? 0: self.value);
     });
 };
 

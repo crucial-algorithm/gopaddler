@@ -4,18 +4,18 @@ body {
 
 .home-sessions-btn {
     height: 33.33%!important;
-    background-color: #3B3D62!important;
+    background-color: #3B3D63!important;
     color: #FFF
 }
 
 .home-start-session-btn {
     height: 33.33%!important;
-    background-color: #5650EF!important;
+    background-color: #5550F2!important;
 }
 
 .home-settings-btn {
     height: 33.33%!important;
-    background-color: #F4934F!important;
+    background-color: #F59146!important;
 }
 
 .home-sessions-title {
@@ -24,6 +24,7 @@ body {
     vertical-align: middle;
     font-size: 14vh;
     margin: 3%;
+    text-transform: capitalize;
 }
 
 .home-icon {
@@ -99,7 +100,7 @@ body {
 }
 
 .yellow {
-    background-color: #F4934F;
+    background-color: #F59146;
 }
 
 .blue {
@@ -144,7 +145,7 @@ body {
 }
 
 .back-button {
-    background: #302E3B url("../images/back-temp.png") no-repeat center;
+    background: #2F2F3B url("../images/back-temp.png") no-repeat center;
     float:left;
     width: 15%;
     height: 100%;
@@ -166,7 +167,7 @@ body {
 }
 
 .settings-header {
-    background-color: #FF8B2E;
+    background-color: #F59146;
 }
 
 .settings-header-title {
@@ -238,11 +239,11 @@ body {
 
 .sessions-content {
     height: 80%;
-    background-color: #FF483C;
+    background-color: #F05E4E;
 }
 
 .sessions-header {
-    background-color: #3E3964;
+    background-color: #3B3D63;
 }
 .sessions-header-title {
     display: table-cell;
@@ -251,7 +252,6 @@ body {
     vertical-align: middle;
     text-align: right;
     padding-right: 4%;
-
     font-size: 10vh;
 }
 
@@ -265,19 +265,23 @@ body {
 .sessions-details {
     float: right;
     width: 60%;
-    height: 100%;
-    max-height: 100%;
+    /*height: 100%;*/
+    /*max-height: 100%;*/
     color: #fff;
     text-transform: uppercase;
-    background-color: #E23C32;
-    overflow-y: scroll;
-    overflow-x: hidden;
+    background-color: #2F2F3B;
+    overflow: hidden;
+    list-style: none;
 }
 
+#sessions-wrapper {
+    overflow: hidden;
+    background-color: #D05043;
+}
 
 .sessions-summary-label {
     text-transform: uppercase;
-    color: #fff;
+    color: #F6A79E;
     padding: 5% 5% 0 5%;
     width: 100%;
 }
@@ -295,22 +299,74 @@ body {
 }
 
 .session-row {
-    list-style: none;
     height: 20vh;
-    width: 100%;
-    position:relative;
-    overflow:hidden;
+    white-space: nowrap
 }
 
-.session-row > li {
-    width: 25%;
+.session-row-wrapper {
+    display: block;
+    height: 100%;
+    width: auto;
+    position: relative;
+    -webkit-transition: -webkit-transform 300ms ease;
+    -moz-transition: -moz-transform 300ms ease;
+    transition: transform 300ms ease;
+}
+
+.session-row-data-wrapper {
+    width:100%;
+    height: 100%;
+    display:inline-block;
+}
+
+.session-row-data {
+    display:table;
+    width:100%;
+    height: 100%;
+    line-height: 100%;
+    vertical-align: middle;
     text-align: center;
-    float: left;
-    line-height: 20vh;
 }
 
-.sessions-details > ul:nth-child(odd) {
-    background-color: #EE4235;
+.session-row-data {
+    display:table;
+    width:100%;
+    height: 100%;
+}
+
+.session-row-data div{
+    display:table-cell;
+    height: 100%;
+    width: 25%;
+    max-width: 25%;
+    line-height: 100%;
+    vertical-align: middle;
+    text-align: center;
+
+}
+
+.session-row-delete {
+    width:25%;
+    height: 100%;
+    display:inline-block;
+    vertical-align: top;
+}
+
+.session-row-delete-btn {
+    display:table-cell;
+    vertical-align: middle;
+    line-height: 100%;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+
+.sessions-details > li:nth-child(odd) {
+    background-color: #D05043;
+}
+
+.sessions-details > li:nth-child(even) {
+    background-color: #DA5647;
 }
 
 .sessions-delete-session {

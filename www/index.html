@@ -21,21 +21,21 @@
       <div class="app-content" data-no-scroll="true">
           <div class="home-sessions-btn" id="btn-sessions">
               <div class="home-icon sessions-icon">&nbsp;</div>
-              <div class="home-sessions-title" >Sessions</div>
+              <div class="home-sessions-title" >SESSIONS</div>
           </div>
           <div class="home-start-session-btn" id="btn-session">
               <div class="home-icon start-icon">&nbsp;</div>
               <div class="home-username"></div>
-              <div class="home-sessions-title"><b>Start Session</b></div>
+              <div class="home-sessions-title"><b>START SESSION</b></div>
           </div>
           <div class="home-settings-btn" id="btn-settings">
               <div class="home-icon settings-icon">&nbsp;</div>
-              <div class="home-sessions-title">Settings</div>
+              <div class="home-sessions-title">SETTINGS</div>
           </div>
       </div>
     </div>
 
-    <div class="app-page" data-page="sessions">
+    <div class="app-page" data-page="sessions" data-no-scroll="true">
         <!--div class="app-topbar">
             <div class="app-button left" data-back data-autotitle></div>
             <div class="app-title">Sessions</div>
@@ -53,7 +53,7 @@
                             <div class="sessions-summary-label">
                                 Total Distance (km)
                             </div>
-                            <div class="sessions-summary-value">
+                            <div class="sessions-summary-value" id="total-distance">
                                 0.0
                             </div>
                         </div>
@@ -62,7 +62,7 @@
                             <div class="sessions-summary-label">
                                 Top speed (km/h)
                             </div>
-                            <div class="sessions-summary-value">
+                            <div class="sessions-summary-value" id="top-speed">
                                 0.0
                             </div>
                         </div>
@@ -71,65 +71,15 @@
                             <div class="sessions-summary-label">
                                 Total Time
                             </div>
-                            <div class="sessions-summary-value">
+                            <div class="sessions-summary-value" id="total-duration">
                                 00:00:00
                             </div>
                         </div>
                     </div>
 
-                    <div class="sessions-details app-content" >
-                        <ul class="session-row">
-                            <li>Not</li>
-                            <li>working</li>
-                            <li>yet</li>
-                        </ul>
-
-                        <!--ul class="session-row">
-                            <li>May 22</li>
-                            <li><b>18:26:32</b></li>
-                            <li><b>72</b> SPM</li>
-                            <li><b>8.5</b>km</li>
-                        </ul>
-
-                        <ul class="session-row">
-                            <li>May 22</li>
-                            <li><b>18:26:32</b></li>
-                            <li><b>72</b> SPM</li>
-                            <li><b>8.5</b>km</li>
-                        </ul>
-
-                        <ul class="session-row">
-                            <li>May 22</li>
-                            <li><b>18:26:32</b></li>
-                            <li><b>72</b> SPM</li>
-                            <li><b>8.5</b>km</li>
-                        </ul>
-
-                        <ul class="session-row">
-                            <li>May 22</li>
-                            <li><b>18:26:32</b></li>
-                            <li><b>72</b> SPM</li>
-                            <li><b>8.5</b>km</li>
-                        </ul>
-
-                        <ul class="session-row">
-                            <li>May 22</li>
-                            <li><b>18:26:32</b></li>
-                            <li><b>72</b> SPM</li>
-                            <li><b>8.5</b>km</li>
-                        </ul>
-                        <ul class="session-row">
-                            <li>May 22</li>
-                            <li><b>18:26:32</b></li>
-                            <li><b>72</b> SPM</li>
-                            <li><b>8.5</b>km</li>
-                        </ul>
-                        <ul class="session-row">
-                            <li>May 22</li>
-                            <li><b>18:26:32</b></li>
-                            <li><b>72</b> SPM</li>
-                            <li><b>8.5</b>km</li>
-                        </ul-->
+                    <!--ul class="app-content sessions-details" data-no-scroll="true" id="local-sessions"></ul-->
+                    <div class="app-content" data-no-scroll="true" id="sessions-wrapper" style="height:100%">
+                        <ul class="sessions-details" data-no-scroll="true" id="local-sessions" style="width:100%"></ul>
                     </div>
                 </div>
             </div>
@@ -198,9 +148,9 @@
                         Sign-in with Gmail
                     </div>
                 </div>
-                <div class="app-button settings-row"><!-- id="facebook">-->
-                    <div class="settings-facebook disabled">
-                        Sign-in with Facebook
+                <div class="app-button settings-row" id="logout">
+                    <div class="settings-facebook">
+                        Logout
                     </div>
                 </div>
             </div>
@@ -230,14 +180,12 @@
     </div>
 
     <script src="cordova.js"></script>
-    <script src="lib/zepto.js"></script>
-    <script src="lib/zepto.callbacks.js"></script>
-    <script src="lib/zepto.deferred.js"></script>
-    <script src="lib/touch.js"></script>
-    <script src="lib/animate.js"></script>
     <script src="lib/swiped.js"></script>
+    <script src="lib/jquery-2.1.4.min.js"></script>
+    <script src="lib/jquery.touchSwipe.min.js"></script>
+    <script src="lib/iscroll.js"></script>
     <script src="lib/app.min.js"></script>
-    <!--script src="lib/fastclick.js"></script-->
+    <script src="lib/moment.js"></script>
 
     <script src="js/global.js"></script>
     <script src="js/utils.js"></script>

@@ -12,9 +12,11 @@ Calibrate.prototype.start = function() {
     var i = 1, x = 0, y = 0, z = 0;
 
     function onSuccess(acceleration) {
+        document.PREVENT_SYNC = true;
 
         if (i === self.MEASURES) {
             self.stop();
+            document.PREVENT_SYNC = false;
             self.calculate(x, y, z);
             self.callback.call();
         }
@@ -79,14 +81,17 @@ Calibrate.prototype.stop = function () {
 }
 
 Calibrate.prototype.store = function (predominant, angleZ, noiseX, noiseY, noiseZ, factorX, factorZ) {
+    var round = function(value) {
+        return Math.round(value * 10000000000000000) / 10000000000000000
+    };
     window.localStorage.setItem("calibration", JSON.stringify({
         predominant: predominant,
-        angleZ: angleZ,
-        noiseX: noiseX,
-        noiseY: noiseY,
-        noiseZ: noiseZ,
-        factorX: factorX,
-        factorZ: factorZ
+        angleZ: round(angleZ),
+        noiseX: round(noiseX),
+        noiseY: round(noiseY),
+        noiseZ: round(noiseZ),
+        factorX: round(factorX),
+        factorZ: round(factorZ)
     }));
 }
 

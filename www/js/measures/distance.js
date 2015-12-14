@@ -12,9 +12,14 @@ Distance.prototype.render = function() {
 };
 
 Distance.prototype.start = function () {
-    var self = this, previous = undefined, distance = 0, d ;
+    var self = this, previous = undefined, distance = 0, i = 0 ;
 
     this.gps.listen(function (position) {
+        if (i < 5) {
+            i++;
+            return;
+        }
+
         if (previous !== undefined) {
             distance += GPS.calcDistance(previous, position);
 

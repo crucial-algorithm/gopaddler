@@ -1,3 +1,5 @@
+var db;
+
 /**
  * Splash screen / login page.
  */
@@ -51,7 +53,7 @@ App.controller('home', function (page) {
  * New session page.
  */
 App.controller('session', function (page) {
-    new Session(page);
+    new Session(page, db);
 });
 
 
@@ -65,6 +67,11 @@ App.controller('settings', function (page) {
 
     $calibration.on('touchstart', function () {
         App.load('calibration');
+    });
+
+    $('#logout', page).on('touchend', function () {
+        Paddler.Session.destroy();
+        window.location.reload();
     });
 
 
@@ -97,87 +104,81 @@ App.controller('sessions', function (page) {
     });
 
 
-    // get training sessions
-    Paddler.TrainingSessions.get('2016f4e0-6ecb-11e5-a837-0800200c9a66').done(function (trainingSession) {
-        console.log(trainingSession);
+
+    var $sessions = $page.find('#local-sessions');
+
+    // handle delete
+    $sessions.on('touchstart', '.session-row-delete-btn', function (e) {
+        var $el = $(e.target);
+        SessionEntity.delete(parseInt($el.attr('session-id')))
+            .then(function () {
+                $el.closest('li').remove();
+            });
     });
 
+    // load sessions
+    SessionEntity.all(function (sessions) {
+        var $li, $main, sessionAt, time, hours, minutes, duration, dDisplay;
+        for (var i = 0; i < sessions.length; i++) {
+            $li = $('<li class="session-row"></li>');
 
-    // save training session
-    /*
-     var trainingSessionDataPoints = [];
+            $('<div class="session-row-wrapper"></div>')
+                .append(($main = $('<div class="session-row-data-wrapper"></div>')))
+                .append($('<div class="session-row-delete"></div>')
+                    .append($('<div style="display:table;width:100%;height:100%"></div>')
+                        .append($('<div class="session-row-delete-btn"></div>').attr("session-id", sessions[i].id).text("delete"))))
+                .appendTo($li);
 
-     var trainingSessionData = new Paddler.TrainingSessionData();
 
-     trainingSessionData.setTimestamp((new Date()).getTime());
-     trainingSessionData.setDistance(0);
-     trainingSessionData.setSpeed(0);
-     trainingSessionData.setSpm(0);
-     trainingSessionData.setSpmEfficiency(0);
+            sessionAt = moment(new Date(sessions[i].session_start));
+            duration = moment.duration(sessions[i].session_end - sessions[i].session_start);
 
-     trainingSessionDataPoints.push(trainingSessionData);
+            hours = duration.hours();
+            minutes = duration.minutes();
 
-     var trainingSession = new Paddler.TrainingSession();
+            if (hours > 0)
+                dDisplay = hours + 'h' + lpad(minutes, 2);
+            else
+                dDisplay = lpad(minutes, 2) + "m";
 
-     trainingSession.setDate(new Date());
-     trainingSession.setDescription('My Training Session');
-     trainingSession.setData(trainingSessionDataPoints);
 
-     // calibration details
-     trainingSession.setAngleZ(0.2);
-     trainingSession.setNoiseX(0.2);
-     trainingSession.setNoiseZ(0.2);
-     trainingSession.setFactorX(0.2);
-     trainingSession.setFactorZ(0.2);
-     trainingSession.setAxis(2);
+            $('<div class="session-row-data"></div>')
+                .append($("<div style=\"display:table-cell\"/>").html(sessionAt.format("MMM D")))
+                .append($("<div style=\"display:table-cell\"/>").html(sessionAt.format("hh:mm:ss")))
+                .append($("<div style=\"display:table-cell;text-transform:none\"/>").html(dDisplay))
+                .append($("<div style=\"display:table-cell\"/>").html(Math.round2(sessions[i].distance || 0) + " km"))
+                .appendTo($main)
+            ;
 
-     Paddler.TrainingSessions.save(trainingSession);
-     */
-
-    var $row, $rows = $('.session-row', page), width, baseWidth;
-
-    $rows.on('touchend', function (e) {
-        if ($row) {
-            $row.animate({left: 0}, 200);
-            if ($row[0] === e.currentTarget) {
-                $row = undefined;
-                return;
-            }
+            $li.appendTo($sessions);
         }
 
-        $row = $(e.currentTarget);
-        $row.animate({left: -width}, 200);
     });
 
-    $rows.on('touchstart', function (e) {
-        if ($(e.srcElement).data('is') === 'delete') {
-            alert('are you sure you want to delete this session?');
-            e.preventDefault();
-            e.stopPropagation();
-        }
+    SessionEntity.sessionsSummary().then(function (data) {
+        var time = Math.floor(data.duration / 1000);
+        var hours = Math.floor(time / 3600);
+        time = time - hours * 3600;
+        var minutes = Math.floor(time / 60);
+        var seconds = time - minutes * 60;
+        $('#total-distance', page).text(Math.round2(data.distance));
+        $('#top-speed', page).text(Math.round2(data.speed));
+        $('#total-duration', page).text([lpad(hours, 2), lpad(minutes, 2), lpad(seconds, 2)].join(':'));
     });
 
-    $page.find('.sessions-details').on('scroll', function (e) {
-        if (e.axis == e.HORIZONTAL_AXIS) {
-            e.stopPropagation();
-            e.preventDefault();
-            e.cancelBubble = false;
-        }
-        return false;
-    });
-
-    // allow for elements to be added to dom and then, append delete button, but keep it hidden (overflow-x: hidden)
-//    setTimeout(function () {
-//        width = $rows.find('li').width();
-//        $rows.find('li').width(width);
-//        baseWidth = $rows.width() + width;
-//        $rows.width(baseWidth);
-//        $rows.append($('<li data-is="delete" class="sessions-delete-session">Delete</li>').width(baseWidth - (4 * width)));
-//        $rows.parent().css({'overflow': 'hidden'});
-//    }, 0);
 
     $page.on('appShow', function () {
-        $page.find('.sessions-details').css({'overflow': 'hidden'});
+
+        var width = $('.session-row-delete', page).width();
+
+        Swiped.init({
+            query: 'li',
+            list: true,
+            left: 0,
+            right: width
+        });
+
+        new IScroll($('#sessions-wrapper', page)[0], {});
     });
 });
 
@@ -210,9 +211,7 @@ App.controller('calibration', function (page) {
 
 });
 
-document.pd_device_ready = false;
-document.addEventListener('deviceready', function () {
-
+function onDeviceReady() {
     document.pd_device_ready = true;
 
     // Override default HTML alert with native dialog
@@ -244,12 +243,187 @@ document.addEventListener('deviceready', function () {
 
     window.powermanagement.acquire();
 
-}, false);
+    StatusBar.overlaysWebView( false );
+    StatusBar.backgroundColorByHexString('#ffffff');
+    StatusBar.styleDefault();
+
+    loadDb();
+    loadUi();
+}
+
+document.pd_device_ready = false;
+if (navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry|IEMobile)/)) {
+    document.addEventListener("deviceready", onDeviceReady, false);
+} else {
+    emulateCordova();
+    loadDb();
+    Paddler.Session.init();
+    Paddler.Session.setUser(new Paddler.User(-1, 'local-test-user', 'local', 'test', 'local.test@gmail.com', undefined));
+    Paddler.Session.setAccessToken('test-access-token');
+    loadUi();
+}
+
+function loadDb() {
+    db = window.sqlitePlugin.openDatabase({name: "sessions.db", "location": 2});
+
+    var ddl = [
+        [
+            ["CREATE TABLE IF NOT EXISTS meta (",
+                "version INTEGER NOT NULL",
+                ")"],
+
+            ["CREATE TABLE IF NOT EXISTS session (",
+                "id INTEGER NOT NULL PRIMARY KEY,",
+                "session_start INTEGER NOT NULL,",
+                "session_end INTEGER,",
+                "anglez REAL NOT NULL,",
+                "noisex REAL NOT NULL,",
+                "noisez REAL NOT NULL,",
+                "factorx REAL NOT NULL,",
+                "factorz REAL NOT NULL,",
+                "axis INTEGER NOT NULL,",
+                "distance REAL,",
+                "avg_sr REAL,",
+                "avg_speed REAL,",
+                "top_sr REAL,",
+                "top_speed REAL,",
+                "synced INTEGER DEFAULT 0,",
+                "synced_at INTEGER,",
+                "debug TEXT,",
+                "debug_synced INTEGER DEFAULT 0",
+                ")"],
+
+            ["CREATE TABLE IF NOT EXISTS session_data (",
+                "id INTEGER NOT NULL PRIMARY KEY,",
+                "session INTEGER NOT NULL,",
+                "timestamp INTEGER NOT NULL,",
+                "distance REAL,",
+                "speed REAL,",
+                "spm INTEGER,",
+                "efficiency REAL",
+                ")"]
+        ]
+    ];
 
 
-/**
- * Home screen.
- */
-App.load('login');
+    var success = function() {console.log('table created successfully')};
+    var error = function(e) {
+        console.log('error creating table', e);
+    };
+    db.transaction(function (tx) {
+        var v1 = ddl[0], sql;
+        for (var i = 0; i < v1.length; i++) {
+            sql = v1[i].join('');
+            console.log("DDL: ", sql);
+            tx.executeSql(sql, [], success, error);
+        }
+    });
+
+    var processing = {};
+    setTimeout(function () {
+        setInterval(function try2SyncSessions() {
+
+            if (document.PREVENT_SYNC === true) return;
+
+            var isOffline = 'onLine' in navigator && !navigator.onLine;
+
+            if (isOffline)
+                return;
+
+            SessionEntity.findAllNotSynced(function (sessions) {
+                var trainingSession, row;
+                for (var i = 0; i < sessions.length; i++) {
+                    if (processing[sessions[i].id] === true)
+                        continue;
+
+                    processing[sessions[i].id] = true;
+
+                    trainingSession = new Paddler.TrainingSession();
+                    trainingSession.setDate(new Date(sessions[i].session_start));
+                    trainingSession.setAngleZ(sessions[i].anglez);
+                    trainingSession.setNoiseX(sessions[i].noisex);
+                    trainingSession.setNoiseZ(sessions[i].noisez);
+                    trainingSession.setFactorX(sessions[i].factorx);
+                    trainingSession.setFactorZ(sessions[i].factorz);
+                    trainingSession.setAxis(sessions[i].axis);
+
+                    SessionDataEntity.get(sessions[i].id, function (localId, session, debug) {
+                        return function (rows) {
+                            var dataPoints = [];
+                            for (var j = 0; j < rows.length; j++) {
+                                row = new Paddler.TrainingSessionData();
+                                row.setTimestamp(rows[j].timestamp);
+                                row.setDistance(rows[j].distance);
+                                row.setSpeed(rows[j].speed);
+                                row.setSpm(rows[j].spm);
+                                row.setSpmEfficiency(rows[j].efficiency);
+                                dataPoints.push(row);
+                            }
+                            session.setData(dataPoints);
 
 
+                            Paddler.TrainingSessions.save(session).done(function (id) {
+                                    return function (session) {
+
+                                        IO.open(debug).then(IO.read).then(function (csv) {
+                                            var rows = csv.split('\n');
+                                            postDebugData(id, session.getId(), rows).done(function () {
+                                                delete processing[localId];
+                                            });
+                                        });
+
+                                        SessionEntity.synced(id);
+                                        if (!debug)
+                                            delete processing[localId];
+                                    }
+                                }(localId)).fail(function (res) {
+                                    console.log('save failed'   , res)
+                                    delete processing[localId];
+                                }).exception(function (res) {
+                                    delete processing[localId];
+                                    console.log('save failed', res);
+                                });
+                        }
+                    }(sessions[i].id, trainingSession, sessions[i].debug));
+                }
+            });
+
+        }, 10000);
+    }, 10000);
+
+    return db;
+}
+
+function loadUi() {
+    // Go directly to home or do we have to sign in?
+    Paddler.Session.init();
+    if (Paddler.Session.getAccessToken())
+        App.load('home');
+    else
+        App.load('login');
+}
+
+function postDebugData(localSessionId, remoteSessionId, rows) {
+    var self = this, sensorData = [], record, defer = $.Deferred();
+    for (var i = 0, l = rows.length; i < l; i++) {
+        record = rows[i].split(';');
+        sensorData.push(new Paddler.DebugSessionData(/* ts = */ record[0]
+            , /* x = */     record[1]
+            , /* y = */     record[2]
+            , /* z = */     record[3]
+            , /* value = */ record[4]
+        ));
+    }
+
+    Paddler.DebugSessions.saveMultiple(remoteSessionId, sensorData)
+        .then(function () {
+            console.log('saved successfully');
+            SessionEntity.debugSynced(localSessionId);
+            defer.resolve();
+        })
+        .fail(function (e) {
+            console.log('error saving debug data: ', e)
+            defer.reject();
+        });
+    return defer.promise();
+}

@@ -1,6 +1,6 @@
 'use strict'
 
-function StrokeDetector(sessionId, calibration, onStrokeDetected) {
+function StrokeDetector(session, calibration, onStrokeDetected, onAccelerationTriggered) {
     var self = this;
     self.watchId = undefined;
 
@@ -24,13 +24,14 @@ function StrokeDetector(sessionId, calibration, onStrokeDetected) {
     self.lastEvent = undefined;
 
     self.intervalId = undefined;
-    self.sessionId = sessionId;
+    self.session = session;
     self.debugAcceleration = [];
     this.db = window.localStorage;
     self.calibration = calibration;
 
     // used in simulation, to represent strokes in chart
     self.onStrokeDetectedListener = onStrokeDetected || function () {};
+    self.onAccelerationTriggeredListener = onAccelerationTriggered || function () {};
     self.onStrokeRateChangedListener = function () {};
 
     initilizeLog();
@@ -44,6 +45,12 @@ StrokeDetector.prototype.onStrokeRateChanged = function (callback) {
     var self = this;
     self.onStrokeRateChangedListener = callback;
 }
+
+StrokeDetector.prototype.onAccelerationTriggered = function (callback) {
+    var self = this;
+    self.onAccelerationTriggeredListener = callback;
+}
+
 
 StrokeDetector.prototype.stop = function () {
     var self = this;
@@ -59,15 +66,13 @@ StrokeDetector.prototype.start = function () {
         value = self.filter(acceleration);
 
         // call event handler
-        self.onAccelerationTriggered(acceleration, value);
+        self.process(acceleration, value);
 
-        // for debug only
-        self.debugAcceleration.push([acceleration.timestamp, acceleration.x, acceleration.y, acceleration.z, value, self.calibration.getPredominant(), self.calibration.getAngleZ(), self.calibration.getFactorX(), self.calibration.getNoiseX(), self.calibration.getFactorZ(), self.calibration.getNoiseZ(), "\n"].join(','));
-        if (self.debugAcceleration.length > 1000) {
-            debug(self.debugAcceleration);
-            self.debugAcceleration = [];
-        }
+        // for debug
+        self.onAccelerationTriggeredListener(acceleration, value);
     }
+
+
 
     function onError() {
         console.log('onError!');
@@ -106,12 +111,12 @@ StrokeDetector.prototype.refreshSPM = function () {
 
 
 /**
- * Process events comming from accelerometer
+ * Process events coming from accelerometer
  *
  * @param acceleration
  * @param value
  */
-StrokeDetector.prototype.onAccelerationTriggered = function (acceleration, value) {
+StrokeDetector.prototype.process = function (acceleration, value) {
     var self = this, current, stroke;
 
     if (self.checkpoint === undefined)
@@ -227,7 +232,7 @@ StrokeDetector.prototype.filter = function(acceleration) {
     } else {
         factor = self.calibration.getFactorZ();
         adjustment = self.calibration.getNoiseZ();
-        value = acceleration.z
+        value = acceleration.z;
     }
 
     return (value - adjustment) * factor;
@@ -389,7 +394,6 @@ StrokeDetector.prototype.calculateSPM = function (strokes) {
 
     // if we don't have strokes in the past 3 seconds, set it to zero
     if (self.lastStroke && self.lastEvent && (self.lastEvent.getSampleAt() - self.lastStroke.getSampleAt() > 3000)) {
-        log([(new Date).getTime(), 0, "\n"].join(','));
         return 0;
     }
 
@@ -420,7 +424,6 @@ StrokeDetector.prototype.calculateSPM = function (strokes) {
     // avg interval between strokes in mili seconds (thus the division by 1000)
     var strokeRate = 60 / (avg / 1000);
 
-    log([new Date().getTime(), Math.round(strokeRate), logA, '-', logB, "\n"].join(','));
     return Math.round(strokeRate);
 }
 
@@ -484,11 +487,6 @@ Event.prototype.getStroke = function() {
     return this.stroke;
 }
 
-
-var fsFail = function(err) {
-    console.log('fs fail', err);
-}
-
 var debugFile, logFile;
 function initilizeLog() {
 
@@ -497,27 +495,12 @@ function initilizeLog() {
         dir.getFile("debug-" + ts, {create: true}, function (file) {
             debugFile = file;
         });
-        dir.getFile("sr-" + ts, {create: true}, function (file) {
-            logFile = file;
-        });
     };
 
     if (window.resolveLocalFileSystemURL)
-        window.resolveLocalFileSystemURL("cdvfile://localhost/sdcard/paddler/", success, function fail() {
-            createDirectory(initilizeLog);
+        window.resolveLocalFileSystemURL(cordova.file.cacheDirectory, success, function fail() {
+            // TODO: handle error properly
         });
-}
-
-
-function createDirectory(callback) {
-    var root;
-    var gotFS = function (fileSystem) {
-        root = fileSystem.root;
-        root.getDirectory("paddler", {create: true}, callback, fsFail);
-    };
-
-    var SD_CARD = 7;
-    window.requestFileSystem(SD_CARD, 0, gotFS, fsFail);
 }
 
 
@@ -537,8 +520,4 @@ function write(file, str) {
 
 function debug(str) {
     write(debugFile, str);
-}
-
-function log(str) {
-    write(logFile, str);
 }

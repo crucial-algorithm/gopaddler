@@ -100,4 +100,4 @@
         '4201' // user canceled login dialog
     ];
 
-})(window, Zepto);
+})(window, jQuery);

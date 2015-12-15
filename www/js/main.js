@@ -395,12 +395,12 @@ function loadDb() {
 }
 
 function loadUi() {
-    // Go directly to home or do we have to sign in?
-    Paddler.Session.init();
-    if (Paddler.Session.getAccessToken())
+
+    Paddler.Authentication.autoLogin(true).done(function() {
         App.load('home');
-    else
+    }).fail(function() {
         App.load('login');
+    });
 }
 
 function postDebugData(localSessionId, remoteSessionId, rows) {

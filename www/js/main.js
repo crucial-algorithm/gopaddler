@@ -45,7 +45,12 @@ App.controller('home', function (page) {
         App.load('settings');
     });
 
-    $('.home-username', page).html('Hi, ' + Paddler.Session.getUser().getFullName());
+    $('.home-username-bold', page).html(Paddler.Session.getUser().getFullName());
+    var session;
+    if ((session = SessionEntity.last())) {
+        $('.home-last-record', page).show();
+        $('.home-last-record-date', page).html(moment(session.session_start).format('MMM d'));
+    }
 });
 
 
@@ -120,7 +125,7 @@ App.controller('sessions', function (page) {
     SessionEntity.all(function (sessions) {
         var $li, $main, sessionAt, time, hours, minutes, duration, dDisplay;
         for (var i = 0; i < sessions.length; i++) {
-            $li = $('<li class="session-row"></li>');
+            $li = $('<li class="session-row vh_height20"></li>');
 
             $('<div class="session-row-wrapper"></div>')
                 .append(($main = $('<div class="session-row-data-wrapper"></div>')))
@@ -388,7 +393,7 @@ function loadDb() {
                 }
             });
 
-        }, 10000);
+        }, 120000);
     }, 10000);
 
     return db;

@@ -237,6 +237,23 @@ SessionEntity.all = function (callback) {
     });
 };
 
+SessionEntity.last = function () {
+    var defer = $.Deferred();
+    db.executeSql("SELECT id, session_start, session_end, anglez, noisex, noisez, factorx, factorz, axis" +
+        ", distance, avg_sr, top_sr, avg_speed, top_speed FROM session order by id desc limit 1", [], function (res) {
+
+        if (res.rows.length > 0) {
+            // TODO: create real entity
+            defer.resolve(res.rows.item(0));
+            return;
+        }
+        defer.resolve(undefined);
+    }, function (error) {
+        defer.reject(error.message);
+    });
+
+    return defer.promise();
+};
 
 
 function SessionDataEntity(db, session, timestamp, distance, speed, spm, efficiency) {

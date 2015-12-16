@@ -16,13 +16,16 @@
                     // authentication with facebook
                     fbLogin().then(defer.resolve, defer.reject);
 
-                } else if (!Paddler.Authentication.isAuthenticated()) {
+                } else {
 
                     // if no API authentication, go ahead and authenticate
                     paddlerLogin(response).then(defer.resolve, defer.reject);
                 }
 
-            }, fbAuthError);
+            }, function(response) {
+
+                fbAuthError(response).then(defer.resolve, defer.reject);
+            });
 
             return defer.promise();
         }

@@ -186,9 +186,9 @@ SessionEntity.synced = function (id) {
     return defer.promise();
 };
 
-SessionEntity.debugSynced = function (id) {
+SessionEntity.debugSynced = function (id, partially) {
     var defer = $.Deferred();
-    db.executeSql("update session set debug_synced = 1 where id = ?", [new Date().getTime(), id], function success() {
+    db.executeSql("update session set debug_synced = 1, debug_synced_at = ?, debug_synced_part = ? where id = ?", [new Date().getTime(), id, partially === true ? 1 : 0], function success() {
         defer.resolve();
     }, function error() {
         defer.fail();

@@ -46,11 +46,11 @@ App.controller('home', function (page) {
     });
 
     $('.home-username-bold', page).html(Paddler.Session.getUser().getFullName());
-    var session;
-    if ((session = SessionEntity.last())) {
+    SessionEntity.last().then(function (session) {
         $('.home-last-record', page).show();
-        $('.home-last-record-date', page).html(moment(session.session_start).format('MMM d'));
-    }
+        $('.home-last-record-date', page).html(moment(session.session_start).format('MMM D'));
+    });
+
 });
 
 
@@ -295,7 +295,9 @@ function loadDb() {
                 "synced INTEGER DEFAULT 0,",
                 "synced_at INTEGER,",
                 "debug TEXT,",
-                "debug_synced INTEGER DEFAULT 0",
+                "debug_synced INTEGER DEFAULT 0,",
+                "debug_synced_at INTEGER,",
+                "debug_synced_part INTEGER DEFAULT 0",
                 ")"],
 
             ["CREATE TABLE IF NOT EXISTS session_data (",
@@ -319,84 +321,84 @@ function loadDb() {
         var v1 = ddl[0], sql;
         for (var i = 0; i < v1.length; i++) {
             sql = v1[i].join('');
-            console.log("DDL: ", sql);
             tx.executeSql(sql, [], success, error);
         }
     });
 
-    var processing = {};
     setTimeout(function () {
-        setInterval(function try2SyncSessions() {
-
-            if (document.PREVENT_SYNC === true) return;
-
-            var isOffline = 'onLine' in navigator && !navigator.onLine;
-
-            if (isOffline)
-                return;
-
-            SessionEntity.findAllNotSynced(function (sessions) {
-                var trainingSession, row;
-                for (var i = 0; i < sessions.length; i++) {
-                    if (processing[sessions[i].id] === true)
-                        continue;
-
-                    processing[sessions[i].id] = true;
-
-                    trainingSession = new Paddler.TrainingSession();
-                    trainingSession.setDate(new Date(sessions[i].session_start));
-                    trainingSession.setAngleZ(sessions[i].anglez);
-                    trainingSession.setNoiseX(sessions[i].noisex);
-                    trainingSession.setNoiseZ(sessions[i].noisez);
-                    trainingSession.setFactorX(sessions[i].factorx);
-                    trainingSession.setFactorZ(sessions[i].factorz);
-                    trainingSession.setAxis(sessions[i].axis);
-
-                    SessionDataEntity.get(sessions[i].id, function (localId, session, debug) {
-                        return function (rows) {
-                            var dataPoints = [];
-                            for (var j = 0; j < rows.length; j++) {
-                                row = new Paddler.TrainingSessionData();
-                                row.setTimestamp(rows[j].timestamp);
-                                row.setDistance(rows[j].distance);
-                                row.setSpeed(rows[j].speed);
-                                row.setSpm(rows[j].spm);
-                                row.setSpmEfficiency(rows[j].efficiency);
-                                dataPoints.push(row);
-                            }
-                            session.setData(dataPoints);
-
-
-                            Paddler.TrainingSessions.save(session).done(function (id) {
-                                    return function (session) {
-
-                                        IO.open(debug).then(IO.read).then(function (csv) {
-                                            var rows = csv.split('\n');
-                                            postDebugData(id, session.getId(), rows).done(function () {
-                                                delete processing[localId];
-                                            });
-                                        });
-
-                                        SessionEntity.synced(id);
-                                        if (!debug)
-                                            delete processing[localId];
-                                    }
-                                }(localId)).fail(function (res) {
-                                    console.log('save failed'   , res)
-                                    delete processing[localId];
-                                }).exception(function (res) {
-                                    delete processing[localId];
-                                    console.log('save failed', res);
-                                });
-                        }
-                    }(sessions[i].id, trainingSession, sessions[i].debug));
-                }
-            });
-
-        }, 120000);
+        setInterval(sync.bind(self), 120000);
     }, 10000);
 
     return db;
+}
+
+var processing = {};
+
+function sync() {
+    if (document.PREVENT_SYNC === true) return;
+
+    var isOffline = 'onLine' in navigator && !navigator.onLine;
+
+    if (isOffline)
+        return;
+
+    SessionEntity.findAllNotSynced(function (sessions) {
+        var trainingSession, row;
+        for (var i = 0; i < sessions.length; i++) {
+            if (processing[sessions[i].id] === true)
+                continue;
+
+            processing[sessions[i].id] = true;
+
+            trainingSession = new Paddler.TrainingSession();
+            trainingSession.setDate(new Date(sessions[i].session_start));
+            trainingSession.setAngleZ(sessions[i].anglez);
+            trainingSession.setNoiseX(sessions[i].noisex);
+            trainingSession.setNoiseZ(sessions[i].noisez);
+            trainingSession.setFactorX(sessions[i].factorx);
+            trainingSession.setFactorZ(sessions[i].factorz);
+            trainingSession.setAxis(sessions[i].axis);
+
+            SessionDataEntity.get(sessions[i].id, function (localId, session, debug) {
+                return function (rows) {
+                    var dataPoints = [];
+                    for (var j = 0; j < rows.length; j++) {
+                        row = new Paddler.TrainingSessionData();
+                        row.setTimestamp(rows[j].timestamp);
+                        row.setDistance(rows[j].distance);
+                        row.setSpeed(rows[j].speed);
+                        row.setSpm(rows[j].spm);
+                        row.setSpmEfficiency(rows[j].efficiency);
+                        dataPoints.push(row);
+                    }
+                    session.setData(dataPoints);
+
+
+                    Paddler.TrainingSessions.save(session).done(function (id) {
+                            return function (session) {
+
+                                IO.open(debug).then(IO.read).then(function (csv) {
+                                    var rows = csv.split('\n');
+                                    uploadDebugData(id, session.getId(), rows).done(function () {
+                                        delete processing[localId];
+                                    });
+                                });
+
+                                SessionEntity.synced(id);
+                                if (!debug)
+                                    delete processing[localId];
+                            }
+                        }(localId)).fail(function (res) {
+                            console.log('save failed'   , res)
+                            delete processing[localId];
+                        }).exception(function (res) {
+                            delete processing[localId];
+                            console.log('save failed', res);
+                        });
+                }
+            }(sessions[i].id, trainingSession, sessions[i].debug));
+        }
+    });
 }
 
 function loadUi() {
@@ -408,7 +410,7 @@ function loadUi() {
     });
 }
 
-function postDebugData(localSessionId, remoteSessionId, rows) {
+function uploadDebugData(localSessionId, remoteSessionId, rows) {
     var self = this, sensorData = [], record, defer = $.Deferred();
     for (var i = 0, l = rows.length; i < l; i++) {
         record = rows[i].split(';');
@@ -420,15 +422,27 @@ function postDebugData(localSessionId, remoteSessionId, rows) {
         ));
     }
 
-    Paddler.DebugSessions.saveMultiple(remoteSessionId, sensorData)
-        .then(function () {
-            console.log('saved successfully');
-            SessionEntity.debugSynced(localSessionId);
-            defer.resolve();
-        })
-        .fail(function (e) {
-            console.log('error saving debug data: ', e)
-            defer.reject();
-        });
+
+    (function loopAsync() {
+        var payload = sensorData.splice(0, 1000);
+
+        Paddler.DebugSessions.saveMultiple(remoteSessionId, payload)
+            .then(function () {
+                if (sensorData.length > 0) {
+                    loopAsync();
+                    return;
+                }
+
+                console.log('finish uploading session ' + localSessionId);
+                SessionEntity.debugSynced(localSessionId, false);
+                defer.resolve();
+            })
+            .fail(function (e) {
+
+                console.log('error saving debug data: ', e);
+                SessionEntity.debugSynced(localSessionId, true);
+                defer.reject(e);
+            });
+    })();
     return defer.promise();
 }

@@ -213,6 +213,11 @@ var IO = {
     open: function(filename) {
         var self = this, defer = $.Deferred();
 
+        if (!filename) {
+            defer.reject();
+            return defer.promise();
+        }
+
         console.log('open ', filename);
 
         var success = function (dir) {
@@ -223,7 +228,7 @@ var IO = {
 
         if (window.resolveLocalFileSystemURL)
             window.resolveLocalFileSystemURL(cordova.file.cacheDirectory, success, function fail(e) {
-                defer.fail(e);
+                defer.reject(e);
             });
 
         return defer.promise();

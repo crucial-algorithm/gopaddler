@@ -109,8 +109,19 @@ function uploadDebugData(session, rows) {
             .fail(function (e) {
 
                 console.log('error saving debug data: ', e);
-                Session.debugSyncFinished(session.getId(), false);
-                defer.reject(e);
+
+                Session.get(session.getId()).then(function (s) {
+                    if (s.getDebugAttempt() < 3) {
+                        loopAsync();
+                        return;
+                    }
+
+                    Session.debugSyncFinished(session.getId(), false);
+                    defer.reject(e);
+                }).fail(function () {
+                        Session.debugSyncFinished(session.getId(), false);
+                        defer.reject(e);
+                    });
             });
     })();
     return defer.promise();

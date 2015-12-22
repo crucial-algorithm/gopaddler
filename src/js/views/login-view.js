@@ -1,5 +1,7 @@
 'use strict';
 
+var FB = require('../server/fb').FB;
+
 function LoginView(page) {
 
     var $login = $('#facebook', page);

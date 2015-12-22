@@ -20,6 +20,8 @@ function Session(sessionStart, angleZ, noiseX, noiseZ, factorX, factorZ, axis, d
     this.topSpm = topSpm;
     this.avgSpeed = avgSpeed;
     this.topSpeed = topSpeed;
+
+    this.dbgAttempt = undefined;
     return this;
 }
 
@@ -123,6 +125,13 @@ Session.prototype.setDistance = function (distance) {
 };
 Session.prototype.getDistance = function () {
     return this.distance;
+};
+
+Session.prototype.setDebugAttempt = function (attempt) {
+    this.dbgAttempt = attempt;
+};
+Session.prototype.getDebugAttempt = function () {
+    return this.dbgAttempt;
 };
 
 
@@ -285,11 +294,29 @@ Session.last = function () {
     return defer.promise();
 };
 
+Session.get = function (id) {
+    var connection = db.getConnection();
+    var defer = $.Deferred();
+    connection.executeSql("SELECT * FROM session where id = ?", [id], function (res) {
+
+        if (res.rows.length > 0) {
+            defer.resolve(sessionFromDbRow(res.rows.item(0)));
+            return;
+        }
+        defer.resolve(undefined);
+    }, function (error) {
+        defer.reject(error.message);
+    });
+
+    return defer.promise();
+};
+
 
 function sessionFromDbRow(data) {
     var session = new Session(data.session_start, data.anglez, data.noisex, data.noisez, data.factorx, data.factorz, data.axis
         , data.distance, data.avg_spm, data.top_spm, data.avg_speed, data.top_speed, data.session_end);
     session.setId(data.id);
+    session.setDebugAttempt(data.dbg_attempt);
     return session;
 }
 

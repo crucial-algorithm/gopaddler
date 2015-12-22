@@ -1,3 +1,6 @@
+'use strict';
+var Measure = require('./measure').Measure;
+
 function StrokeRate($parent, strokeDetector) {
     this.defaultValue = "0";
     this.measure = Measure.get('large', $parent, "-", "-", this.defaultValue);
@@ -37,3 +40,5 @@ StrokeRate.prototype.getValue = function () {
 StrokeRate.prototype.onUpdate = function (callback) {
     this.onUpdateListener = callback;
 };
+
+exports.StrokeRate = StrokeRate;

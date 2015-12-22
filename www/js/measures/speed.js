@@ -1,3 +1,6 @@
+'use strict';
+var Measure = require('./measure').Measure;
+
 function Speed($parent, gps) {
     this.defaultValue = "0";
     this.measure = Measure.get('small', $parent, "Speed", "Km/h", this.defaultValue);
@@ -25,4 +28,6 @@ Speed.prototype.reset = function () {
 
 Speed.prototype.getValue = function () {
     return this.value;
-}
+};
+
+exports.Speed = Speed;

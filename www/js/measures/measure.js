@@ -57,4 +57,6 @@ Measure.get = function (type, $parent, label, unit, defaultValue) {
     } else {
         return new LargeMeasure($parent, label, unit, defaultValue);
     }
-}
+};
+
+exports.Measure = Measure;

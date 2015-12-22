@@ -1,3 +1,6 @@
+'use strict';
+var Measure = require('./measure').Measure;
+
 function Timer($parent) {
     this.measure = Measure.get('small', $parent, 'Duration', undefined, '00:00:00');
     this.$parent = $parent;
@@ -53,3 +56,6 @@ Timer.prototype.zeroPad = function (value) {
 Timer.prototype.toString = function () {
     return this.zeroPad(this.hour) + ':' + this.zeroPad(this.minute) + ':' + this.zeroPad(this.second);
 }
+
+
+exports.Timer = Timer;

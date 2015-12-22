@@ -1,3 +1,8 @@
+'use strict';
+var Measure = require('./measure').Measure;
+var GPS = require('../utils/gps').GPS;
+
+
 function Distance($parent, gps) {
     this.defaultValue = "0";
     this.measure = Measure.get('small', $parent, "Distance", "Km", this.defaultValue);
@@ -37,4 +42,6 @@ Distance.prototype.reset = function () {
 
 Distance.prototype.getValue = function () {
     return this.value;
-}
+};
+
+exports.Distance = Distance;

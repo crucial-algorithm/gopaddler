@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="css/paddler.css">
 
     <script src="lib/vunit-0.2.0.min.js"></script>
-    <script src="js/head.js"></script>
+    <script src="js/utils/polyfils.js"></script>
 
 </head>
 
@@ -89,7 +89,14 @@
 
                     <!--ul class="app-content sessions-details" data-no-scroll="true" id="local-sessions"></ul-->
                     <div class="app-content" data-no-scroll="true" id="sessions-wrapper" style="height:100%">
-                        <ul class="sessions-details" data-no-scroll="true" id="local-sessions" style="width:100%"></ul>
+                        <ul class="sessions-details" data-no-scroll="true" id="local-sessions" style="height:100%;width:100%">
+                            <li class="vh_height20" style="display: table;width: 100%;height:100%">
+                                <div class="vw_font-size7"
+                                     style="display:table-cell;vertical-align: middle;text-align: center;font-weight: bold;text-transform: capitalize;color: #F6A79E;height:100%;line-height: 100%">
+                                    &lt;empty&gt;
+                                </div>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -197,24 +204,10 @@
     <script src="lib/app.min.js"></script>
     <script src="lib/moment.js"></script>
 
-    <script src="js/global.js"></script>
-    <script src="js/utils.js"></script>
-    <script src="js/gps.js"></script>
-    <script src="js/measure.js"></script>
-    <script src="js/calibration.js"></script>
-    <script src="js/stroke-detector.js"></script>
-
-
-    <script src="js/session.js"></script>
-    <script src="js/measures/timer.js"></script>
-    <script src="js/measures/distance.js"></script>
-    <script src="js/measures/speed.js"></script>
-    <script src="js/measures/strokrate.js"></script>
-
-    <script src="js/fb.js"></script>
+    <script src="js/server/fb.js"></script>
     <script src="lib/paddler-api.min.js"></script>
 
-    <script src="js/main.js"></script>
+    <script src="dist/app.js"></script>
 
   </body>
 </html>

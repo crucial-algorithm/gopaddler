@@ -1,3 +1,6 @@
+'use strict';
+
+// Add support for vh and vw units in older browsers (android < 4.4)
 new vUnit({
     CSSMap: {
         // Wanted to have a font-size based on the viewport width? You got it.
@@ -24,8 +27,7 @@ new vUnit({
         '.vh_padding-bottom': {
             property: 'padding-bottom',
             reference: 'vh'
-        },
-
+        }
     },
     onResize: function() {
         console.log('A screen resize just happened, yo.');

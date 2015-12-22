@@ -1,3 +1,5 @@
+'use strict';
+
 // Converts from degrees to radians.
 Math.toRadians = function(degrees) {
     return degrees * Math.PI / 180;
@@ -85,8 +87,6 @@ Array.prototype.before = function(milis) {
     }
     return this.slice(0, i);
 };
-
-
 
 
 // override functions when in testing (deviceready not triggered)
@@ -202,68 +202,4 @@ $.extend($.fn, {
 });
 
 
-function lpad(value, places) {
-    var pad = new Array(places + 1).join('0');
-    var str = value + "";
-    return pad.substring(0, pad.length - str.length) + str;
-}
-
-
-var IO = {
-    open: function(filename) {
-        var self = this, defer = $.Deferred();
-
-        if (!filename) {
-            defer.reject();
-            return defer.promise();
-        }
-
-        console.log('open ', filename);
-
-        var success = function (dir) {
-            dir.getFile(filename, {create: true}, function (file) {
-                defer.resolve(file)
-            });
-        };
-
-        if (window.resolveLocalFileSystemURL)
-            window.resolveLocalFileSystemURL(cordova.file.cacheDirectory, success, function fail(e) {
-                defer.reject(e);
-            });
-
-        return defer.promise();
-    },
-
-    write: function (file, content) {
-        if(!file) return;
-
-        file.createWriter(function (fileWriter) {
-
-            console.log('writting to', fileWriter);
-
-            fileWriter.seek(fileWriter.length);
-            var blob = new Blob([content], {type: 'text/plain'});
-            fileWriter.write(blob);
-            console.log('finished');
-
-        }, function fail() {
-            console.log("write to log failed");
-        });
-    },
-
-    read: function(file) {
-        var defer = $.Deferred();
-        file.file(function(file) {
-            var reader = new FileReader();
-
-            reader.onloadend = function(e) {
-                console.log("reading from: ", this);
-                defer.resolve(this.result);
-            }
-
-            reader.readAsText(file);
-        });
-
-        return defer.promise();
-    }
-}
+exports.emulateCordova = emulateCordova;

@@ -521,3 +521,6 @@ function write(file, str) {
 function debug(str) {
     write(debugFile, str);
 }
+
+
+exports.StrokeDetector = StrokeDetector;

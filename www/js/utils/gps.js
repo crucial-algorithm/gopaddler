@@ -1,3 +1,8 @@
+'use strict';
+
+var utils = require('./utils.js');
+
+
 function GPS () {
     var self = this;
     self.listeners = [];
@@ -27,7 +32,7 @@ GPS.prototype.start = function() {
     };
 
 
-    pdOnDeviceReady(function gpsListenDeviceReady() {
+    utils.pdOnDeviceReady(function gpsListenDeviceReady() {
         self.watchId = navigator.geolocation.watchPosition(onSuccess, onError, { timeout: 60000, enableHighAccuracy: true });
     }, function gpsFailureDeviceReady(e) {
         console.log('GPS: no signal found - are you viewing in browser? ' + e)
@@ -62,4 +67,7 @@ GPS.calcDistance = function (starting, ending) {
     } catch (e) {
         return 0;
     }
-}
+};
+
+
+exports.GPS = GPS;

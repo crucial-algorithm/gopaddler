@@ -112,7 +112,9 @@ function uploadDebugData(session, rows) {
 
                 Session.get(session.getId()).then(function (s) {
                     if (s.getDebugAttempt() < 3) {
-                        loopAsync();
+                        Session.incrementAttempt(session.getId()).then(function () {
+                            loopAsync();
+                        });
                         return;
                     }
 

@@ -120,7 +120,7 @@ SessionView.prototype.createSession = function (calibration) {
         , calibration.getNoiseZ()
         , calibration.getFactorX()
         , calibration.getFactorZ()
-        , calibration.getPredominant() === 'X' ? 0 : 1
+        , calibration.getPredominant()
     );
 
     return session.create();

@@ -33,8 +33,6 @@ function StrokeDetector(session, calibration, onStrokeDetected, onAccelerationTr
     self.onStrokeDetectedListener = onStrokeDetected || function () {};
     self.onAccelerationTriggeredListener = onAccelerationTriggered || function () {};
     self.onStrokeRateChangedListener = function () {};
-
-    initilizeLog();
 }
 
 StrokeDetector.exceptions = {
@@ -486,41 +484,5 @@ Event.prototype.setStroke = function (stroke) {
 Event.prototype.getStroke = function() {
     return this.stroke;
 }
-
-var debugFile, logFile;
-function initilizeLog() {
-
-    var success = function (dir) {
-        var ts = new Date().getTime();
-        dir.getFile("debug-" + ts, {create: true}, function (file) {
-            debugFile = file;
-        });
-    };
-
-    if (window.resolveLocalFileSystemURL)
-        window.resolveLocalFileSystemURL(cordova.file.cacheDirectory, success, function fail() {
-            // TODO: handle error properly
-        });
-}
-
-
-function write(file, str) {
-    if(!file) return;
-    console.log("going to log " + str);
-    file.createWriter(function (fileWriter) {
-
-        fileWriter.seek(fileWriter.length);
-
-        var blob = new Blob([str], {type: 'text/plain'});
-        fileWriter.write(blob);
-    }, function fail() {
-        console.log("write to log failed");
-    });
-}
-
-function debug(str) {
-    write(debugFile, str);
-}
-
 
 exports.StrokeDetector = StrokeDetector;

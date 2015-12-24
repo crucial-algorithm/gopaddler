@@ -65,9 +65,9 @@ Calibrate.prototype.calculate = function (sumx, sumy, sumz) {
     }
 
     if (angleZ < Math.toRadians(45)) {
-        predominantAxis = 'Z';
+        predominantAxis = 2;
     } else {
-        predominantAxis = 'X';
+        predominantAxis = 0;
     }
 
     var factorX = Math.toRadians(90) - angleZ;

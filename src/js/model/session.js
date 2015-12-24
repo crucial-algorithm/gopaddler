@@ -233,6 +233,17 @@ Session.debugSyncFinished = function (id, success) {
     return defer.promise();
 };
 
+Session.incrementAttempt = function (id) {
+    var connection = db.getConnection();
+    var defer = $.Deferred();
+    connection.executeSql("update session set dbg_attempt = dbg_attempt + 1 where id = ?", [id], function success() {
+        defer.resolve();
+    }, function error() {
+        defer.fail();
+    });
+    return defer.promise();
+};
+
 Session.sessionsSummary = function () {
     var defer = $.Deferred();
     var connection = db.getConnection();

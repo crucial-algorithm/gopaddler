@@ -13,9 +13,7 @@ function StrokeDetector(session, calibration, onStrokeDetected, onAccelerationTr
     self.mins = [];
     self.checkpoint = undefined;
     self.positiveMaxs = [];
-    self.positiveThresholds = [];
     self.negativeMaxs = [];
-    self.negativeThresholds = [];
     self.strokes = [];
     self.events = [];
     self.intervals = [];
@@ -33,6 +31,7 @@ function StrokeDetector(session, calibration, onStrokeDetected, onAccelerationTr
     self.onStrokeDetectedListener = onStrokeDetected || function () {};
     self.onAccelerationTriggeredListener = onAccelerationTriggered || function () {};
     self.onStrokeRateChangedListener = function () {};
+    self.onThresholdChangedListener = function() {};
 }
 
 StrokeDetector.exceptions = {
@@ -47,6 +46,11 @@ StrokeDetector.prototype.onStrokeRateChanged = function (callback) {
 StrokeDetector.prototype.onAccelerationTriggered = function (callback) {
     var self = this;
     self.onAccelerationTriggeredListener = callback;
+}
+
+StrokeDetector.prototype.onThresholdChanged = function (callback) {
+    var self = this;
+    self.onThresholdChangedListener = callback;
 }
 
 
@@ -69,8 +73,6 @@ StrokeDetector.prototype.start = function () {
         // for debug
         self.onAccelerationTriggeredListener(acceleration, value);
     }
-
-
 
     function onError() {
         console.log('onError!');
@@ -144,16 +146,19 @@ StrokeDetector.prototype.process = function (acceleration, value) {
 
         self.max = 0;
         self.min = 0;
+
+        if (self.positiveMaxs.length === 3) {
+            self.positiveThreshold =  Math.round2(self.positiveMaxs.avg() * .5);
+            self.negativeThreshold = Math.round2(self.negativeMaxs.avg() * .5);
+            self.onThresholdChangedListener.apply({}, [acceleration.timestamp, self.positiveThreshold, self.negativeThreshold]);
+        }
+
     }
 
     if (self.positiveMaxs.length < 3 ) return;
 
-    var pt = Math.round2(self.positiveMaxs.avg() * .5);
-    var nt = Math.round2(self.negativeMaxs.avg() * .5);
-    self.positiveThresholds.push([acceleration.timestamp, pt]);
-    self.negativeThresholds.push([acceleration.timestamp, nt]);
 
-    current = new Event(acceleration.timestamp, value, pt, nt, undefined);
+    current = new Event(acceleration.timestamp, value, self.positiveThreshold, self.negativeThreshold, undefined);
 
     if (self.isAccelerationCrossingThreshold(current, self.lastEvent) && (stroke = self.findStroke(self.events, acceleration, self.lastStroke)) !== undefined) {
         stroke.setDetected(current);

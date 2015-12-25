@@ -328,6 +328,7 @@ function sessionFromDbRow(data) {
         , data.distance, data.avg_spm, data.top_spm, data.avg_speed, data.top_speed, data.session_end);
     session.setId(data.id);
     session.setDebugAttempt(data.dbg_attempt);
+    session.setRemoteId(data.remote_id);
     return session;
 }
 

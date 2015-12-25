@@ -21,6 +21,8 @@ GPS.prototype.start = function() {
 
 
     var onSuccess = function (position) {
+        if (position.coords.accuracy > 10) return;
+
         for (var i = 0, length = self.listeners.length; i < length; i++) {
             self.listeners[i].apply(undefined, [position]);
         }
@@ -33,7 +35,7 @@ GPS.prototype.start = function() {
 
 
     utils.pdOnDeviceReady(function gpsListenDeviceReady() {
-        self.watchId = navigator.geolocation.watchPosition(onSuccess, onError, { timeout: 60000, enableHighAccuracy: true });
+        self.watchId = navigator.geolocation.watchPosition(onSuccess, onError, { timeout: 60000, enableHighAccuracy: true, maximumAge: 500 });
     }, function gpsFailureDeviceReady(e) {
         console.log('GPS: no signal found - are you viewing in browser? ' + e)
     });

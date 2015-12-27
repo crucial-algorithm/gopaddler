@@ -1,5 +1,6 @@
 'use strict';
 var Measure = require('./measure').Measure;
+var utils = require('../utils/utils');
 
 function Speed($parent, gps) {
     this.defaultValue = "0";
@@ -17,7 +18,7 @@ Speed.prototype.render = function() {
 Speed.prototype.start = function () {
     var self = this;
     self.gps.listen(function (position) {
-        self.value = Math.round2(position.coords.speed * 3.6);
+        self.value = utils.round2(position.coords.speed * 3.6);
         self.measure.setValue(self.value < 0 ? 0: self.value);
     });
 };

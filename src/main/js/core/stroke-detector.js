@@ -1,10 +1,11 @@
 'use strict'
 
+var utils = require('../utils/utils');
+
 function StrokeDetector(session, calibration, onStrokeDetected, onAccelerationTriggered) {
     var self = this;
     self.watchId = undefined;
 
-    self.acceleration = [];
     self.max = 0;
     self.min = 0;
     self.maxAt = undefined;
@@ -24,7 +25,6 @@ function StrokeDetector(session, calibration, onStrokeDetected, onAccelerationTr
     self.intervalId = undefined;
     self.session = session;
     self.debugAcceleration = [];
-    this.db = window.localStorage;
     self.calibration = calibration;
 
     // used in simulation, to represent strokes in chart
@@ -53,6 +53,10 @@ StrokeDetector.prototype.onThresholdChanged = function (callback) {
     self.onThresholdChangedListener = callback;
 }
 
+StrokeDetector.prototype.onStrokeDetected = function (callback) {
+    var self = this;
+    self.onStrokeDetectedListener = callback;
+}
 
 StrokeDetector.prototype.stop = function () {
     var self = this;
@@ -122,8 +126,7 @@ StrokeDetector.prototype.process = function (acceleration, value) {
     if (self.checkpoint === undefined)
         self.checkpoint = acceleration.timestamp;
 
-    value = Math.round2(value);
-    self.acceleration.push([acceleration.timestamp, value]);
+    value = utils.round2(value);
 
     if (value > self.max) {
         self.max = value;
@@ -148,8 +151,8 @@ StrokeDetector.prototype.process = function (acceleration, value) {
         self.min = 0;
 
         if (self.positiveMaxs.length === 3) {
-            self.positiveThreshold =  Math.round2(self.positiveMaxs.avg() * .5);
-            self.negativeThreshold = Math.round2(self.negativeMaxs.avg() * .5);
+            self.positiveThreshold =  utils.round2(self.positiveMaxs.avg() * .5);
+            self.negativeThreshold = utils.round2(self.negativeMaxs.avg() * .5);
             self.onThresholdChangedListener.apply({}, [acceleration.timestamp, self.positiveThreshold, self.negativeThreshold]);
         }
 
@@ -192,8 +195,10 @@ StrokeDetector.prototype.process = function (acceleration, value) {
 
             self.lastStroke = stroke;
 
-        } else {
-            // lost is after current
+        }
+
+        // lost is after current
+        else {
 
             // add current
             self.counter++;
@@ -228,7 +233,7 @@ StrokeDetector.prototype.process = function (acceleration, value) {
 StrokeDetector.prototype.filter = function(acceleration) {
     var self = this;
     var factor, adjustment, value;
-    if (self.calibration.getPredominant() == 'X') {
+    if (self.calibration.getPredominant() == 0) {
         factor = self.calibration.getFactorX();
         adjustment = self.calibration.getNoiseX();
         value = acceleration.x;
@@ -278,7 +283,7 @@ StrokeDetector.prototype.didWeLostOne = function (events, current, last) {
     var cadence = self.strokes.cadence();
 
     // check if either the interval between last stroke and current one is close to cadence or if the duration of current stroke (detect - max) is close to cadence
-//    if (Math.round2((current.getSampleAt() - last.getSampleAt()) / cadence) < 1.7 && Math.round2((current.getDetected().getSampleAt() - current.getSampleAt()) / cadence) < 1.7) return undefined;
+//    if (utils.round2((current.getSampleAt() - last.getSampleAt()) / cadence) < 1.7 && utils.round2((current.getDetected().getSampleAt() - current.getSampleAt()) / cadence) < 1.7) return undefined;
 
     // Search for stroke before max
     var data = events.slice(0, events.indexOf(current));
@@ -465,10 +470,10 @@ Event.prototype.getAcceleration = function() {
 
 Event.prototype.isSmallerThanOrEquealToNegativeThreshold = function () {
     return this.acceleration <= this.negativeThreshold;
-}
+};
 Event.prototype.isBiggerThanNegativeThreshold = function () {
     return this.acceleration > this.negativeThreshold;
-}
+};
 
 Event.prototype.isBiggerThanPositiveThreshold = function () {
     return this.acceleration > this.positiveThreshold;
@@ -476,18 +481,96 @@ Event.prototype.isBiggerThanPositiveThreshold = function () {
 
 Event.prototype.setDetected = function (detected) {
     this.detected = detected;
-}
+};
 
 Event.prototype.getDetected = function () {
     return this.detected;
-}
+};
 
 Event.prototype.setStroke = function (stroke) {
     this.stroke = stroke;
-}
+};
 
 Event.prototype.getStroke = function() {
     return this.stroke;
+};
+
+Array.prototype.avg = function () {
+    if (this.length ===0) return 0;
+    var value = 0;
+    for (var i = 0; i < this.length; i++) {
+        value += this[i];
+    }
+    return value / this.length;
+};
+
+
+// calculates cadence based on 5 strokes
+Array.prototype.cadence = function() {
+    if (this.length < 5) return undefined;
+    var data = this.slice(0), i = 0, total = 0, current, previous;
+    for (var j = data.length; i <= 5; j--) {
+        current = data[j];
+        if (!previous) {
+            previous = current;
+            i++;
+            continue;
+        }
+
+        total += previous.getSampleAt() - current.getSampleAt();
+
+        previous = current;
+        i++;
+    }
+
+    return total / (i - 1);
 }
+
+
+Array.prototype.indexOf = function (value) {
+    if (this.length === 0) return -1;
+
+    for (var i = 0; i < this.length; i++) {
+        if (this[i] === value) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+/**
+ * remove from beginning
+ * @param milis
+ */
+Array.prototype.after = function (milis) {
+    if (this.length == 0)
+        return [];
+
+    var first = this[0].getSampleAt();
+    for (var i = 0; i < this.length; i++) {
+
+        if (this[i].getSampleAt() > first + milis)
+            break;
+    }
+    return this.slice(i, this.length);
+}
+
+/**
+ * Remove from end
+ *
+ * @param milis
+ * @returns {Array}
+ */
+Array.prototype.before = function(milis) {
+    if (this.length == 0)
+        return [];
+    var last = this[this.length - 1].getSampleAt();
+    for (var i = (this.length - 1); i >= 0; i--) {
+
+        if (this[i].getSampleAt() < last - milis)
+            break;
+    }
+    return this.slice(0, i);
+};
 
 exports.StrokeDetector = StrokeDetector;

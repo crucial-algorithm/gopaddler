@@ -1,6 +1,7 @@
 'use strict';
 
 var Calibration = require('../model/calibration.js').Calibration;
+var utils = require('../utils/utils');
 
 function Calibrate (callback) {
     this.callback = callback;
@@ -64,13 +65,13 @@ Calibrate.prototype.calculate = function (sumx, sumy, sumz) {
         angleZ = Math.asin(1);
     }
 
-    if (angleZ < Math.toRadians(45)) {
+    if (angleZ < utils.toRadians(45)) {
         predominantAxis = 2;
     } else {
         predominantAxis = 0;
     }
 
-    var factorX = Math.toRadians(90) - angleZ;
+    var factorX = utils.toRadians(90) - angleZ;
     factorX = factorX ? factorX : 1;
 
     var factorZ = Math.cos(angleZ);

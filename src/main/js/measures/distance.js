@@ -1,6 +1,7 @@
 'use strict';
 var Measure = require('./measure').Measure;
 var GPS = require('../utils/gps').GPS;
+var utils = require('../utils/utils');
 
 
 function Distance($parent, gps) {
@@ -28,7 +29,7 @@ Distance.prototype.start = function () {
         if (previous !== undefined) {
             distance += GPS.calcDistance(previous, position);
 
-            self.value = Math.round2(distance);
+            self.value = utils.round2(distance);
             self.measure.setValue(self.value);
         }
 

@@ -60,7 +60,7 @@ function SessionsView(page) {
                 .append($("<div style=\"display:table-cell\"/>").html(sessionAt.format("MMM D")))
                 .append($("<div style=\"display:table-cell\"/>").html(sessionAt.format("hh:mm:ss")))
                 .append($("<div style=\"display:table-cell;text-transform:none\"/>").html(dDisplay))
-                .append($("<div style=\"display:table-cell\"/>").html(Math.round2(sessions[i].getDistance() || 0) + " km"))
+                .append($("<div style=\"display:table-cell\"/>").html(utils.round2(sessions[i].getDistance() || 0) + " km"))
                 .appendTo($main)
             ;
 
@@ -74,8 +74,8 @@ function SessionsView(page) {
         time = time - hours * 3600;
         var minutes = Math.floor(time / 60);
         var seconds = time - minutes * 60;
-        $('#total-distance', page).text(Math.round2(data.distance));
-        $('#top-speed', page).text(Math.round2(data.speed));
+        $('#total-distance', page).text(utils.round2(data.distance));
+        $('#top-speed', page).text(utils.round2(data.speed));
         $('#total-duration', page).text([utils.lpad(hours, 2), utils.lpad(minutes, 2), utils.lpad(seconds, 2)].join(':'));
     });
 

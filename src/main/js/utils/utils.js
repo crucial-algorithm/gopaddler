@@ -37,6 +37,14 @@ function lpad(value, places) {
     return pad.substring(0, pad.length - str.length) + str;
 }
 
+function round2(value) {
+    return Math.round(value * 100) / 100;
+}
+
+function toRadians(degrees) {
+    return degrees * Math.PI / 180;
+}
+
 
 /**
  * Convert actions from browser actions into native ones (by registering plugins)
@@ -78,5 +86,7 @@ function mapBrowserToNative() {
 }
 
 exports.pdOnDeviceReady = pdOnDeviceReady;
-exports.mapBrowserToNative= mapBrowserToNative;
-exports.lpad= lpad;
+exports.mapBrowserToNative = mapBrowserToNative;
+exports.lpad = lpad;
+exports.round2 = round2;
+exports.toRadians = toRadians;

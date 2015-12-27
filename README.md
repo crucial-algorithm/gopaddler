@@ -29,3 +29,17 @@ In <app>/, run *webpack*
 
 ### Compile automatically
 *webpack --progress --colors --watch*
+
+
+
+## Unit testing
+Test cases are stored in local PostgreSQL databaes
+
+### Requirements
+mocha: sudo npm install -g mocha
+pg: npm install pg
+bluebird: npm install bluebird
+
+### running
+cd src/test/js
+mocha .

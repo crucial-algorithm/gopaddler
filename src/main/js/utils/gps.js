@@ -52,10 +52,10 @@ GPS.prototype.stop = function() {
 GPS.calcDistance = function (starting, ending) {
     var KM_RATIO = 6371;
     try {
-        var dLat = Math.toRadians(ending.coords.latitude - starting.coords.latitude);
-        var dLon = Math.toRadians(ending.coords.longitude - starting.coords.longitude);
-        var lat1Rad = Math.toRadians(starting.coords.latitude);
-        var lat2Rad = Math.toRadians(ending.coords.latitude);
+        var dLat = utils.toRadians(ending.coords.latitude - starting.coords.latitude);
+        var dLon = utils.toRadians(ending.coords.longitude - starting.coords.longitude);
+        var lat1Rad = utils.toRadians(starting.coords.latitude);
+        var lat2Rad = utils.toRadians(ending.coords.latitude);
 
         var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
             Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1Rad) * Math.cos(lat2Rad);

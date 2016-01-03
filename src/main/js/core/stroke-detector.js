@@ -102,7 +102,6 @@ StrokeDetector.prototype.start = function () {
     self.intervalId = setInterval(self.refreshSPM.bind(self), 1500);
 }
 
-
 StrokeDetector.prototype.refreshSPM = function () {
     var self = this, range, strokeRate;
     range = self.strokes.slice(-SPM_STROKE_COUNT);
@@ -224,6 +223,10 @@ StrokeDetector.prototype.process = function (acceleration, value) {
         self.events = self.consolidate(self.events, current);
     }
 
+    if (current.isSmallerThanOrEquealToNegativeThreshold() && self.lastStroke) {
+        self.lastStroke.getDetected().add(current);
+    }
+
     self.lastEvent = current;
 }
 
@@ -264,7 +267,7 @@ StrokeDetector.prototype.findMaxAbovePositiveThreshold = function (events, accel
     var max = undefined;
     for (var i = 0; i < events.length; i++) {
         if (events[i].isBiggerThanPositiveThreshold()) {
-            if (!max || events[i].getAcceleration() > max.getAcceleration()) {
+            if (!events[i].isDiscarded() && (!max || events[i].getAcceleration() > max.getAcceleration())) {
                 max = events[i];
             }
         }
@@ -273,8 +276,11 @@ StrokeDetector.prototype.findMaxAbovePositiveThreshold = function (events, accel
     if (!max)
         return undefined;
 
-    if (max.getSampleAt() - lastStroke.getSampleAt() <= 300 || acceleration.timestamp - lastStroke.getDetected().getSampleAt() <= 300)
+    if (max.getSampleAt() - lastStroke.getSampleAt() <= 300 || acceleration.timestamp - lastStroke.getDetected().getSampleAt() <= 300) {
+        // This max won't ever validate... we need to give the chance to the next max to validate a new stroke!!
+        max.setDiscarded(true);
         return undefined;
+    }
 
     return max;
 }
@@ -422,14 +428,14 @@ StrokeDetector.prototype.consolidate = function (events, value) {
     if (i > 0)
         events = events.slice(events.length - i);
     return events;
-}
+};
 
 
 StrokeDetector.prototype.calculateSPM = function (strokes) {
     var self = this;
 
     // if we don't have strokes in the past 3 seconds, set it to zero
-    if (self.lastStroke && self.lastEvent && (self.lastEvent.getSampleAt() - self.lastStroke.getSampleAt() > 3000)) {
+    if (self.lastStroke && self.lastEvent && (self.lastEvent.getSampleAt() - self.lastStroke.getDetected().getPosition() > 3000)) {
         return 0;
     }
 
@@ -444,22 +450,44 @@ StrokeDetector.prototype.calculateSPM = function (strokes) {
     var updated = false;
     var interval;
     var variance;
+    var adjusted = 0;
 
-    for (var i = 0; i < intervals.length; i++) {
+    for (var i = intervals.length - 1; i > 0; i--) {
         variance = (avg - intervals[i]) / avg;
-        if (variance > 0 && variance >= .4) {
-            updated = true;
-            console.log('strokes ', map[i][1].getStroke(), map[i][0].getStroke(), 'are probably a single stroke', variance);
 
-            interval = Math.round(avg);
-            intervals[i] = interval;
+        if (variance > 0 && variance >= .4) {
+
+            // after 2 strokes, if post strokes are inline with avg, it's probably because we counted one stroke
+            // more than we should
+            if (intervals.length - i > 1 && adjusted == 0) {
+
+                var which = self.pickBestMatch(avg, map[i][1], map[i][0]);
+                var remove;
+
+                // if best match is 1st, remove second
+                if (which === 1) {
+                    remove = map[i][0];
+                } else {
+                    remove = map[i][1];
+                }
+
+//                console.log('removing stroke', remove.getStroke());
+                map[i][0].setDiscarded(true);
+                strokes.splice(indexOf(strokes, remove), 1);
+
+                adjusted = 0;
+            } else {
+//                console.log('strokes ', map[i][1].getStroke(), map[i][0].getStroke(), 'are probably a single stroke', variance);
+            }
+
+            updated = true;
+            adjusted++;
+            intervals.splice(i, 1);
 
         } else if (variance < 0 && variance <= -.4) {
             updated = true;
-            console.log('lost strokes between ', map[i][1].getStroke(), map[i][0].getStroke());
-            interval = Math.round(avg);
-            intervals[i] = interval;
-
+//            console.log('lost strokes between ', map[i][1].getStroke(), map[i][0].getStroke());
+            intervals.splice(i, 1);
         }
     }
 
@@ -470,8 +498,45 @@ StrokeDetector.prototype.calculateSPM = function (strokes) {
     // avg interval between strokes in mili seconds (thus the division by 1000)
     var strokeRate = 60 / (avg / 1000);
 
+//    console.log("spm: ", Math.round(strokeRate), map[0][0].getStroke()
+//        , map[1][0].getStroke(), map[2][0].getStroke(), map[3][0].getStroke());
     return Math.round(strokeRate);
-}
+};
+
+
+/**
+ * When we find an extra stroke that does not feet current cadence, we have to eliminate that stroke; this method will
+ * decide which stroke (from the 2 that form an interval that is to small) is to be removed
+ * @param avg
+ * @param first
+ * @param second
+ * @returns {number}
+ */
+StrokeDetector.prototype.pickBestMatch = function (avg, first, second) {
+    var self = this;
+    var positionFirst = indexOf(self.strokes, first);
+    var positionSecond = indexOf(self.strokes, second);
+    var beforeFirst = self.strokes[positionFirst - 1];
+    var afterSecond = self.strokes[positionSecond + 1 ];
+
+    var varianceFirstBefore = Math.abs((avg - (first.getDetected().getPosition() - beforeFirst.getDetected().getPosition())) / avg);
+    var varianceFirstAfter = Math.abs((avg - (afterSecond.getDetected().getPosition() - first.getDetected().getPosition())) / avg);
+
+    if (varianceFirstBefore < .4 && varianceFirstAfter < .4)
+        return 1;
+
+    var varianceSecondBefore = Math.abs((avg - (second.getDetected().getPosition() - beforeFirst.getDetected().getPosition())) / avg);
+    var varianceSecondAfter = Math.abs((avg - (afterSecond.getDetected().getPosition() - second.getDetected().getPosition())) / avg);
+
+    if (varianceSecondBefore < .4 && varianceSecondAfter < .4)
+        return 2;
+
+    if ((varianceFirstBefore + varianceFirstAfter) < (varianceSecondBefore + varianceSecondAfter)) {
+        return 1;
+    } else {
+        return 2;
+    }
+};
 
 /**
  * Calculate interval between strokes
@@ -480,7 +545,9 @@ StrokeDetector.prototype.calculateIntervals = function (strokes) {
     var self = this, intervals = [], map = [];
     for (var i = 1, length = strokes.length; i < length; i++) {
         map.push([strokes[i], strokes[i - 1]]);
-        intervals.push(strokes[i].getSampleAt() - strokes[i - 1].getSampleAt());
+        // use minimums to calculate intervals (instead of max's) because they are tipically more stable!
+        // use position, given that position assigns a middle position between all accelerations bellow negative threshold
+        intervals.push(strokes[i].getDetected().getPosition() - strokes[i - 1].getDetected().getPosition());
     }
     return {
         intervals: intervals,
@@ -490,59 +557,99 @@ StrokeDetector.prototype.calculateIntervals = function (strokes) {
 
 
 
-
 // Event
 function Event(timestamp, acceleration, pt, nt, detected) {
-    this.timestamp = timestamp;
-    this.acceleration = acceleration;
-    this.positiveThreshold = pt;
-    this.negativeThreshold = nt;
-    this.detected = detected;
-    this.fuzzy = false;
+    this._timestamp = timestamp;
+    this._acceleration = acceleration;
+    this._positiveThreshold = pt;
+    this._negativeThreshold = nt;
+    this._detected = detected;
+    this._fuzzy = false;
+    this._positions = [];
+    this._stroke = -1;
+    this._discarded = false;
 }
 
 Event.prototype.getSampleAt = function() {
-    return this.timestamp;
+    return this._timestamp;
 };
 
 Event.prototype.getAcceleration = function() {
-    return this.acceleration;
+    return this._acceleration;
 };
 
 Event.prototype.isSmallerThanOrEquealToNegativeThreshold = function () {
-    return this.acceleration <= this.negativeThreshold;
+    return this._acceleration <= this._negativeThreshold;
 };
 
 Event.prototype.isBiggerThanNegativeThreshold = function () {
-    return this.acceleration > this.negativeThreshold;
+    return this._acceleration > this._negativeThreshold;
 };
 
 Event.prototype.isBiggerThanPositiveThreshold = function () {
-    return this.acceleration > this.positiveThreshold;
+    return this._acceleration > this._positiveThreshold;
 };
 
 Event.prototype.setDetected = function (detected) {
-    this.detected = detected;
+    this._detected = detected;
 };
 
 Event.prototype.getDetected = function () {
-    return this.detected;
+    return this._detected;
 };
 
 Event.prototype.setStroke = function (stroke) {
-    this.stroke = stroke;
+    this._stroke = stroke;
 };
 
 Event.prototype.getStroke = function() {
-    return this.stroke;
+    return this._stroke;
 };
 
 Event.prototype.setFuzzy = function (fuzzy) {
-    this.fuzzy = fuzzy;
+    this._fuzzy = fuzzy;
 };
 
 Event.prototype.isFuzzy = function () {
-    return this.fuzzy === true;
+    return this._fuzzy === true;
+};
+
+Event.prototype.add = function (event) {
+    this._positions.push(event);
+};
+
+Event.prototype.setDiscarded = function (discarded) {
+    this._discarded = discarded;
+}
+
+Event.prototype.isDiscarded = function () {
+    return this._discarded;
+}
+
+Event.prototype.getRange = function() {
+    var min = undefined , max = undefined;
+    for (var i = 0; i < this._positions.length; i++) {
+        var obj = this._positions[i];
+        if (min === undefined || this._positions[i].getSampleAt() < min) {
+            min = this._positions[i];
+        }
+
+        if (max === undefined || this._positions[i].getSampleAt() > max) {
+            max = this._positions[i];
+        }
+    }
+    return {
+        start: min,
+        stop: max
+    }
+};
+
+Event.prototype.getPosition = function() {
+    if (this._positions.length > 2) {
+        return this._positions[Math.floor(this._positions.length / 2)].getSampleAt();
+    } else {
+        return this.getSampleAt();
+    }
 };
 
 

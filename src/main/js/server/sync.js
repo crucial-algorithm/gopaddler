@@ -15,117 +15,128 @@ function sync() {
         return;
 
     Session.findAllNotSynced(function (sessions) {
-        var trainingSession, row;
         for (var i = 0; i < sessions.length; i++) {
             if (processing[sessions[i].getId()] === true)
                 continue;
 
+            // set lock
             processing[sessions[i].getId()] = true;
-
-            trainingSession = new Paddler.TrainingSession();
-            trainingSession.setDate(new Date(sessions[i].getSessionStart()));
-            trainingSession.setAngleZ(sessions[i].getAngleZ());
-            trainingSession.setNoiseX(sessions[i].getNoiseX());
-            trainingSession.setNoiseZ(sessions[i].getNoiseZ());
-            trainingSession.setFactorX(sessions[i].getFactorX());
-            trainingSession.setFactorZ(sessions[i].getFactorZ());
-            trainingSession.setAxis(sessions[i].getAxis());
-
-            SessionDetail.get(sessions[i].getId(), function (localSession, session) {
-                return function (rows) {
-                    var dataPoints = [];
-                    for (var j = 0; j < rows.length; j++) {
-                        row = new Paddler.TrainingSessionData();
-                        row.setTimestamp(rows[j].getTimestamp());
-                        row.setDistance(rows[j].getDistance());
-                        row.setSpeed(rows[j].getSpeed());
-                        row.setSpm(rows[j].getSpm());
-                        row.setSpmEfficiency(rows[j].getEfficiency());
-                        dataPoints.push(row);
-                    }
-                    session.setData(dataPoints);
-
-
-                    Paddler.TrainingSessions.save(session).done(function (session) {
-
-                            localSession.setRemoteId(session.getId());
-                            Session.synced(localSession.getRemoteId(), localSession.getId());
-
-                            IO.open(localSession.getDebugFile()).then(IO.read).then(function (csv) {
-                                var rows = csv.split('\n');
-                                uploadDebugData(localSession, rows).done(function () {
-                                    delete processing[localSession.getId()];
-                                });
-                            });
-
-                            if (!localSession.getDebugFile())
-                                delete processing[localSession.getId()];
-                        }
-                    ).fail(function (res) {
-                            console.log('save failed', res)
-                            delete processing[localSession.getId()];
-                        }).exception(function (res) {
-                            delete processing[localSession.getId()];
-                            console.log('save failed', res);
-                        });
-                }
-            }(sessions[i], trainingSession));
+            
+            if (sessions[i].isSynced()) {
+                uploadDebugData(sessions[i]);
+            } else {
+                uploadSession(sessions[i]);
+            }
         }
     });
 }
 
 
+function uploadSession(localSession) {
+    var defer = $.Deferred();
 
-function uploadDebugData(session, rows) {
-    var self = this, sensorData = [], record, defer = $.Deferred();
-    for (var i = 0, l = rows.length; i < l; i++) {
-        record = rows[i].split(';');
-        sensorData.push(new Paddler.DebugSessionData(/* ts = */ record[0]
-            , /* x = */     record[1]
-            , /* y = */     record[2]
-            , /* z = */     record[3]
-            , /* value = */ record[4]
-        ));
+    localSession.createAPISession().then(function (api) {
+        Paddler.TrainingSessions.save(api).done(function (remoteSession) {
+
+                localSession.setRemoteId(remoteSession.getId());
+                Session.synced(localSession.getRemoteId(), localSession.getId());
+
+                // upload debug data, if we have a file
+                uploadDebugData(localSession);
+            }
+        ).fail(function (res) {
+                console.log('save failed', res);
+                delete processing[localSession.getId()];
+            }).exception(function (res) {
+                delete processing[localSession.getId()];
+                console.log('save failed', res);
+            });
+    });
+
+    return defer.promise();
+}
+
+
+function loadFile(filename) {
+    var defer = $.Deferred();
+    IO.open(filename).then(IO.read).then(function (csv) {
+        defer.resolve(csv.split('\n'));
+    });
+    return defer.promise();
+}
+
+
+function uploadDebugData(session) {
+
+    var self = this
+        , sensorData = []
+        , record
+        , defer = $.Deferred();
+
+    if (!session.getDebugFile()) {
+        delete processing[session.getId()];
+        defer.resolve();
+        return defer.promise();
     }
 
-    Session.startDebugSync(session.getId(), sensorData.length);
-    var SIZE = 1000;
 
-    (function loopAsync() {
-        var payload = sensorData.splice(0, SIZE);
+    loadFile(session.getDebugFile()).then(function (rows) {
 
-        Paddler.DebugSessions.saveMultiple(session.getRemoteId(), payload)
-            .then(function () {
-                Session.debugSynced(session.getId(), SIZE);
-                if (sensorData.length > 0) {
-                    loopAsync();
-                    return;
-                }
+        var i = 0;
+        if (session.getDbgSyncedRows() > 0) {
+            i = session.getDbgSyncedRows() - 1;
+        } else {
+            // 1st time - register sync start
+            Session.startDebugSync(session.getId(), sensorData.length);
+        }
 
-                console.log('finish uploading session ' + session.getId());
-                Session.debugSyncFinished(session.getId(), true);
-                defer.resolve();
-            })
-            .fail(function (e) {
+        for (var l = rows.length; i < l; i++) {
+            record = rows[i].split(';');
+            sensorData.push(new Paddler.DebugSessionData(/* ts = */ record[0]
+                , /* x = */     record[1]
+                , /* y = */     record[2]
+                , /* z = */     record[3]
+                , /* value = */ record[4]
+            ));
+        }
 
-                console.log('error saving debug data: ', e);
+        var SIZE = 1000;
+        (function loopAsync() {
+            var payload = sensorData.splice(0, SIZE);
 
-                Session.get(session.getId()).then(function (s) {
-                    if (s.getDebugAttempt() < 3) {
-                        Session.incrementAttempt(session.getId()).then(function () {
-                            loopAsync();
-                        });
+            Paddler.DebugSessions.saveMultiple(session.getRemoteId(), payload)
+                .then(function () {
+                    Session.debugSynced(session.getId(), SIZE);
+                    if (sensorData.length > 0) {
+                        loopAsync();
                         return;
                     }
 
-                    Session.debugSyncFinished(session.getId(), false);
-                    defer.reject(e);
-                }).fail(function () {
+                    console.log('finish uploading session ' + session.getId());
+                    Session.debugSyncFinished(session.getId(), true);
+                    defer.resolve();
+                })
+                .fail(function (e) {
+
+                    console.log('error saving debug data: ', e);
+
+                    Session.get(session.getId()).then(function (s) {
+                        if (s.getDebugAttempt() < 3) {
+                            Session.incrementAttempt(session.getId()).then(function () {
+                                loopAsync();
+                            });
+                            return;
+                        }
+
                         Session.debugSyncFinished(session.getId(), false);
                         defer.reject(e);
-                    });
-            });
-    })();
+                    }).fail(function () {
+                            Session.debugSyncFinished(session.getId(), false);
+                            defer.reject(e);
+                        });
+                });
+        })();
+    });
     return defer.promise();
 }
 

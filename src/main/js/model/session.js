@@ -1,6 +1,7 @@
 'use strict';
 
 var db = require('../db.js');
+var SessionDetail = require('./session-detail').SessionDetail;
 
 function Session(sessionStart, angleZ, noiseX, noiseZ, factorX, factorZ, axis, distance, avgSpm, topSpm, avgSpeed, topSpeed, sessionEnd) {
     this.connection = db.getConnection();
@@ -22,6 +23,7 @@ function Session(sessionStart, angleZ, noiseX, noiseZ, factorX, factorZ, axis, d
     this.topSpeed = topSpeed;
 
     this.dbgAttempt = undefined;
+    this.dbgSyncedRows = 0;
     return this;
 }
 
@@ -133,8 +135,47 @@ Session.prototype.setDebugAttempt = function (attempt) {
 Session.prototype.getDebugAttempt = function () {
     return this.dbgAttempt;
 };
+Session.prototype.isSynced = function () {
+    return !!(this.remoteId);
+};
 
+Session.prototype.setDbgSyncedRows = function (rows) {
+    this.dbgSyncedRows = rows;
+}
 
+Session.prototype.getDbgSyncedRows = function () {
+    return this.dbgSyncedRows;
+}
+
+Session.prototype.createAPISession = function(){
+    var self = this, defer = $.Deferred();
+    var remoteSession = new Paddler.TrainingSession();
+    remoteSession.setDate(new Date(self.getSessionStart()));
+    remoteSession.setAngleZ(self.getAngleZ());
+    remoteSession.setNoiseX(self.getNoiseX());
+    remoteSession.setNoiseZ(self.getNoiseZ());
+    remoteSession.setFactorX(self.getFactorX());
+    remoteSession.setFactorZ(self.getFactorZ());
+    remoteSession.setAxis(self.getAxis());
+
+    SessionDetail.get(self.getId(), function (rows) {
+        var dataPoints = [], row;
+        for (var j = 0; j < rows.length; j++) {
+            row = new Paddler.TrainingSessionData();
+            row.setTimestamp(rows[j].getTimestamp());
+            row.setDistance(rows[j].getDistance());
+            row.setSpeed(rows[j].getSpeed());
+            row.setSpm(rows[j].getSpm());
+            row.setSpmEfficiency(rows[j].getEfficiency());
+            dataPoints.push(row);
+        }
+        remoteSession.setData(dataPoints);
+
+        defer.resolve(remoteSession);
+    });
+
+    return defer.promise();
+};
 
 Session.prototype.create = function () {
     var self = this;
@@ -203,7 +244,7 @@ Session.synced = function (remoteId, id) {
 Session.startDebugSync = function (id, total) {
     var connection = db.getConnection();
     var defer = $.Deferred();
-    connection.executeSql("update session set dbg_attempt = if(dbg_attempt = 0, 1, dbg_attempt + 1), dbg_tot_rows = ? where id = ?", [total, id], function success() {
+    connection.executeSql("update session set dbg_attempt = if(dbg_attempt is null, 1, dbg_attempt + 1), dbg_tot_rows = ? where id = ?", [total, id], function success() {
         defer.resolve();
     }, function error() {
         defer.fail();
@@ -263,7 +304,7 @@ Session.sessionsSummary = function () {
 
 Session.findAllNotSynced = function (callback) {
     var connection = db.getConnection();
-    connection.executeSql("SELECT * FROM session WHERE synced <> 1", [], function (res) {
+    connection.executeSql("SELECT * FROM session WHERE synced <> 1 OR ((datetime('now','localtime') - session_start) < 604800 AND dbg_synced = 0)", [], function (res) {
         var rows = [];
         for (var i = 0; i < res.rows.length; i++) {
             rows.push(sessionFromDbRow(res.rows.item(i)));
@@ -329,6 +370,7 @@ function sessionFromDbRow(data) {
     session.setId(data.id);
     session.setDebugAttempt(data.dbg_attempt);
     session.setRemoteId(data.remote_id);
+    session.setDbgSyncedRows(data.dbg_sync_rows);
     return session;
 }
 

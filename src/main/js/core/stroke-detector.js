@@ -17,6 +17,8 @@ function StrokeDetector(session, calibration, onStrokeDetected, onAccelerationTr
     self.checkpoint = undefined;
     self.positiveMaxs = [];
     self.negativeMaxs = [];
+    self.positiveThreshold = undefined;
+    self.negativeThreshold = undefined;
     self.strokes = [];
     self.events = [];
     self.intervals = [];
@@ -107,14 +109,16 @@ StrokeDetector.prototype.refreshSPM = function () {
     range = self.strokes.slice(-SPM_STROKE_COUNT);
     strokeRate = self.calculateSPM(range);
     self.onStrokeRateChangedListener(strokeRate);
-    self.strokes = range;
+
+    // keep only last 8 strokes, without any clean up of stroke rate calculation
+    self.strokes = self.strokes.slice(-SPM_STROKE_COUNT);
 
     if (strokeRate === 0) {
         self.onStrokeRateChangedListener(0);
         self.strokes = [];
     }
     return strokeRate;
-}
+};
 
 
 /**
@@ -131,37 +135,9 @@ StrokeDetector.prototype.process = function (acceleration, value) {
 
     value = utils.round2(value);
 
-    if (value > self.max) {
-        self.max = value;
-        self.maxAt = acceleration.timestamp;
-    }
-    if (value < self.min) {
-        self.min = value;
-        self.minAt = acceleration.timestamp;
-    }
+    self.updateThresholds(acceleration, value);
 
-    // recalculate thresholds every 1 sec
-    if ((acceleration.timestamp - self.checkpoint) > 1000) {
-        self.checkpoint = acceleration.timestamp;
-
-        if (self.positiveMaxs.length === 3) self.positiveMaxs.shift();
-        if (self.negativeMaxs.length === 3) self.negativeMaxs.shift();
-
-        self.positiveMaxs.push(self.max);
-        self.negativeMaxs.push(self.min);
-
-        self.max = 0;
-        self.min = 0;
-
-        if (self.positiveMaxs.length === 3) {
-            self.positiveThreshold =  utils.round2(self.positiveMaxs.avg() * .5);
-            self.negativeThreshold = utils.round2(self.negativeMaxs.avg() * .5);
-            self.onThresholdChangedListener.apply({}, [acceleration.timestamp
-                , self.positiveThreshold, self.negativeThreshold]);
-        }
-    }
-
-    if (self.positiveMaxs.length < 3 ) return;
+    if (self.positiveThreshold === undefined) return;
 
     current = new Event(acceleration.timestamp, value, self.positiveThreshold, self.negativeThreshold, undefined);
 
@@ -189,6 +165,7 @@ StrokeDetector.prototype.process = function (acceleration, value) {
             lost.stroke.setStroke(self.counter);
             self.strokes.push(lost.stroke);
             self.onStrokeDetectedListener(lost.stroke);
+            self.lastStroke.getDetected().relocate(lost.stroke);
 
             // add current
             self.counter++;
@@ -207,6 +184,7 @@ StrokeDetector.prototype.process = function (acceleration, value) {
             stroke.setStroke(self.counter);
             self.strokes.push(stroke);
             self.onStrokeDetectedListener(stroke);
+            self.lastStroke.getDetected().relocate(stroke);
 
             // add lost
             self.counter++;
@@ -228,7 +206,47 @@ StrokeDetector.prototype.process = function (acceleration, value) {
     }
 
     self.lastEvent = current;
-}
+};
+
+/**
+ * Calculate positive and negative threshold
+ * @param acceleration
+ * @param value
+ */
+StrokeDetector.prototype.updateThresholds = function (acceleration, value) {
+    var self = this;
+
+    if (value > self.max) {
+        self.max = value;
+        self.maxAt = acceleration.timestamp;
+    }
+    if (value < self.min) {
+        self.min = value;
+        self.minAt = acceleration.timestamp;
+    }
+
+    // recalculate every 1 second
+    if ((acceleration.timestamp - self.checkpoint) <= 1000)
+        return;
+
+    self.checkpoint = acceleration.timestamp;
+
+    if (self.positiveMaxs.length === 3) self.positiveMaxs.shift();
+    if (self.negativeMaxs.length === 3) self.negativeMaxs.shift();
+
+    self.positiveMaxs.push(self.max);
+    self.negativeMaxs.push(self.min);
+
+    self.max = 0;
+    self.min = 0;
+
+    if (self.positiveMaxs.length === 3) {
+        self.positiveThreshold =  utils.round2(self.positiveMaxs.avg() * .5);
+        self.negativeThreshold = utils.round2(self.negativeMaxs.avg() * .5);
+        self.onThresholdChangedListener.apply({}, [acceleration.timestamp
+            , self.positiveThreshold, self.negativeThreshold]);
+    }
+};
 
 /**
  * Filter acceleration based on calibration
@@ -289,9 +307,9 @@ StrokeDetector.prototype.findMaxAbovePositiveThreshold = function (events, accel
  * Check if we failed to detect strokes between the last one and current potential stroke
  *
  * @param {Array} events
- * @param {Event} last
+ * @param {Event} current   current stroke
+ * @param {Event} last      previous detected stroke
  * @returns {*}
- * @param {Event} current
  */
 StrokeDetector.prototype.didWeLostOne = function (events, current, last) {
     var self = this;
@@ -313,8 +331,8 @@ StrokeDetector.prototype.didWeLostOne = function (events, current, last) {
  * Try to detect strokes that don't cross thresholds, but may feet other criteria
  *
  * @param events
- * @param current
- * @param last
+ * @param current   current stroke
+ * @param last      last detected stroke
  * @returns {*}
  */
 StrokeDetector.prototype.findFuzzyStroke = function (events, current, last) {
@@ -325,7 +343,7 @@ StrokeDetector.prototype.findFuzzyStroke = function (events, current, last) {
     max.setDetected(min);
     max.setFuzzy(true);
 
-    // lost is before current
+    // if max is before current detected stroke, then we may find a lost stroke before current one
     if (max.getSampleAt() < current.getSampleAt()) {
         cadence = self.strokes.cadence();
         mg = magnitude(self.strokes);
@@ -448,11 +466,10 @@ StrokeDetector.prototype.calculateSPM = function (strokes) {
     var map = c.map;
     var avg = intervals.avg();
     var updated = false;
-    var interval;
     var variance;
     var adjusted = 0;
 
-    for (var i = intervals.length - 1; i > 0; i--) {
+    for (var i = intervals.length - 1; i >= 0; i--) {
         variance = (avg - intervals[i]) / avg;
 
         if (variance > 0 && variance >= .4) {
@@ -489,6 +506,11 @@ StrokeDetector.prototype.calculateSPM = function (strokes) {
 //            console.log('lost strokes between ', map[i][1].getStroke(), map[i][0].getStroke());
             intervals.splice(i, 1);
         }
+    }
+
+    if (intervals.length === 0) {
+        // happened when stopped rowing and all the intervals were far from the variance!
+        return 0;
     }
 
     if (updated)
@@ -626,24 +648,6 @@ Event.prototype.isDiscarded = function () {
     return this._discarded;
 }
 
-Event.prototype.getRange = function() {
-    var min = undefined , max = undefined;
-    for (var i = 0; i < this._positions.length; i++) {
-        var obj = this._positions[i];
-        if (min === undefined || this._positions[i].getSampleAt() < min) {
-            min = this._positions[i];
-        }
-
-        if (max === undefined || this._positions[i].getSampleAt() > max) {
-            max = this._positions[i];
-        }
-    }
-    return {
-        start: min,
-        stop: max
-    }
-};
-
 Event.prototype.getPosition = function() {
     if (this._positions.length > 2) {
         return this._positions[Math.floor(this._positions.length / 2)].getSampleAt();
@@ -651,6 +655,15 @@ Event.prototype.getPosition = function() {
         return this.getSampleAt();
     }
 };
+
+Event.prototype.relocate = function (before) {
+    for (var i = 0; i < this._positions.length; i++) {
+        if (this._positions[i].getSampleAt() > before.getSampleAt()) {
+            this._positions.splice(i);
+            return;
+        }
+    }
+}
 
 
 Array.prototype.avg = function () {

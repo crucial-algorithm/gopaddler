@@ -8,6 +8,7 @@ function Timer($parent) {
     this.second = 0;
     this.minute = 0;
     this.hour = 0;
+    this.duration = 0;
     this.render();
 }
 
@@ -20,19 +21,30 @@ Timer.prototype.start = function() {
     this.timer();
 }
 
+Timer.prototype.pause = function () {
+    clearInterval(this.intervalId);
+}
+
+Timer.prototype.resume = function () {
+    this.timer(this.duration);
+}
+
 Timer.prototype.stop = function() {
     var self = this;
     clearInterval(self.intervalId);
 }
 
-Timer.prototype.timer = function() {
+Timer.prototype.timer = function(offset) {
     var self = this
         , start, time, elapsed;
 
-    start = new Date().getTime();;
+    offset = offset || 0;
+
+    start = new Date().getTime();
     this.intervalId = setInterval(function () {
-        time = new Date().getTime() - start;
+        time = (new Date().getTime() + offset) - start;
         elapsed = Math.round(time / 1000);
+        self.duration = time;
 
         self.minute = Math.floor(elapsed / 60);
         self.second = elapsed - self.minute * 60;

@@ -2,6 +2,7 @@
 
 var IO = require('../utils/io.js').IO;
 var GPS = require('../utils/gps').GPS;
+var Dialog = require('../utils/dialog');
 var Calibration = require('../model/calibration').Calibration;
 var Session = require('../model/session').Session;
 var SessionDetail = require('../model/session-detail').SessionDetail;
@@ -51,20 +52,6 @@ function SessionView(page) {
     });
 
     var $page = $(page);
-    $page.off('appDestroy').on('appDestroy', function () {
-        if (!timer) return;
-
-        clearInterval(self.intervalId);
-
-        timer.stop();
-        gps.stop();
-        strokeDetector.stop();
-
-        // clean buffer
-        IO.write(self.sensorDataFile, sensorData.join('\n'));
-
-    });
-
 
     var timer = new Timer($('.yellow', page));
     timer.start();
@@ -87,31 +74,94 @@ function SessionView(page) {
     strokeRate.start();
 
     var back = function () {
-        App.back('home');
+        App.back();
     };
 
     $page.swipe({
         swipe: back
     });
 
+
     var tx = false;
-    $page.on('appBeforeBack', function (e) {
+    var clear = function () {
+        tx = true;
+        document.PREVENT_SYNC = false;
+        session.finish();
+        Dialog.hideModal();
+
+        clearInterval(self.intervalId);
+        timer.stop();
+        gps.stop();
+        strokeDetector.stop();
+
+        // clean buffer
+        IO.write(self.sensorDataFile, sensorData.join('\n'));
+        back();
+    };
+
+    var confirmBeforeExit = function () {
         if (tx) {
             tx = false;
             return true;
         }
-        confirm("Finish Session?", function (r) {
-            if (r == 1) {
-                tx = true;
-                document.PREVENT_SYNC = false;
-                session.finish();
-                App.back('home');
-            }
-        });
-        return false;
-    });
-};
 
+        timer.pause();
+        speed.pause();
+        distance.pause();
+        strokeRate.pause();
+
+        self.confirm(function resume() {
+            timer.resume();
+            speed.resume();
+            distance.resume();
+            strokeRate.resume();
+            Dialog.hideModal();
+        }, function finish() {
+            clear();
+        });
+    };
+
+    $page.on('appBeforeBack', function (e) {
+        confirmBeforeExit();
+    });
+
+
+    var $stop, tapend = false;
+    $page.on('tapstart', function (e) {
+        if (!e.originalEvent.touches) return;
+
+        var width = $page.width() * .4;
+
+        if(!$stop) $stop = $('#session-stop');
+
+        var svgPath = document.getElementById('pause-svg');
+        var path = new ProgressBar.Path(svgPath, {
+            duration: 1000,
+            easing: 'easeIn'
+        });
+
+        $stop.css({top: e.originalEvent.touches[0].clientY - (width / 2), left: e.originalEvent.touches[0].clientX - (width / 2)});
+        $stop.show();
+
+
+        tapend = false;
+        path.animate(1, function () {
+            if (tapend === true) return;
+
+            tapend = false;
+            setTimeout(function () {
+                $page.trigger('tapend');
+                confirmBeforeExit();
+            }, 20);
+        });
+
+    });
+
+    $page.on('tapend', function () {
+        $stop.hide();
+        tapend = true;
+    });
+}
 
 SessionView.prototype.createSession = function (calibration) {
     var session = new Session(new Date().getTime() // TODO: handle timezone!!!
@@ -125,6 +175,41 @@ SessionView.prototype.createSession = function (calibration) {
 
     return session.create();
 };
+
+SessionView.prototype.confirm = function (onresume, onfinish) {
+    var self = this;
+    var $controls = $('<div class="session-controls"/>');
+    var $resume = $('<div class="session-resume">' +
+        '<div class="session-controls-outer-text">' +
+            '<div class="session-controls-inner-text vw_font-size4">resume</div>' +
+        '</div></div></div>');
+    var $finish = $('<div class="session-finish"><div class="session-controls-outer-text">' +
+        '<div class="session-controls-inner-text vw_font-size4">finish</div>' +
+        '</div></div></div>');
+
+    $controls.append($finish).append($resume);
+    Dialog.showModal($controls);
+
+    // make height equal to width and adjust margin accordingly
+    var displayHeight = $controls.height();
+    setTimeout(function () {
+        var height = $resume.width();
+        var margin = (displayHeight - height) / 2;
+        $resume.height(height);
+        $finish.height(height);
+        $resume.css({"margin-top": margin, "margin-bottom": margin});
+        $finish.css({"margin-top": margin, "margin-bottom": margin});
+    }, 0);
+
+    // add behavior
+    $resume.on('touchend', function () {
+        onresume.apply(self, []);
+    });
+
+    $finish.on('touchend', function () {
+        onfinish.apply(self, []);
+    });
+}
 
 
 exports.SessionView = SessionView;

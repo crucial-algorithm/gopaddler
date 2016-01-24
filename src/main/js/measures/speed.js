@@ -9,6 +9,7 @@ function Speed($parent, gps) {
     this.gps = gps;
     this.render();
     this.value = undefined;
+    this.paused = false;
 }
 
 Speed.prototype.render = function() {
@@ -18,10 +19,19 @@ Speed.prototype.render = function() {
 Speed.prototype.start = function () {
     var self = this;
     self.gps.listen(function (position) {
+        if (this.pause === true) return;
         self.value = utils.round2(position.coords.speed * 3.6);
         self.measure.setValue(self.value < 0 ? 0: self.value);
     });
 };
+
+Speed.prototype.pause = function () {
+    this.paused = true;
+}
+
+Speed.prototype.resume = function () {
+    this.paused = false;
+}
 
 Speed.prototype.reset = function () {
     this.measure.setValue(this.defaultValue);

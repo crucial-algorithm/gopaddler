@@ -9,6 +9,7 @@ function StrokeRate($parent, strokeDetector) {
     this.render();
     this.value = undefined;
     this.onUpdateListener = function(){};
+    this.paused = false;
 }
 
 StrokeRate.prototype.render = function() {
@@ -21,6 +22,8 @@ StrokeRate.prototype.start = function () {
     this.strokeDetector.onStrokeRateChanged(function (spm) {
         if (isNaN(spm)) return;
 
+        if (self.paused === true) return;
+
         self.measure.setValue(spm);
         self.value = spm;
         self.onUpdateListener.apply({}, [spm]);
@@ -28,6 +31,14 @@ StrokeRate.prototype.start = function () {
 
     this.strokeDetector.start();
 };
+
+StrokeRate.prototype.pause = function () {
+    this.paused = true;
+}
+
+StrokeRate.prototype.resume = function () {
+    this.paused = false;
+}
 
 StrokeRate.prototype.reset = function () {
     this.measure.setValue(this.defaultValue);

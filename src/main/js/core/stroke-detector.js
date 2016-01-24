@@ -66,7 +66,8 @@ StrokeDetector.prototype.onStrokeDetected = function (callback) {
 
 StrokeDetector.prototype.stop = function () {
     var self = this;
-    navigator.accelerometer.clearWatch(self.watchId);
+    if (navigator.accelerometer)
+        navigator.accelerometer.clearWatch(self.watchId);
     clearInterval(self.intervalId);
 }
 

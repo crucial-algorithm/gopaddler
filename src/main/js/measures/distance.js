@@ -11,6 +11,7 @@ function Distance($parent, gps) {
     this.gps = gps;
     this.render();
     this.value = undefined;
+    this.paused = false;
 }
 
 Distance.prototype.render = function() {
@@ -21,6 +22,8 @@ Distance.prototype.start = function () {
     var self = this, previous = undefined, distance = 0, i = 0 ;
 
     this.gps.listen(function (position) {
+        if (self.paused === true) return;
+
         if (i < 5) {
             i++;
             return;
@@ -36,6 +39,14 @@ Distance.prototype.start = function () {
         previous = position;
     });
 };
+
+Distance.prototype.pause = function () {
+    this.paused = true;
+}
+
+Distance.prototype.resume = function () {
+    this.paused = false;
+}
 
 Distance.prototype.reset = function () {
     this.measure.setValue(this.defaultValue);

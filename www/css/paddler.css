@@ -12,7 +12,7 @@
 }
 
 body {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Roboto', sans-serif;!important
 }
 
 .home-sessions-btn {
@@ -178,6 +178,50 @@ body {
     float: right;
     margin-top: 4%;
     margin-right: 4%;
+}
+
+
+.session-controls {
+    width: 100%;
+    height: 100%;
+}
+
+.session-resume {
+    border-radius: 50%;
+    width: 40%;
+    margin: 0 5% 0 5%;
+    color: #fff;
+    float: left;
+    background: #5650EF url(../images/play.svg) no-repeat 70% 50%;
+    background-size: 70%;
+}
+
+.session-finish {
+    border-radius: 50%;
+    width: 40%;
+    margin: 0 5% 0 5%;
+    background: #EF6156 url(../images/flag.svg) no-repeat 50% 50%;
+    background-size: 70%;
+    color: #fff;
+    float: right;
+}
+
+.session-controls-outer-text {
+    display: table;
+    width: 100%;
+    height: 100%;
+}
+
+.session-controls-inner-text {
+    display: table-cell;
+    width: 100%;
+    height: 100%;
+    vertical-align: bottom;
+    padding-bottom: 10%;
+    letter-spacing: -2px;
+    font-weight: bold;
+    text-align: center;
+    text-transform: uppercase;
 }
 
 .template {
@@ -428,6 +472,16 @@ body {
 
 .calibrate.finished {
     background-color: #4B946A;
+}
+
+.dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 10000;
+    background-color: rgba(0,0,0,0.7);
 }
 
 @keyframes fade {

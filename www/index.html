@@ -5,7 +5,7 @@
     <title>My App</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta http-equiv="Content-Security-Policy" content="script-src 'self'; object-src 'none'">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self'; object-src 'self'">
 
     <link rel="stylesheet" href="css/app.min.css">
     <link rel="stylesheet" href="css/auth-buttons.css">
@@ -139,7 +139,19 @@
                     <div class="small-measure-value vw_font-size10">0</div>
                 </div>
             </div>
+            <div id="session-stop" style="position:absolute;width: 40%;display:none">
+                <svg viewBox="0 0 60 60">
+                    <g>
+                        <path class="pause" fill="#fff" d="M28.03,19.06v21.88c0,0.86-0.7,1.56-1.56,1.56h-3.12c-0.86,0-1.56-0.7-1.56-1.56V19.06
+		c0-0.86,0.7-1.56,1.56-1.56h3.12C27.33,17.5,28.03,18.2,28.03,19.06z M38.46,19.06v21.88c0,0.86-0.7,1.56-1.56,1.56h-3.12
+		c-0.86,0-1.56-0.7-1.56-1.56V19.06c0-0.86,0.7-1.56,1.56-1.56h3.12C37.76,17.5,38.46,18.2,38.46,19.06z" />
+                        <path id ="pause-svg" class="stroke" fill="none" stroke="#fff" stroke-width="4" d="M30,7C17.32,7,7,17.32,7,30
+	c0,12.68,10.32,23,23,23c12.68,0,23-10.32,23-23C53,17.32,42.68,7,30,7z" />
+                    </g>
+                </svg>
+            </div>
         </div>
+
     </div>
 
     <div class="app-page" data-page="settings">
@@ -203,6 +215,8 @@
     <script src="lib/iscroll.js"></script>
     <script src="lib/app.min.js"></script>
     <script src="lib/moment.js"></script>
+    <script src="lib/progressbar.js"></script>
+    <script src="lib/jquery-touch-events.js"></script>
 
     <script src="lib/paddler-api.min.js"></script>
 

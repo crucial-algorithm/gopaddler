@@ -14,6 +14,7 @@ cordova plugin add cordova-plugin-screen-orientation
 cordova plugin add cordova-plugin-powermanagement
 cordova plugin add cordova-plugin-inappbrowser
 cordova plugin add cordova-plugin-file
+cordova plugin add cordova-plugin-ios-longpress-fix
 
 cordova plugin add cordova-sqlite-storage
 cordova plugin add https://github.com/Wizcorp/phonegap-facebook-plugin.git --variable APP_ID=529853143847598 --variable APP_NAME=Paddle

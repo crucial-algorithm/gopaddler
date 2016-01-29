@@ -45,6 +45,10 @@ function toRadians(degrees) {
     return degrees * Math.PI / 180;
 }
 
+function onWifi() {
+    return navigator.connection.type === Connection.ETHERNET || navigator.connection.type === Connection.WIFI;
+}
+
 
 /**
  * Convert actions from browser actions into native ones (by registering plugins)
@@ -90,3 +94,4 @@ exports.mapBrowserToNative = mapBrowserToNative;
 exports.lpad = lpad;
 exports.round2 = round2;
 exports.toRadians = toRadians;
+exports.onWifi = onWifi;

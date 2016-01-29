@@ -1,13 +1,17 @@
 'use strict';
 
 var IO = require('../utils/io.js').IO;
+var Utils = require('../utils/utils.js');
 var Session = require('../model/session').Session;
-var SessionDetail = require('../model/session-detail').SessionDetail;
 
 var processing = {};
 
 function sync() {
     if (document.PREVENT_SYNC === true) return;
+
+    if (!Utils.onWifi()) {
+        return;
+    }
 
     var isOffline = 'onLine' in navigator && !navigator.onLine;
 
@@ -143,6 +147,6 @@ function uploadDebugData(session) {
 exports.start = function () {
     var self = this;
     setTimeout(function () {
-        setInterval(sync.bind(self), 10000);
+        setInterval(sync.bind(self), 60000);
     }, 10000);
 };

@@ -5,8 +5,11 @@ var connection;
 // Array with DDL to be applied to each version of database; Each position corresponds to a version number
 var ddl = [
     [
-        ["CREATE TABLE IF NOT EXISTS meta (",
-            "version INTEGER NOT NULL",
+        ["CREATE TABLE IF NOT EXISTS settings (",
+            "version INTEGER NOT NULL,",
+            "units TEXT not null default 'K',",
+            "sync_wifi integer not null default 1,",
+            "restore_layout integer not null default 1",
             ")"],
 
         ["CREATE TABLE IF NOT EXISTS session (",
@@ -67,6 +70,13 @@ function init() {
             sql = v1[i].join('');
             tx.executeSql(sql, [], success, error);
         }
+    });
+
+    // when we are able to handle multiple versions, this insert needs to
+    // be adjusted to the proper version (according to meta schema)
+    connection.executeSql("select count(1) total from settings", [], function (res) {
+        if (res.rows.item(0).total === 1) return;
+        connection.executeSql("insert into settings (version) values (1)");
     });
 }
 

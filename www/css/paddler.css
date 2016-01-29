@@ -15,6 +15,39 @@ body {
     font-family: 'Roboto', sans-serif;!important
 }
 
+.paddler-topbar {
+    background-color: #7E8C8D;
+}
+
+.paddler-title {
+    height: 100%;
+    width: 100%;
+    display:table;
+}
+.paddler-title-text {
+    display: table-cell;
+    text-transform: UPPERCASE;
+    margin: 0 auto;
+    height: 100%;
+    width: 100%;
+    line-height: 100%;
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.app-topbar .app-button[data-back].left.paddler-back {
+    background-image: url(../images/back.svg);
+    height: 100%;
+    background-size: 70%;
+    background-position: center center;
+    padding: 0;
+    width: 9%;
+    background-color: #9EACAD;
+}
+
 .home-sessions-btn {
     height: 33.33%!important;
     background-color: #3B3D63!important;
@@ -228,38 +261,40 @@ body {
     display: none;
 }
 
-.back-button {
-    background: #2F2F3B url("../images/back-temp.png") no-repeat center;
-    float:left;
-    width: 15%;
+.settings-website {
+    width: 50%;
     height: 100%;
+    float: left;
+    background-color: #3B3D62;
+    display: table;
+    color:#fff;
 }
 
-.view-content {
+.settings-website-text {
+    display: table-cell;
+    text-transform: uppercase;
+    line-height: 100%;
+    vertical-align: middle;
+    text-align: center;
+    font-weight: bold;
+}
+
+.settings-options {
+    width: 50%;
     float: right;
-    width: 85%;
-    height: 100%;
-    background-color: #3B539B;
 }
 
-.settings-header, .sessions-header, .settings-row {
-    height: 20%!important;
+.settings-row {
     display: table;
     width: 100%;
     color: #FFFFFF;
     text-transform: uppercase;
+    background-color: #313455;
+    font-weight: bold;
 }
 
-.settings-header {
-    background-color: #F59146;
-}
-
-.settings-header-title {
-    display: table-cell;
-    height: 100%;
-    vertical-align: middle;
-    text-align: right;
-    padding-right: 4%;
+.settings-row.odd {
+    background-color: #2C2D49;
 }
 
 .settings-calibrate {
@@ -270,38 +305,18 @@ body {
     text-align: left;
     padding-left: 3%;
 
-    background-color: #2E2A4A;
+    background-color: #F4563D;
     text-transform: uppercase;
     color: #fff;
     font-weight: bold;
 }
 
-.settings-units {
+.settings-option {
     display: table-cell;
-    width: 100%;
     height: 100%;
     vertical-align: middle;
     text-align: left;
     padding-left: 3%;
-
-    background-color: #333056;
-    text-transform: uppercase;
-    color: #fff;
-    font-weight: bold;
-}
-
-.settings-gmail {
-    display: table-cell;
-    width: 100%;
-    height: 100%;
-    text-align: left;
-    vertical-align: middle;
-    padding-left: 3%;
-
-    background-color: #F25A45;
-    text-transform: uppercase;
-    color: #fff;
-    font-weight: bold;
 }
 
 .settings-facebook {
@@ -313,9 +328,19 @@ body {
     padding-left: 3%;
     font-weight: bold;
 
-    background-color: #3B539B;
+    background-color: #3B5999;
     text-transform: uppercase;
     color: #fff;
+}
+
+.settings-facebook-icon {
+    display: table-cell;
+    width: 10%;
+    background-color: #3B5999;
+    background-image: url(../images/facebook.svg);
+    background-position: left;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
 }
 
 
@@ -341,6 +366,8 @@ body {
     float:left;
     color: #fff;
     width: 40%;
+    height: 100%;
+    background-color: #F05E4E;
 }
 
 .sessions-details {

@@ -18,6 +18,7 @@ function emulateCordova () {
     window.sqlitePlugin = window;
 
     var executeSql = function (sql, args, success, error) {
+        success = success || function(){};
         if (sql.toLowerCase().substr(0,3) === 'ins') {
             success({insertId: 1234});
         } else {
@@ -53,6 +54,9 @@ function emulateCordova () {
             }
         }
     }
+
+    navigator.connection = navigator.connection || {};
+    window.Connection = {"WIFI": 1, "ETHERNET": 2};
 }
 
 exports.emulateCordova = emulateCordova;

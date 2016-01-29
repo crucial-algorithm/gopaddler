@@ -20,6 +20,10 @@ new vUnit({
             property: 'top',
             reference: 'vh'
         },
+        '.vw_padding-right': {
+            property: 'padding-right',
+            reference: 'vh'
+        },
         '.vh_padding-top': {
             property: 'padding-top',
             reference: 'vh'

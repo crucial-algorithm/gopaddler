@@ -41,7 +41,8 @@ function HomeView(page) {
         version: device.version,
         manufacturer: device.manufacturer,
         isVirtual: device.isVirtual,
-        serial: device.serial
+        serial: device.serial,
+        paddler: "0.6.0"
     });
 }
 

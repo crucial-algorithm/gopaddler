@@ -57,6 +57,11 @@ function emulateCordova () {
 
     navigator.connection = navigator.connection || {};
     window.Connection = {"WIFI": 1, "ETHERNET": 2};
+
+    window.analytics = {startTrackerWithId: function () {
+    }, trackView: function () {
+    }, setUserId: function () {
+    }};
 }
 
 exports.emulateCordova = emulateCordova;

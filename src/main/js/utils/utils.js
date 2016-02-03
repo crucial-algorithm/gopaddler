@@ -80,7 +80,7 @@ function mapBrowserToNative() {
     }, false);
 
     // set to either landscape
-    screen.lockOrientation('landscape');
+    screen.lockOrientation('portrait');
 
     window.powermanagement.acquire();
 

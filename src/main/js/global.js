@@ -62,6 +62,9 @@ function emulateCordova () {
     }, trackView: function () {
     }, setUserId: function () {
     }};
+
+    window.screen.lockOrientation = function(){};
+    window.device = {};
 }
 
 exports.emulateCordova = emulateCordova;

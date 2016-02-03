@@ -23,6 +23,7 @@ App.controller('login', function (page) {
 App.controller('home', function (page) {
     analytics.setView('home');
     analytics.setUser(Paddler.Session.getUser().getId());
+    screen.lockOrientation('landscape');
     new HomeView(page);
 });
 

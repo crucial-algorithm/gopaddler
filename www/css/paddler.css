@@ -467,6 +467,10 @@ body {
     text-align: center;
 }
 
+.session-row-delete-btn.cancel {
+    background-color: #F59146;
+}
+
 .sessions-details > li:nth-child(odd) {
     background-color: #D05043;
 }
@@ -510,6 +514,13 @@ body {
     z-index: 10000;
     background-color: rgba(0,0,0,0.7);
 }
+
+.progress-waiting-cancel {
+    background-color: #3B3D63!important;
+    height: 2px;
+    box-shadow: 0 1px 12px 0px #757575
+}
+
 
 @keyframes fade {
     from { opacity: 1.0; }

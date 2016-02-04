@@ -45,7 +45,9 @@ function SettingsView(page) {
         $back.off('touchstart');
     });
 
-    $logout.find('.settings-facebook').html("Logout (" + Paddler.Session.getUser().getFullName() + ", "+ Paddler.Session.getUser().getHashId() +")");
+    $logout.find('.settings-facebook').html("Logout (" + Paddler.Session.getUser().getFullName() + ")");
+
+    $('[data-selector="version"]', page).html("v. 0.6.0 / u. " + Paddler.Session.getUser().getHashId());
 
     $page.on('appBeforeBack', function (e) {
         var units = $units.is(':checked') ? 'M' : 'K';

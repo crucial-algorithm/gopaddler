@@ -200,10 +200,10 @@ SessionView.prototype.confirm = function (onresume, onfinish) {
     var $controls = $('<div class="session-controls"/>');
     var $resume = $('<div class="session-resume">' +
         '<div class="session-controls-outer-text">' +
-            '<div class="session-controls-inner-text vw_font-size4">resume</div>' +
+            '<div class="session-controls-inner-text vw_font-size3">resume</div>' +
         '</div></div></div>');
     var $finish = $('<div class="session-finish"><div class="session-controls-outer-text">' +
-        '<div class="session-controls-inner-text vw_font-size4">finish</div>' +
+        '<div class="session-controls-inner-text vw_font-size3">finish</div>' +
         '</div></div></div>');
 
     $controls.append($finish).append($resume);

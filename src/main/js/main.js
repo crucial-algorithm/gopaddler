@@ -65,7 +65,11 @@ function onDeviceReady() {
     utils.mapBrowserToNative();
 
     loadDb();
-    loadUi();
+    navigator.splashscreen.hide();
+
+    setTimeout(function () {
+        loadUi();
+    }, 3000);
 }
 
 document.pd_device_ready = false;

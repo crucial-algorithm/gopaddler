@@ -17,6 +17,7 @@ cordova plugin add cordova-plugin-file
 cordova plugin add cordova-plugin-ios-longpress-fix
 cordova plugin add cordova-plugin-network-information
 cordova plugin add cordova-plugin-google-analytics
+cordova plugin add cordova-plugin-splashscreen
 
 cordova plugin add cordova-sqlite-storage
 cordova plugin add https://github.com/Wizcorp/phonegap-facebook-plugin.git --variable APP_ID=529853143847598 --variable APP_NAME=Paddle

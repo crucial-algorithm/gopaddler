@@ -36,11 +36,22 @@
     <platform name="android">
         <preference name="AndroidLaunchMode" value="singleTop"/>
 
-        <icon src="res/android/ic_launcher-mhdpi" density="mdpi" />
+        <icon src="res/android/ic_launcher-mhdpi.png" density="mdpi" />
         <icon src="res/android/ic_launcher-hdpi.png" density="hdpi" />
         <icon src="res/android/ic_launcher-xhdpi.png" density="xhdpi" />
         <icon src="res/android/ic_launcher-xxhdpi.png" density="xxhdpi" />
         <icon src="res/android/ic_launcher-xxxhdpi.png" density="xxxhdpi" />
+
+
+        <!-- you can use any density that exists in the Android project -->
+        <splash src="res/android/splash-port-hdpi.png" density="port-hdpi"/>
+        <splash src="res/android/splash-port-ldpi.png" density="port-ldpi"/>
+        <splash src="res/android/splash-port-mdpi.png" density="port-mdpi"/>
+        <splash src="res/android/splash-port-xhdpi.png" density="port-xhdpi"/>
+        <splash src="res/android/splash-port-xxhdpi.png" density="port-xxhdpi"/>
+        <splash src="res/android/splash-port-xxxhdpi.png" density="port-xxhdpi"/>
+
+
     </platform>
 
     <platform name="ios">
@@ -70,7 +81,23 @@
         <!-- iPad Spotlight and Settings Icon -->
         <!--icon src="res/ios/icon-50.png" width="50" height="50" />
         <icon src="res/ios/icon-50@2x.png" width="100" height="100" /-->
+
+
+
+        <splash src="res/ios/screen/Default~iphone.png" width="320" height="480"/>
+        <splash src="res/ios/screen/Default@2x~iphone.png" width="640" height="960"/>
+        <splash src="res/ios/screen/Default-Portrait~ipad.png" width="768" height="1024"/>
+        <splash src="res/ios/screen/Default-Portrait@2x~ipad.png" width="1536" height="2048"/>
+        <splash src="res/ios/screen/Default-Landscape~ipad.png" width="1024" height="768"/>
+        <splash src="res/ios/screen/Default-Landscape@2x~ipad.png" width="2048" height="1536"/>
+        <splash src="res/ios/screen/Default-568h@2x~iphone.png" width="640" height="1136"/>
+        <splash src="res/ios/screen/Default-750@2x~iphone6-portrait.png" width="750" height="1334"/>
+        <splash src="res/ios/screen/Default-1242@3x~iphone6s-portrait.png" width="1242" height="2208"/>
+        <splash src="res/ios/screen/Default-1242@3x~iphone6s-landscape.png" width="2208" height="1242"/>
     </platform>
+
+    <preference name="FadeSplashScreen" value="false"/>
+    <preference name="AutoHideSplashScreen" value="true" />
 
     <preference name="BackupWebStorage" value="local"/>
 

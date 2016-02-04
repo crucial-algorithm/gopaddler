@@ -68,7 +68,7 @@ function SessionsView(page) {
                 .append($("<div style=\"display:table-cell\"/>").html(sessionAt.format("MMM D")))
                 .append($("<div style=\"display:table-cell\"/>").html(sessionAt.format("hh:mm:ss")))
                 .append($("<div style=\"display:table-cell;text-transform:none\"/>").html(dDisplay))
-                .append($("<div style=\"display:table-cell\"/>").html(utils.round2(sessions[i].getDistance() || 0) + " km"))
+                .append($("<div style=\"display:table-cell\"/>").html('<b>' + utils.round2(sessions[i].getDistance() || 0) + " km</b>"))
                 .appendTo($main)
             ;
 

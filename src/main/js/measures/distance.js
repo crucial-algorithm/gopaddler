@@ -12,6 +12,7 @@ function Distance($parent, gps) {
     this.render();
     this.value = undefined;
     this.paused = false;
+    this.takenAt = null;
 }
 
 Distance.prototype.render = function() {
@@ -23,6 +24,8 @@ Distance.prototype.start = function () {
 
     this.gps.listen(function (position) {
         if (self.paused === true) return;
+
+        self.takenAt = new Date().getTime();
 
         if (i < 5) {
             i++;
@@ -55,5 +58,9 @@ Distance.prototype.reset = function () {
 Distance.prototype.getValue = function () {
     return this.value;
 };
+
+Distance.prototype.getTakenAt = function(){
+    return this.takenAt;
+}
 
 exports.Distance = Distance;

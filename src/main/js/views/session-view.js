@@ -14,6 +14,7 @@ var Distance = require('../measures/distance').Distance;
 var Speed = require('../measures/speed').Speed;
 
 var StrokeRate = require('../measures/spm').StrokeRate;
+var StrokeEfficiency = require('../measures/efficiency').StrokeEfficiency;
 
 function SessionView(page) {
     var self = this;
@@ -63,11 +64,17 @@ function SessionView(page) {
     distance.start();
 
 
-    var strokeRate = new StrokeRate($('.session-left', page), strokeDetector);
-    strokeRate.onUpdate(function onSpmUpdate(spm) {
+    var strokeEfficiency = new StrokeEfficiency($('.session-left', page));
+    var totalDistance;
 
-        new SessionDetail(session.getId(), new Date().getTime(), distance.getValue(), speed.getValue(), spm
-            , 0 // TODO: implement efficiency
+    var strokeRate = new StrokeRate($('.session-left-hidden', page), strokeDetector);
+    strokeRate.onUpdate(function onSpmUpdate(spm, interval) {
+
+        totalDistance = distance.getValue();
+        strokeEfficiency.update(totalDistance, distance.getTakenAt(), interval);
+
+        new SessionDetail(session.getId(), new Date().getTime(), totalDistance, speed.getValue(), spm
+            , strokeEfficiency.getValue()
         ).save();
 
     });
@@ -210,6 +217,5 @@ SessionView.prototype.confirm = function (onresume, onfinish) {
         onfinish.apply(self, []);
     });
 }
-
 
 exports.SessionView = SessionView;

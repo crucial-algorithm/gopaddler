@@ -19,14 +19,12 @@ StrokeRate.prototype.render = function() {
 StrokeRate.prototype.start = function () {
     var self = this;
 
-    this.strokeDetector.onStrokeRateChanged(function (spm) {
-        if (isNaN(spm)) return;
-
+    this.strokeDetector.onStrokeRateChanged(function (spm, interval) {
         if (self.paused === true) return;
 
         self.measure.setValue(spm);
         self.value = spm;
-        self.onUpdateListener.apply({}, [spm]);
+        self.onUpdateListener.apply({}, [spm, interval]);
     });
 
     this.strokeDetector.start();

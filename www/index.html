@@ -87,7 +87,7 @@
                 <ul class="sessions-details" data-no-scroll="true" id="local-sessions" style="height:100%;width:100%">
                     <li class="vh_height20" style="display: table;width: 100%;height:100%">
                         <div class="vw_font-size7"
-                             style="display:table-cell;vertical-align: middle;text-align: center;font-weight: bold;text-transform: capitalize;color: #F6A79E;height:100%;line-height: 100%">
+                             style="display:table-cell;vertical-align: middle;text-align: center;font-weight: bold;text-transform: capitalize;color: #3b3d62;height:100%;line-height: 100%">
                             &lt;empty&gt;
                         </div>
                     </li>
@@ -105,7 +105,7 @@
             <div class="session-left">
                 <div class="big-measure-units vh_padding-top10">Per Min.</div>
                 <div class="big-measure-label vh_top85 vh_padding-bottom68 vh_height100">Stroke Rate</div>
-                <div class="session-big-meaure-container">
+                <div class="session-big-mesaure-container">
                     <span class="session-big-measure vw_font-size40">0</span>
                 </div>
             </div>
@@ -164,7 +164,11 @@
         <div class="app-content" style="height:100%" data-no-scroll="true">
             <div class="settings-split">
                 <div class="settings-website vh_height45 vw_font-size3">
-                    <div class="settings-website-text">More settings @ <span style="color:#D05043">app.gopaddler.com</span></div>
+                    <div class="settings-website-text">
+                        <p>Visit <a style="color:#D05043;text-decoration: none" href="javascript:;">app.gopaddler.com</a></p>
+                        <p data-selector="version">&nbsp;</p>
+
+                    </div>
                 </div>
                 <div class="settings-options">
                     <div class="settings-row odd vh_height15" id="units">
@@ -218,10 +222,10 @@
         </div>
     </div>
 
-    <div class="app-page" data-page="login">
+    <div class="app-page login-page" data-page="login">
 
-        <div style="margin:0 auto;text-align:center;padding:30px 0;">
-            <a id="facebook" class="btn-auth btn-facebook large" href="#">Sign in with <b>Facebook</b></a>
+        <div class="login vh_height15 vh_bottom8" id="facebook">
+            <div class="login-fb-icon">&nbsp;</div><div class="login-text vh_font-size4">Sign-in with <b>Facebook</b></div>
         </div>
 
     </div>
@@ -249,6 +253,7 @@
     <script src="lib/moment.js"></script>
     <script src="lib/progressbar.js"></script>
     <script src="lib/jquery-touch-events.js"></script>
+    <script src="lib/hashids.min.js"></script>
 
     <script src="lib/paddler-api.min.js"></script>
 

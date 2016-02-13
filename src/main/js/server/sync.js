@@ -46,7 +46,12 @@ function uploadSession(localSession) {
                 Session.synced(localSession.getRemoteId(), localSession.getId());
 
                 // upload debug data, if we have a file
-                uploadDebugData(localSession);
+                if (api.getData().length === 0) {
+                    Session.debugSyncFinished(localSession.getId(), true);
+                    delete processing[localSession.getId()];
+                } else {
+                    uploadDebugData(localSession);
+                }
             }
         ).fail(function (res) {
                 console.log('save failed', res);
@@ -95,6 +100,8 @@ function uploadDebugData(session) {
         }
 
         for (var l = rows.length; i < l; i++) {
+            if (!rows[0]) continue;
+
             record = rows[i].split(';');
             sensorData.push(new Paddler.DebugSessionData(/* ts = */ record[0]
                 , /* x = */     record[1]
@@ -107,6 +114,11 @@ function uploadDebugData(session) {
         var SIZE = 1000;
         (function loopAsync() {
             var payload = sensorData.splice(0, SIZE);
+
+            if (payload.length === 0) {
+                Session.debugSyncFinished(session.getId(), true);
+                return;
+            }
 
             Paddler.DebugSessions.saveMultiple(session.getRemoteId(), payload)
                 .then(function () {
@@ -147,6 +159,6 @@ function uploadDebugData(session) {
 exports.start = function () {
     var self = this;
     setTimeout(function () {
-        setInterval(sync.bind(self), 60000);
+        setInterval(sync.bind(self), 10000);
     }, 10000);
 };

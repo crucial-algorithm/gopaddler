@@ -31,6 +31,19 @@ function HomeView(page) {
             $('.home-last-record-date', page).html(moment(session.getSessionStart()).format('MMM D'));
         }
     });
+
+    // store device information
+    Paddler.Authentication.saveUserDevice({
+        cordova: device.cordova,
+        model: device.model,
+        platform: device.platform,
+        uuid: device.uuid,
+        version: device.version,
+        manufacturer: device.manufacturer,
+        isVirtual: device.isVirtual,
+        serial: device.serial,
+        paddler: "0.6.0"
+    });
 }
 
 exports.HomeView = HomeView;

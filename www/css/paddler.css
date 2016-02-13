@@ -138,12 +138,12 @@ body {
 
 }
 
-.session-big-meaure-container {
+.session-big-mesaure-container {
     display: table;
     height: 100%;
     width: 100%;
     color: #fff;
-    background-color: #3B3D62;
+    background-color: #3b3d62;
     vertical-align: middle;
     text-align: center;
 }
@@ -225,8 +225,8 @@ body {
     margin: 0 5% 0 5%;
     color: #fff;
     float: left;
-    background: #5650EF url(../images/play.svg) no-repeat 70% 50%;
-    background-size: 70%;
+    background: #5650EF url(../images/play.svg) no-repeat center center;
+    background-size: 90%;
 }
 
 .session-finish {
@@ -251,7 +251,6 @@ body {
     height: 100%;
     vertical-align: bottom;
     padding-bottom: 10%;
-    letter-spacing: -2px;
     font-weight: bold;
     text-align: center;
     text-transform: uppercase;
@@ -265,7 +264,7 @@ body {
     width: 50%;
     height: 100%;
     float: left;
-    background-color: #3B3D62;
+    background-color: #3b3d62;
     display: table;
     color:#fff;
 }
@@ -367,7 +366,7 @@ body {
     color: #fff;
     width: 40%;
     height: 100%;
-    background-color: #F05E4E;
+    background-color: #3b3d62;
 }
 
 .sessions-details {
@@ -377,21 +376,21 @@ body {
     /*max-height: 100%;*/
     color: #fff;
     text-transform: uppercase;
-    background-color: #2F2F3B;
+    background-color: #F4563D;
     overflow: hidden;
     list-style: none;
 }
 
 #sessions-wrapper {
     overflow: hidden;
-    background-color: #D05043;
 }
 
 .sessions-summary-label {
     text-transform: uppercase;
-    color: #F6A79E;
+    color: #AEAEAE;
     padding: 5% 5% 0 5%;
     width: 100%;
+    font-weight: bold;
 }
 
 .sessions-summary-value {
@@ -423,6 +422,7 @@ body {
     width:100%;
     height: 100%;
     display:inline-block;
+    color: #3b3d62;
 }
 
 .session-row-data {
@@ -465,14 +465,26 @@ body {
     width: 100%;
     height: 100%;
     text-align: center;
+    color: #ffffff;
+    background-color: #F4563D
+}
+
+.session-row-delete-btn.cancel {
+    background-color: #F59146;
+}
+
+#sessions-wrapper {
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
 }
 
 .sessions-details > li:nth-child(odd) {
-    background-color: #D05043;
+    background-color: #D3D3D3;
 }
 
 .sessions-details > li:nth-child(even) {
-    background-color: #DA5647;
+    background-color: #E8E8E8;
 }
 
 .sessions-delete-session {
@@ -511,6 +523,13 @@ body {
     background-color: rgba(0,0,0,0.7);
 }
 
+.progress-waiting-cancel {
+    background-color: #3B3D62!important;
+    height: 2px;
+    box-shadow: 0 1px 12px 0px #757575
+}
+
+
 @keyframes fade {
     from { opacity: 1.0; }
     50% { opacity: 0.4; }
@@ -526,4 +545,34 @@ body {
 .blink {
     animation:fade 3000ms infinite;
     -webkit-animation:fade 3000ms infinite;
+}
+
+.login-page {
+    background: url(../images/login-hdpi.png) center center;
+}
+
+.login {
+    display: table;
+    margin: 0 auto;
+    text-align: center;
+    position: fixed;
+    width: 100%;
+    background-color: #3B5999
+}
+
+.login-fb-icon {
+    display: table-cell;
+    width: 10%;
+    background-color: #3B5999;
+    background-image: url(../images/facebook.svg);
+    background-position: left;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+
+.login-text {
+    display: table-cell;
+    vertical-align: middle;
+    color: #ffffff;
+    font-weight: bold;
 }

@@ -4,7 +4,7 @@ var utils = require('../utils/utils.js');
 var Session = require('../model/session').Session;
 
 function SessionsView(page) {
-    var $back = $('.back-button', page), $page = $(page), nbr = 0;
+    var self = this, $back = $('.back-button', page), $page = $(page), nbr = 0;
 
     $back.on('touchstart', function () {
         App.back('home', function () {
@@ -18,12 +18,20 @@ function SessionsView(page) {
     var $sessions = $page.find('#local-sessions');
 
     // handle delete
+    self.lock = {};
+    self.progress = {};
     $sessions.on('touchstart', '.session-row-delete-btn', function (e) {
-        var $el = $(e.target);
-        Session.delete(parseInt($el.attr('session-id')))
-            .then(function () {
-                $el.closest('li').remove();
-            });
+        var $el = $(event.target);
+        var sessionId = $el.attr('session-id');
+
+        if (self.lock[sessionId] === true) {
+            self.cancelDelete($el, sessionId);
+            return;
+        }
+
+        self.confirmDelete($el, sessionId);
+        e.preventDefault();
+        e.stopImmediatePropagation();
     });
 
     // load sessions
@@ -60,7 +68,7 @@ function SessionsView(page) {
                 .append($("<div style=\"display:table-cell\"/>").html(sessionAt.format("MMM D")))
                 .append($("<div style=\"display:table-cell\"/>").html(sessionAt.format("hh:mm:ss")))
                 .append($("<div style=\"display:table-cell;text-transform:none\"/>").html(dDisplay))
-                .append($("<div style=\"display:table-cell\"/>").html(utils.round2(sessions[i].getDistance() || 0) + " km"))
+                .append($("<div style=\"display:table-cell\"/>").html('<b>' + utils.round2(sessions[i].getDistance() || 0) + " km</b>"))
                 .appendTo($main)
             ;
 
@@ -96,5 +104,63 @@ function SessionsView(page) {
         new IScroll($('#sessions-wrapper', page)[0], {});
     });
 }
+
+
+SessionsView.prototype.confirmDelete = function ($button, sessionId) {
+    var self = this;
+
+    self.lock[sessionId] = true;
+
+    // change button to cancel
+    $button.addClass('cancel');
+    $button.text('cancel');
+
+    // add progress in order to wait for delete
+    var $parent = $button.closest('li');
+    var $row = $('<li/>').insertAfter($parent);
+    $('<li/>').insertAfter($row);
+    var $progress = $('<div class="progress-waiting-cancel"/>').appendTo($row);
+
+    self.progress[sessionId] = {$dom: $row, start: new Date().getTime()};
+
+    $({
+        property: 0
+    }).animate({
+            property: 100
+        }, {
+            duration: 5000,
+            step: function () {
+                var _percent = Math.round(this.property);
+                $progress.css("width", _percent + "%");
+                if (_percent == 105) {
+                    $progress.addClass("done");
+                }
+            },
+            complete: function () {
+                console.log(new Date().getTime() - self.progress[sessionId].start);
+                if (self.lock[sessionId] !== true || new Date().getTime() - self.progress[sessionId].start < 5000) {
+                    console.log('canceled');
+                    return;
+                }
+
+                Session.delete(parseInt(sessionId))
+                    .then(function () {
+                        $button.closest('li').remove();
+                        $row.next().remove();
+                        $row.remove();
+                        self.lock[sessionId] = false;
+                    });
+            }
+        });
+};
+
+SessionsView.prototype.cancelDelete = function ($button, sessionId) {
+    var self = this;
+    self.lock[sessionId] = false;
+    $button.removeClass('cancel');
+    $button.text('delete');
+    self.progress[sessionId].$dom.next().remove();
+    self.progress[sessionId].$dom.remove();
+};
 
 exports.SessionsView = SessionsView;

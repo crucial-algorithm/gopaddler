@@ -10,15 +10,20 @@ var utils = require('./utils/utils.js');
 var global = require('./global.js');
 var db = require('./db.js');
 var sync = require('./server/sync.js');
+var analytics = require('./utils/analytics.js');
 
 /**
  * Splash screen / login page.
  */
 App.controller('login', function (page) {
+    analytics.setView('login');
     new LoginView(page);
 });
 
 App.controller('home', function (page) {
+    analytics.setView('home');
+    analytics.setUser(Paddler.Session.getUser().getId());
+    screen.lockOrientation('landscape');
     new HomeView(page);
 });
 
@@ -26,6 +31,7 @@ App.controller('home', function (page) {
  * New session page.
  */
 App.controller('session', function (page) {
+    analytics.setView('session');
     new SessionView(page);
 });
 
@@ -33,6 +39,7 @@ App.controller('session', function (page) {
  * Settings page.
  */
 App.controller('settings', function (page) {
+    analytics.setView('settings');
     new SettingsView(page);
 });
 
@@ -40,6 +47,7 @@ App.controller('settings', function (page) {
  * Session list page.
  */
 App.controller('sessions', function (page) {
+    analytics.setView('sessions');
     new SessionsView(page);
 });
 
@@ -47,6 +55,7 @@ App.controller('sessions', function (page) {
  * Calibration page.
  */
 App.controller('calibration', function (page) {
+    analytics.setView('calibration');
     new CalibrationView(page);
 });
 
@@ -56,7 +65,11 @@ function onDeviceReady() {
     utils.mapBrowserToNative();
 
     loadDb();
-    loadUi();
+    navigator.splashscreen.hide();
+
+    setTimeout(function () {
+        loadUi();
+    }, 3000);
 }
 
 document.pd_device_ready = false;
@@ -79,6 +92,7 @@ function loadDb() {
 var processing = {};
 
 function loadUi() {
+    analytics.init();
     Paddler.Authentication.autoLogin(true).done(function() {
         App.load('home');
     }).fail(function() {

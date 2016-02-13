@@ -19,38 +19,14 @@ var StrokeEfficiency = require('../measures/efficiency').StrokeEfficiency;
 function SessionView(page) {
     var self = this;
     var calibration =  Calibration.load();
-
     var session = self.createSession(calibration);
-
     var gps = new GPS();
+
+    self.isDebugEnabled = Paddler.Session.getUser().getProfile().isDebug();
 
     document.PREVENT_SYNC = true;
 
-    var sensorData = [];
-    self.sensorDataFileError = false;
-
-    IO.open(session.getDebugFile()).then(function (file) {
-        self.sensorDataFile = file;
-    }).fail(function () {
-            self.sensorDataFileError = true;
-        });
-
-    var strokeDetector = new StrokeDetector(session, calibration, null, function onAccelerationTriggered(acceleration, value) {
-        if (self.sensorDataFileError == true) {
-            // unbind listener
-            strokeDetector.onAccelerationTriggered(function(){});
-            sensorData = [];
-            return;
-        }
-
-        if (sensorData.length >= 100) {
-            IO.write(self.sensorDataFile, sensorData.join('\n') + '\n');
-            sensorData = [];
-            return;
-        }
-
-        sensorData.push([acceleration.timestamp, acceleration.x, acceleration.y, acceleration.z, value].join(';'));
-    });
+    var strokeDetector = new StrokeDetector(session, calibration, null, self.debug(session));
 
     var $page = $(page);
 
@@ -102,7 +78,9 @@ function SessionView(page) {
         strokeDetector.stop();
 
         // clean buffer
-        IO.write(self.sensorDataFile, sensorData.join('\n'));
+        if (self.isDebugEnabled)
+            self.flushDebugBuffer();
+
         back();
     };
 
@@ -170,6 +148,47 @@ function SessionView(page) {
     });
 }
 
+SessionView.prototype.debug = function (session) {
+    var self = this;
+    self.sensorData = [];
+
+    if (self.isDebugEnabled !== true)
+        return function () {};
+
+
+    // Open debug file
+    IO.open(session.getDebugFile()).then(function (file) {
+        self.sensorDataFile = file;
+    }).fail(function () {
+            self.sensorDataFileError = true;
+        });
+
+    self.sensorDataFileError = false;
+    return function onAccelerationTriggered(acceleration, value) {
+
+        if (self.sensorDataFileError == true) {
+            self.sensorData = [];
+            return;
+        }
+
+        if (self.sensorData.length >= 100) {
+            IO.write(self.sensorDataFile, self.sensorData.join('\n') + '\n');
+            self.sensorData = [];
+            return;
+        }
+
+        self.sensorData.push([acceleration.timestamp, acceleration.x, acceleration.y, acceleration.z, value].join(';'));
+    };
+};
+
+SessionView.prototype.flushDebugBuffer = function () {
+    var self = this;
+    if (self.isDebugEnabled !== true)
+        return;
+
+    IO.write(self.sensorDataFile, self.sensorData.join('\n'));
+};
+
 SessionView.prototype.createSession = function (calibration) {
     var session = new Session(new Date().getTime() // TODO: handle timezone!!!
         , calibration.getAngleZ()
@@ -188,10 +207,10 @@ SessionView.prototype.confirm = function (onresume, onfinish) {
     var $controls = $('<div class="session-controls"/>');
     var $resume = $('<div class="session-resume">' +
         '<div class="session-controls-outer-text">' +
-            '<div class="session-controls-inner-text vw_font-size4">resume</div>' +
+            '<div class="session-controls-inner-text vw_font-size3">resume</div>' +
         '</div></div></div>');
     var $finish = $('<div class="session-finish"><div class="session-controls-outer-text">' +
-        '<div class="session-controls-inner-text vw_font-size4">finish</div>' +
+        '<div class="session-controls-inner-text vw_font-size3">finish</div>' +
         '</div></div></div>');
 
     $controls.append($finish).append($resume);

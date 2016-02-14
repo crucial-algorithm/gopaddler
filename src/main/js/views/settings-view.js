@@ -2,7 +2,7 @@
 
 var Settings = require('../model/settings');
 
-function SettingsView(page) {
+function SettingsView(page, settings) {
     var $calibration = $('#calibration', page)
         , $back = $('.back-button', page)
         , $logout = $('#logout', page)
@@ -11,19 +11,17 @@ function SettingsView(page) {
         , $wifi = $('#wifi', page)
         , $layout = $('#layout', page);
 
-    Settings.loadSettings().then(function (settings) {
-        if (settings.getUnits() === 'M') {
-            $units.prop('checked', true);
-        }
+    if (settings.getUnits() === Settings.CONSTANTS.MI) {
+        $units.prop('checked', true);
+    }
 
-        if (settings.isSyncOnlyOnWifi()) {
-            $wifi.prop('checked', true);
-        }
+    if (settings.isSyncOnlyOnWifi()) {
+        $wifi.prop('checked', true);
+    }
 
-        if (settings.getRestoreLayout()) {
-            $layout.prop('checked', true);
-        }
-    });
+    if (settings.isRestoreLayout()) {
+        $layout.prop('checked', true);
+    }
 
     $calibration.on('touchstart', function () {
         App.load('calibration');
@@ -50,10 +48,15 @@ function SettingsView(page) {
     $('[data-selector="version"]', page).html("v. 0.6.0 / u. " + Paddler.Session.getUser().getHashId());
 
     $page.on('appBeforeBack', function (e) {
-        var units = $units.is(':checked') ? 'M' : 'K';
+        var units = $units.is(':checked') ? Settings.CONSTANTS.MI : Settings.CONSTANTS.KM;
         var wifi = $wifi.is(':checked') ;
         var layout = $layout.is(':checked');
         Settings.saveSettings(units, wifi, layout);
+
+        // update referece that is being used globally
+        settings.setUnits(units);
+        settings.setSyncOnlyOnWifi(wifi);
+        settings.setRestoreLayout(layout);
     });
 
 }

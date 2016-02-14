@@ -146,6 +146,10 @@ Field.prototype._set = function (p) {
     }
 };
 
+Field.prototype.getType = function() {
+    return this.current.type;
+}
+
 
 /**
  *

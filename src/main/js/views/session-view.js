@@ -18,13 +18,13 @@ var StrokeEfficiency = require('../measures/efficiency').StrokeEfficiency;
 var Field = require('../measures/field.js').Field;
 
 var DEFAULT_POSITIONS = {
-    top: 0,
-    middle: 1,
-    bottom: 2,
-    large: 3
+    top: 'timer',
+    middle: 'speed',
+    bottom: 'distance',
+    large: 'spm'
 };
 
-function SessionView(page) {
+function SessionView(page, settings) {
     var self = this;
     var $page = $(page);
     var calibration =  Calibration.load();
@@ -40,10 +40,17 @@ function SessionView(page) {
 
     document.PREVENT_SYNC = true;
 
-    var top = new Field($('.session-small-measure.yellow', page), 'timer');
-    var middle = new Field($('.session-small-measure.blue', page), 'speed');
-    var bottom = new Field($('.session-small-measure.red', page), 'distance');
-    var large = new Field($('.session-left', page), 'spm', 'large');
+    var fields;
+    if (settings.isRestoreLayout()) {
+        fields = loadLayout();
+    } else {
+        fields = DEFAULT_POSITIONS;
+    }
+
+    var top = new Field($('.session-small-measure.yellow', page), fields.top);
+    var middle = new Field($('.session-small-measure.blue', page), fields.middle);
+    var bottom = new Field($('.session-small-measure.red', page), fields.bottom);
+    var large = new Field($('.session-left', page), fields.large, 'large');
 
 
 
@@ -56,7 +63,7 @@ function SessionView(page) {
 
         top.setValues(values);
         middle.setValues(values);
-        bottom.setValues(values)
+        bottom.setValues(values);
         large.setValues(values);
 
     });
@@ -92,14 +99,16 @@ function SessionView(page) {
     });
     strokeDetector.start();
 
-
-
-
     var back = function () {
+
+        if (settings.isRestoreLayout()) {
+            saveLayout(top.getType(), middle.getType(), bottom.getType(), large.getType());
+        } else {
+            resetLayout();
+        }
+
         App.back();
     };
-
-
 
     var tx = false;
     var clear = function () {
@@ -140,10 +149,7 @@ function SessionView(page) {
     };
 
     $page.on('appBeforeBack', function (e) {
-        if (confirmBeforeExit() === true)
-            return true;
-        else
-            return false;
+        return confirmBeforeExit() === true;
     });
 
 
@@ -204,11 +210,6 @@ function SessionView(page) {
         clearTimeout(pauseTimeout);
     });
 }
-
-
-SessionView.prototype.showPause = function () {
-
-};
 
 SessionView.prototype.debug = function (session) {
     var self = this;
@@ -297,6 +298,28 @@ SessionView.prototype.confirm = function (onresume, onfinish) {
     $finish.on('touchend', function () {
         onfinish.apply(self, []);
     });
+}
+
+
+function saveLayout(top, middle, bottom, large) {
+    window.localStorage.setItem("layout", JSON.stringify({
+        top: top,
+        middle: middle,
+        bottom: bottom,
+        large: large
+    }));
+}
+
+function loadLayout() {
+    var layout = window.localStorage.getItem("layout");
+    if (layout)
+        return JSON.parse(layout);
+    else
+        return DEFAULT_POSITIONS;
+}
+
+function resetLayout() {
+    window.localStorage.removeItem("layout");
 }
 
 exports.SessionView = SessionView;

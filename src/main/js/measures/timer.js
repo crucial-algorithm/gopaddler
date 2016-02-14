@@ -1,23 +1,17 @@
 'use strict';
-var Measure = require('./measure').Measure;
 
 function Timer($parent) {
-    this.measure = Measure.get('small', $parent, 'Duration', undefined, '00:00:00');
     this.$parent = $parent;
 
     this.second = 0;
     this.minute = 0;
     this.hour = 0;
     this.duration = 0;
-    this.render();
+    this.listener = function(){};
 }
 
-
-Timer.prototype.render = function() {
-    this.measure.render();
-}
-
-Timer.prototype.start = function() {
+Timer.prototype.start = function(listener) {
+    this.listener = listener;
     this.timer();
 }
 
@@ -54,7 +48,8 @@ Timer.prototype.timer = function(offset) {
             self.minute = self.minute - self.hour * 60;
         }
 
-        self.measure.setValue(self.toString());
+        self.listener(self.toString());
+
     }, 1000);
 }
 

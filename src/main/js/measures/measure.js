@@ -4,12 +4,12 @@ function SmallMeasure($parent, label, unit, value) {
     this.unit = unit;
     this.defaultValue = value;
 
-}
+};
 
 SmallMeasure.prototype.render = function () {
     this.$parent.empty();
 
-    var $template = $('#measure').children().clone(true);
+    var $template = $('#template-small-measure').children().clone(true);
     $template.appendTo(this.$parent);
 
     this.$parent.find('.small-measure-label').html(this.label);
@@ -17,11 +17,11 @@ SmallMeasure.prototype.render = function () {
 
     this.$value = this.$parent.find('.small-measure-value');
     this.$value.html(this.defaultValue);
-}
+};
 
 SmallMeasure.prototype.setValue = function (value) {
     this.$value.html(value);
-}
+};
 
 
 function LargeMeasure($parent, label, unit, value) {
@@ -30,15 +30,23 @@ function LargeMeasure($parent, label, unit, value) {
     this.unit = unit;
     this.defaultValue = value;
 
-}
+};
 
 LargeMeasure.prototype.render = function () {
+    this.$parent.empty();
+    var $template = $('#template-large-measure').children().clone(true);
+    $template.appendTo(this.$parent);
+
+    this.$parent.find('.big-measure-label').html(this.label);
+    this.$parent.find('.big-measure-units').html(this.unit);
+
+
     this.$value = this.$parent.find('.session-big-measure');
     this.$value.html(this.defaultValue);
-}
+};
 
 LargeMeasure.prototype.setValue = function (value) {
-    if (value >= 100) {
+    if ((value + '').length > 2) {
         this.$value.css({"font-size": "30vw"});
         this.fontSizeChanged = true;
     } else if (value < 100 && this.fontSizeChanged) {
@@ -47,7 +55,7 @@ LargeMeasure.prototype.setValue = function (value) {
     }
 
     this.$value.html(value);
-}
+};
 
 function Measure(){}
 

@@ -56,7 +56,7 @@ body {
 
 .home-start-session-btn {
     height: 33.33%!important;
-    background-color: #5550F2!important;
+    background-color: #EF6156!important;
 }
 
 .home-settings-btn {
@@ -71,16 +71,15 @@ body {
 }
 
 .home-last-record {
-    color: #B0AFBD;
+    color: rgba(255,255,255,0.6);;
 }
 
 .home-username {
-    color: #B4B7FC;
+    color: rgba(255,255,255,0.6);
     display: block;
 }
 
 .home-username-bold {
-    color: #B9B7F8;
     font-weight: bold;
 }
 
@@ -130,6 +129,7 @@ body {
     float: left;
     height: 100%;
     width: 50%;
+    background-color: #3b3d62;
 }
 .session-right {
     float: right;
@@ -143,7 +143,6 @@ body {
     height: 100%;
     width: 100%;
     color: #fff;
-    background-color: #3b3d62;
     vertical-align: middle;
     text-align: center;
 }
@@ -153,24 +152,36 @@ body {
     vertical-align: middle;
 }
 
-.big-measure-label {
-    position: absolute;
+.big-measure-units, .big-measure-label {
     text-align: center;
-    width: 50%;
+    line-height: 100%;
+    width:100%;
     color: #B8B5C1;
+    position: absolute;
 }
 
 .big-measure-units {
-    position: absolute;
-    text-align: center;
-    width: 50%;
-    color: #B8B5C1;
+    top: 10%;
+}
+
+.big-measure-label {
+    bottom: 10%;
 }
 
 .session-small-measure {
     height: 33.33%;
     width: 100%;
     color:#fff;
+
+    overflow: hidden;
+}
+
+.measures {
+    height: 100%;
+}
+
+.measures .measure {
+    height: 100%;
 }
 
 .yellow {
@@ -575,4 +586,9 @@ body {
     vertical-align: middle;
     color: #ffffff;
     font-weight: bold;
+}
+
+
+div[aria-live="polite"],  div[aria-live="polite"] > .slick-track{
+    height: 100%;
 }

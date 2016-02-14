@@ -13,56 +13,92 @@ var Timer = require('../measures/timer').Timer;
 var Distance = require('../measures/distance').Distance;
 var Speed = require('../measures/speed').Speed;
 
-var StrokeRate = require('../measures/spm').StrokeRate;
 var StrokeEfficiency = require('../measures/efficiency').StrokeEfficiency;
+
+var Field = require('../measures/field.js').Field;
+
+var DEFAULT_POSITIONS = {
+    top: 0,
+    middle: 1,
+    bottom: 2,
+    large: 3
+};
 
 function SessionView(page) {
     var self = this;
+    var $page = $(page);
     var calibration =  Calibration.load();
     var session = self.createSession(calibration);
     var gps = new GPS();
+    var distance = new Distance();
+    var speed = new Speed();
+    var strokeEfficiency = new StrokeEfficiency();
+    var strokeDetector = new StrokeDetector(session, calibration, null, self.debug(session));
+    var paused = false;
 
     self.isDebugEnabled = Paddler.Session.getUser().getProfile().isDebug();
 
     document.PREVENT_SYNC = true;
 
-    var strokeDetector = new StrokeDetector(session, calibration, null, self.debug(session));
-
-    var $page = $(page);
-
-    var timer = new Timer($('.yellow', page));
-    timer.start();
-
-    var speed = new Speed($('.blue', page), gps);
-    speed.start();
-
-    var distance = new Distance($('.red', page), gps);
-    distance.start();
+    var top = new Field($('.session-small-measure.yellow', page), 'timer');
+    var middle = new Field($('.session-small-measure.blue', page), 'speed');
+    var bottom = new Field($('.session-small-measure.red', page), 'distance');
+    var large = new Field($('.session-left', page), 'spm', 'large');
 
 
-    var strokeEfficiency = new StrokeEfficiency($('.session-left', page));
-    var totalDistance;
 
-    var strokeRate = new StrokeRate($('.session-left-hidden', page), strokeDetector);
-    strokeRate.onUpdate(function onSpmUpdate(spm, interval) {
+    // -- Handle GPS sensor data
+    var values = {speed: 0, distance: 0};
+    gps.listen(function (position) {
 
-        totalDistance = distance.getValue();
-        strokeEfficiency.update(totalDistance, distance.getTakenAt(), interval);
+        values.speed = speed.calculate(position);
+        values.distance = distance.calculate(position);
 
-        new SessionDetail(session.getId(), new Date().getTime(), totalDistance, speed.getValue(), spm
-            , strokeEfficiency.getValue()
-        ).save();
+        top.setValues(values);
+        middle.setValues(values);
+        bottom.setValues(values)
+        large.setValues(values);
 
     });
-    strokeRate.start();
+
+
+
+    // -- initiate timer
+    var timer = new Timer();
+    timer.start(function (value) {
+        top.setValue("timer", value);
+        middle.setValue("timer", value);
+        bottom.setValue("timer", value);
+        large.setValue("timer", value);
+    });
+
+
+    // -- handle stroke related data
+    strokeDetector.onStrokeRateChanged(function (spm, interval) {
+        var values = {spm: spm, efficiency: 0};
+
+        values.efficiency = strokeEfficiency.calculate(distance.getValue(), distance.getTakenAt(), interval);
+
+        // update fields using spm and efficiency
+        top.setValues(values);
+        middle.setValues(values);
+        bottom.setValues(values);
+        large.setValues(values);
+
+        // store data
+        new SessionDetail(session.getId(), new Date().getTime(), distance.getValue(), speed.getValue(), spm
+            , values.efficiency
+        ).save();
+    });
+    strokeDetector.start();
+
+
+
 
     var back = function () {
         App.back();
     };
 
-    $page.swipe({
-        swipe: back
-    });
 
 
     var tx = false;
@@ -91,15 +127,12 @@ function SessionView(page) {
         }
 
         timer.pause();
-        speed.pause();
-        distance.pause();
-        strokeRate.pause();
+
+        paused = true;
 
         self.confirm(function resume() {
+            paused = false;
             timer.resume();
-            speed.resume();
-            distance.resume();
-            strokeRate.resume();
             Dialog.hideModal();
         }, function finish() {
             clear();
@@ -107,46 +140,75 @@ function SessionView(page) {
     };
 
     $page.on('appBeforeBack', function (e) {
-        confirmBeforeExit();
+        if (confirmBeforeExit() === true)
+            return true;
+        else
+            return false;
     });
 
 
-    var $stop, tapend = false;
+    var $stop, tapStarted = false, pauseCanceled = false, pauseTimeout, lastEvent;
     $page.on('tapstart', function (e) {
         if (!e.originalEvent.touches) return;
 
-        var width = $page.width() * .4;
+        lastEvent = e;
+        tapStarted = true;
+        pauseCanceled = false;
+        pauseTimeout = setTimeout(function (event) {
+            return function () {
+                if (pauseCanceled === true || event !== lastEvent) {
+                    pauseCanceled = false;
+                    tapStarted = false;
+                    return;
+                }
 
-        if(!$stop) $stop = $('#session-stop');
+                var width = $page.width() * .4;
 
-        var svgPath = document.getElementById('pause-svg');
-        var path = new ProgressBar.Path(svgPath, {
-            duration: 1000,
-            easing: 'easeIn'
-        });
+                if (!$stop) $stop = $('#session-stop');
 
-        $stop.css({top: e.originalEvent.touches[0].clientY - (width / 2), left: e.originalEvent.touches[0].clientX - (width / 2)});
-        $stop.show();
+                var svgPath = document.getElementById('pause-svg');
+                var path = new ProgressBar.Path(svgPath, {
+                    duration: 1000,
+                    easing: 'easeIn'
+                });
 
+                $stop.css({top: e.originalEvent.touches[0].clientY - (width / 2), left: e.originalEvent.touches[0].clientX - (width / 2)});
+                $stop.show();
 
-        tapend = false;
-        path.animate(1, function () {
-            if (tapend === true) return;
+                path.animate(1, function () {
+                    if (pauseCanceled === true || event !== lastEvent) return;
 
-            tapend = false;
-            setTimeout(function () {
-                $page.trigger('tapend');
-                confirmBeforeExit();
-            }, 20);
-        });
-
+                    setTimeout(function () {
+                        $stop.hide();
+                        confirmBeforeExit();
+                    }, 20);
+                });
+            }
+        }(lastEvent), 450);
     });
 
     $page.on('tapend', function () {
-        $stop.hide();
-        tapend = true;
+        if ($stop !== undefined)
+            $stop.hide();
+
+        if (tapStarted)
+            pauseCanceled = true;
+
+        clearTimeout(pauseTimeout);
+    });
+
+    $page.on('measureSwapStarted', function () {
+        if (tapStarted)
+            pauseCanceled = true;
+
+        clearTimeout(pauseTimeout);
     });
 }
+
+
+SessionView.prototype.showPause = function () {
+
+};
 
 SessionView.prototype.debug = function (session) {
     var self = this;

@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="css/auth-buttons.css">
     <link rel="stylesheet" href="css/paddler.css">
     <link rel="stylesheet" href="css/flipswitch.css">
+    <link rel="stylesheet" href="css/slick.css">
 
     <script src="lib/vunit-0.2.0.min.js"></script>
     <script src="js/polyfils.js"></script>
@@ -102,42 +103,11 @@
             <div class="app-title">Sessions</div>
         </div-->
         <div class="app-content" data-no-scroll="true" id="session">
-            <div class="session-left">
-                <div class="big-measure-units vh_padding-top10">Per Min.</div>
-                <div class="big-measure-label vh_top85 vh_padding-bottom68 vh_height100">Stroke Rate</div>
-                <div class="session-big-mesaure-container">
-                    <span class="session-big-measure vw_font-size40">0</span>
-                </div>
-            </div>
-            <div class="session-left-hidden" style="display:none">
-                <div class="big-measure-units vh_padding-top10">Per Min.</div>
-                <div class="big-measure-label vh_top85 vh_padding-bottom68 vh_height100">Stroke Rate</div>
-                <div class="session-big-meaure-container">
-                    <span class="session-big-measure vw_font-size40">0</span>
-                </div>
-            </div>
+            <div class="session-left"></div>
             <div class="session-right">
-                <div class="session-small-measure yellow">
-                    <div class="small-measure-header">
-                        <div class="small-measure-label">Duration</div>
-                        <div class="small-measure-units"></div>
-                    </div>
-                    <div class="small-measure-value vw_font-size10">00:00:00</div>
-                </div>
-                <div class="session-small-measure blue">
-                    <div class="small-measure-header">
-                        <div class="small-measure-label">Speed</div>
-                        <div class="small-measure-units">km/h</div>
-                    </div>
-                    <div class="small-measure-value vw_font-size10">0</div>
-                </div>
-                <div class="session-small-measure red">
-                    <div class="small-measure-header">
-                        <div class="small-measure-label">Distance</div>
-                        <div class="small-measure-units">Km</div>
-                    </div>
-                    <div class="small-measure-value vw_font-size10">0</div>
-                </div>
+                <div class="session-small-measure yellow">&nbsp;</div>
+                <div class="session-small-measure blue">&nbsp;</div>
+                <div class="session-small-measure red">&nbsp;</div>
             </div>
             <div id="session-stop" style="position:absolute;width: 40%;display:none">
                 <svg viewBox="0 0 60 60">
@@ -182,7 +152,7 @@
                                 <label class="onoffswitch-label" for="pick-units"></label>
                             </div>
                         </div>
-                        <div class="settings-option" style="width:15%">ML</div>
+                        <div class="settings-option" style="width:15%">Mi</div>
                     </div>
                     <div class="settings-row vh_height15" id="tbd1">
                         <div class="settings-option">
@@ -236,12 +206,22 @@
         </div>
     </div>
 
-    <div class="template" id="measure">
+    <div class="template" id="template-small-measure">
         <div class="small-measure-header">
             <div class="small-measure-label"></div>
             <div class="small-measure-units"></div>
         </div>
         <div class="small-measure-value vw_font-size10"></div>
+    </div>
+
+    <div class="template" id="template-large-measure">
+        <div style="position:relative;height: 100%">
+            <div class="big-measure-units">Per Min.</div>
+            <div class="session-big-mesaure-container">
+                <span class="session-big-measure vw_font-size40">0</span>
+            </div>
+            <div class="big-measure-label">Stroke Rate</div>
+        </div>
     </div>
 
     <script src="cordova.js"></script>
@@ -254,6 +234,7 @@
     <script src="lib/progressbar.js"></script>
     <script src="lib/jquery-touch-events.js"></script>
     <script src="lib/hashids.min.js"></script>
+    <script src="lib/slick.js"></script>
 
     <script src="lib/paddler-api.min.js"></script>
 

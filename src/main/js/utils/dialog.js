@@ -2,11 +2,20 @@
 
 var $modal = undefined;
 
-function showModal($content) {
+/**
+ *
+ *
+ * @param $content
+ * @param color override backdrop color
+ */
+function showModal($content, color) {
     if ($modal) {
         $modal.remove()
     }
     $modal = $('<div id="modal" class="dialog-overlay"></div>');
+    if (color) {
+        $modal.css({"background-color": color});
+    }
     $modal.append($content);
     $modal.appendTo($('body'));
 

@@ -27,7 +27,7 @@ var DEFAULT_POSITIONS = {
 function SessionView(page, settings) {
     var self = this;
     var $page = $(page);
-    var calibration =  Calibration.load();
+    var calibration = Calibration.load();
     var session = self.createSession(calibration);
     var gps = new GPS();
     var distance = new Distance();
@@ -53,6 +53,23 @@ function SessionView(page, settings) {
     var large = new Field($('.session-left', page), fields.large, 'large');
 
 
+    // prevent drag using touch during session
+    var preventDrag = function (e) {
+        e.preventDefault();
+    };
+    document.addEventListener('touchmove', preventDrag, false);
+
+    $(window).on('scroll.scrolldisabler', function (event) {
+        $(window).scrollTop(0);
+        event.preventDefault();
+    });
+
+
+    $(window).on('touchmove', function (e) {
+        if (true) {
+            e.preventDefault();
+        }
+    });
 
     // -- Handle GPS sensor data
     var values = {speed: 0, distance: 0};
@@ -73,6 +90,7 @@ function SessionView(page, settings) {
     // -- initiate timer
     var timer = new Timer();
     timer.start(function (value) {
+        if (paused) return;
         top.setValue("timer", value);
         middle.setValue("timer", value);
         bottom.setValue("timer", value);
@@ -82,6 +100,7 @@ function SessionView(page, settings) {
 
     // -- handle stroke related data
     strokeDetector.onStrokeRateChanged(function (spm, interval) {
+        if (paused) return;
         var values = {spm: spm, efficiency: 0};
 
         values.efficiency = strokeEfficiency.calculate(distance.getValue(), distance.getTakenAt(), interval);
@@ -106,6 +125,8 @@ function SessionView(page, settings) {
         } else {
             resetLayout();
         }
+
+        document.removeEventListener('touchmove', preventDrag, false);
 
         App.back();
     };
@@ -153,24 +174,26 @@ function SessionView(page, settings) {
     });
 
 
-    var $stop, tapStarted = false, pauseCanceled = false, pauseTimeout, lastEvent;
+    var $pause, tapStarted = false, pauseCanceled = false, pauseTimeout, lastEvent, pauseAnimationStarted;
     $page.on('tapstart', function (e) {
         if (!e.originalEvent.touches) return;
 
         lastEvent = e;
         tapStarted = true;
         pauseCanceled = false;
+        pauseAnimationStarted = false;
         pauseTimeout = setTimeout(function (event) {
             return function () {
                 if (pauseCanceled === true || event !== lastEvent) {
                     pauseCanceled = false;
                     tapStarted = false;
+                    pauseAnimationStarted = false;
                     return;
                 }
 
                 var width = $page.width() * .4;
 
-                if (!$stop) $stop = $('#session-stop');
+                if (!$pause) $pause = $('#session-stop');
 
                 var svgPath = document.getElementById('pause-svg');
                 var path = new ProgressBar.Path(svgPath, {
@@ -178,24 +201,32 @@ function SessionView(page, settings) {
                     easing: 'easeIn'
                 });
 
-                $stop.css({top: e.originalEvent.touches[0].clientY - (width / 2), left: e.originalEvent.touches[0].clientX - (width / 2)});
-                $stop.show();
+                $pause.css({top: e.originalEvent.touches[0].clientY - (width / 2), left: e.originalEvent.touches[0].clientX - (width / 2)});
+                $pause.show();
 
+                $('body').css({overflow: 'hidden'});
+                pauseAnimationStarted = true;
                 path.animate(1, function () {
-                    if (pauseCanceled === true || event !== lastEvent) return;
+                    Dialog.hideModal();
+                    if (pauseCanceled === true || event !== lastEvent) {
+                        return;
+                    }
 
                     setTimeout(function () {
-                        $stop.hide();
+                        $pause.hide();
                         confirmBeforeExit();
                     }, 20);
                 });
+
+                // try to prevent touch move on android, by placing a fixed backdrop on top of the animation
+                Dialog.showModal($('<div/>'), ' rgba(0,0,0,0.1)');
             }
         }(lastEvent), 450);
     });
 
     $page.on('tapend', function () {
-        if ($stop !== undefined)
-            $stop.hide();
+        if ($pause !== undefined)
+            $pause.hide();
 
         if (tapStarted)
             pauseCanceled = true;
@@ -204,6 +235,11 @@ function SessionView(page, settings) {
     });
 
     $page.on('measureSwapStarted', function () {
+        // if already showing pause animation, let it do it
+        if (pauseAnimationStarted)
+            return;
+
+        // not showing pause, but tap started? Discard... user is changing measures
         if (tapStarted)
             pauseCanceled = true;
 
@@ -270,7 +306,7 @@ SessionView.prototype.confirm = function (onresume, onfinish) {
     var $controls = $('<div class="session-controls"/>');
     var $resume = $('<div class="session-resume">' +
         '<div class="session-controls-outer-text">' +
-            '<div class="session-controls-inner-text vw_font-size3">resume</div>' +
+        '<div class="session-controls-inner-text vw_font-size3">resume</div>' +
         '</div></div></div>');
     var $finish = $('<div class="session-finish"><div class="session-controls-outer-text">' +
         '<div class="session-controls-inner-text vw_font-size3">finish</div>' +

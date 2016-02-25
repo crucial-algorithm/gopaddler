@@ -3,6 +3,7 @@
 var IO = require('../utils/io.js').IO;
 var GPS = require('../utils/gps').GPS;
 var Dialog = require('../utils/dialog');
+var utils = require('../utils/utils');
 var Calibration = require('../model/calibration').Calibration;
 var Session = require('../model/session').Session;
 var SessionDetail = require('../model/session-detail').SessionDetail;
@@ -71,21 +72,6 @@ function SessionView(page, settings) {
         }
     });
 
-    // -- Handle GPS sensor data
-    var values = {speed: 0, distance: 0};
-    gps.listen(function (position) {
-
-        values.speed = speed.calculate(position);
-        values.distance = distance.calculate(position);
-
-        top.setValues(values);
-        middle.setValues(values);
-        bottom.setValues(values);
-        large.setValues(values);
-
-    });
-
-
 
     // -- initiate timer
     var timer = new Timer();
@@ -98,23 +84,57 @@ function SessionView(page, settings) {
     });
 
 
-    // -- handle stroke related data
-    strokeDetector.onStrokeRateChanged(function (spm, interval) {
+
+    // -- Handle GPS sensor data
+    var lastSpeeds = [], lastEfficiency = 0, lastInterval = 0, lastSpeed = 0;
+    gps.listen(function (position) {
+
         if (paused) return;
-        var values = {spm: spm, efficiency: 0};
 
-        values.efficiency = strokeEfficiency.calculate(distance.getValue(), distance.getTakenAt(), interval);
+        var d = distance.calculate(position);
 
-        // update fields using spm and efficiency
+        top.setValue('distance', d);
+        middle.setValue('distance', d);
+        bottom.setValue('distance', d);
+        large.setValue('distance', d);
+
+        lastSpeeds.push(speed.calculate(position));
+        lastSpeeds = lastSpeeds.slice(Math.max(lastSpeeds.length - 3, 0));
+    });
+
+
+    self.speedIntervalId = setInterval(function () {
+        if (self.paused) return;
+
+        var values = {speed: 0, efficiency: 0};
+
+        lastSpeed = values.speed = utils.round2(utils.avg(lastSpeeds));
+        lastEfficiency = values.efficiency = strokeEfficiency.calculate(values.speed, lastInterval);
+
         top.setValues(values);
         middle.setValues(values);
         bottom.setValues(values);
         large.setValues(values);
+    }, 3000);
+
+
+
+    // -- handle stroke related data
+    strokeDetector.onStrokeRateChanged(function (spm, interval) {
+        if (paused) return;
+
+        // update fields using spm and efficiency
+        top.setValue('spm', spm);
+        middle.setValue('spm', spm);
+        bottom.setValue('spm', spm);
+        large.setValue('spm', spm);
 
         // store data
-        new SessionDetail(session.getId(), new Date().getTime(), distance.getValue(), speed.getValue(), spm
-            , values.efficiency
+        new SessionDetail(session.getId(), new Date().getTime(), distance.getValue(), lastSpeed, spm
+            , lastEfficiency
         ).save();
+
+        lastInterval = interval;
     });
     strokeDetector.start();
 
@@ -139,6 +159,7 @@ function SessionView(page, settings) {
         Dialog.hideModal();
 
         clearInterval(self.intervalId);
+        clearInterval(self.speedIntervalId);
         timer.stop();
         gps.stop();
         strokeDetector.stop();

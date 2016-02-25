@@ -12,7 +12,7 @@ Speed.prototype.calculate = function (position) {
 };
 
 Speed.prototype.getValue = function () {
-    return this.value;
+    return this.value || 0;
 }
 
 exports.Speed = Speed;

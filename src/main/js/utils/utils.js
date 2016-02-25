@@ -53,6 +53,15 @@ function onWifi() {
     return navigator.connection.type === Connection.ETHERNET || navigator.connection.type === Connection.WIFI;
 }
 
+function avg(arr) {
+    if (arr.length === 0) return 0;
+    var value = 0;
+    for (var i = 0; i < arr.length; i++) {
+        value += arr[i];
+    }
+    return value / arr.length;
+}
+
 
 /**
  * Convert actions from browser actions into native ones (by registering plugins)
@@ -100,3 +109,4 @@ exports.round2 = round2;
 exports.round1 = round1;
 exports.toRadians = toRadians;
 exports.onWifi = onWifi;
+exports.avg = avg;

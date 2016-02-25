@@ -2,6 +2,7 @@
 
 var db = require('../db.js');
 var SessionDetail = require('./session-detail').SessionDetail;
+var utils = require('../utils/utils.js');
 
 function Session(sessionStart, angleZ, noiseX, noiseZ, factorX, factorZ, axis, distance, avgSpm, topSpm, avgSpeed, topSpeed, sessionEnd) {
     this.connection = db.getConnection();
@@ -163,8 +164,8 @@ Session.prototype.createAPISession = function(){
         for (var j = 0; j < rows.length; j++) {
             row = new Paddler.TrainingSessionData();
             row.setTimestamp(rows[j].getTimestamp());
-            row.setDistance(rows[j].getDistance());
-            row.setSpeed(rows[j].getSpeed());
+            row.setDistance(utils.round2(rows[j].getDistance()));
+            row.setSpeed(utils.round2(rows[j].getSpeed()));
             row.setSpm(rows[j].getSpm());
             row.setSpmEfficiency(rows[j].getEfficiency());
             dataPoints.push(row);

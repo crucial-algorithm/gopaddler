@@ -141,37 +141,45 @@ Session.prototype.isSynced = function () {
 
 Session.prototype.setDbgSyncedRows = function (rows) {
     this.dbgSyncedRows = rows;
-}
+};
 
 Session.prototype.getDbgSyncedRows = function () {
     return this.dbgSyncedRows;
-}
+};
 
-Session.prototype.createAPISession = function(){
-    var self = this, defer = $.Deferred();
-    var remoteSession = new Paddler.TrainingSession();
-    remoteSession.setDate(new Date(self.getSessionStart()));
-    remoteSession.setAngleZ(self.getAngleZ());
-    remoteSession.setNoiseX(self.getNoiseX());
-    remoteSession.setNoiseZ(self.getNoiseZ());
-    remoteSession.setFactorX(self.getFactorX());
-    remoteSession.setFactorZ(self.getFactorZ());
-    remoteSession.setAxis(self.getAxis());
+Session.prototype.createAPISession = function () {
+
+    var self = this,
+        defer = $.Deferred();
 
     SessionDetail.get(self.getId(), function (rows) {
-        var dataPoints = [], row;
-        for (var j = 0; j < rows.length; j++) {
-            row = new Paddler.TrainingSessionData();
-            row.setTimestamp(rows[j].getTimestamp());
-            row.setDistance(rows[j].getDistance());
-            row.setSpeed(rows[j].getSpeed());
-            row.setSpm(rows[j].getSpm());
-            row.setSpmEfficiency(rows[j].getEfficiency());
-            dataPoints.push(row);
-        }
-        remoteSession.setData(dataPoints);
 
-        defer.resolve(remoteSession);
+        var dataPoints = [],
+            row;
+
+        for (var j = 0; j < rows.length; j++) {
+
+            row = rows[j];
+
+            dataPoints.push({
+                timestamp: row.getTimestamp(),
+                distance: row.getDistance(),
+                speed: row.getSpeed(),
+                spm: row.getSpm(),
+                spmEfficiency: row.getEfficiency()
+            });
+        }
+
+        defer.resolve({
+            date: new Date(self.getSessionStart()),
+            data: dataPoints,
+            angleZ: self.getAngleZ(),
+            noiseX: self.getNoiseX(),
+            noiseZ: self.getNoiseZ(),
+            factorX: self.getFactorX(),
+            factorZ: self.getFactorZ(),
+            axis: self.getAxis()
+        });
     });
 
     return defer.promise();
@@ -198,9 +206,9 @@ Session.prototype.finish = function () {
 
         self.connection.executeSql("update session set distance = ?, avg_spm = ?, top_spm = ?, avg_speed = ?, top_speed = ?, session_end = ? where id = ?"
             , [record.total_distance, record.avg_spm, record.top_spm, record.avg_speed, record.max_speed, new Date().getTime(), self.id]
-            , function(a){
+            , function (a) {
                 console.log('success', a);
-            }, function(a){
+            }, function (a) {
                 console.log('error', a);
             })
 

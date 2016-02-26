@@ -2,6 +2,7 @@
 
 var Calibration = require('../model/calibration.js').Calibration;
 var Session = require('../model/session.js').Session;
+var Api = require('../server/api');
 
 function HomeView(page) {
 
@@ -22,7 +23,7 @@ function HomeView(page) {
         App.load('settings');
     });
 
-    $('.home-username-bold', page).html(Paddler.Session.getUser().getFullName());
+    $('.home-username-bold', page).html(Api.User.getProfile().name);
 
     Session.last().then(function (session) {
         if (session === undefined) {
@@ -33,7 +34,7 @@ function HomeView(page) {
     });
 
     // store device information
-    Paddler.Authentication.saveUserDevice({
+    Api.User.saveDevice({
         cordova: device.cordova,
         model: device.model,
         platform: device.platform,

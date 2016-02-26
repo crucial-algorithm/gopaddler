@@ -6,11 +6,13 @@ var HomeView = require('./views/home-view.js').HomeView;
 var LoginView = require('./views/login-view.js').LoginView;
 var SessionsView = require('./views/sessions-view.js').SessionsView;
 var CalibrationView = require('./views/calibration-view.js').CalibrationView;
+var Api = require('./server/api');
 var utils = require('./utils/utils.js');
 var global = require('./global.js');
 var db = require('./db.js');
 var sync = require('./server/sync.js');
 var analytics = require('./utils/analytics.js');
+
 
 /**
  * Splash screen / login page.
@@ -22,7 +24,7 @@ App.controller('login', function (page) {
 
 App.controller('home', function (page) {
     analytics.setView('home');
-    analytics.setUser(Paddler.Session.getUser().getId());
+    analytics.setUser(Api.User.getId());
     screen.lockOrientation('landscape');
     new HomeView(page);
 });
@@ -78,9 +80,12 @@ if (navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry|IEMobile)/))
 } else {
     global.emulateCordova();
     loadDb();
-    Paddler.Session.init();
-    Paddler.Session.setUser(new Paddler.User(-1, 'local-test-user', 'local', 'test', 'local.test@gmail.com', undefined));
-    Paddler.Session.setAccessToken('test-access-token');
+    Api.User.set({
+        _id: -1,
+        profile: {
+            name: 'local-test-user'
+        }
+    });
     loadUi();
 }
 
@@ -89,13 +94,13 @@ function loadDb() {
     sync.start();
 }
 
-var processing = {};
-
 function loadUi() {
+
     analytics.init();
-    Paddler.Authentication.autoLogin(true).done(function() {
+
+    Api.Auth.login().done(function () {
         App.load('home');
-    }).fail(function() {
+    }).fail(function () {
         App.load('login');
     });
 }

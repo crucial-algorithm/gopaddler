@@ -7,12 +7,11 @@ var Calibration = require('../model/calibration').Calibration;
 var Session = require('../model/session').Session;
 var SessionDetail = require('../model/session-detail').SessionDetail;
 var db = require('../db').Session;
-
+var Api = require('../server/api');
 var StrokeDetector = require('../core/stroke-detector').StrokeDetector;
 var Timer = require('../measures/timer').Timer;
 var Distance = require('../measures/distance').Distance;
 var Speed = require('../measures/speed').Speed;
-
 var StrokeRate = require('../measures/spm').StrokeRate;
 
 function SessionView(page) {
@@ -21,7 +20,7 @@ function SessionView(page) {
     var session = self.createSession(calibration);
     var gps = new GPS();
 
-    self.isDebugEnabled = Paddler.Session.getUser().getProfile().isDebug();
+    self.isDebugEnabled = !!Api.User.getProfile().debug;
 
     document.PREVENT_SYNC = true;
 

@@ -20,8 +20,7 @@ cordova plugin add cordova-plugin-google-analytics
 cordova plugin add cordova-plugin-splashscreen
 
 cordova plugin add cordova-sqlite-storage
-cordova plugin add https://github.com/Wizcorp/phonegap-facebook-plugin.git --variable APP_ID=529853143847598 --variable APP_NAME=Paddle
-
+cordova plugin add https://github.com/Wizcorp/phonegap-facebook-plugin.git --variable APP_ID=529853143847598 --variable APP_NAME=GoPaddler
 
 ## Compile javascript
 ### Install webpack

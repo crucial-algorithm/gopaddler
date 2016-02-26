@@ -3,6 +3,7 @@
 var IO = require('../utils/io.js').IO;
 var Utils = require('../utils/utils.js');
 var Session = require('../model/session').Session;
+var Api = require('../server/api');
 
 var processing = {};
 
@@ -25,7 +26,7 @@ function sync() {
 
             // set lock
             processing[sessions[i].getId()] = true;
-            
+
             if (sessions[i].isSynced()) {
                 uploadDebugData(sessions[i]);
             } else {
@@ -37,29 +38,30 @@ function sync() {
 
 
 function uploadSession(localSession) {
+
     var defer = $.Deferred();
 
-    localSession.createAPISession().then(function (api) {
-        Paddler.TrainingSessions.save(api).done(function (remoteSession) {
+    localSession.createAPISession().then(function (trainingSession) {
 
-                localSession.setRemoteId(remoteSession.getId());
-                Session.synced(localSession.getRemoteId(), localSession.getId());
+        Api.TrainingSessions.save(trainingSession).done(function (id) {
 
-                // upload debug data, if we have a file
-                if (api.getData().length === 0) {
-                    Session.debugSyncFinished(localSession.getId(), true);
-                    delete processing[localSession.getId()];
-                } else {
-                    uploadDebugData(localSession);
-                }
+            localSession.setRemoteId(id);
+
+            Session.synced(localSession.getRemoteId(), localSession.getId());
+
+            // upload debug data, if we have a file
+            if (trainingSession.data.length === 0) {
+                Session.debugSyncFinished(localSession.getId(), true);
+                delete processing[localSession.getId()];
+            } else {
+                uploadDebugData(localSession);
             }
-        ).fail(function (res) {
-                console.log('save failed', res);
-                delete processing[localSession.getId()];
-            }).exception(function (res) {
-                delete processing[localSession.getId()];
-                console.log('save failed', res);
-            });
+
+        }).fail(function (err) {
+
+            console.log('save failed', err);
+            delete processing[localSession.getId()];
+        });
     });
 
     return defer.promise();
@@ -77,10 +79,10 @@ function loadFile(filename) {
 
 function uploadDebugData(session) {
 
-    var self = this
-        , sensorData = []
-        , record
-        , defer = $.Deferred();
+    var self = this,
+        sensorData = [],
+        record,
+        defer = $.Deferred();
 
     if (!session.getDebugFile()) {
         delete processing[session.getId()];
@@ -88,10 +90,10 @@ function uploadDebugData(session) {
         return defer.promise();
     }
 
-
     loadFile(session.getDebugFile()).then(function (rows) {
 
         var i = 0;
+
         if (session.getDbgSyncedRows() > 0) {
             i = session.getDbgSyncedRows() - 1;
         } else {
@@ -103,12 +105,13 @@ function uploadDebugData(session) {
             if (!rows[0]) continue;
 
             record = rows[i].split(';');
-            sensorData.push(new Paddler.DebugSessionData(/* ts = */ record[0]
-                , /* x = */     record[1]
-                , /* y = */     record[2]
-                , /* z = */     record[3]
-                , /* value = */ record[4]
-            ));
+            sensorData.push({
+                timestamp: record[0],
+                x: record[1],
+                y: record[2],
+                z: record[3],
+                value: record[4]
+            });
         }
 
         var SIZE = 1000;
@@ -120,9 +123,10 @@ function uploadDebugData(session) {
                 return;
             }
 
-            Paddler.DebugSessions.saveMultiple(session.getRemoteId(), payload)
-                .then(function () {
+            Api.DebugSessions.save({trainingSession: session.getRemoteId(), data: payload}).done(function () {
+
                     Session.debugSynced(session.getId(), SIZE);
+
                     if (sensorData.length > 0) {
                         loopAsync();
                         return;
@@ -137,6 +141,7 @@ function uploadDebugData(session) {
                     console.log('error saving debug data: ', e);
 
                     Session.get(session.getId()).then(function (s) {
+
                         if (s.getDebugAttempt() < 3) {
                             Session.incrementAttempt(session.getId()).then(function () {
                                 loopAsync();
@@ -146,10 +151,12 @@ function uploadDebugData(session) {
 
                         Session.debugSyncFinished(session.getId(), false);
                         defer.reject(e);
+
                     }).fail(function () {
-                            Session.debugSyncFinished(session.getId(), false);
-                            defer.reject(e);
-                        });
+
+                        Session.debugSyncFinished(session.getId(), false);
+                        defer.reject(e);
+                    });
                 });
         })();
     });

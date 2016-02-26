@@ -45,6 +45,16 @@ function toRadians(degrees) {
     return degrees * Math.PI / 180;
 }
 
+function isNetworkConnected() {
+
+    return navigator.connection.type === Connection.ETHERNET ||
+        navigator.connection.type === Connection.WIFI ||
+        navigator.connection.type === Connection.CELL_2G ||
+        navigator.connection.type === Connection.CELL_3G ||
+        navigator.connection.type === Connection.CELL_4G ||
+        navigator.connection.type === Connection.CELL;
+}
+
 function onWifi() {
     return navigator.connection.type === Connection.ETHERNET || navigator.connection.type === Connection.WIFI;
 }
@@ -94,4 +104,5 @@ exports.mapBrowserToNative = mapBrowserToNative;
 exports.lpad = lpad;
 exports.round2 = round2;
 exports.toRadians = toRadians;
+exports.isNetworkConnected = isNetworkConnected;
 exports.onWifi = onWifi;

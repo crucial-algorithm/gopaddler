@@ -41,6 +41,10 @@ function round2(value) {
     return Math.round(value * 100) / 100;
 }
 
+function round1(value) {
+    return Math.round(value * 10) / 10;
+}
+
 function toRadians(degrees) {
     return degrees * Math.PI / 180;
 }
@@ -57,6 +61,15 @@ function isNetworkConnected() {
 
 function onWifi() {
     return navigator.connection.type === Connection.ETHERNET || navigator.connection.type === Connection.WIFI;
+}
+
+function avg(arr) {
+    if (arr.length === 0) return 0;
+    var value = 0;
+    for (var i = 0; i < arr.length; i++) {
+        value += arr[i];
+    }
+    return value / arr.length;
 }
 
 
@@ -103,6 +116,8 @@ exports.pdOnDeviceReady = pdOnDeviceReady;
 exports.mapBrowserToNative = mapBrowserToNative;
 exports.lpad = lpad;
 exports.round2 = round2;
+exports.round1 = round1;
 exports.toRadians = toRadians;
 exports.isNetworkConnected = isNetworkConnected;
 exports.onWifi = onWifi;
+exports.avg = avg;

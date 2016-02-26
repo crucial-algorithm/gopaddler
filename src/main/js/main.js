@@ -12,6 +12,9 @@ var global = require('./global.js');
 var db = require('./db.js');
 var sync = require('./server/sync.js');
 var analytics = require('./utils/analytics.js');
+var Settings = require('./model/settings');
+
+var settings = undefined;
 
 
 /**
@@ -19,6 +22,7 @@ var analytics = require('./utils/analytics.js');
  */
 App.controller('login', function (page) {
     analytics.setView('login');
+    screen.lockOrientation('portrait');
     new LoginView(page);
 });
 
@@ -26,7 +30,12 @@ App.controller('home', function (page) {
     analytics.setView('home');
     analytics.setUser(Api.User.getId());
     screen.lockOrientation('landscape');
-    new HomeView(page);
+    Settings.loadSettings().then(function (s) {
+        settings = s;
+        new HomeView(page);
+    }).fail(function (error, defaultSettings) {
+            settings = defaultSettings;
+        });
 });
 
 /**
@@ -34,7 +43,7 @@ App.controller('home', function (page) {
  */
 App.controller('session', function (page) {
     analytics.setView('session');
-    new SessionView(page);
+    new SessionView(page, settings);
 });
 
 /**
@@ -42,7 +51,7 @@ App.controller('session', function (page) {
  */
 App.controller('settings', function (page) {
     analytics.setView('settings');
-    new SettingsView(page);
+    new SettingsView(page, settings);
 });
 
 /**

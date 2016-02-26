@@ -33,22 +33,26 @@ Settings.prototype.setSyncOnlyOnWifi = function(syncOnlyOnWifi) {
     this._syncOnlyOnWifi = syncOnlyOnWifi;
 }
 
-Settings.prototype.getRestoreLayout = function() {
+Settings.prototype.isRestoreLayout = function() {
     return this._restoreLayout;
 }
 
-Settings.prototype.setSyncOnlyOnWifi = function(restoreLayout) {
+Settings.prototype.setRestoreLayout = function(restoreLayout) {
     this._restoreLayout = restoreLayout;
 }
 
 
 function loadSettings() {
-    var connection = db.getConnection();
     var defer = $.Deferred();
-    connection.executeSql("SELECT * FROM settings", [], function (res) {
+    var connection = db.getConnection();
+
+    connection.executeSql("SELECT * FROM settings", [], function success(res) {
         var row = res.rows.item(0);
         console.log(res.rows.length);
         defer.resolve(new Settings(row.version, row.units, row.sync_wifi, row.restore_layout));
+    }, function error(e) {
+        console.log('error loding settings... defaulting');
+        defer.reject(err, new Settings(-1, Settings.CONSTANTS.KM, true, true));
     });
 
     return defer.promise();
@@ -63,6 +67,10 @@ function saveSettings(units, syncOnWikiOnly, restoreLayout) {
 exports.loadSettings = loadSettings;
 exports.saveSettings = saveSettings;
 exports.Settings = Settings;
+exports.CONSTANTS  = {
+    KM: 'K',
+    MI: 'M'
+}
 
 
 

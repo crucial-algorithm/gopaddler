@@ -103,4 +103,6 @@
 
     <preference name="android-minSdkVersion" value="15" />
     <preference name="android-targetSdkVersion" value="19" />
+
+    <preference name="DisallowOverscroll" value="true" />
 </widget>

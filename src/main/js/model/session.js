@@ -2,6 +2,7 @@
 
 var db = require('../db.js');
 var SessionDetail = require('./session-detail').SessionDetail;
+var utils = require('../utils/utils.js');
 
 function Session(sessionStart, angleZ, noiseX, noiseZ, factorX, factorZ, axis, distance, avgSpm, topSpm, avgSpeed, topSpeed, sessionEnd) {
     this.connection = db.getConnection();

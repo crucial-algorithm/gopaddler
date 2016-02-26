@@ -21,6 +21,13 @@ function emulateCordova () {
         success = success || function(){};
         if (sql.toLowerCase().substr(0,3) === 'ins') {
             success({insertId: 1234});
+        } else if (sql === "SELECT * FROM settings") {
+            var data = [
+                {version: 1, units: 'K', sync_wifi: true, restore_layout: true}
+            ];
+            success({rows: {length: 14, item: function (index) {
+                return data[index];
+            }}})
         } else {
             var data = [
                 {id: 1, session_at: 1449330144249, anglez: 1, noisex: 1, noisey: 1, factorx: 1, factorz: 1, axis: 0},

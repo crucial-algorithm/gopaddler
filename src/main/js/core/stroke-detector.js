@@ -103,22 +103,24 @@ StrokeDetector.prototype.start = function () {
     }
 
     self.intervalId = setInterval(self.refreshSPM.bind(self), 1500);
-}
+};
 
 StrokeDetector.prototype.refreshSPM = function () {
-    var self = this, range, strokeRate;
+    var self = this, range, result;
     range = self.strokes.slice(-SPM_STROKE_COUNT);
-    strokeRate = self.calculateSPM(range);
-    self.onStrokeRateChangedListener(strokeRate);
+    result = self.calculateSPM(range) || {};
+
+    if (!isNaN(result.spm))
+        self.onStrokeRateChangedListener(result.spm, result.interval);
 
     // keep only last 8 strokes, without any clean up of stroke rate calculation
     self.strokes = self.strokes.slice(-SPM_STROKE_COUNT);
 
-    if (strokeRate === 0) {
-        self.onStrokeRateChangedListener(0);
+    if (result.spm === 0) {
+        self.onStrokeRateChangedListener(0, undefined);
         self.strokes = [];
     }
-    return strokeRate;
+    return result.spm;
 };
 
 
@@ -455,11 +457,11 @@ StrokeDetector.prototype.calculateSPM = function (strokes) {
 
     // if we don't have strokes in the past 3 seconds, set it to zero
     if (self.lastStroke && self.lastEvent && (self.lastEvent.getSampleAt() - self.lastStroke.getDetected().getPosition() > 3000)) {
-        return 0;
+        return {spm: 0, interval: 0};
     }
 
     if (strokes.length < SPM_STROKE_COUNT)
-        return;
+        return undefined;
 
     // --- look for strokes that don't feet well in current stroke rate and discard them (replace by average)
     var c = self.calculateIntervals(strokes);
@@ -523,7 +525,7 @@ StrokeDetector.prototype.calculateSPM = function (strokes) {
 
 //    console.log("spm: ", Math.round(strokeRate), map[0][0].getStroke()
 //        , map[1][0].getStroke(), map[2][0].getStroke(), map[3][0].getStroke());
-    return Math.round(strokeRate);
+    return {spm: Math.round(strokeRate), interval: avg};
 };
 
 

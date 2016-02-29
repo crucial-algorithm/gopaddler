@@ -7,12 +7,17 @@ function Speed() {
 
 
 Speed.prototype.calculate = function (position) {
-    this.value = utils.round2(position.coords.speed * 3.6);
+    var value = utils.round2(position.coords.speed * 3.6);
+    if (value > this.value)  this.value = value;
     return this.value;
 };
 
+Speed.prototype.reset = function () {
+    this.value = 0;
+}
+
 Speed.prototype.getValue = function () {
-    return this.value || 0;
+    return this.value;
 }
 
 exports.Speed = Speed;

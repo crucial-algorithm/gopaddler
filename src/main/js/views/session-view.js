@@ -131,7 +131,7 @@ function SessionView(page, settings) {
 
         // store data
         new SessionDetail(session.getId(), new Date().getTime(), distance.getValue(), lastDisplayedSpeed, spm
-            , lastEfficiency
+            , lastEfficiency, distance.getLatitude(), distance.getLongitude()
         ).save();
 
         lastInterval = interval;

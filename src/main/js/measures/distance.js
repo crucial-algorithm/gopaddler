@@ -34,4 +34,12 @@ Distance.prototype.getValue = function () {
     return this.distance;
 };
 
+Distance.prototype.getLatitude = function () {
+    return (this.previous || {}).latitude;
+}
+
+Distance.prototype.getLongitude = function () {
+    return (this.previous || {}).longitude;
+}
+
 exports.Distance = Distance;

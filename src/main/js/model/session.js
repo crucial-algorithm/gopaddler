@@ -167,7 +167,9 @@ Session.prototype.createAPISession = function () {
                 distance: row.getDistance(),
                 speed: row.getSpeed(),
                 spm: row.getSpm(),
-                spmEfficiency: row.getEfficiency()
+                spmEfficiency: row.getEfficiency(),
+                latitude: row.getLatitude(),
+                longitude: row.getLongitude()
             });
         }
 

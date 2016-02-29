@@ -46,8 +46,10 @@ var ddl = [
             "speed REAL,",
             "spm INTEGER,",
             "efficiency REAL",
-            ")"]
-    ]
+            ")"],
+        ["insert into settings (version) values (1)"]
+    ],
+    [["ALTER session_data add column latitude REAL, longitude real"]]
 ];
 
 
@@ -64,20 +66,30 @@ var error = function (e) {
  */
 function init() {
     connection = window.sqlitePlugin.openDatabase({name: "sessions.db", "location": 2});
-    connection.transaction(function (tx) {
-        var v1 = ddl[0], sql;
-        for (var i = 0; i < v1.length; i++) {
-            sql = v1[i].join('');
-            tx.executeSql(sql, [], success, error);
-        }
-    });
 
-    // when we are able to handle multiple versions, this insert needs to
-    // be adjusted to the proper version (according to meta schema)
-    connection.executeSql("select count(1) total from settings", [], function (res) {
-        if (res.rows.item(0).total === 1) return;
-        connection.executeSql("insert into settings (version) values (1)");
+    determineDbVersion().then(function (version) {
+        connection.transaction(function (tx) {
+            var sql;
+            for (var d = version; d < ddl.length; d++) {
+
+                for (var i = 0; i < ddl[d].length; i++) {
+                    sql = ddl[d][i].join('');
+                    tx.executeSql(sql, [], success, error);
+                }
+            }
+        });
     });
+}
+
+
+function determineDbVersion() {
+    var defer = $.Deferred();
+    connection.executeSql("select version from settings", [], function success(res) {
+        defer.resolve(res.rows.item(0).version);
+    }, function error(err) {
+        defer.resolve(0);
+    });
+    return defer.promise();
 }
 
 

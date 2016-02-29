@@ -1,7 +1,7 @@
 'use strict';
 var db = require('../db');
 
-function SessionDetail(session, timestamp, distance, speed, spm, efficiency) {
+function SessionDetail(session, timestamp, distance, speed, spm, efficiency, latitude, longitude) {
     this.connection = db.getConnection();
     this.session = session;
     this.timestamp = timestamp;
@@ -9,6 +9,8 @@ function SessionDetail(session, timestamp, distance, speed, spm, efficiency) {
     this.speed = speed || 0;
     this.spm = spm;
     this.efficiency = efficiency || 0;
+    this.latitude = latitude;
+    this.longitude = longitude;
 }
 
 SessionDetail.prototype.getSession = function () {
@@ -59,6 +61,21 @@ SessionDetail.prototype.setEfficiency = function (efficiency) {
     this.efficiency = efficiency;
 }
 
+SessionDetail.prototype.getLatitude = function () {
+    return this.latitude;
+}
+
+SessionDetail.prototype.setLatitude = function (latitude) {
+    this.latitude = latitude;
+}
+
+SessionDetail.prototype.getLongitude = function () {
+    return this.longitude;
+}
+
+SessionDetail.prototype.setLongitude = function (longitude) {
+    this.longitude = longitude;
+}
 
 SessionDetail.prototype.save = function () {
     this.connection.executeSql("INSERT INTO session_data (session, timestamp, distance, speed, spm, efficiency) VALUES (?,?,?,?,?,?)",
@@ -71,7 +88,7 @@ SessionDetail.prototype.save = function () {
 
 SessionDetail.get = function(sessionId, callback) {
     var connection = db.getConnection();
-    connection.executeSql("SELECT timestamp, distance, speed, spm, efficiency FROM session_data WHERE session = ?",[sessionId], function (res) {
+    connection.executeSql("SELECT timestamp, distance, speed, spm, efficiency, latitude, longitude FROM session_data WHERE session = ?",[sessionId], function (res) {
         var rows = [], data;
         for (var i = 0; i < res.rows.length; i++) {
             data = res.rows.item(i);

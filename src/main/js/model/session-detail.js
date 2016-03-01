@@ -78,8 +78,8 @@ SessionDetail.prototype.setLongitude = function (longitude) {
 }
 
 SessionDetail.prototype.save = function () {
-    this.connection.executeSql("INSERT INTO session_data (session, timestamp, distance, speed, spm, efficiency) VALUES (?,?,?,?,?,?)",
-        [this.session, this.timestamp, this.distance, this.speed, this.spm, this.efficiency], function (res) {
+    this.connection.executeSql("INSERT INTO session_data (session, timestamp, distance, speed, spm, efficiency, latitude, longitude) VALUES (?,?,?,?,?,?,?,?)",
+        [this.session, this.timestamp, this.distance, this.speed, this.spm, this.efficiency, this.latitude, this.longitude], function (res) {
             console.log("Session Data#" + res.insertId + " created");
         }, function (error) {
             console.log('Error creating session: ' + error.message);
@@ -92,7 +92,7 @@ SessionDetail.get = function(sessionId, callback) {
         var rows = [], data;
         for (var i = 0; i < res.rows.length; i++) {
             data = res.rows.item(i);
-            rows.push(new SessionDetail(sessionId, data.timestamp, data.distance, data.speed, data.spm, data.efficiency));
+            rows.push(new SessionDetail(sessionId, data.timestamp, data.distance, data.speed, data.spm, data.efficiency, data.latitude, data.longitude));
         }
         callback(rows);
     }, function (error) {

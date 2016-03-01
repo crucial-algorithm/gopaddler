@@ -49,7 +49,10 @@ var ddl = [
             ")"],
         ["insert into settings (version) values (1)"]
     ],
-    [["ALTER session_data add column latitude REAL, longitude real"]]
+    [
+        ["ALTER TABLE session_data add column latitude REAL"],
+        ["ALTER TABLE session_data add column longitude REAL"]
+    ]
 ];
 
 

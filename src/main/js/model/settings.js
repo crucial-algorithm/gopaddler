@@ -48,7 +48,6 @@ function loadSettings() {
 
     connection.executeSql("SELECT * FROM settings", [], function success(res) {
         var row = res.rows.item(0);
-        console.log(res.rows.length);
         defer.resolve(new Settings(row.version, row.units, row.sync_wifi, row.restore_layout));
     }, function error(e) {
         console.log('error loding settings... defaulting');

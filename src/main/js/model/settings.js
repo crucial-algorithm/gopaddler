@@ -2,6 +2,11 @@
 
 var db = require('../db.js');
 
+var CONSTANTS  = {
+    KM: 'K',
+    MI: 'M'
+};
+
 function Settings(version, units, syncOnlyOnWifi, restoreLayout) {
     this._version = version;
     this._units = units;
@@ -23,6 +28,10 @@ Settings.prototype.getUnits = function() {
 
 Settings.prototype.setUnits = function(units) {
     this._units = units;
+}
+
+Settings.prototype.isImperial = function(){
+    return this._units === CONSTANTS.MI;
 }
 
 Settings.prototype.isSyncOnlyOnWifi = function() {
@@ -51,7 +60,7 @@ function loadSettings() {
         defer.resolve(new Settings(row.version, row.units, row.sync_wifi, row.restore_layout));
     }, function error(e) {
         console.log('error loding settings... defaulting');
-        defer.reject(err, new Settings(-1, Settings.CONSTANTS.KM, true, true));
+        defer.reject(err, new Settings(-1, CONSTANTS.KM, true, true));
     });
 
     return defer.promise();
@@ -66,10 +75,7 @@ function saveSettings(units, syncOnWikiOnly, restoreLayout) {
 exports.loadSettings = loadSettings;
 exports.saveSettings = saveSettings;
 exports.Settings = Settings;
-exports.CONSTANTS  = {
-    KM: 'K',
-    MI: 'M'
-}
+exports.CONSTANTS  = CONSTANTS;
 
 
 

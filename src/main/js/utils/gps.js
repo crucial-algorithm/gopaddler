@@ -29,16 +29,11 @@ GPS.prototype.start = function() {
     };
 
     var onError = function (error) {
-        alert('GPS: failed to get GPS signal');
         console.log(error);
     };
 
 
-    utils.pdOnDeviceReady(function gpsListenDeviceReady() {
-        self.watchId = navigator.geolocation.watchPosition(onSuccess, onError, { timeout: 60000, enableHighAccuracy: true, maximumAge: 500 });
-    }, function gpsFailureDeviceReady(e) {
-        console.log('GPS: no signal found - are you viewing in browser? ' + e)
-    });
+    self.watchId = navigator.geolocation.watchPosition(onSuccess, onError, { timeout: 60000, enableHighAccuracy: true, maximumAge: 500 });
 
     self.started = true;
 };

@@ -83,7 +83,6 @@ function onDeviceReady() {
     }, 3000);
 }
 
-document.pd_device_ready = false;
 if (navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry|IEMobile)/)) {
     document.addEventListener("deviceready", onDeviceReady, false);
 } else {

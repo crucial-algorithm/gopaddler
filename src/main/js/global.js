@@ -72,6 +72,23 @@ function emulateCordova () {
 
     window.screen.lockOrientation = function(){};
     window.device = {};
+
+    navigator.geolocation.watchPosition = function (callback) {
+        return setInterval(function () {
+            callback({
+                coords: {
+                    accuracy: 1,
+                    latitude: Math.random() + 1,
+                    longitude: Math.random() + 1,
+                    speed: Math.random() * 10 + 10
+                }
+            })
+        }, 1000);
+    };
+
+    navigator.geolocation.clearWatch = function (id) {
+        clearInterval(id);
+    };
 }
 
 exports.emulateCordova = emulateCordova;

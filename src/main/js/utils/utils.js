@@ -1,40 +1,15 @@
 'use strict';
 
-function pdOnDeviceReady(successCallback, failureCallback, interval) {
-    if (document.pd_device_ready) {
-        clearInterval(interval);
-        successCallback.apply(undefined, []);
-        return;
-    }
-    if (interval === undefined) {
-        interval = setInterval(function () {
-            pdOnDeviceReady(successCallback, failureCallback, interval);
-        }, 1000);
-
-        document['retries_' + interval] = 0;
-
-    }
-
-    if (document['retries_' + interval] >= 10) {
-        // give up... we are probably in developer mode
-        clearInterval(interval);
-
-        if ($.isFunction(failureCallback))
-            failureCallback.apply(undefined, []);
-
-
-        // clean up
-        delete document['retries_' + interval];
-        return;
-    }
-
-    document['retries_' + interval]++;
-}
-
 function lpad(value, places) {
     var pad = new Array(places + 1).join('0');
     var str = value + "";
     return pad.substring(0, pad.length - str.length) + str;
+}
+function round(value, decimalPlaces) {
+    if (decimalPlaces === 0) return value;
+
+    var precision = Math.pow(10, decimalPlaces);
+    return Math.round(value * precision) / precision;
 }
 
 function round2(value) {
@@ -112,11 +87,11 @@ function mapBrowserToNative() {
     StatusBar.styleDefault();
 }
 
-exports.pdOnDeviceReady = pdOnDeviceReady;
 exports.mapBrowserToNative = mapBrowserToNative;
 exports.lpad = lpad;
 exports.round2 = round2;
 exports.round1 = round1;
+exports.round = round;
 exports.toRadians = toRadians;
 exports.isNetworkConnected = isNetworkConnected;
 exports.onWifi = onWifi;

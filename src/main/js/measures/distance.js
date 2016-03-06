@@ -1,6 +1,5 @@
 'use strict';
 var GPS = require('../utils/gps').GPS;
-var utils = require('../utils/utils');
 
 
 function Distance() {
@@ -23,7 +22,7 @@ Distance.prototype.calculate = function (position) {
     }
 
     this.previous = position;
-    return utils.round2(this.distance);
+    return this.distance;
 };
 
 Distance.prototype.getTakenAt = function () {

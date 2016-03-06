@@ -1,8 +1,9 @@
 'use strict';
 
 var MeasureFactory = require('./measure.js').Measure;
+var utils = require('../utils/utils');
 
-var Field = function(element, type, size) {
+var Field = function(element, type, size, settings) {
     var self = this;
     size = size || 'small';
     self.$element = $(element);
@@ -17,6 +18,9 @@ var Field = function(element, type, size) {
     self.positions = [];
     self.measures = {};
     self.current = {};
+    self.displayImperial = settings.isImperial();
+
+    self.options = {};
 
     self.init(type || 0, size);
 };
@@ -59,19 +63,23 @@ var MeasureSpecifics = {
     },
     speed: {
         label: "Speed",
-        units: 'Km/h'
+        units: { metric: 'Km/h', imperial: 'Mi/h'},
+        decimalPlaces: 1
     },
     distance: {
         label: "Distance",
-        units: 'Km'
+        units: { metric: 'Km', imperial: 'Mi'},
+        decimalPlaces: 1
     },
     spm: {
         label: "Stroke Rate",
-        units: "Per Min."
+        units: { metric: "SR/Min", imperial: "SR/Min"},
+        decimalPlaces: 1
     },
     efficiency: {
         label: "Stroke Efficiency",
-        units: "Meter"
+        units: { metric: "Meter", imperial: "Foot"},
+        decimalPlaces: 1
     }
 };
 
@@ -92,11 +100,16 @@ Field.prototype.init = function (initialType, size) {
 
         if (type === initialType) position = i;
 
-        options = $.extend({}, MeasureDefaults, MeasureSpecifics[type]);
+        options = $.extend(true, {}, MeasureDefaults, MeasureSpecifics[type]);
+        var units = options.units.metric;
+        if (self.displayImperial) {
+            units = options.units.imperial;
+        }
 
-        instance = MeasureFactory.get(size, $dom, options.label, options.units, options.init);
+        instance = MeasureFactory.get(size, $dom, options.label, units, options.init);
         instance.render();
         self.positions[i] = {position: i, type: type, $dom: $dom, instance: instance};
+        self.options[type] = options;
     });
 
 
@@ -148,7 +161,27 @@ Field.prototype._set = function (p) {
 
 Field.prototype.getType = function() {
     return this.current.type;
-}
+};
+
+
+Field.prototype.convertInValueToDisplay = function (type, value) {
+    var self = this;
+
+    if (self.displayImperial) {
+        if (type === 'speed')
+            value = value * 0.621371;
+        if (type === 'distance')
+            value = value * 0.621371;
+        if (type === 'efficiency')
+            value = value * 3.28084;
+    }
+
+    if (self.options[type].decimalPlaces >= 0) {
+        value = utils.round(value, self.options[type].decimalPlaces);
+    }
+
+    return value;
+};
 
 
 /**
@@ -165,12 +198,12 @@ Field.prototype.setValue = function (type, value) {
 
     if (type !== this.current.type) return;
 
-    this.current.instance.setValue(value);
+    this.current.instance.setValue(this.convertInValueToDisplay(type, value));
 };
 
 Field.prototype.setValues = function (values) {
     if (this.current.type in values) {
-        this.current.instance.setValue(values[this.current.type]);
+        this.setValue(this.current.type, values[this.current.type]);
     }
 
     if ('timer' in values) {

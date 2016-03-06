@@ -169,11 +169,11 @@ Field.prototype.convertInValueToDisplay = function (type, value) {
 
     if (self.displayImperial) {
         if (type === 'speed')
-            value = value * 0.621371;
+            value = utils.kmToMiles(value);
         if (type === 'distance')
-            value = value * 0.621371;
+            value = utils.kmToMiles(value);
         if (type === 'efficiency')
-            value = value * 3.28084;
+            value = utils.meterToFeet(value);
     }
 
     if (self.options[type].decimalPlaces >= 0) {

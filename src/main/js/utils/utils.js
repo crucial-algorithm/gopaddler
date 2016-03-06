@@ -47,6 +47,13 @@ function avg(arr) {
     return value / arr.length;
 }
 
+function kmToMiles(kms) {
+    return kms * 0.621371;
+}
+
+function meterToFeet(meters) {
+    return meters * 3.28084;
+}
 
 /**
  * Convert actions from browser actions into native ones (by registering plugins)
@@ -96,3 +103,5 @@ exports.toRadians = toRadians;
 exports.isNetworkConnected = isNetworkConnected;
 exports.onWifi = onWifi;
 exports.avg = avg;
+exports.kmToMiles = kmToMiles;
+exports.meterToFeet = meterToFeet;

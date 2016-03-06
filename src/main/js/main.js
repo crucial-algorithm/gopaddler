@@ -59,7 +59,7 @@ App.controller('settings', function (page) {
  */
 App.controller('sessions', function (page) {
     analytics.setView('sessions');
-    new SessionsView(page);
+    new SessionsView(page, settings);
 });
 
 /**

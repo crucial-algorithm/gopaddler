@@ -13,7 +13,7 @@ StrokeEfficiency.prototype.calculate = function (speed, interval) {
     }
 
     var metersPerSecond = speed / 60 / 60;
-    return utils.round1(metersPerSecond * (1 / interval));
+    return metersPerSecond * (1 / interval);
 };
 
 

@@ -164,10 +164,10 @@ Session.prototype.createAPISession = function () {
 
             dataPoints.push({
                 timestamp: row.getTimestamp(),
-                distance: row.getDistance(),
-                speed: row.getSpeed(),
+                distance: utils.round2(row.getDistance()),
+                speed: utils.round2(row.getSpeed()),
                 spm: row.getSpm(),
-                spmEfficiency: row.getEfficiency(),
+                spmEfficiency: utils.round2(row.getEfficiency()),
                 latitude: row.getLatitude(),
                 longitude: row.getLongitude()
             });

@@ -59,7 +59,7 @@ App.controller('settings', function (page) {
  */
 App.controller('sessions', function (page) {
     analytics.setView('sessions');
-    new SessionsView(page);
+    new SessionsView(page, settings);
 });
 
 /**
@@ -83,10 +83,10 @@ function onDeviceReady() {
     }, 3000);
 }
 
-document.pd_device_ready = false;
 if (navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry|IEMobile)/)) {
     document.addEventListener("deviceready", onDeviceReady, false);
 } else {
+    // in browser, development mode!
     global.emulateCordova();
     loadDb();
     Api.User.set({
@@ -95,7 +95,8 @@ if (navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry|IEMobile)/))
             name: 'local-test-user'
         }
     });
-    loadUi();
+    // go direct to home, without going through authentication
+    App.load('home');
 }
 
 function loadDb() {

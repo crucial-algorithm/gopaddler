@@ -30,20 +30,20 @@ function emulateCordova () {
             }}})
         } else {
             var data = [
-                {id: 1, session_at: 1449330144249, anglez: 1, noisex: 1, noisey: 1, factorx: 1, factorz: 1, axis: 0},
-                {id: 2, session_at: 1449330144249, anglez: 1, noisex: 1, noisey: 1, factorx: 1, factorz: 1, axis: 0},
-                {id: 3, session_at: 1449330144249, anglez: 1, noisex: 1, noisey: 1, factorx: 1, factorz: 1, axis: 0},
-                {id: 4, session_at: 1449330144249, anglez: 1, noisex: 1, noisey: 1, factorx: 1, factorz: 1, axis: 0},
-                {id: 5, session_at: 1449330144249, anglez: 1, noisex: 1, noisey: 1, factorx: 1, factorz: 1, axis: 0},
-                {id: 6, session_at: 1449330144249, anglez: 1, noisex: 1, noisey: 1, factorx: 1, factorz: 1, axis: 0},
-                {id: 7, session_at: 1449330144249, anglez: 1, noisex: 1, noisey: 1, factorx: 1, factorz: 1, axis: 0},
-                {id: 8, session_at: 1449330144249, anglez: 1, noisex: 1, noisey: 1, factorx: 1, factorz: 1, axis: 0},
-                {id: 9, session_at: 1449330144249, anglez: 1, noisex: 1, noisey: 1, factorx: 1, factorz: 1, axis: 0},
-                {id: 10, session_at: 1449330144249, anglez: 1, noisex: 1, noisey: 1, factorx: 1, factorz: 1, axis: 0},
-                {id: 11, session_at: 1449330144249, anglez: 1, noisex: 1, noisey: 1, factorx: 1, factorz: 1, axis: 0},
-                {id: 12, session_at: 1449330144249, anglez: 1, noisex: 1, noisey: 1, factorx: 1, factorz: 1, axis: 0},
-                {id: 13, session_at: 1449330144249, anglez: 1, noisex: 1, noisey: 1, factorx: 1, factorz: 1, axis: 0},
-                {id: 14, session_at: 1449330144249, anglez: 1, noisex: 1, noisey: 1, factorx: 1, factorz: 1, axis: 0}
+                {id: 1, session_start:  new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 2, session_start:  new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 3, session_start:  new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 4, session_start:  new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 5, session_start:  new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 6, session_start:  new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 7, session_start:  new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 8, session_start:  new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 9, session_start:  new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 10, session_start: new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 11, session_start: new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 12, session_start: new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 13, session_start: new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 14, session_start: new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)}
             ];
             success({rows: {length: 14, item: function (index) {
                 return data[index];
@@ -72,6 +72,23 @@ function emulateCordova () {
 
     window.screen.lockOrientation = function(){};
     window.device = {};
+
+    navigator.geolocation.watchPosition = function (callback) {
+        return setInterval(function () {
+            callback({
+                coords: {
+                    accuracy: 1,
+                    latitude: Math.random() + 1,
+                    longitude: Math.random() + 1,
+                    speed: Math.random() * 10 + 10
+                }
+            })
+        }, 1000);
+    };
+
+    navigator.geolocation.clearWatch = function (id) {
+        clearInterval(id);
+    };
 }
 
 exports.emulateCordova = emulateCordova;

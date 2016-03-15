@@ -25,6 +25,8 @@ var DEFAULT_POSITIONS = {
     large: 'spm'
 };
 
+var SMALL = 'small', LARGE = 'large';
+
 function SessionView(page, settings) {
     var self = this;
     var $page = $(page);
@@ -48,10 +50,10 @@ function SessionView(page, settings) {
         fields = DEFAULT_POSITIONS;
     }
 
-    var top = new Field($('.session-small-measure.yellow', page), fields.top);
-    var middle = new Field($('.session-small-measure.blue', page), fields.middle);
-    var bottom = new Field($('.session-small-measure.red', page), fields.bottom);
-    var large = new Field($('.session-left', page), fields.large, 'large');
+    var top = new Field($('.session-small-measure.yellow', page), fields.top, SMALL, settings);
+    var middle = new Field($('.session-small-measure.blue', page), fields.middle, SMALL, settings);
+    var bottom = new Field($('.session-small-measure.red', page), fields.bottom, SMALL, settings);
+    var large = new Field($('.session-left', page), fields.large, LARGE, settings);
 
 
     // prevent drag using touch during session

@@ -23,7 +23,7 @@ function LoginView(page) {
 
     var $login = $('#facebook', page);
 
-    $login.on('touchstart', function () {
+    $login.off('touchstart').on('touchstart', function () {
 
         Api.Auth.login().done(function () {
 

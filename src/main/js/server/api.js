@@ -1,6 +1,6 @@
 var Utils = require('../utils/utils.js');
 
-var asteroid = new Asteroid("dev.gopaddler.com", true);
+var asteroid = new Asteroid("local.gopaddler.com:3000", false);
 
 /**
  * Load user information from local storage.
@@ -53,24 +53,9 @@ function _remoteLogin() {
 
     if (Utils.isNetworkConnected()) {
 
-        asteroid.loginWithFacebook().then(function () {
+        asteroid.loginWithFacebook().then(function (user) {
 
-            // create a reactive query to fetch the user details (they're not provided by the loginWithFacebook method)
-            asteroid.subscribe('currentUser');
-
-            var users = asteroid.getCollection('users').reactiveQuery({_id: asteroid.userId});
-
-            // the user information is immediately available
-            if (users.result.length > 0) {
-                _finishLogin(defer, users.result[0]);
-                return;
-            }
-
-            // listen to changes in the user object
-            users.on('change', function () {
-                _finishLogin(defer, users.result[0]);
-                users.off('change');
-            });
+            _finishLogin(defer, user);
 
         }).catch(function (err) {
 

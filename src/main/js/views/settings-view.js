@@ -24,17 +24,17 @@ function SettingsView(page, settings) {
         $layout.prop('checked', true);
     }
 
-    $calibration.on('touchstart', function () {
+    $calibration.off('touchstart').on('touchstart', function () {
         App.load('calibration');
     });
 
-    $logout.on('touchend', function () {
+    $logout.off('touchend').on('touchend', function () {
         Api.Auth.logout().done(function () {
             App.load('login');
         });
     });
 
-    $back.on('touchstart', function () {
+    $back.off('touchstart').on('touchstart', function () {
         App.back('home', function () {
         });
     });

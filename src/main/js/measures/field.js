@@ -3,7 +3,7 @@
 var MeasureFactory = require('./measure.js').Measure;
 var utils = require('../utils/utils');
 
-var Field = function(element, type, size, settings) {
+var Field = function(element, type, size, context) {
     var self = this;
     size = size || 'small';
     self.$element = $(element);
@@ -18,7 +18,8 @@ var Field = function(element, type, size, settings) {
     self.positions = [];
     self.measures = {};
     self.current = {};
-    self.displayImperial = settings.isImperial();
+    self.context = context;
+    self.convertToImperial = context.preferences().isImperial();
 
     self.options = {};
 
@@ -56,37 +57,27 @@ Field.DEFAULTS = {
 };
 
 
-var MeasureSpecifics = {
+var FIELD_SETTINGS = {
     timer: {
         label: "Duration",
-        init: '00:00:00'
+        init: '00:00:00',
     },
     speed: {
         label: "Speed",
-        units: { metric: 'Km/h', imperial: 'Mi/h'},
-        decimalPlaces: 1
+        init: 0
     },
     distance: {
         label: "Distance",
-        units: { metric: 'Km', imperial: 'Mi'},
-        decimalPlaces: 1
+        init: 0
     },
     spm: {
         label: "Stroke Rate",
-        units: { metric: "SR/Min", imperial: "SR/Min"},
-        decimalPlaces: 1
+        init: 0
     },
     efficiency: {
-        label: "Stroke Efficiency",
-        units: { metric: "Meter", imperial: "Foot"},
-        decimalPlaces: 1
+        label: "Distance per Stroke",
+        init: 0
     }
-};
-
-var MeasureDefaults = {
-    units: "",
-    // default value
-    init: 0
 };
 
 Field.prototype.init = function (initialType, size) {
@@ -100,13 +91,9 @@ Field.prototype.init = function (initialType, size) {
 
         if (type === initialType) position = i;
 
-        options = $.extend(true, {}, MeasureDefaults, MeasureSpecifics[type]);
-        var units = options.units.metric;
-        if (self.displayImperial) {
-            units = options.units.imperial;
-        }
+        options = FIELD_SETTINGS[type];
 
-        instance = MeasureFactory.get(size, $dom, options.label, units, options.init);
+        instance = MeasureFactory.get(size, $dom, options.label, self.context.getUnit(type, size === 'large'), options.init);
         instance.render();
         self.positions[i] = {position: i, type: type, $dom: $dom, instance: instance};
         self.options[type] = options;
@@ -167,7 +154,7 @@ Field.prototype.getType = function() {
 Field.prototype.convertInValueToDisplay = function (type, value) {
     var self = this;
 
-    if (self.displayImperial) {
+    if (self.convertToImperial) {
         if (type === 'speed')
             value = utils.kmToMiles(value);
         if (type === 'distance')
@@ -176,9 +163,7 @@ Field.prototype.convertInValueToDisplay = function (type, value) {
             value = utils.meterToFeet(value);
     }
 
-    if (self.options[type].decimalPlaces >= 0) {
-        value = utils.round(value, self.options[type].decimalPlaces);
-    }
+    value = utils.round(value, self.context.getUnitDecimalPlaces(type));
 
     return value;
 };
@@ -212,5 +197,3 @@ Field.prototype.setValues = function (values) {
 };
 
 exports.Field = Field;
-
-

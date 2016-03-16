@@ -51,7 +51,8 @@ var ddl = [
     ],
     [
         ["ALTER TABLE session_data add column latitude REAL"],
-        ["ALTER TABLE session_data add column longitude REAL"]
+        ["ALTER TABLE session_data add column longitude REAL"],
+        ["UPDATE settings SET version = 2"]
     ]
 ];
 

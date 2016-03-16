@@ -27,7 +27,7 @@ var DEFAULT_POSITIONS = {
 
 var SMALL = 'small', LARGE = 'large';
 
-function SessionView(page, settings) {
+function SessionView(page, context) {
     var self = this;
     var $page = $(page);
     var calibration = Calibration.load();
@@ -44,16 +44,16 @@ function SessionView(page, settings) {
     document.PREVENT_SYNC = true;
 
     var fields;
-    if (settings.isRestoreLayout()) {
+    if (context.preferences().isRestoreLayout()) {
         fields = loadLayout();
     } else {
         fields = DEFAULT_POSITIONS;
     }
 
-    var top = new Field($('.session-small-measure.yellow', page), fields.top, SMALL, settings);
-    var middle = new Field($('.session-small-measure.blue', page), fields.middle, SMALL, settings);
-    var bottom = new Field($('.session-small-measure.red', page), fields.bottom, SMALL, settings);
-    var large = new Field($('.session-left', page), fields.large, LARGE, settings);
+    var top = new Field($('.session-small-measure.yellow', page), fields.top, SMALL, context);
+    var middle = new Field($('.session-small-measure.blue', page), fields.middle, SMALL, context);
+    var bottom = new Field($('.session-small-measure.red', page), fields.bottom, SMALL, context);
+    var large = new Field($('.session-left', page), fields.large, LARGE, context);
 
 
     // prevent drag using touch during session
@@ -142,7 +142,7 @@ function SessionView(page, settings) {
 
     var back = function () {
 
-        if (settings.isRestoreLayout()) {
+        if (context.preferences().isRestoreLayout()) {
             saveLayout(top.getType(), middle.getType(), bottom.getType(), large.getType());
         } else {
             resetLayout();
@@ -150,15 +150,13 @@ function SessionView(page, settings) {
 
         document.removeEventListener('touchmove', preventDrag, false);
 
-        App.back();
+        App.load('session-summary', session);
     };
 
     var tx = false;
     var clear = function () {
         tx = true;
         document.PREVENT_SYNC = false;
-        session.finish();
-        Dialog.hideModal();
 
         clearInterval(self.intervalId);
         clearInterval(self.speedIntervalId);
@@ -170,7 +168,10 @@ function SessionView(page, settings) {
         if (self.isDebugEnabled)
             self.flushDebugBuffer();
 
-        back();
+        session.finish().then(function () {
+            Dialog.hideModal();
+            back();
+        });
     };
 
     var confirmBeforeExit = function () {

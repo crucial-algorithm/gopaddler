@@ -161,11 +161,11 @@ body {
 }
 
 .big-measure-units {
-    top: 10%;
+    bottom: 10%;
 }
 
 .big-measure-label {
-    bottom: 10%;
+    top: 10%;
 }
 
 .session-small-measure {
@@ -248,6 +248,84 @@ body {
     background-size: 70%;
     color: #fff;
     float: right;
+}
+
+.summary-congrats {
+    display: table-cell;
+    height: 100%;
+    width: 50%;
+    background-color: #EF6156;
+
+}
+
+.summary-stats {
+    display: table-cell;
+    height: 100%;
+    width: 50%;
+    background-color: #3b3d62;
+    padding: 2%;
+    vertical-align: top;
+    text-align: center;
+}
+
+.summary-congrats-title {
+    text-align: center;
+    color: rgba(255,255,255,0.9);
+    margin-top: 23px;
+}
+
+.summary-thumbs-up-icon {
+    fill: #ffffff;
+}
+
+.summary-stats-row {
+    width: 100%;
+    clear: both;
+    height: 20vh;
+}
+
+.summary-stats-left {
+    width: 50%;
+    float: left;
+}
+
+.summary-stats-right {
+    width: 50%;
+    float: right;
+}
+
+.summary-thumbs-up {
+    width: 45%;
+    text-align: center;
+    padding-left: 25%;
+}
+
+.summary-label {
+    color: rgba(255,255,255,0.9);
+    line-height: 20px;
+}
+
+.summary-value {
+    height: 10vh;
+    color: #ffffff;
+}
+
+.summary-value > b {
+    font-size: 6vh;
+}
+
+.summary-congrats-session {
+    color: rgba(255,255,255,0.9);
+    text-align: center;
+    margin-top: 5%;
+}
+
+.summary-finish-btn {
+    vertical-align: middle;
+    display: table-cell;
+    text-transform: uppercase;
+    background-color: #9EACAD;
+    padding: 15px;
 }
 
 .session-controls-outer-text {

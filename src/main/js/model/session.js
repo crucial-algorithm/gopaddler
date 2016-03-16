@@ -123,6 +123,24 @@ Session.prototype.getTopSpeed = function () {
     return this.topSpeed;
 };
 
+Session.prototype.setTopEfficiency = function(value) {
+    this.topEfficiency = value;
+}
+
+
+// TODO: create efficiency fields in table
+Session.prototype.getTopEfficiency = function(){
+    return this.topEfficiency;
+}
+
+Session.prototype.setAvgEfficiency = function(value) {
+    this.topEfficiency = value;
+}
+
+Session.prototype.getAvgEfficiency = function(){
+    return this.topEfficiency;
+}
+
 Session.prototype.setDistance = function (distance) {
     this.distance = distance;
 };
@@ -201,25 +219,36 @@ Session.prototype.create = function () {
 };
 
 Session.prototype.finish = function () {
-    var self = this;
+    var self = this, defer = $.Deferred();
     self.connection.executeSql("select max(distance) total_distance, avg(speed) avg_speed, max(speed) max_speed, avg(spm) avg_spm, max(spm) top_spm " +
-        "FROM session_data where session = ?", [self.id], function (res) {
+        " max(efficiency) max_ef, avg(efficiency) avg_ef FROM session_data where session = ?", [self.id], function (res) {
 
         var record = res.rows.item(0);
 
+        self.setSessionEnd(new Date().getTime());
+        self.setDistance(record.total_distance);
+        self.setAvgSpeed(record.avg_speed);
+        self.setTopSpeed(record.max_speed);
+        self.setAvgSpm(record.avg_spm);
+        self.setTopSpm(record.top_spm);
+        self.setAvgEfficiency(record.max_ef);
+        self.setTopEfficiency(record.max_ef);
+
         self.connection.executeSql("update session set distance = ?, avg_spm = ?, top_spm = ?, avg_speed = ?, top_speed = ?, session_end = ? where id = ?"
-            , [record.total_distance, record.avg_spm, record.top_spm, record.avg_speed, record.max_speed, new Date().getTime(), self.id]
+            , [record.total_distance, record.avg_spm, record.top_spm, record.avg_speed, record.max_speed, self.getSessionEnd(), self.id]
             , function (a) {
-                console.log('success', a);
+                defer.resolve(this);
             }, function (a) {
                 console.log('error', a);
+                defer.reject(this);
             })
 
 
     }, function (error) {
         console.log('Error creating session: ' + error.message);
+        defer.reject(this);
     });
-    return this;
+    return defer;
 };
 
 Session.delete = function (id) {

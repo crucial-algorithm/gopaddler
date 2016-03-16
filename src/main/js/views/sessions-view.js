@@ -3,7 +3,7 @@
 var utils = require('../utils/utils.js');
 var Session = require('../model/session').Session;
 
-function SessionsView(page, settings) {
+function SessionsView(page, context) {
     var self = this, $back = $('.back-button', page), $page = $(page), nbr = 0;
 
     $back.on('touchstart', function () {
@@ -58,22 +58,18 @@ function SessionsView(page, settings) {
             hours = duration.hours();
             minutes = duration.minutes();
 
-            if (hours > 0)
-                dDisplay = hours + 'h' + utils.lpad(minutes, 2);
-            else
-                dDisplay = utils.lpad(minutes, 2) + "m";
+            dDisplay = utils.lpad(hours, 2) + ':' + utils.lpad(minutes, 2) + ' H';
 
-            var distance = sessions[i].getDistance(), units = 'km';
-            if (settings.isImperial()) {
+            var distance = sessions[i].getDistance();
+            if (context.preferences().isImperial()) {
                 distance = utils.kmToMiles(distance);
-                units = 'mi';
             }
 
             $('<div class="session-row-data"></div>')
                 .append($("<div style=\"display:table-cell\"/>").html(sessionAt.format("MMM D")))
                 .append($("<div style=\"display:table-cell\"/>").html(sessionAt.format("hh:mm:ss")))
                 .append($("<div style=\"display:table-cell;text-transform:none\"/>").html(dDisplay))
-                .append($("<div style=\"display:table-cell\"/>").html('<b>' + utils.round2(distance || 0) + " " + units + "</b>"))
+                .append($("<div style=\"display:table-cell\"/>").html('<b>' + utils.round2(distance || 0) + " " + context.getUnit('distance') + "</b>"))
                 .appendTo($main)
             ;
 

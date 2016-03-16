@@ -1,6 +1,7 @@
 'use strict';
 
 var SessionView = require('./views/session-view.js').SessionView;
+var SessionSummaryView = require('./views/session-summary.js').SessionSummaryView;
 var SettingsView = require('./views/settings-view.js').SettingsView;
 var HomeView = require('./views/home-view.js').HomeView;
 var LoginView = require('./views/login-view.js').LoginView;
@@ -13,8 +14,10 @@ var db = require('./db.js');
 var sync = require('./server/sync.js');
 var analytics = require('./utils/analytics.js');
 var Settings = require('./model/settings');
+var Context = require('./context').Context;
 
 var settings = undefined;
+var context = undefined;
 
 
 /**
@@ -32,9 +35,11 @@ App.controller('home', function (page) {
     screen.lockOrientation('landscape');
     Settings.loadSettings().then(function (s) {
         settings = s;
+        context = new Context(settings);
         new HomeView(page);
     }).fail(function (error, defaultSettings) {
             settings = defaultSettings;
+            context = new Context(settings);
         });
 });
 
@@ -43,7 +48,12 @@ App.controller('home', function (page) {
  */
 App.controller('session', function (page) {
     analytics.setView('session');
-    new SessionView(page, settings);
+    new SessionView(page, context);
+});
+
+App.controller('session-summary', function (page, session) {
+    analytics.setView('session-summary');
+    new SessionSummaryView(page, context, session);
 });
 
 /**
@@ -59,7 +69,7 @@ App.controller('settings', function (page) {
  */
 App.controller('sessions', function (page) {
     analytics.setView('sessions');
-    new SessionsView(page, settings);
+    new SessionsView(page, context);
 });
 
 /**

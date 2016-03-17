@@ -220,7 +220,7 @@ Session.prototype.create = function () {
 
 Session.prototype.finish = function () {
     var self = this, defer = $.Deferred();
-    self.connection.executeSql("select max(distance) total_distance, avg(speed) avg_speed, max(speed) max_speed, avg(spm) avg_spm, max(spm) top_spm " +
+    self.connection.executeSql("select max(distance) total_distance, avg(speed) avg_speed, max(speed) max_speed, avg(spm) avg_spm, max(spm) top_spm, " +
         " max(efficiency) max_ef, avg(efficiency) avg_ef FROM session_data where session = ?", [self.id], function (res) {
 
         var record = res.rows.item(0);

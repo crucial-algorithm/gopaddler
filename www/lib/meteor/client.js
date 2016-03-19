@@ -30,14 +30,22 @@ Asteroid.prototype.loginWithFacebook = function (permissions) {
         }
     };
 
-    facebookConnectPlugin.login(permissions || ["public_profile", "email"], function (data) {
+    var loginToMeteor = function (data) {
         self.call('Asteroid.loginWithFacebook', data).result.then(function (res) {
             done(null, res);
         }, function (err) {
             done(new Error(error.reason))
         });
-    }, function (err) {
-        done(new Error(err.errorMessage));
+    };
+
+    facebookConnectPlugin.getLoginStatus(function success(response) {
+        if (response.status === 'connected') {
+            loginToMeteor(response);
+        } else {
+            facebookConnectPlugin.login(permissions || ["public_profile", "email"], loginToMeteor, function (err) {
+                done(new Error(err.errorMessage));
+            });
+        }
     });
 
     return deferred.promise;

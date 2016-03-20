@@ -1,5 +1,7 @@
 'use strict';
 
+var utils = require('./utils/utils');
+
 
 var units = {
 
@@ -14,7 +16,7 @@ var units = {
         },
         distance: {
             label: {regular: "Km", large: "Km"},
-            decimalPlaces: 1
+            decimalPlaces: 2
         },
         spm: {
             label: {regular: "SPM", large: "SPM"},
@@ -52,11 +54,12 @@ var units = {
 
 function Context(settings) {
     this._settings = settings;
+    this._system = this._settings.isImperial() ? 'imperial' : 'metric';
 }
 
 Context.prototype.preferences = function () {
     return this._settings;
-}
+};
 
 /**
  *
@@ -65,10 +68,9 @@ Context.prototype.preferences = function () {
  * @returns {*}
  */
 Context.prototype.getUnit = function (type, large) {
-    var system = this._settings.isImperial() ? 'imperial' : 'metric';
     var size = large === true ? "large" : "regular";
 
-    return units[system][type].label[size];
+    return units[this._system][type].label[size];
 };
 
 /**
@@ -77,10 +79,17 @@ Context.prototype.getUnit = function (type, large) {
  * @returns {*}
  */
 Context.prototype.getUnitDecimalPlaces = function (type) {
-    var system = this._settings.isImperial() ? 'imperial' : 'metric';
-
-    return units[system][type].decimalPlaces;
+    return units[this._system][type].decimalPlaces;
 };
 
+Context.prototype.displayMetric = function (type, value) {
+    if (units[this._system][type] === undefined) {
+        throw 'unkown field type - ' + type;
+    }
+
+    if (isNaN(value)) return 0;
+
+    return utils.round(value, this.getUnitDecimalPlaces(type));
+};
 
 exports.Context = Context;

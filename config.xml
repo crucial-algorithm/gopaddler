@@ -34,7 +34,7 @@
     <preference name="StatusBarOverlaysWebView" value="true" />
 
     <platform name="android">
-        <preference name="AndroidLaunchMode" value="singleTop"/>
+        <preference name="AndroidLaunchMode" value="singleTop" />
 
         <icon src="res/android/ic_launcher-mhdpi.png" density="mdpi" />
         <icon src="res/android/ic_launcher-hdpi.png" density="hdpi" />
@@ -96,13 +96,17 @@
         <splash src="res/ios/screen/Default-1242@3x~iphone6s-landscape.png" width="2208" height="1242"/>
     </platform>
 
-    <preference name="FadeSplashScreen" value="false"/>
+    <preference name="FadeSplashScreen" value="false" />
     <preference name="AutoHideSplashScreen" value="true" />
 
-    <preference name="BackupWebStorage" value="local"/>
+    <preference name="BackupWebStorage" value="local" />
 
     <preference name="android-minSdkVersion" value="15" />
     <preference name="android-targetSdkVersion" value="19" />
 
     <preference name="DisallowOverscroll" value="true" />
+    <plugin name="cordova-plugin-facebook4" spec="~1.7.0">
+        <variable name="APP_ID" value="529853143847598" />
+        <variable name="APP_NAME" value="GoPaddler" />
+    </plugin>
 </widget>

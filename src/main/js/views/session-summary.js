@@ -21,14 +21,22 @@ function SessionSummaryView(page, context, session) {
     var durationFormatted = utils.lpad(duration.hours(), 2)
         + ':' + utils.lpad(duration.minutes(), 2) + ":" + utils.lpad(duration.seconds(), 2);
 
+    var distance = context.displayMetric('distance', session.getDistance());
+    var avgSpeed = context.displayMetric('speed', session.getAvgSpeed());
+    var maxSpeed = context.displayMetric('speed', session.getTopSpeed());
+    var avgSPM = context.displayMetric('spm', session.getAvgSpm());
+    var maxSPM = context.displayMetric('spm', session.getTopSpm());
+    var avgEfficiency = context.displayMetric('efficiency', session.getAvgEfficiency());
+    var maxEfficiency = context.displayMetric('efficiency', session.getTopEfficiency());
+
     $duration.html('<b>' + durationFormatted + '</b>' + ' H');
-    $distance.html('<b>' + (session.getDistance() || 0) + '</b> ' + context.getUnit('distance'));
-    $avgSpeed.html('<b>' + (session.getAvgSpeed() || 0) + '</b> ' + context.getUnit('speed'));
-    $maxSpeed.html('<b>' + (session.getTopSpeed() || 0) + '</b> ' + context.getUnit('speed'));
-    $avgSPM.html('<b>' + (session.getAvgSpm() || 0) + '</b> ' + context.getUnit('spm'));
-    $maxSPM.html('<b>' + (session.getTopSpm() || 0) + '</b> ' + context.getUnit('spm'));
-    $avgEfficiency.html('<b>' + (session.getAvgEfficiency() || 0) + '</b> ' + context.getUnit('efficiency'));
-    $maxEfficiency.html('<b>' + (session.getTopEfficiency() || 0) + '</b> ' + context.getUnit('efficiency'));
+    $distance.html('<b>' + distance + '</b> ' + context.getUnit('distance'));
+    $avgSpeed.html('<b>' + avgSpeed + '</b> ' + context.getUnit('speed'));
+    $maxSpeed.html('<b>' + maxSpeed + '</b> ' + context.getUnit('speed'));
+    $avgSPM.html('<b>' + avgSPM + '</b> ' + context.getUnit('spm'));
+    $maxSPM.html('<b>' + maxSPM + '</b> ' + context.getUnit('spm'));
+    $avgEfficiency.html('<b>' + avgEfficiency + '</b> ' + context.getUnit('efficiency'));
+    $maxEfficiency.html('<b>' + maxEfficiency + '</b> ' + context.getUnit('efficiency'));
 
     $finish.on('click', function () {
         App.destroyStack();

@@ -92,4 +92,8 @@ Calibration.load = function () {
     return new Calibration(obj.predominant, obj.angleZ, obj.noiseX, obj.noiseY, obj.noiseZ, obj.factorX, obj.factorZ);
 }
 
+Calibration.blank = function () {
+    return new Calibration(0, 0, 0, 0, 0, 0, 0);
+}
+
 exports.Calibration = Calibration;

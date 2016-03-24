@@ -7,6 +7,7 @@ var HomeView = require('./views/home-view.js').HomeView;
 var LoginView = require('./views/login-view.js').LoginView;
 var SessionsView = require('./views/sessions-view.js').SessionsView;
 var CalibrationView = require('./views/calibration-view.js').CalibrationView;
+var SessionTipsView = require('./views/session-tips-view.js').SessionTipsView;
 var Api = require('./server/api');
 var utils = require('./utils/utils.js');
 var global = require('./global.js');
@@ -36,7 +37,7 @@ App.controller('home', function (page) {
     Settings.loadSettings().then(function (s) {
         settings = s;
         context = new Context(settings);
-        new HomeView(page);
+        new HomeView(page, context);
     }).fail(function (error, defaultSettings) {
             settings = defaultSettings;
             context = new Context(settings);
@@ -78,6 +79,14 @@ App.controller('sessions', function (page) {
 App.controller('calibration', function (page) {
     analytics.setView('calibration');
     new CalibrationView(page);
+});
+
+/**
+ * Pause and swipe session tutorial page.
+ */
+App.controller('session-basic-touch-tutorial', function (page) {
+    analytics.setView('session-touch-tips-tutorial');
+    new SessionTipsView(page, context);
 });
 
 function onDeviceReady() {

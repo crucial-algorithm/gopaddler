@@ -52,6 +52,7 @@ var ddl = [
     [
         ["ALTER TABLE session_data add column latitude REAL"],
         ["ALTER TABLE session_data add column longitude REAL"],
+        ["ALTER TABLE settings add column show_touch_events_tips boolean default true"],
         ["UPDATE settings SET version = 2"]
     ]
 ];

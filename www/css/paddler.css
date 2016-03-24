@@ -125,6 +125,75 @@ body {
     background-image: url(../images/settings.svg);
 }
 
+.no-calibration-modal-body {
+    background-color: #3b3d62;
+    color: #ffffff;
+    width: 80%;
+    margin: auto;
+}
+
+.no-calibration-modal-title {
+    text-align: center;
+    vertical-align: middle;
+    font-weight: bold;
+
+}
+.no-calibration-modal-content {
+    padding: 2% 2% 0 2%;
+}
+
+.no-calibration-modal-controls {
+    display: table;
+    width: 100%;
+}
+
+.no-calibration-modal-skip-btn {
+    display: table-cell;
+    width: 50%;
+    text-align: center;
+    text-transform: uppercase;
+    background-color: #7E8C8D;
+}
+
+.no-calibration-modal-calibrate-btn {
+    display: table-cell;
+    text-align: center;
+    background-color: #F59146;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.tips-slideshow {
+    background-color: #3b3d62;
+    color: #ffffff;
+    width: 100%;
+}
+
+.gestures-tip-icon {
+    width: 50%;
+    float:left;
+}
+.gestures-tip-caption {
+    width: 50%;
+    float: right;
+    line-height: 100%;
+    padding-top: 15%;
+    font-size: 38px;
+}
+
+.gestures-got-it {
+    position: fixed;
+    top: 85vh;
+    right: 2%;
+    background-color: #EF6156;
+    height: 10vh;
+    width: 18vw;
+    text-transform: uppercase;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 10vh;
+}
+
 .session-left {
     float: left;
     height: 100%;
@@ -669,4 +738,29 @@ body {
 
 div[aria-live="polite"],  div[aria-live="polite"] > .slick-track{
     height: 100%;
+}
+
+.slick-dots {
+    position: fixed;
+    bottom: 20px;
+    left: 45%;
+}
+
+.slick-dots li {
+    width: 10px;
+    height: 10px;
+    display: inline-block;
+    background: none !important;
+    cursor: pointer;
+    text-indent: -9999px;
+    box-shadow: none !important;
+    border: 3px solid rgba(255, 255, 255, .3);
+    border-radius: 25px;
+    margin: 0 2px;
+}
+
+.slick-dots li.slick-active {
+    background: rgba(255, 255, 255, 0.7) !important;
+    cursor: default !important;
+    border: 3px solid rgba(255, 255, 255, 0);
 }

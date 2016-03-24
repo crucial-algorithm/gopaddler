@@ -6,20 +6,29 @@ var $modal = undefined;
  *
  *
  * @param $content
- * @param color override backdrop color
+ * @param options
  */
-function showModal($content, color) {
+function showModal($content, options) {
     if ($modal) {
         $modal.remove()
     }
     $modal = $('<div id="modal" class="dialog-overlay"></div>');
-    if (color) {
-        $modal.css({"background-color": color});
+
+    options = options || {};
+
+    // override background color
+    if (options.color) {
+        $modal.css({"background-color": options.color});
     }
     $modal.append($content);
+
+    // check if we want to center content in page
+    if (options.center === true) {
+        setTimeout(function () {
+            $content.center();
+        }, 0);
+    }
     $modal.appendTo($('body'));
-
-
 }
 
 function hideModal() {

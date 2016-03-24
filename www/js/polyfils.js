@@ -12,6 +12,10 @@ new vUnit({
             property: 'font-size',
             reference: 'vh'
         },
+        '.vw_width': {
+            property: 'width',
+            reference: 'vw'
+        },
         '.vh_height': {
             property: 'height',
             reference: 'vh'
@@ -35,7 +39,16 @@ new vUnit({
         '.vh_padding-bottom': {
             property: 'padding-bottom',
             reference: 'vh'
+        },
+        '.vh_line-height': {
+            property: 'line-height',
+            reference: 'vh'
+        },
+        '.vh_margin-top': {
+            property: 'margin-top',
+            reference: 'vh'
         }
+
     },
     onResize: function() {
         console.log('A screen resize just happened, yo.');

@@ -7,47 +7,61 @@ var CONSTANTS  = {
     MI: 'M'
 };
 
-function Settings(version, units, syncOnlyOnWifi, restoreLayout) {
+function Settings(version, units, syncOnlyOnWifi, restoreLayout, showTouchGestures) {
     this._version = version;
     this._units = units;
     this._syncOnlyOnWifi = syncOnlyOnWifi;
     this._restoreLayout = restoreLayout;
+    this._showTouchGestures = showTouchGestures === undefined ? true : showTouchGestures;
 }
 
 Settings.prototype.getVersion = function() {
     return this._version;
-}
+};
 
 Settings.prototype.setVersion = function(version) {
     this._version = version;
-}
+};
 
 Settings.prototype.getUnits = function() {
     return this._units;
-}
+};
 
 Settings.prototype.setUnits = function(units) {
     this._units = units;
-}
+};
 
 Settings.prototype.isImperial = function(){
     return this._units === CONSTANTS.MI;
-}
+};
 
 Settings.prototype.isSyncOnlyOnWifi = function() {
     return this._syncOnlyOnWifi;
-}
+};
 
 Settings.prototype.setSyncOnlyOnWifi = function(syncOnlyOnWifi) {
     this._syncOnlyOnWifi = syncOnlyOnWifi;
-}
+};
 
 Settings.prototype.isRestoreLayout = function() {
     return this._restoreLayout;
-}
+};
 
 Settings.prototype.setRestoreLayout = function(restoreLayout) {
     this._restoreLayout = restoreLayout;
+};
+
+Settings.prototype.isShowTouchGestures = function () {
+    return this._showTouchGestures;
+};
+
+Settings.prototype.setShowTouchGestures = function (showTouchGestures) {
+    this._showTouchGestures = showTouchGestures;
+};
+
+Settings.prototype.touchGesturesShown = function () {
+    var connection = db.getConnection();
+    connection.executeSql("update settings set show_touch_events_tips = ?", [true]);
 }
 
 

@@ -92,4 +92,19 @@ Context.prototype.displayMetric = function (type, value) {
     return utils.round(value, this.getUnitDecimalPlaces(type));
 };
 
+/**
+ * navigate to target
+ * @param target
+ * @param clear
+ */
+Context.prototype.navigate = function (target, clear) {
+    if (target === 'session' && this._settings.isShowTouchGestures()) {
+        target = 'session-basic-touch-tutorial';
+    }
+
+    if (clear === true) App.destroyStack();
+
+    App.load(target);
+};
+
 exports.Context = Context;

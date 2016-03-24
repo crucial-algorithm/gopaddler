@@ -30,7 +30,7 @@ var SMALL = 'small', LARGE = 'large';
 function SessionView(page, context) {
     var self = this;
     var $page = $(page);
-    var calibration = Calibration.load();
+    var calibration = Calibration.load() || Calibration.blank();
     var session = self.createSession(calibration);
     var gps = new GPS();
     var distance = new Distance();
@@ -243,7 +243,7 @@ function SessionView(page, context) {
                 });
 
                 // try to prevent touch move on android, by placing a fixed backdrop on top of the animation
-                Dialog.showModal($('<div/>'), ' rgba(0,0,0,0.1)');
+                Dialog.showModal($('<div/>'), {color: ' rgba(0,0,0,0.1)'});
             }
         }(lastEvent), 450);
     });
@@ -337,7 +337,7 @@ SessionView.prototype.confirm = function (onresume, onfinish) {
         '</div></div></div>');
 
     $controls.append($finish).append($resume);
-    Dialog.showModal($controls);
+    Dialog.showModal($controls, {});
 
     // make height equal to width and adjust margin accordingly
     var displayHeight = $controls.height();

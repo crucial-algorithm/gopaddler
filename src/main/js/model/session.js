@@ -231,7 +231,7 @@ Session.prototype.finish = function () {
         self.setTopSpeed(record.max_speed);
         self.setAvgSpm(record.avg_spm);
         self.setTopSpm(record.top_spm);
-        self.setAvgEfficiency(record.max_ef);
+        self.setAvgEfficiency(record.avg_ef);
         self.setTopEfficiency(record.max_ef);
 
         self.connection.executeSql("update session set distance = ?, avg_spm = ?, top_spm = ?, avg_speed = ?, top_speed = ?, session_end = ? where id = ?"

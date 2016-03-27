@@ -38,7 +38,7 @@ function SessionSummaryView(page, context, session) {
     $avgEfficiency.html('<b>' + avgEfficiency + '</b> ' + context.getUnit('efficiency'));
     $maxEfficiency.html('<b>' + maxEfficiency + '</b> ' + context.getUnit('efficiency'));
 
-    $finish.on('click', function () {
+    $finish.on('tap', function () {
         App.destroyStack();
         App.load('home');
 

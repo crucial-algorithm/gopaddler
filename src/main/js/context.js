@@ -96,15 +96,20 @@ Context.prototype.displayMetric = function (type, value) {
  * navigate to target
  * @param target
  * @param clear
+ * @param args
  */
-Context.prototype.navigate = function (target, clear) {
+Context.prototype.navigate = function (target, clear, args) {
     if (target === 'session' && this._settings.isShowTouchGestures()) {
         target = 'session-basic-touch-tutorial';
     }
 
+    if (target === 'calibration' && this._settings.isShowCalibrationTips()) {
+        target = 'calibration-help';
+    }
+
     if (clear === true) App.destroyStack();
 
-    App.load(target);
+    App.load(target, args);
 };
 
 exports.Context = Context;

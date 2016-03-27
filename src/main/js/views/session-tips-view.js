@@ -4,7 +4,7 @@
 function SessionTipsView(page, context) {
     var $page = $(page)
         , $content = $page.find('[data-selector="slick"]')
-        , $gotIt = $page.find('.gestures-got-it');
+        , $gotIt = $page.find('.got-it');
 
     setTimeout(function () {
         $content.slick({

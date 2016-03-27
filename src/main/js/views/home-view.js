@@ -5,33 +5,42 @@ var Session = require('../model/session.js').Session;
 var Api = require('../server/api');
 var Dialog = require('../utils/dialog');
 
-function HomeView(page, context) {
+function HomeView(page, context, request) {
+    request = request || {};
 
-    $('#btn-sessions', page).on('tap', function () {
+    var $page = $(page)
+        , self = this
+        , $sessions = $page.find('#btn-sessions')
+        , $session = $page.find('#btn-session')
+        , $settings = $page.find('#btn-settings')
+        ;
+
+    self.$homeLastRecord = $page.find('.home-last-record');
+    self.$homeLastRecordDate = $page.find('.home-last-record-date');
+
+    $sessions.on('tap', function () {
         App.load('sessions');
     });
 
-    $('#btn-session', page).on('tap', function () {
+    $session.on('tap', function () {
         var calibration = Calibration.load();
         if (calibration === undefined) {
             showNoCalibrationModal($(page), context);
             return false;
         }
-        App.load('session');
+        context.navigate('session', false, undefined);
     });
 
-    $('#btn-settings', page).on('tap', function () {
+    $settings.on('tap', function () {
         App.load('settings');
     });
 
-    $('.home-username-bold', page).html(Api.User.getProfile().name);
+    $page.find('.home-username-bold').html(Api.User.getProfile().name);
 
-    Session.last().then(function (session) {
-        if (session === undefined) {
-            $('.home-last-record', page).html('No sessions yet');
-        } else {
-            $('.home-last-record-date', page).html(moment(session.getSessionStart()).format('MMM D'));
-        }
+    self.updateLastSessionDate();
+
+    $page.on('appShow', function () {
+        self.updateLastSessionDate();
     });
 
     // store device information
@@ -46,26 +55,45 @@ function HomeView(page, context) {
         serial: device.serial,
         paddler: "0.6.0"
     });
+
+
+    // check if we are comming from calibration and show dialog if that's the case
+   if (request.from === 'calibration') {
+       showFirstCalibrationCompletedModal($(page), context);
+   }
 };
+
+HomeView.prototype.updateLastSessionDate = function () {
+    var self = this;
+    Session.last().then(function (session) {
+        if (session === undefined) {
+            self.$homeLastRecord.html('No sessions yet');
+        } else {
+            self.$homeLastRecordDate.html(moment(session.getSessionStart()).format('MMM D'));
+        }
+    });
+};
+
+
 
 function showNoCalibrationModal($page, context) {
     var html = [
-        '<div class="no-calibration-modal-body">',
-            '<div class="no-calibration-modal-title vh_height10 vh_line-height10">No calibration found</div>',
-            '<div class="no-calibration-modal-content vh_height26"">',
+        '<div class="info-modal-body">',
+            '<div class="info-modal-title vh_height10 vh_line-height10">No calibration found</div>',
+            '<div class="info-modal-content vh_height26"">',
                 '<p style="text-align: center">Before you start, we need to adjust to your mount system!</p>',
                 '<p class="vh_line-height11" style="text-align: center">Don\'t worry - it will only take a few seconds...</p>',
             '</div>',
-            '<div class="no-calibration-modal-controls vh_height15 vh_line-height15">',
-                '<div class="no-calibration-modal-skip-btn">Ignore SPM</div>',
-                '<div class="no-calibration-modal-calibrate-btn">Calibrate</div>',
+            '<div class="info-modal-controls vh_height15 vh_line-height15">',
+                '<div class="info-modal-secondary-action">Try it</div>',
+                '<div class="info-modal-primary-action">Calibrate</div>',
             '</div>',
         '</div>'
     ];
 
     var $body = $(html.join(''))
-        , $skip = $body.find('.no-calibration-modal-skip-btn')
-        , $calibrate = $body.find('.no-calibration-modal-calibrate-btn');
+        , $skip = $body.find('.info-modal-secondary-action')
+        , $calibrate = $body.find('.info-modal-primary-action');
 
     $skip.on('tap', function () {
         Dialog.hideModal();
@@ -75,10 +103,35 @@ function showNoCalibrationModal($page, context) {
 
     $calibrate.on('tap', function () {
         Dialog.hideModal();
-        context.navigate('calibration', true);
+        context.navigate('calibration', true, {from: "start-session"});
     });
 
     Dialog.showModal($body, {center: true});
 }
+
+function showFirstCalibrationCompletedModal($page, context) {
+    var html = [
+        '<div class="info-modal-body">',
+        '<div class="info-modal-title vh_height10 vh_line-height10">Calibration completed</div>',
+        '<div class="info-modal-content vh_height26"">',
+        '<p style="text-align: center">Thanks... now you can go ahead and start a new session</p>',
+        '</div>',
+        '<div class="info-modal-controls vh_height15 vh_line-height15">',
+        '<div class="info-modal-primary-action">OK</div>',
+        '</div>',
+        '</div>'
+    ];
+
+    var $body = $(html.join(''))
+        , $ok = $body.find('.info-modal-primary-action');
+
+    $ok.on('tap', function () {
+        Dialog.hideModal();
+    });
+
+    Dialog.showModal($body, {center: true});
+}
+
+
 
 exports.HomeView = HomeView;

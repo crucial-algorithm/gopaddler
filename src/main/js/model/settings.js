@@ -7,12 +7,13 @@ var CONSTANTS  = {
     MI: 'M'
 };
 
-function Settings(version, units, syncOnlyOnWifi, restoreLayout, showTouchGestures) {
+function Settings(version, units, syncOnlyOnWifi, restoreLayout, showTouchGestures, showCalibrationTips) {
     this._version = version;
     this._units = units;
     this._syncOnlyOnWifi = syncOnlyOnWifi;
     this._restoreLayout = restoreLayout;
     this._showTouchGestures = showTouchGestures === undefined ? true : showTouchGestures;
+    this._showCalibrationTips = showCalibrationTips === undefined ? true : showCalibrationTips;
 }
 
 Settings.prototype.getVersion = function() {
@@ -59,9 +60,26 @@ Settings.prototype.setShowTouchGestures = function (showTouchGestures) {
     this._showTouchGestures = showTouchGestures;
 };
 
+Settings.prototype.isShowCalibrationTips = function () {
+    return this._showCalibrationTips;
+};
+
+Settings.prototype.setShowCalibrationTips = function (showCalibrationTips) {
+    this._showCalibrationTips = showCalibrationTips;
+};
+
+
+
 Settings.prototype.touchGesturesShown = function () {
     var connection = db.getConnection();
-    connection.executeSql("update settings set show_touch_events_tips = ?", [true]);
+    connection.executeSql("update settings set show_touch_events_tips = ?", [0]);
+    this.setShowTouchGestures(false);
+}
+
+Settings.prototype.calibrationTipsShown = function () {
+    var connection = db.getConnection();
+    connection.executeSql("update settings set show_calibration_tips = ?", [0]);
+    this.setShowCalibrationTips(false);
 }
 
 
@@ -71,7 +89,7 @@ function loadSettings() {
 
     connection.executeSql("SELECT * FROM settings", [], function success(res) {
         var row = res.rows.item(0);
-        defer.resolve(new Settings(row.version, row.units, row.sync_wifi, row.restore_layout));
+        defer.resolve(new Settings(row.version, row.units, row.sync_wifi, row.restore_layout, row.show_touch_events_tips === 1, row.show_calibration_tips === 1));
     }, function error(e) {
         console.log('error loding settings... defaulting');
         defer.reject(err, new Settings(-1, CONSTANTS.KM, true, true));

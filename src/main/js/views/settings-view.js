@@ -10,6 +10,7 @@ function SettingsView(page, settings) {
         , $page = $(page)
         , $units = $('#pick-units', page)
         , $wifi = $('#wifi', page)
+        , $calibrationHelp = $('.settings-calibrate-help', page)
         , $layout = $('#layout', page);
 
     if (settings.getUnits() === Settings.CONSTANTS.MI) {
@@ -24,17 +25,21 @@ function SettingsView(page, settings) {
         $layout.prop('checked', true);
     }
 
-    $calibration.off('touchstart').on('touchstart', function () {
+    $calibration.on('tap', function () {
         App.load('calibration');
     });
 
-    $logout.off('touchend').on('touchend', function () {
+    $calibrationHelp.on('tap', function () {
+        App.load('calibration-help');
+    });
+
+    $logout.on('tap', function () {
         Api.Auth.logout().done(function () {
             App.load('login');
         });
     });
 
-    $back.off('touchstart').on('touchstart', function () {
+    $back.on('tap', function () {
         App.back('home', function () {
         });
     });

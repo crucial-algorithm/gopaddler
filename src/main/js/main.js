@@ -34,7 +34,7 @@ App.controller('login', function (page) {
 App.controller('home', function (page, request) {
     analytics.setView('home');
     analytics.setUser(Api.User.getId());
-    screen.lockOrientation('landscape');
+    screen.lockOrientation('landscape-secondary');
     Settings.loadSettings().then(function (s) {
         settings = s;
         context = new Context(settings);

@@ -53,6 +53,10 @@ function SettingsView(page, settings) {
 
     $('[data-selector="version"]', page).html("v. 0.6.0 / u. " + Api.User.getId());
 
+    $('.settings-website-text', page).on('click', function () {
+        window.open('https://app.gopaddler.com/', '_system');
+    });
+
     $page.on('appBeforeBack', function (e) {
         var units = $units.is(':checked') ? Settings.CONSTANTS.MI : Settings.CONSTANTS.KM;
         var wifi = $wifi.is(':checked') ;

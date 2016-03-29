@@ -6,7 +6,7 @@ function lpad(value, places) {
     return pad.substring(0, pad.length - str.length) + str;
 }
 function round(value, decimalPlaces) {
-    if (decimalPlaces === 0) return value;
+    if (decimalPlaces === 0) return Math.round(value);
 
     var precision = Math.pow(10, decimalPlaces);
     return Math.round(value * precision) / precision;

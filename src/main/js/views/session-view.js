@@ -13,6 +13,7 @@ var StrokeDetector = require('../core/stroke-detector').StrokeDetector;
 var Timer = require('../measures/timer').Timer;
 var Distance = require('../measures/distance').Distance;
 var Speed = require('../measures/speed').Speed;
+var Pace = require('../measures/pace').Pace;
 
 var StrokeEfficiency = require('../measures/efficiency').StrokeEfficiency;
 
@@ -35,6 +36,7 @@ function SessionView(page, context) {
     var gps = new GPS();
     var distance = new Distance();
     var speed = new Speed();
+    var pace = new Pace(context.preferences().isImperial());
     var strokeEfficiency = new StrokeEfficiency();
     var strokeDetector = new StrokeDetector(session, calibration, null, self.debug(session));
     var paused = false;
@@ -69,9 +71,7 @@ function SessionView(page, context) {
 
 
     $(window).on('touchmove', function (e) {
-        if (true) {
-            e.preventDefault();
-        }
+        e.preventDefault();
     });
 
 
@@ -111,6 +111,7 @@ function SessionView(page, context) {
 
         values.speed = lastDisplayedSpeed = speed.getValue();
         values.efficiency = lastEfficiency = strokeEfficiency.calculate(values.speed, lastInterval);
+        values.pace = pace.calculate(values.speed);
 
         top.setValues(values);
         middle.setValues(values);

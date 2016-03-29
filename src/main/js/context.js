@@ -8,7 +8,7 @@ var units = {
     metric: {
         timer: {
             label: {regular: "", large: ""},
-            decimalPlaces: 0
+            round: false
         },
         speed: {
             label: {regular: "Km/h", large: "Km/h"},
@@ -25,12 +25,16 @@ var units = {
         efficiency: {
             label: {regular: "m", large: "meters"},
             decimalPlaces: 1
+        },
+        pace: {
+            label: {regular: "Min/Km", large: "Min/Km"},
+            round: false
         }
     },
     imperial: {
         timer: {
             label: {regular: "", large: ""},
-            decimalPlaces: 0
+            round: false
         },
         speed: {
             label: {regular: "Mi/h", large: "Mi/h"},
@@ -47,6 +51,10 @@ var units = {
         efficiency: {
             label: {regular: "ft", large: "ft"},
             decimalPlaces: 1
+        },
+        pace: {
+            label: {regular: "Min/Mi", large: "Min/Mi"},
+            round: false
         }
     }
 };
@@ -72,6 +80,15 @@ Context.prototype.getUnit = function (type, large) {
 
     return units[this._system][type].label[size];
 };
+
+/**
+ * Should we round this type?
+ * @param type
+ * @returns {boolean}
+ */
+Context.prototype.round = function (type) {
+    return units[this._system][type].round !== false && units[this._system][type].decimalPlaces > 0;
+}
 
 /**
  *

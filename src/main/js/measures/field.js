@@ -35,6 +35,7 @@ Field.prototype.createDomStructure = function (size) {
             '    <div class="measure" data-type="timer"></div>',
             '    <div class="measure" data-type="speed"></div>',
             '    <div class="measure" data-type="distance"></div>',
+            '    <div class="measure" data-type="pace"></div>',
             '    <div class="measure" data-type="spm"></div>',
             '    <div class="measure" data-type="efficiency"></div>',
             '</div>'
@@ -45,6 +46,7 @@ Field.prototype.createDomStructure = function (size) {
             '<div class="measures">',
             '    <div class="measure" data-type="speed"></div>',
             '    <div class="measure" data-type="distance"></div>',
+            '    <div class="measure" data-type="pace"></div>',
             '    <div class="measure" data-type="spm"></div>',
             '    <div class="measure" data-type="efficiency"></div>',
             '</div>'
@@ -60,7 +62,7 @@ Field.DEFAULTS = {
 var FIELD_SETTINGS = {
     timer: {
         label: "Duration",
-        init: '00:00:00',
+        init: '00:00:00'
     },
     speed: {
         label: "Speed",
@@ -76,6 +78,10 @@ var FIELD_SETTINGS = {
     },
     efficiency: {
         label: "Distance per Stroke",
+        init: 0
+    },
+    pace: {
+        label: "Pace",
         init: 0
     }
 };
@@ -163,7 +169,9 @@ Field.prototype.convertInValueToDisplay = function (type, value) {
             value = utils.meterToFeet(value);
     }
 
-    value = utils.round(value, self.context.getUnitDecimalPlaces(type));
+    if (self.context.round(type))
+        value = utils.round(value, self.context.getUnitDecimalPlaces(type));
+
 
     return value;
 };

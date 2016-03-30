@@ -96,8 +96,11 @@
         <splash src="res/ios/screen/Default-1242@3x~iphone6s-landscape.png" width="2208" height="1242"/>
     </platform>
 
-    <preference name="FadeSplashScreen" value="false" />
+    <preference name="FadeSplashScreen" value="true" />
     <preference name="AutoHideSplashScreen" value="true" />
+    <preference name="ShowSplashScreenSpinner" value="true" />
+    <preference name="SplashScreenDelay" value="3000" />
+    <preference name="FadeSplashScreenDuration" value="1000"/>
 
     <preference name="BackupWebStorage" value="local" />
 

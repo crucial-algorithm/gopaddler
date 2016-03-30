@@ -104,11 +104,10 @@ function onDeviceReady() {
     utils.mapBrowserToNative();
 
     loadDb();
-    navigator.splashscreen.hide();
 
     setTimeout(function () {
         loadUi();
-    }, 3000);
+    }, 2000);
 }
 
 if (navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry|IEMobile)/)) {

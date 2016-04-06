@@ -1,7 +1,7 @@
 var Utils = require('../utils/utils.js');
 
 //var asteroid = new Asteroid("local.gopaddler.com:3000", false);
-var asteroid = new Asteroid("dev.gopaddler.com", true);
+var asteroid = new Asteroid("app.gopaddler.com", true);
 
 /**
  * Load user information from local storage.

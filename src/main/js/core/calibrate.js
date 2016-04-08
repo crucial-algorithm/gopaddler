@@ -43,12 +43,14 @@ Calibrate.prototype.start = function() {
         console.log('onError!');
     }
 
-    var options = { frequency: 40 };
-    try {
-        this.watchId = navigator.accelerometer.watchAcceleration(onSuccess, onError, options);
-    } catch (e) {
-        console.log('hmmm... browser?');
-    }
+    setTimeout(function () {
+        var options = { frequency: 40 };
+        try {
+            self.watchId = navigator.accelerometer.watchAcceleration(onSuccess, onError, options);
+        } catch (e) {
+            console.log('hmmm... browser?');
+        }
+    }, 2500);
 };
 
 Calibrate.prototype.calculate = function (sumx, sumy, sumz) {

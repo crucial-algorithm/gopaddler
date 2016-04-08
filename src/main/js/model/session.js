@@ -22,6 +22,8 @@ function Session(sessionStart, angleZ, noiseX, noiseZ, factorX, factorZ, axis, d
     this.topSpm = topSpm;
     this.avgSpeed = avgSpeed;
     this.topSpeed = topSpeed;
+    this.topEfficiency = undefined;
+    this.avgEfficiency = undefined;
 
     this.dbgAttempt = undefined;
     this.dbgSyncedRows = 0;
@@ -127,18 +129,17 @@ Session.prototype.setTopEfficiency = function(value) {
     this.topEfficiency = value;
 }
 
-
 // TODO: create efficiency fields in table
 Session.prototype.getTopEfficiency = function(){
     return this.topEfficiency;
 }
 
 Session.prototype.setAvgEfficiency = function(value) {
-    this.topEfficiency = value;
+    this.avgEfficiency = value;
 }
 
 Session.prototype.getAvgEfficiency = function(){
-    return this.topEfficiency;
+    return this.avgEfficiency;
 }
 
 Session.prototype.setDistance = function (distance) {

@@ -13,15 +13,19 @@ cordova plugin add cordova-plugin-device-motion
 cordova plugin add cordova-plugin-screen-orientation
 cordova plugin add cordova-plugin-powermanagement
 cordova plugin add cordova-plugin-inappbrowser
-cordova plugin add cordova-plugin-file
 cordova plugin add cordova-plugin-ios-longpress-fix
 cordova plugin add cordova-plugin-network-information
 cordova plugin add cordova-plugin-google-analytics
 cordova plugin add cordova-plugin-splashscreen
- cordova plugin add cordova-plugin-inappbrowser
+cordova plugin add cordova-plugin-inappbrowser
 
 cordova plugin add cordova-sqlite-storage
 cordova plugin add https://github.com/Wizcorp/phonegap-facebook-plugin.git --variable APP_ID=529853143847598 --variable APP_NAME=GoPaddler
+
+
+Careful:
+- cordova-plugin-screen-orientation only works width cordova version < 6.x
+- cordova-plugin-statusbar requires plist settings for ios (added using a hook)
 
 ## Compile javascript
 ### Install webpack
@@ -33,8 +37,6 @@ In <app>/, run *webpack*
 
 ### Compile automatically
 *webpack --progress --colors --watch*
-
-
 
 ## Unit testing
 Test cases are stored in local PostgreSQL databaes

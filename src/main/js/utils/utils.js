@@ -84,10 +84,7 @@ function mapBrowserToNative() {
         }
     }, false);
 
-    // set to either landscape
-    screen.lockOrientation('portrait');
-
-    window.powermanagement.acquire();
+//    window.powermanagement.acquire();
 
     StatusBar.overlaysWebView( false );
     StatusBar.backgroundColorByHexString('#ffffff');

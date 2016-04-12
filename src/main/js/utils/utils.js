@@ -84,7 +84,7 @@ function mapBrowserToNative() {
         }
     }, false);
 
-//    window.powermanagement.acquire();
+    window.powermanagement.acquire();
 
     StatusBar.overlaysWebView( false );
     StatusBar.backgroundColorByHexString('#ffffff');

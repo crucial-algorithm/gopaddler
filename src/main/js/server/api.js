@@ -1,7 +1,37 @@
 var Utils = require('../utils/utils.js');
+var lastEvent = undefined, retries = 0;
 
 //var asteroid = new Asteroid("local.gopaddler.com:3000", false);
-var asteroid = new Asteroid("app.gopaddler.com", true);
+var asteroid = new Asteroid("app.gopaddler.com", true, function intercept (data) {
+    lastEvent = data;
+});
+
+var serverAvailable = function (d) {
+    var defer = d || $.Deferred();
+
+    if (retries >= 3) defer.reject();
+
+    // If no network, server is for sure not available
+    if (!Utils.isNetworkConnected()) {
+        return defer.reject();
+    }
+
+    if (lastEvent !== undefined) {
+        retries++;
+        setTimeout(function () {
+            serverAvailable(defer);
+        }, 1000);
+    } else {
+
+        if (lastEvent.type === "socket_close"
+            ||  lastEvent.type === "socket_error") {
+            defer.reject();
+        } else {
+            defer.resolve();
+        }
+    }
+    return defer.promise();
+};
 
 /**
  * Load user information from local storage.
@@ -16,26 +46,26 @@ function _localLogin() {
         serializedUser = localStorage.getItem('user'),
         user;
 
-    // user is connected don't use local authentication
-    if (Utils.isNetworkConnected()) {
-        return defer.reject();
-    }
-
-    if (serializedUser) {
-
-        user = JSON.parse(serializedUser);
-
-        asteroid.loggedIn = true;
-        asteroid.userId = user._id;
-        asteroid.user = user;
-
-        _finishLogin(defer, user);
-
-    } else {
-
+    serverAvailable().done(function serverIsAvailable() {
         defer.reject();
-    }
 
+    }).fail(function serverNotAvailable() {
+
+            if (serializedUser) {
+
+                user = JSON.parse(serializedUser);
+
+                asteroid.loggedIn = true;
+                asteroid.userId = user._id;
+                asteroid.user = user;
+
+                _finishLogin(defer, user);
+
+            } else {
+
+                defer.reject();
+            }
+    });
 
     return defer.promise();
 }

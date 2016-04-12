@@ -13,6 +13,9 @@ Pace.prototype.calculate = function (speed) {
     } else {
         value = 60 / speed;
     }
+
+    if (isNaN(value) || !isFinite(value)) return 0;
+
     var decimal = (value % 1);
     var minutes = value - decimal;
     var seconds = Math.round(decimal * 60);

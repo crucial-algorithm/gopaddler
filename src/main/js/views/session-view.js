@@ -90,26 +90,12 @@ function SessionView(page, context) {
     // -- Handle GPS sensor data
     var lastEfficiency = 0, lastInterval = 0, lastDisplayedSpeed = 0;
     gps.listen(function (position) {
-
         if (paused) return;
 
-        var d = distance.calculate(position);
+        var values = {speed: 0, pace: 0, efficiency: 0, distance:0};
 
-        top.setValue('distance', d);
-        middle.setValue('distance', d);
-        bottom.setValue('distance', d);
-        large.setValue('distance', d);
-
-        speed.calculate(position);
-    });
-
-
-    self.speedIntervalId = setInterval(function () {
-        if (self.paused) return;
-
-        var values = {speed: 0, efficiency: 0};
-
-        values.speed = lastDisplayedSpeed = speed.getValue();
+        values.distance = distance.calculate(position);
+        values.speed = lastDisplayedSpeed = speed.calculate(position, values.distance);
         values.efficiency = lastEfficiency = strokeEfficiency.calculate(values.speed, lastInterval);
         values.pace = pace.calculate(values.speed);
 
@@ -118,9 +104,7 @@ function SessionView(page, context) {
         bottom.setValues(values);
         large.setValues(values);
 
-        speed.reset();
-
-    }, 2000);
+    });
 
     // -- handle stroke related data
     strokeDetector.onStrokeRateChanged(function (spm, interval) {

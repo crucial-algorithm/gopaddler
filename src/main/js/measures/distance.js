@@ -11,11 +11,6 @@ function Distance() {
 
 Distance.prototype.calculate = function (position) {
 
-    if (this.counter < 5) {
-        this.counter++;
-        return 0;
-    }
-
     if (this.previous !== undefined) {
         this.takenAt = new Date().getTime();
         this.distance += GPS.calcDistance(this.previous, position);

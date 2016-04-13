@@ -76,6 +76,7 @@ function emulateCordova () {
     navigator.geolocation.watchPosition = function (callback) {
         return setInterval(function () {
             callback({
+                timestamp: new Date().getTime(),
                 coords: {
                     accuracy: 1,
                     latitude: Math.random() + 1,

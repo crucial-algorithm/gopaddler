@@ -163,22 +163,34 @@ body {
     font-weight: bold;
 }
 
-.tips-slideshow {
+.wizard {
     background-color: #3b3d62;
     color: #ffffff;
     width: 100%;
 }
 
-.gestures-tip-icon {
+.wizard-left {
     width: 50%;
     float:left;
 }
-.gestures-tip-caption {
+
+.wizard-right {
     width: 50%;
     float: right;
     line-height: 100%;
-    padding-top: 15%;
     font-size: 38px;
+}
+
+.wizard-right h1 {
+    font-size: 34px;
+    line-height: 38px;
+}
+
+.wizard-right p {
+    font-size: 20px;
+    line-height: 30px;
+    padding: 2% 2%;
+    color: rgba(255,255,255,0.7);
 }
 
 .got-it {
@@ -193,6 +205,14 @@ body {
     vertical-align: middle;
     line-height: 12vh;
     font-weight: bold;
+}
+
+.calibration-wizard-img {
+   padding-left: 15%
+}
+
+.calibration-wizard-text {
+    padding-top: 8%;
 }
 
 .slidshow-centered-text {

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.paddlermetrics.paddler" version="0.6.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.paddlermetrics.paddler" version="0.8.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Paddler</name>
     <description>
         A sample Apache Cordova application that responds to the deviceready event.
@@ -91,7 +91,6 @@
         <variable name="APP_ID" value="529853143847598" />
         <variable name="APP_NAME" value="GoPaddler" />
     </plugin>
-    <plugin name="cordova-plugin-android-support-v4" spec="~21.0.1" />
     <plugin name="cordova-plugin-powermanagement" spec="~1.0.2" />
     <plugin name="cordova-plugin-device-motion" spec="~1.2.0" />
     <plugin name="cordova-plugin-file" spec="~4.1.1" />

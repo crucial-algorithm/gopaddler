@@ -136,7 +136,9 @@ function SessionView(page, context) {
 
         document.removeEventListener('touchmove', preventDrag, false);
 
-        App.load('session-summary', session);
+        App.load('session-summary', session, undefined, function () {
+            App.removeFromStack();
+        });
     };
 
     var tx = false;

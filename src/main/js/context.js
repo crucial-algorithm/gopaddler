@@ -88,7 +88,7 @@ Context.prototype.getUnit = function (type, large) {
  */
 Context.prototype.round = function (type) {
     return units[this._system][type].round !== false && units[this._system][type].decimalPlaces > 0;
-}
+};
 
 /**
  *
@@ -126,7 +126,10 @@ Context.prototype.navigate = function (target, clear, args) {
 
     if (clear === true) App.destroyStack();
 
-    App.load(target, args);
+    App.load(target, args, undefined, function () {
+        if (clear === true)
+            App.removeFromStack();
+    });
 };
 
 exports.Context = Context;

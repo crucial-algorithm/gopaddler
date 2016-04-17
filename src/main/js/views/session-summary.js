@@ -39,9 +39,10 @@ function SessionSummaryView(page, context, session) {
     $maxEfficiency.html('<b>' + maxEfficiency + '</b> ' + context.getUnit('efficiency'));
 
     $finish.on('tap', function () {
-        App.destroyStack();
-        App.load('home');
 
+        App.load('home', undefined, undefined, function () {
+            App.removeFromStack();
+        });
     });
 }
 

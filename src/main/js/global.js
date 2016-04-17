@@ -19,26 +19,26 @@ function emulateCordova () {
 
     var executeSql = function (sql, args, success, error) {
         success = success || function(){};
-        if (sql.toLowerCase().substr(0,3) === 'ins') {
+        if (sql.toLowerCase().substr(0, 3) === 'ins') {
             success({insertId: 1234});
         } else if (sql === "SELECT * FROM settings") {
             var data = [
                 {version: 1, units: 'K', sync_wifi: true, restore_layout: true}
             ];
             success({rows: {length: 14, item: function (index) {
-                return data[index];
+                        return data[index];
             }}})
         } else {
             var data = [
-                {id: 1, session_start:  new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 2, session_start:  new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 3, session_start:  new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 4, session_start:  new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 5, session_start:  new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 6, session_start:  new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 7, session_start:  new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 8, session_start:  new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 9, session_start:  new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 1, session_start: new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 2, session_start: new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 3, session_start: new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 4, session_start: new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 5, session_start: new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 6, session_start: new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 7, session_start: new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 8, session_start: new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 9, session_start: new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
                 {id: 10, session_start: new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
                 {id: 11, session_start: new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
                 {id: 12, session_start: new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
@@ -46,7 +46,7 @@ function emulateCordova () {
                 {id: 14, session_start: new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)}
             ];
             success({rows: {length: 14, item: function (index) {
-                return data[index];
+                        return data[index];
             }}})
         }
     };
@@ -54,7 +54,7 @@ function emulateCordova () {
     window.sqlitePlugin.openDatabase = function (args) {
         return {
             executeSql: executeSql,
-            transaction: function(callback) {
+            transaction: function (callback) {
                 setTimeout(function () {
                     callback({executeSql: executeSql});
                 }, 0);
@@ -66,8 +66,8 @@ function emulateCordova () {
     window.Connection = {"WIFI": 1, "ETHERNET": 2};
 
     window.analytics = {startTrackerWithId: function () {
-    }, trackView: function () {
-    }, setUserId: function () {
+        }, trackView: function () {
+        }, setUserId: function () {
     }};
 
     window.screen.lockOrientation = function(){};
@@ -76,14 +76,14 @@ function emulateCordova () {
     navigator.geolocation.watchPosition = function (callback) {
         var latitude, longitude;
         return setInterval(function () {
-           if (latitude === undefined) {
-               latitude = Math.random() + 1;
-               longitude = Math.random() + 1;
-           }
+            if (latitude === undefined) {
+                latitude = Math.random() + 1;
+                longitude = Math.random() + 1;
+            }
             latitude = latitude + Math.random() / 2 / 10000;
-            longitude = longitude + Math.random() / 2 /  10000;
-           
-            
+            longitude = longitude + Math.random() / 2 / 10000;
+
+
             callback({
                 timestamp: new Date().getTime(),
                 coords: {
@@ -97,6 +97,22 @@ function emulateCordova () {
     };
 
     navigator.geolocation.clearWatch = function (id) {
+        clearInterval(id);
+    };
+
+    navigator.accelerometer = navigator.accelerometer || {};
+    navigator.accelerometer.watchAcceleration = function (callback) {
+        return setInterval(function () {
+            callback({
+                timestamp: new Date().getTime(),
+                x: 1,
+                y: 1,
+                z: 1
+            });
+        }, 10);
+    };
+
+    navigator.accelerometer.clearWatch = function (id) {
         clearInterval(id);
     };
 }

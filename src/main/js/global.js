@@ -74,13 +74,22 @@ function emulateCordova () {
     window.device = {};
 
     navigator.geolocation.watchPosition = function (callback) {
+        var latitude, longitude;
         return setInterval(function () {
+           if (latitude === undefined) {
+               latitude = Math.random() + 1;
+               longitude = Math.random() + 1;
+           }
+            latitude = latitude + Math.random() / 2 / 10000;
+            longitude = longitude + Math.random() / 2 /  10000;
+           
+            
             callback({
                 timestamp: new Date().getTime(),
                 coords: {
                     accuracy: 1,
-                    latitude: Math.random() + 1,
-                    longitude: Math.random() + 1,
+                    latitude: latitude,
+                    longitude: longitude,
                     speed: Math.random() * 10 + 10
                 }
             })

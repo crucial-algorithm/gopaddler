@@ -30,6 +30,8 @@ var SMALL = 'small', LARGE = 'large';
 
 function SessionView(page, context) {
     var self = this;
+    self.isDebugEnabled = !!Api.User.getProfile().debug;
+    
     var $page = $(page);
     var calibration = Calibration.load() || Calibration.blank();
     var session = self.createSession(calibration);
@@ -41,7 +43,6 @@ function SessionView(page, context) {
     var strokeDetector = new StrokeDetector(session, calibration, null, self.debug(session));
     var paused = false;
 
-    self.isDebugEnabled = !!Api.User.getProfile().debug;
 
     document.PREVENT_SYNC = true;
 

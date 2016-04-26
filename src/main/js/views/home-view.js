@@ -53,7 +53,7 @@ function HomeView(page, context, request) {
         manufacturer: device.manufacturer,
         isVirtual: device.isVirtual,
         serial: device.serial,
-        paddler: "0.8.2"
+        paddler: "0.8.3"
     });
 
 

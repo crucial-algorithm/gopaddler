@@ -5,6 +5,8 @@ function Speed() {
     this.value = 0;
     this.lastDistance = undefined;
     this.lastPosition = undefined;
+    this.lastSpeed = undefined;
+    this.speeds = [];
 }
 
 
@@ -22,21 +24,28 @@ Speed.prototype.calculate = function (position, distance) {
 
     var diff = distance - this.lastDistance;
    
-    // don't update speed until we have moved at least 10 meters
-    if (diff < 0.01)
-        return this.value;
-    
     var hours = (position.timestamp - this.lastPosition.timestamp) / 1000 / 60 / 60;
-    this.value = diff * (1 / hours);
+    var speed = diff * (1 / hours);
+
+    this.speeds.push(speed);
 
     this.lastDistance = distance;
     this.lastPosition = position;
-    
+
+    if (this.speeds.length > 3) {
+        this.speeds.shift();
+    }
+
+    if (this.speeds.length === 3) {
+        this.value = utils.avg(this.speeds);
+    }
+
     return this.value;
 };
 
 Speed.prototype.reset = function () {
     this.value = 0;
+    this.speeds = [];
 };
 
 Speed.prototype.getValue = function () {

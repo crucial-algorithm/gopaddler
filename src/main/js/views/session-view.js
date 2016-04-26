@@ -89,7 +89,7 @@ function SessionView(page, context) {
 
 
     // -- Handle GPS sensor data
-    var lastEfficiency = 0, lastInterval = 0, lastDisplayedSpeed = 0;
+    var lastEfficiency = 0, lastInterval = 0, lastDisplayedSpeed = 0, lastGpsAt = 0;
     gps.listen(function (position) {
         if (paused) return;
 
@@ -104,10 +104,23 @@ function SessionView(page, context) {
         middle.setValues(values);
         bottom.setValues(values);
         large.setValues(values);
+        
+        lastGpsAt = position.timestamp;
 
     });
+    
+    var resetGpsData = function () {
+        var values = {speed: 0, pace: 0, efficiency: 0};
+        speed.reset();
+ 
+        top.setValues(values);
+        middle.setValues(values);
+        bottom.setValues(values);
+        large.setValues(values);
+    };
 
     // -- handle stroke related data
+    var now;
     strokeDetector.onStrokeRateChanged(function (spm, interval) {
         if (paused) return;
 
@@ -118,11 +131,17 @@ function SessionView(page, context) {
         large.setValue('spm', spm);
 
         // store data
-        new SessionDetail(session.getId(), new Date().getTime(), distance.getValue(), lastDisplayedSpeed, spm
+        now  = new Date().getTime();
+        new SessionDetail(session.getId(), now, distance.getValue(), lastDisplayedSpeed, spm
             , lastEfficiency, distance.getLatitude(), distance.getLongitude()
         ).save();
 
         lastInterval = interval;
+
+        // this should not be here, but its the easiest way considering that stroke rate is updated every 1.5 sec
+        if (now - lastGpsAt > 5000) {
+            resetGpsData();
+        }
     });
     strokeDetector.start();
 

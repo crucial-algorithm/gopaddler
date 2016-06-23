@@ -23,8 +23,8 @@ var serverAvailable = function (d) {
         }, 1000);
     } else {
 
-        if (lastEvent.type === "socket_close"
-            ||  lastEvent.type === "socket_error") {
+        if (lastEvent && (lastEvent.type === "socket_close"
+            || lastEvent.type === "socket_error")) {
             defer.reject();
         } else {
             defer.resolve();

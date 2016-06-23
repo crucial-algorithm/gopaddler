@@ -29,11 +29,11 @@ Distance.prototype.getValue = function () {
 };
 
 Distance.prototype.getLatitude = function () {
-    return (this.previous || {}).latitude;
+    return (this.previous || {coords: {}}).coords.latitude;
 }
 
 Distance.prototype.getLongitude = function () {
-    return (this.previous || {}).longitude;
+    return (this.previous || {coords: {}}).coords.longitude;
 }
 
 exports.Distance = Distance;

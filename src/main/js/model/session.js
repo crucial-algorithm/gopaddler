@@ -345,7 +345,7 @@ Session.sessionsSummary = function () {
 
 Session.findAllNotSynced = function (callback) {
     var connection = db.getConnection();
-    connection.executeSql("SELECT * FROM session WHERE synced <> 1 OR ((datetime('now','localtime') - session_start) < 604800 AND dbg_synced = 0)", [], function (res) {
+    connection.executeSql("SELECT * FROM session WHERE synced <> 1 OR ((datetime('now','localtime') - session_start) < (604800 * 8) AND dbg_synced = 0)", [], function (res) {
         var rows = [];
         for (var i = 0; i < res.rows.length; i++) {
             rows.push(sessionFromDbRow(res.rows.item(i)));

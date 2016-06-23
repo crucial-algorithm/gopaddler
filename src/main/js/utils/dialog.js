@@ -36,5 +36,33 @@ function hideModal() {
     $modal = undefined;
 }
 
+
+function alert(title, body, btn, callback) {
+    var html = [
+        '<div class="info-modal-body">',
+        '<div class="info-modal-title vh_height10 vh_line-height10">',  title , '</div>',
+        '<div class="info-modal-content vh_height26">',
+        body,
+        '</div>',
+        '<div class="info-modal-controls vh_height15 vh_line-height15">',
+        '<div class="info-modal-primary-action">', btn, '</div>',
+        '</div>',
+        '</div>'
+    ];
+
+    var $body = $(html.join(''))
+        , $calibrate = $body.find('.info-modal-primary-action');
+
+
+
+    $calibrate.on('tap', function () {
+        hideModal();
+        if (callback) callback.apply({}, []);
+    });
+
+    showModal($body, {center: true});
+}
+
 exports.showModal = showModal;
 exports.hideModal = hideModal;
+exports.alert = alert;

@@ -1,6 +1,7 @@
 'use strict';
 
 var utils = require('./utils.js');
+var Dialog = require('./dialog.js');
 
 
 function GPS () {
@@ -44,6 +45,17 @@ GPS.prototype.start = function() {
 
     var onError = function (error) {
         console.log(error);
+        var message, title;
+        if (device.platform === 'iOS') {
+            title = 'Location is disabled';
+            message = 'Please enable Location Services in <i>Settings > Privacy > Location Services</i> and in <i>Settings > Paddler</i>';
+        } else if (device.platform === 'Android') {
+            title = 'Unable to Acquire GPS Signal';
+            message = 'Please make sure GPS is enabled in <i>Settings > Location</i>';
+        }
+        setTimeout(function () {
+            Dialog.alert(title, message, 'OK', undefined);
+        }, 2000);
     };
 
 

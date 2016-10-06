@@ -3,7 +3,7 @@
 var fs    = require('fs');
 var plist = require('plist');
 
-var FILEPATH = 'platforms/ios/Paddler/Paddler-Info.plist';
+var FILEPATH = 'platforms/ios/GoPaddler/GoPaddler-Info.plist';
 
 module.exports = function (context) {
 

@@ -1,51 +1,44 @@
-# Paddler Cordova App
-Some basic documentation on how to use this project to compile and deploy the mobile app
+# README #
 
+GoPaddler mobile app
 
-## Setup cordova
-cordova create paddler com.paddlermetrics.paddler Paddler
-cordova platforms add android
-cordova plugin add cordova-plugin-device
-cordova plugin add cordova-plugin-console
-cordova plugin add cordova-plugin-dialogs
-cordova plugin add cordova-plugin-statusbar
-cordova plugin add cordova-plugin-device-motion
-cordova plugin add cordova-plugin-screen-orientation
-cordova plugin add cordova-plugin-powermanagement
-cordova plugin add cordova-plugin-inappbrowser
-cordova plugin add cordova-plugin-ios-longpress-fix
-cordova plugin add cordova-plugin-network-information
-cordova plugin add cordova-plugin-google-analytics
-cordova plugin add cordova-plugin-splashscreen
-cordova plugin add cordova-plugin-inappbrowser
+### How do I get set up? ###
 
-cordova plugin add cordova-sqlite-storage
-cordova plugin add https://github.com/Wizcorp/phonegap-facebook-plugin.git --variable APP_ID=529853143847598 --variable APP_NAME=GoPaddler
+#### Clone this repository
+    > git clone https://kimile@bitbucket.org/kimile/paddler-app.git
+    
+#### Build source code
+    Build once
+    > webpack
+    watch mode
+    > webpack --progress --colors --watch
+    
+#### To deploy in mobile        
 
+##### Install npm dependencies   
+    > npm install plist
 
-Careful:
-- cordova-plugin-screen-orientation only works width cordova version < 6.x
-- cordova-plugin-statusbar requires plist settings for ios (added using a hook)
+##### Prepare cordova environment
+    > cordova prepare
 
-## Compile javascript
-### Install webpack
-npm install webpack -g
+##### Try it
+    > cordova run android
 
-### Compile once
-In <app>/, run *webpack*
+#### To develop in your browser
+    > npm install zerver
+    > zerver wwww
+    Open your browser in http://localhost:5000
+    Open developer tools and enable device mode; Last, set User Agent (in Network Conditions) to custom value "GoPaddler-DEV"
+    
 
+#### For Unit testing
+Test cases are stored in local PostgreSQL database
 
-### Compile automatically
-*webpack --progress --colors --watch*
+##### Requirements
+    > sudo npm install -g mocha
+    > npm install pg
+    > npm install bluebird
 
-## Unit testing
-Test cases are stored in local PostgreSQL databaes
-
-### Requirements
-mocha: sudo npm install -g mocha
-pg: npm install pg
-bluebird: npm install bluebird
-
-### running
-cd src/test/js
-mocha .
+##### Running
+    > cd src/test/js
+    > mocha .

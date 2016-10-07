@@ -26,27 +26,27 @@ function emulateCordova () {
                 {version: 1, units: 'K', sync_wifi: true, restore_layout: true}
             ];
             success({rows: {length: 14, item: function (index) {
-                        return data[index];
+                return data[index];
             }}})
         } else {
             var data = [
-                {id: 1, session_start: new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 2, session_start: new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 3, session_start: new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 4, session_start: new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 5, session_start: new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 6, session_start: new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 7, session_start: new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 8, session_start: new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 9, session_start: new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 10, session_start: new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 11, session_start: new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 12, session_start: new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 13, session_start: new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 14, session_start: new Date(), distance: 16, session_end: new Date(new Date().getTime() + 3600000)}
+                {id: 1, session_start: new Date(), distance: 1, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 2, session_start: new Date(new Date().getTime() - 86400000), distance: 2, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 3, session_start: new Date(new Date().getTime() - (2 * 86400000)), distance: 3, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 4, session_start: new Date(new Date().getTime() - (3 * 86400000)), distance: 4, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 5, session_start: new Date(new Date().getTime() - (4 * 86400000)), distance: 5, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 6, session_start: new Date(new Date().getTime() - (4 * 86400000)), distance: 6, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 7, session_start: new Date(new Date().getTime() - (4 * 86400000)), distance: 7, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 8, session_start: new Date(new Date().getTime() - (5 * 86400000)), distance: 8, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 9, session_start: new Date(new Date().getTime() - (6 * 86400000)), distance: 9, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 10, session_start: new Date(new Date().getTime() - (6 * 86400000)), distance: 10, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 11, session_start: new Date(new Date().getTime() - (7 * 86400000)), distance: 11, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 12, session_start: new Date(new Date().getTime() - (8 * 86400000)), distance: 12, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 13, session_start: new Date(new Date().getTime() - (8 * 86400000)), distance: 13, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 14, session_start: new Date(new Date().getTime() - (9 * 86400000)), distance: 14, session_end: new Date(new Date().getTime() + 3600000)}
             ];
             success({rows: {length: 14, item: function (index) {
-                        return data[index];
+                return data[index];
             }}})
         }
     };
@@ -60,7 +60,7 @@ function emulateCordova () {
                 }, 0);
             }
         }
-    }
+    };
 
     navigator.connection = navigator.connection || {};
     window.Connection = {"WIFI": 1, "ETHERNET": 2};
@@ -124,6 +124,6 @@ jQuery.fn.center = function () {
     this.css("left", Math.max(0, (($(window).width() - $(this).outerWidth()) / 2) +
         $(window).scrollLeft()) + "px");
     return this;
-}
+};
 
 exports.emulateCordova = emulateCordova;

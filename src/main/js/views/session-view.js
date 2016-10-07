@@ -31,7 +31,7 @@ var SMALL = 'small', LARGE = 'large';
 function SessionView(page, context) {
     var self = this;
     self.isDebugEnabled = !!Api.User.getProfile().debug;
-    
+
     var $page = $(page);
     var calibration = Calibration.load() || Calibration.blank();
     var session = self.createSession(calibration);
@@ -104,15 +104,15 @@ function SessionView(page, context) {
         middle.setValues(values);
         bottom.setValues(values);
         large.setValues(values);
-        
+
         lastGpsAt = position.timestamp;
 
     });
-    
+
     var resetGpsData = function () {
         var values = {speed: 0, pace: 0, efficiency: 0};
         speed.reset();
- 
+
         top.setValues(values);
         middle.setValues(values);
         bottom.setValues(values);
@@ -146,7 +146,6 @@ function SessionView(page, context) {
     strokeDetector.start();
 
     var back = function () {
-
         if (context.preferences().isRestoreLayout()) {
             saveLayout(top.getType(), middle.getType(), bottom.getType(), large.getType());
         } else {
@@ -155,7 +154,7 @@ function SessionView(page, context) {
 
         document.removeEventListener('touchmove', preventDrag, false);
 
-        App.load('session-summary', session, undefined, function () {
+        App.load('session-summary', { session: session, isPastSession: false }, undefined, function () {
             App.removeFromStack();
         });
     };

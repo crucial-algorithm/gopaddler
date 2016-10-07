@@ -49,6 +49,89 @@ body {
     border: 0;
 }
 
+.app-option:after {
+    content: '';
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 6px 6px 0 6px;
+    border-color: #FFFFFF transparent transparent transparent;
+    margin-left: 6px;
+    vertical-align: middle;
+}
+
+.app-options-dropdown {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 70%;
+    height: 70%;
+    min-width: 460px;
+    min-height: 280px;
+    z-index: 4000;
+    background-color: #FFFFFF;
+    padding: 0;
+    margin: auto;
+    -webkit-box-shadow: 0 1px 5px 0 rgba(0, 0, 0, .3);
+    -moz-box-shadow: 0 1px 5px 0 rgba(0, 0, 0, .3);
+    box-shadow: 0 1px 5px 0 rgba(0, 0, 0, .3);
+}
+
+.app-options {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 3000;
+    background-color: rgba(0, 0, 0, .3);
+}
+
+.app-options-line {
+    display: block;
+    height: 40px;
+    line-height: 40px;
+}
+
+.app-options-line {
+    display: block;
+    height: 44px;
+    line-height: 44px;
+    padding: 0 10px;
+    margin-bottom: 4px;
+    background-color: #c3c3c3;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.app-options-line.selected {
+    background-color: #3B3D62;
+}
+
+.date-options {
+    display: inline-block;
+    width: 50%;
+    height: 100%;
+    box-sizing: border-box;
+    vertical-align: top;
+    background-color: #E8E8E8;
+    padding: 20px;
+    float: left;
+}
+
+.calendar {
+    display: inline-block;
+    width: 50%;
+    height: 100%;
+    box-sizing: border-box;
+}
+
 .home-sessions-btn {
     height: 33.33%!important;
     background-color: #3B3D63!important;
@@ -348,12 +431,11 @@ body {
     float: right;
 }
 
-.summary-congrats {
+.summary-session {
     display: table-cell;
     height: 100%;
     width: 50%;
     background-color: #EF6156;
-
 }
 
 .summary-stats {
@@ -392,7 +474,7 @@ body {
     float: right;
 }
 
-.summary-thumbs-up {
+.summary-icon {
     width: 45%;
     text-align: center;
     padding-left: 25%;
@@ -412,7 +494,7 @@ body {
     font-size: 6vh;
 }
 
-.summary-congrats-session {
+.summary-current-session {
     color: rgba(255,255,255,0.9);
     text-align: center;
     margin-top: 5%;
@@ -571,7 +653,7 @@ body {
     /*max-height: 100%;*/
     color: #fff;
     text-transform: uppercase;
-    background-color: #F4563D;
+    /*background-color: #F4563D;*/
     overflow: hidden;
     list-style: none;
 }

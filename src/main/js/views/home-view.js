@@ -61,7 +61,7 @@ function HomeView(page, context, request) {
    if (request.from === 'calibration') {
        showFirstCalibrationCompletedModal($(page), context);
    }
-};
+}
 
 HomeView.prototype.updateLastSessionDate = function () {
     var self = this;

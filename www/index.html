@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="css/paddler.css">
     <link rel="stylesheet" href="css/flipswitch.css">
     <link rel="stylesheet" href="css/slick.css">
+    <link rel="stylesheet" href="css/daterangepicker.min.css">
+    <link rel="stylesheet" href="css/vendor-override.css">
 
     <script src="lib/vunit-0.2.0.min.js"></script>
     <script src="js/polyfils.js"></script>
@@ -51,7 +53,18 @@
         <div class="app-topbar paddler-topbar vh_height17">
             <button class="app-button left paddler-back" alt="back" data-back></button>
             <div class="paddler-title">
-                <div class="paddler-title-text vh_font-size6 vw_padding-right6">All Sessions</div>
+                <div id="session-period-filter-button" class="paddler-title-text vh_font-size6 vw_padding-right6 app-option">All Sessions</div>
+            </div>
+        </div>
+        <div id="session-period-filter" class="app-options">
+            <div class="app-options-dropdown">
+                <div class="date-options">
+                    <div class="app-options-line selected" data-period="all">All Sessions</div>
+                    <div class="app-options-line" data-period="this-month">Last 30 days</div>
+                    <div class="app-options-line" data-period="last-month">Last Month</div>
+                    <div class="app-options-line" data-period="custom">Custom Range</div>
+                </div>
+                <div id="session-period-datepicker" class="calendar"></div>
             </div>
         </div>
         <div class="app-content" style="height:100%;overflow: hidden" data-no-scroll="true">
@@ -126,15 +139,16 @@
 
     <div class="app-page" data-page="session-summary">
         <div class="app-topbar paddler-topbar vh_height17" style="display:table">
+            <button class="app-button left paddler-back" id="summary-back" alt="back" data-back style="display: none"></button>
             <div class="summary-finish-btn" id="summary-finish"><b>Finish</b></div>
             <div class="paddler-title-text vh_font-size6 vw_padding-right6">Summary</div>
         </div>
         <div class="app-content" style="height:100%" data-no-scroll="true">
             <div style="display:table;height:100%;width:100%">
                 <div style="display:table-row;width:100%">
-                    <div class="summary-congrats">
+                    <div id="summary-congrats" class="summary-session">
                         <div class="summary-congrats-title vw_font-size6">congrats</div>
-                        <div class="summary-thumbs-up">
+                        <div class="summary-icon">
                             <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
                                  viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
                             <path class="summary-thumbs-up-icon" d="M402,231.7c0-19.7-10.2-31.3-30.4-34.4c-7.4-1.1-28.6-2-48.5-2.6c9.6-12,21.7-30.7,20.2-60.7
@@ -151,12 +165,19 @@
                                 c-7.5,0-13.7,6.1-13.7,13.7s6.1,13.7,13.7,13.7H167c26.7,0,37.1,4.3,45.8,11.8c14.7,12.5,28,16.7,52.7,16.7
                                 c30.2,0,70.2-0.8,89.7-4.8c11-2.3,19-8.1,23-16.9c2.7-5.9,3.4-11.8,3.8-16.4c0.1-1.3,0.1-2.6,0.1-3.8c0-0.5,0-1.3,0.1-2
                                 c3.4-3.8,7.4-8.6,9.5-16c1.9-6.9,2.2-13.8,2.2-19.5c0-5.3-1.3-9.2-2.4-12.4c0.1-0.1,0.2-0.3,0.3-0.4c1.3-1.9,2.9-4.2,4-7
-                                c3.2-8.1,3.4-16.4,3.4-23.5c0-3.4-0.2-8.4-2.1-13.5c-0.5-1.3-1-2.4-1.7-3.6c1.9-2.8,3-5.8,3.8-8.6C401.7,246.5,402,238.8,402,231.7z
-                                "></path>
+                                c3.2-8.1,3.4-16.4,3.4-23.5c0-3.4-0.2-8.4-2.1-13.5c-0.5-1.3-1-2.4-1.7-3.6c1.9-2.8,3-5.8,3.8-8.6C401.7,246.5,402,238.8,402,231.7z">
+                            </path>
                             </svg>
                         </div>
                         <div class="summary-label vw_font-size4" style="text-align: center;margin-top: -10px;">Session</div>
-                        <div class="summary-congrats-session  vw_font-size3"></div>
+                        <div id="summary-congrats-session" class="summary-current-session vw_font-size3"></div>
+                    </div>
+                    <div id="summary-details" class="summary-session" style="display: none">
+                        <div class="summary-icon" style="margin-top: 23px;">
+                            <img src="images/flag.svg">
+                        </div>
+                        <div class="summary-label vw_font-size4" style="text-align: center;margin-top: -10px;">Session Details</div>
+                        <div id="summary-details-session" class="summary-current-session vw_font-size3"></div>
                     </div>
                     <div class="summary-stats">
 
@@ -341,7 +362,6 @@
                 </div>
 
             </div>
-            </div>
         </div>
     </div>
 
@@ -350,7 +370,7 @@
             <div data-selector="slick" style="width:100%; height:100%">
                 <div>
                     <div class="wizard-left vh_height60 vh_margin-top20">
-                        <svg xmlns="http:œ//www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" width="100%" height="100%" viewBox="0 0 516.375 516.375" style="enable-background:new 0 0 516.375 516.375;" xml:space="preserve">
+                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" width="100%" height="100%" viewBox="0 0 516.375 516.375" style="enable-background:new 0 0 516.375 516.375;" xml:space="preserve">
                             <g>
                                 <rect x="210.375" y="325.125" width="95.625" height="19.125" fill="rgba(255,255,255,0.8)"/>
                                 <path d="M258.188,153c-26.775,0-47.812,21.038-47.812,47.812v66.938H306v-66.938C306,174.038,284.963,153,258.188,153z     M286.875,248.625H229.5v-47.812c0-15.3,13.388-28.688,28.688-28.688s28.688,13.388,28.688,28.688V248.625z" fill="rgba(255,255,255,0.8)"/>
@@ -411,6 +431,7 @@
     <script src="lib/jquery-touch-events.js"></script>
     <script src="lib/hashids.min.js"></script>
     <script src="lib/slick.js"></script>
+    <script src="lib/jquery.daterangepicker.min.js"></script>
 
     <!-- Meteor -->
     <script src="lib/meteor/underscore.js"></script>

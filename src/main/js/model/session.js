@@ -127,20 +127,20 @@ Session.prototype.getTopSpeed = function () {
 
 Session.prototype.setTopEfficiency = function(value) {
     this.topEfficiency = value;
-}
+};
 
 // TODO: create efficiency fields in table
 Session.prototype.getTopEfficiency = function(){
     return this.topEfficiency;
-}
+};
 
 Session.prototype.setAvgEfficiency = function(value) {
     this.avgEfficiency = value;
-}
+};
 
 Session.prototype.getAvgEfficiency = function(){
     return this.avgEfficiency;
-}
+};
 
 Session.prototype.setDistance = function (distance) {
     this.distance = distance;
@@ -340,7 +340,7 @@ Session.sessionsSummary = function () {
         defer.fail(error);
     });
     return defer.promise();
-}
+};
 
 
 Session.findAllNotSynced = function (callback) {
@@ -406,12 +406,27 @@ Session.get = function (id) {
 
 
 function sessionFromDbRow(data) {
-    var session = new Session(data.session_start, data.anglez, data.noisex, data.noisez, data.factorx, data.factorz, data.axis
-        , data.distance, data.avg_spm, data.top_spm, data.avg_speed, data.top_speed, data.session_end);
+    var session = new Session(
+        data.session_start,
+        data.anglez,
+        data.noisex,
+        data.noisez,
+        data.factorx,
+        data.factorz,
+        data.axis,
+        data.distance,
+        data.avg_spm,
+        data.top_spm,
+        data.avg_speed,
+        data.top_speed,
+        data.session_end
+    );
+
     session.setId(data.id);
     session.setDebugAttempt(data.dbg_attempt);
     session.setRemoteId(data.remote_id);
     session.setDbgSyncedRows(data.dbg_sync_rows);
+
     return session;
 }
 

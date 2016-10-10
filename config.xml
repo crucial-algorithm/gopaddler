@@ -59,6 +59,8 @@
         <splash height="1334" src="res/ios/screen/Default-750@2x~iphone6-portrait.png" width="750" />
         <splash height="2208" src="res/ios/screen/Default-1242@3x~iphone6s-portrait.png" width="1242" />
         <splash height="1242" src="res/ios/screen/Default-1242@3x~iphone6s-landscape.png" width="2208" />
+
+        <hook type="before_build" src="src/cordova/ios/plist.js" />
     </platform>
     <preference name="FadeSplashScreen" value="true" />
     <preference name="AutoHideSplashScreen" value="true" />

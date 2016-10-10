@@ -53,16 +53,19 @@
         <div class="app-topbar paddler-topbar vh_height17">
             <button class="app-button left paddler-back" alt="back" data-back></button>
             <div class="paddler-title">
-                <div id="session-period-filter-button" class="paddler-title-text vh_font-size6 vw_padding-right6 app-option">All Sessions</div>
+                <div id="session-period-filter-button" class="paddler-title-text vh_font-size6 vw_padding-right6 app-option">Last 30 days</div>
             </div>
         </div>
         <div id="session-period-filter" class="app-options">
             <div class="app-options-dropdown">
                 <div class="date-options">
-                    <div class="app-options-line selected" data-period="all">All Sessions</div>
-                    <div class="app-options-line" data-period="this-month">Last 30 days</div>
+                    <div class="app-options-line selected" data-period="last-30-days">Last 30 days</div>
                     <div class="app-options-line" data-period="last-month">Last Month</div>
+                    <div class="app-options-line" data-period="start-from">Starting From</div>
                     <div class="app-options-line" data-period="custom">Custom Range</div>
+
+                    <div id="cancel-session-filter" class="app-options-cancel-button">Cancel</div>
+                    <div id="apply-session-filter" class="app-options-ok-button">Apply</div>
                 </div>
                 <div id="session-period-datepicker" class="calendar"></div>
             </div>
@@ -100,8 +103,7 @@
             <div class="app-content" data-no-scroll="true" id="sessions-wrapper" style="height:100%">
                 <ul class="sessions-details" data-no-scroll="true" id="local-sessions" style="height:100%;width:100%">
                     <li class="vh_height20" style="display: table;width: 100%;height:100%">
-                        <div class="vw_font-size7"
-                             style="display:table-cell;vertical-align: middle;text-align: center;font-weight: bold;text-transform: none;color: rgba(59,61,98,0.5);height:100%;line-height: 100%">
+                        <div class="vw_font-size7" style="display:table-cell;vertical-align: middle;text-align: center;font-weight: bold;text-transform: none;color: rgba(59,61,98,0.5);height:100%;line-height: 100%">
                             &lt;empty&gt;
                         </div>
                     </li>

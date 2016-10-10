@@ -342,7 +342,6 @@ Session.sessionsSummary = function () {
     return defer.promise();
 };
 
-
 Session.findAllNotSynced = function (callback) {
     var connection = db.getConnection();
     connection.executeSql("SELECT * FROM session WHERE synced <> 1 OR ((datetime('now','localtime') - session_start) < (604800 * 8) AND dbg_synced = 0)", [], function (res) {
@@ -385,6 +384,34 @@ Session.last = function () {
     });
 
     return defer.promise();
+};
+
+Session.getFromDate = function (date, callback) {
+    var connection = db.getConnection();
+
+    connection.executeSql('SELECT * FROM session WHERE session_end >= ? order by id desc', [date], function (res) {
+        var rows = [];
+        for (var i = 0; i < res.rows.length; i++) {
+            rows.push(sessionFromDbRow(res.rows.item(i)));
+        }
+        callback(rows);
+    }, function (error) {
+        console.log('Error retrieving sessions: ' + error.message);
+    });
+};
+
+Session.getForDates = function (startDate, endDate, callback) {
+    var connection = db.getConnection();
+
+    connection.executeSql('SELECT * FROM session WHERE session_end >= ? AND session_end <= ? order by id desc', [startDate, endDate], function (res) {
+        var rows = [];
+        for (var i = 0; i < res.rows.length; i++) {
+            rows.push(sessionFromDbRow(res.rows.item(i)));
+        }
+        callback(rows);
+    }, function (error) {
+        console.log('Error retrieving sessions: ' + error.message);
+    });
 };
 
 Session.get = function (id) {

@@ -55,6 +55,12 @@ var ddl = [
         ["ALTER TABLE settings add column show_touch_events_tips integer not null default 1"],
         ["ALTER TABLE settings add column show_calibration_tips integer not null default 1"],
         ["UPDATE settings SET version = 2"]
+    ],
+    [
+        ["ALTER TABLE settings add column default_session_filter TEXT"],
+        ["ALTER TABLE settings add column default_start_date INTEGER"],
+        ["ALTER TABLE settings add column default_end_date INTEGER"],
+        ["UPDATE settings SET version = 3"]
     ]
 ];
 

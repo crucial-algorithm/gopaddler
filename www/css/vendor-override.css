@@ -61,18 +61,26 @@
     color: #C3C3C3 !important;
 }
 
-.date-picker-wrapper .month-wrapper table .day.nextMonth.checked {
+.date-picker-wrapper .month-wrapper table .day.nextMonth.checked,
+.date-picker-wrapper .month-wrapper table .day.lastMonth.checked{
     background-color: #9495a7;
     color: #C3C3C3 !important;
 }
 
-.date-picker-wrapper .month-wrapper table div.first-date-selected,
-.date-picker-wrapper .month-wrapper table div.last-date-selected {
+.date-picker-wrapper .month-wrapper table .day.checked.first-date-selected,
+.date-picker-wrapper .month-wrapper table .day.checked.last-date-selected {
     background-color: #EF6156 !important;
     color: #FFFFFF !important;
 }
 
-.date-picker-wrapper .month-wrapper table .nextMonth.first-date-selected,
-.date-picker-wrapper .month-wrapper table .nextMonth.last-date-selected {
+.date-picker-wrapper .month-wrapper table .day.checked.nextMonth.first-date-selected,
+.date-picker-wrapper .month-wrapper table .day.checked.nextMonth.last-date-selected,
+.date-picker-wrapper .month-wrapper table .day.checked.lastMonth.first-date-selected,
+.date-picker-wrapper .month-wrapper table .day.checked.lastMonth.last-date-selected{
     background-color: #F49891 !important;
+}
+
+.date-picker-wrapper .month-wrapper table .day.lastMonth,
+.date-picker-wrapper .month-wrapper table .day.nextMonth {
+    display: block;
 }

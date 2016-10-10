@@ -30,20 +30,20 @@ function emulateCordova () {
             }}})
         } else {
             var data = [
-                {id: 1, session_start: new Date(), distance: 1, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 2, session_start: new Date(new Date().getTime() - 86400000), distance: 2, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 3, session_start: new Date(new Date().getTime() - (2 * 86400000)), distance: 3, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 4, session_start: new Date(new Date().getTime() - (3 * 86400000)), distance: 4, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 5, session_start: new Date(new Date().getTime() - (4 * 86400000)), distance: 5, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 6, session_start: new Date(new Date().getTime() - (4 * 86400000)), distance: 6, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 7, session_start: new Date(new Date().getTime() - (4 * 86400000)), distance: 7, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 8, session_start: new Date(new Date().getTime() - (5 * 86400000)), distance: 8, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 9, session_start: new Date(new Date().getTime() - (6 * 86400000)), distance: 9, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 10, session_start: new Date(new Date().getTime() - (6 * 86400000)), distance: 10, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 11, session_start: new Date(new Date().getTime() - (7 * 86400000)), distance: 11, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 12, session_start: new Date(new Date().getTime() - (8 * 86400000)), distance: 12, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 13, session_start: new Date(new Date().getTime() - (8 * 86400000)), distance: 13, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 14, session_start: new Date(new Date().getTime() - (9 * 86400000)), distance: 14, session_end: new Date(new Date().getTime() + 3600000)}
+                {id: 1, session_start: new Date(), distance: 1, top_speed: 1, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 2, session_start: new Date(new Date().getTime() - 86400000), distance: 2, top_speed: 2, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 3, session_start: new Date(new Date().getTime() - (2 * 86400000)), distance: 3, top_speed: 3, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 4, session_start: new Date(new Date().getTime() - (3 * 86400000)), distance: 4, top_speed: 4, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 5, session_start: new Date(new Date().getTime() - (4 * 86400000)), distance: 5, top_speed: 5, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 6, session_start: new Date(new Date().getTime() - (4 * 86400000)), distance: 6, top_speed: 6, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 7, session_start: new Date(new Date().getTime() - (4 * 86400000)), distance: 7, top_speed: 7, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 8, session_start: new Date(new Date().getTime() - (5 * 86400000)), distance: 8, top_speed: 8, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 9, session_start: new Date(new Date().getTime() - (6 * 86400000)), distance: 9, top_speed: 9, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 10, session_start: new Date(new Date().getTime() - (6 * 86400000)), distance: 10, top_speed: 10, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 11, session_start: new Date(new Date().getTime() - (7 * 86400000)), distance: 11, top_speed: 11, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 12, session_start: new Date(new Date().getTime() - (8 * 86400000)), distance: 12, top_speed: 12, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 13, session_start: new Date(new Date().getTime() - (8 * 86400000)), distance: 13, top_speed: 13, session_end: new Date(new Date().getTime() + 3600000)},
+                {id: 14, session_start: new Date(new Date().getTime() - (9 * 86400000)), distance: 14, top_speed: 14, session_end: new Date(new Date().getTime() + 3600000)}
             ];
             success({rows: {length: 14, item: function (index) {
                 return data[index];

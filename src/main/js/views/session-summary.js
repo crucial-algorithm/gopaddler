@@ -28,8 +28,8 @@ function SessionSummaryView(page, context, sessionSummaryArguments) {
         $details.css('display', 'table-cell');
     }
 
-    $page.find('#summary-congrats-session').html(moment(session.getSessionStart()).format('MMMM Do YYYY, HH:mm:ss'));
-    $page.find('#summary-details-session').html(moment(session.getSessionStart()).format('MMMM Do YYYY, HH:mm:ss'));
+    $page.find('#summary-congrats-session').html(moment(session.getSessionStart()).format('MMMM Do YYYY, HH:mm') + 'h');
+    $page.find('#summary-details-session').html(moment(session.getSessionStart()).format('MMMM Do YYYY, HH:mm') + 'h');
 
     var duration = moment.duration(session.getSessionEnd() - session.getSessionStart());
     var durationFormatted = utils.lpad(duration.hours(), 2)

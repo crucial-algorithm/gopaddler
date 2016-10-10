@@ -7,13 +7,16 @@ var CONSTANTS  = {
     MI: 'M'
 };
 
-function Settings(version, units, syncOnlyOnWifi, restoreLayout, showTouchGestures, showCalibrationTips) {
+function Settings(version, units, syncOnlyOnWifi, restoreLayout, showTouchGestures, showCalibrationTips, default_session_filter, default_start_date, default_end_date) {
     this._version = version;
     this._units = units;
     this._syncOnlyOnWifi = syncOnlyOnWifi;
     this._restoreLayout = restoreLayout;
     this._showTouchGestures = showTouchGestures === undefined ? true : showTouchGestures;
     this._showCalibrationTips = showCalibrationTips === undefined ? true : showCalibrationTips;
+    this.default_session_filter = default_session_filter;
+    this.default_start_date = default_start_date;
+    this.default_end_date = default_end_date;
 }
 
 Settings.prototype.getVersion = function() {
@@ -89,7 +92,18 @@ function loadSettings() {
 
     connection.executeSql("SELECT * FROM settings", [], function success(res) {
         var row = res.rows.item(0);
-        defer.resolve(new Settings(row.version, row.units, row.sync_wifi, row.restore_layout, row.show_touch_events_tips === 1, row.show_calibration_tips === 1));
+        defer.resolve(
+            new Settings(
+                row.version,
+                row.units,
+                row.sync_wifi,
+                row.restore_layout,
+                row.show_touch_events_tips === 1,
+                row.show_calibration_tips === 1,
+                row.default_session_filter,
+                row.default_start_date,
+                row.default_end_date
+            ));
     }, function error(e) {
         console.log('error loding settings... defaulting');
         defer.reject(err, new Settings(-1, CONSTANTS.KM, true, true));

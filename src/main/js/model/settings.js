@@ -14,9 +14,9 @@ function Settings(version, units, syncOnlyOnWifi, restoreLayout, showTouchGestur
     this._restoreLayout = restoreLayout;
     this._showTouchGestures = showTouchGestures === undefined ? true : showTouchGestures;
     this._showCalibrationTips = showCalibrationTips === undefined ? true : showCalibrationTips;
-    this.default_session_filter = default_session_filter;
-    this.default_start_date = default_start_date;
-    this.default_end_date = default_end_date;
+    this._defaultSessionFilter = default_session_filter;
+    this._defaultStartDate = default_start_date;
+    this._defaultEndDate = default_end_date;
 }
 
 Settings.prototype.getVersion = function() {
@@ -69,6 +69,30 @@ Settings.prototype.isShowCalibrationTips = function () {
 
 Settings.prototype.setShowCalibrationTips = function (showCalibrationTips) {
     this._showCalibrationTips = showCalibrationTips;
+};
+
+Settings.prototype.getDefaultSessionFilter = function() {
+    return this._defaultSessionFilter;
+};
+
+Settings.prototype.setDefaultSessionFilter = function(defaultSessionFilter) {
+    this._defaultSessionFilter = defaultSessionFilter;
+};
+
+Settings.prototype.getDefaultStartDate = function() {
+    return this._defaultStartDate;
+};
+
+Settings.prototype.setDefaultStartDate = function(defaultStartDate) {
+    this._defaultStartDate = defaultStartDate;
+};
+
+Settings.prototype.getDefaultEndDate = function() {
+    return this._defaultEndDate;
+};
+
+Settings.prototype.setDefaultEndDate = function(defaultEndDate) {
+    this._defaultEndDate = defaultEndDate;
 };
 
 

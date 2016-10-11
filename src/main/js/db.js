@@ -57,7 +57,7 @@ var ddl = [
         ["UPDATE settings SET version = 2"]
     ],
     [
-        ["ALTER TABLE settings add column default_session_filter TEXT"],
+        ["ALTER TABLE settings add column default_session_filter TEXT DEFAULT NULL"],
         ["ALTER TABLE settings add column default_start_date INTEGER"],
         ["ALTER TABLE settings add column default_end_date INTEGER"],
         ["UPDATE settings SET version = 3"]

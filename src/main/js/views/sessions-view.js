@@ -8,6 +8,9 @@ var LAST_30_DAYS_PERIOD_FILTER = 'last-30-days',
     utils   = require('../utils/utils.js'),
     Session = require('../model/session').Session,
 
+    swipe,
+    iScroll,
+
     appContext,
     $page,
     $sessionList,
@@ -30,13 +33,23 @@ function addSessionsToSessionList(sessions) {
         totalDuration = 0,
         totalSpeed    = 0.0,
         time,
-        hours,
-        minutes,
-        seconds;
+        hours         = 0,
+        minutes       = 0,
+        seconds       = 0;
 
     $sessionList.empty().css('height', 'auto');
 
     if (sessions.length === 0) {
+        var $noSessions = $('<li class="session-row-empty">You have no sessions for the selected period.</li>');
+
+        $noSessions.appendTo($sessionList);
+
+        // update scroll
+        iScroll = new IScroll($('#sessions-wrapper', $page)[0], {});
+
+        $summaryDistance.text(utils.round2(totalDistance));
+        $summarySpeed.text(utils.round2(totalSpeed));
+        $summaryTime.text([utils.lpad(hours, 2), utils.lpad(minutes, 2), utils.lpad(seconds, 2)].join(':'));
 
         return;
     }
@@ -96,19 +109,28 @@ function addSessionsToSessionList(sessions) {
     $summarySpeed.text(utils.round2(totalSpeed));
     $summaryTime.text([utils.lpad(hours, 2), utils.lpad(minutes, 2), utils.lpad(seconds, 2)].join(':'));
 
-    // update scroll to new height
-    new IScroll($('#sessions-wrapper', $page)[0], {});
+    // update scroll and swipe for new elements
+    iScroll = new IScroll($('#sessions-wrapper', $page)[0], {});
+
+    swipe = Swiped.init({
+        query: 'li',
+        list: true,
+        left: 0,
+        right: $('.session-row-delete', $page).width()
+    });
 }
 
 /**
  * Filter list of sessions by the selected filter
+ *
+ * @param {Context} context
  */
-function filterSessionsByPeriod() {
+function filterSessionsByPeriod(context) {
     var $sessionPeriodFilterButton = $page.find('#session-period-filter-button'),
         calendarValues;
 
     // if calendar has been declared, get dates from it
-    if (typeof $calendar !== 'undefined') {
+    if ($calendar !== undefined) {
         calendarValues = $calendar[0].value.split(' to ');
 
         filterStartDate = moment(calendarValues[0]).startOf('day');
@@ -119,21 +141,31 @@ function filterSessionsByPeriod() {
         }
     }
 
-    // TODO: update user settings
-
     switch (selectedFilter) {
         case LAST_MONTH_PERIOD_FILTER:
             $sessionPeriodFilterButton.html('Last Month');
+            context.preferences().setDefaultSessionFilter(LAST_MONTH_PERIOD_FILTER);
+            context.preferences().setDefaultStartDate(null);
+            context.preferences().setDefaultEndDate(null);
             break;
         case START_FROM_PERIOD_FILTER:
             $sessionPeriodFilterButton.html('Starting from ' + filterStartDate.format('YYYY-MM-DD'));
+            context.preferences().setDefaultSessionFilter(START_FROM_PERIOD_FILTER);
+            context.preferences().setDefaultStartDate(filterStartDate.valueOf());
+            context.preferences().setDefaultEndDate(filterEndDate.valueOf());
             break;
         case CUSTOM_PERIOD_FILTER:
             $sessionPeriodFilterButton.html(filterStartDate.format('YYYY-MM-DD') + ' to ' + filterEndDate.format('YYYY-MM-DD'));
+            context.preferences().setDefaultSessionFilter(CUSTOM_PERIOD_FILTER);
+            context.preferences().setDefaultStartDate(filterStartDate.valueOf());
+            context.preferences().setDefaultEndDate(filterEndDate.valueOf());
             break;
         case LAST_30_DAYS_PERIOD_FILTER:
         default:
             $sessionPeriodFilterButton.html('Last 30 Days');
+            context.preferences().setDefaultSessionFilter(LAST_30_DAYS_PERIOD_FILTER);
+            context.preferences().setDefaultStartDate(null);
+            context.preferences().setDefaultEndDate(null);
     }
 
     // adjust sessions according to chosen period
@@ -149,17 +181,22 @@ function filterSessionsByPeriod() {
 }
 
 /**
- * Change period on calendar according to selected filter
+ * Change sessions period according to selected filter
  *
- * @param {string}  $filter
+ * @param {string}  filter
  * @param {boolean} updateCalendar
  */
-function setCalendarSessionPeriod($filter, updateCalendar) {
-    selectedFilter = $filter;
+function setSessionPeriod(filter, updateCalendar) {
+    // set default filter
+    if (filter === undefined || filter === null) {
+        filter = LAST_30_DAYS_PERIOD_FILTER;
+    }
 
     // select new filter
-    $page.find('.app-options-line.selected').removeClass('selected');
-    $page.find('.app-options-line[data-period=' + $filter + ']').addClass('selected');
+    $page.find('.app-modal-button.selected').removeClass('selected');
+    $page.find('.app-modal-button[data-period=' + filter + ']').addClass('selected');
+
+    selectedFilter = filter;
 
     // if updateCalendar is set to false, don't change calendar dates
     if (updateCalendar === false) {
@@ -167,28 +204,29 @@ function setCalendarSessionPeriod($filter, updateCalendar) {
         return;
     }
 
-    switch (selectedFilter) {
+    switch (filter) {
         case LAST_MONTH_PERIOD_FILTER:
-            filterStartDate = moment(new Date()).subtract(1, 'months').startOf('month').format('YYYY-MM-DD');
-            filterEndDate   = moment(new Date()).subtract(1, 'months').endOf('month').format('YYYY-MM-DD');
+            filterStartDate = moment(new Date()).subtract(1, 'months').startOf('month');
+            filterEndDate   = moment(new Date()).subtract(1, 'months').endOf('month');
             break;
         case START_FROM_PERIOD_FILTER:
-            filterStartDate = moment(new Date()).format('YYYY-MM-DD');
-            filterEndDate   = moment(new Date()).format('YYYY-MM-DD');
+            filterStartDate = moment(new Date());
+            filterEndDate   = moment(new Date());
             break;
         case CUSTOM_PERIOD_FILTER:
-            filterStartDate = moment(new Date()).subtract(7, 'days').format('YYYY-MM-DD');
-            filterEndDate   = moment(new Date()).format('YYYY-MM-DD');
+            filterStartDate = moment(new Date()).subtract(7, 'days');
+            filterEndDate   = moment(new Date());
             break;
         case LAST_30_DAYS_PERIOD_FILTER:
         default:
-            filterStartDate = moment(new Date()).subtract(30, 'days').format('YYYY-MM-DD');
-            filterEndDate   = moment(new Date()).format('YYYY-MM-DD');
+            filterStartDate = moment(new Date()).subtract(30, 'days');
+            filterEndDate   = moment(new Date());
     }
 
     // select new dates on the calendar
-    if (typeof $calendar !== 'undefined') {
-        $calendar.data('dateRangePicker').setDateRange(filterStartDate, filterEndDate, true);
+    if ($calendar !== undefined) {
+        $calendar.data('dateRangePicker')
+            .setDateRange(filterStartDate.format('YYYY-MM-DD'), filterEndDate.format('YYYY-MM-DD'), true);
     }
 }
 
@@ -196,20 +234,29 @@ function setCalendarSessionPeriod($filter, updateCalendar) {
  * Initializes and binds events to Session Filter modal and its buttons
  *
  * @param {jQuery} $page
+ * @param {Context} context
  */
-function setupSessionFilter($page) {
+function setupSessionFilter($page, context) {
     var $sessionPeriodFilter,
         $sessionPeriodFilterOptions,
         $sessionPeriodFilterButton,
         $sessionFilterCancelButton,
-        $sessionFilterApplyButton;
+        $sessionFilterApplyButton,
+        $sessionPeriodFilterBackground;
 
-    $calendar                   = $page.find('#session-period-datepicker');
-    $sessionPeriodFilterButton  = $page.find('#session-period-filter-button');
-    $sessionPeriodFilter        = $page.find('#session-period-filter');
-    $sessionPeriodFilterOptions = $sessionPeriodFilter.find('.app-options-line');
-    $sessionFilterCancelButton  = $sessionPeriodFilter.find('#cancel-session-filter');
-    $sessionFilterApplyButton   = $sessionPeriodFilter.find('#apply-session-filter');
+    $calendar                      = $page.find('#session-period-datepicker');
+    $sessionPeriodFilterButton     = $page.find('#session-period-filter-button');
+    $sessionPeriodFilter           = $page.find('#session-period-filter');
+    $sessionPeriodFilterBackground = $sessionPeriodFilter.find('#session-filter-background');
+    $sessionPeriodFilterOptions    = $sessionPeriodFilter.find('.app-modal-button');
+    $sessionFilterCancelButton     = $sessionPeriodFilter.find('#cancel-session-filter');
+    $sessionFilterApplyButton      = $sessionPeriodFilter.find('#apply-session-filter');
+
+    // if calendar has been initialized, return. (this happens on session summary back button)
+    if ($calendar.data('dateRangePicker') !== undefined) {
+
+        return;
+    }
 
     // initialize session period filter datepicker
     $calendar.dateRangePicker({
@@ -223,19 +270,22 @@ function setupSessionFilter($page) {
         language:        'en'
     });
 
+    $calendar.data('dateRangePicker')
+        .setDateRange(filterStartDate.format('YYYY-MM-DD'), filterEndDate.format('YYYY-MM-DD'), true);
+
     $calendar
         .bind('datepicker-first-date-selected', function(event, obj) {
             // activate starting from filter when first date is selected, and update calendar value to single date
-            setCalendarSessionPeriod(START_FROM_PERIOD_FILTER, false);
+            setSessionPeriod(START_FROM_PERIOD_FILTER, false);
             $(this)[0].value = moment(obj.date1).format('YYYY-MM-DD');
         })
         .bind('datepicker-change',function(event, obj) {
             // activate custom filter when second date is selected and is different than the first
             if (moment(obj.date2).format('YYYY-MM-DD') === moment(obj.date1).format('YYYY-MM-DD')) {
-                setCalendarSessionPeriod(START_FROM_PERIOD_FILTER, false);
+                setSessionPeriod(START_FROM_PERIOD_FILTER, false);
                 $(this)[0].value = moment(obj.date1).format('YYYY-MM-DD');
             } else {
-                setCalendarSessionPeriod(CUSTOM_PERIOD_FILTER, false);
+                setSessionPeriod(CUSTOM_PERIOD_FILTER, false);
             }
         });
 
@@ -249,14 +299,19 @@ function setupSessionFilter($page) {
         $sessionPeriodFilter.hide();
     });
 
+    // hide modal when background is tapped
+    $sessionPeriodFilterBackground.on('tap', function () {
+        $sessionPeriodFilter.hide();
+    });
+
     // reflect period on calendar when a filter is chosen
     $sessionPeriodFilterOptions.on('tap', function () {
-        setCalendarSessionPeriod($(this).data('period'));
+        setSessionPeriod($(this).data('period'));
     });
 
     // filter session when apply is tapped
     $sessionFilterApplyButton.on('tap', function () {
-        filterSessionsByPeriod();
+        filterSessionsByPeriod(context);
         $sessionPeriodFilter.toggle();
     });
 }
@@ -274,6 +329,9 @@ function SessionsView(page, context) {
     appContext   = context;
     $page        = $(page);
     $sessionList = $page.find('#local-sessions');
+
+    // initialize calendar as undefined so date are retrieved from preferences and not it
+    $calendar    = undefined;
 
     $summaryDistance = $page.find('#total-distance');
     $summarySpeed    = $page.find('#top-speed');
@@ -306,27 +364,34 @@ function SessionsView(page, context) {
         e.stopImmediatePropagation();
     });
 
-    console.log(appContext);
+    // load sessions according to user preferences
+    setSessionPeriod(context.preferences().getDefaultSessionFilter());
 
-    // TODO: load sessions according to user preferences
-    setCalendarSessionPeriod(LAST_30_DAYS_PERIOD_FILTER);
-    filterSessionsByPeriod();
+    if (context.preferences().getDefaultStartDate() !== null && context.preferences().getDefaultStartDate() !== undefined) {
+        filterStartDate = moment(context.preferences().getDefaultStartDate());
+    }
+
+    if (context.preferences().getDefaultEndDate() !== null && context.preferences().getDefaultStartDate() !== undefined) {
+        filterEndDate = moment(context.preferences().getDefaultEndDate());
+    }
+
+    filterSessionsByPeriod(context);
 
     $page.on('appShow', function () {
 
         // initialize and bind events to session filter
-        setupSessionFilter($page);
+        setupSessionFilter($page, context);
 
         var width = $('.session-row-delete', page).width();
 
-        Swiped.init({
+        swipe = Swiped.init({
             query: 'li',
             list: true,
             left: 0,
             right: width
         });
 
-        new IScroll($('#sessions-wrapper', page)[0], {});
+        iScroll = new IScroll($('#sessions-wrapper', page)[0], {});
     });
 }
 
@@ -373,6 +438,12 @@ SessionsView.prototype.confirmDelete = function ($button, sessionId) {
                         $button.closest('li').remove();
                         $row.next().remove();
                         $row.remove();
+
+                        // update scroll
+                        iScroll = new IScroll($('#sessions-wrapper', $page)[0], {});
+
+                        filterSessionsByPeriod(appContext);
+
                         self.lock[sessionId] = false;
                     });
             }

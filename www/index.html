@@ -53,22 +53,23 @@
         <div class="app-topbar paddler-topbar vh_height17">
             <button class="app-button left paddler-back" alt="back" data-back></button>
             <div class="paddler-title">
-                <div id="session-period-filter-button" class="paddler-title-text vh_font-size6 vw_padding-right6 app-option">Last 30 days</div>
+                <div id="session-period-filter-button" class="paddler-title-text vh_font-size6 vw_padding-right6 app-modal-open">Last 30 days</div>
             </div>
         </div>
-        <div id="session-period-filter" class="app-options">
-            <div class="app-options-dropdown">
+        <div id="session-period-filter" class="app-modal-wrapper">
+            <div class="app-modal">
                 <div class="date-options">
-                    <div class="app-options-line selected" data-period="last-30-days">Last 30 days</div>
-                    <div class="app-options-line" data-period="last-month">Last Month</div>
-                    <div class="app-options-line" data-period="start-from">Starting From</div>
-                    <div class="app-options-line" data-period="custom">Custom Range</div>
+                    <div class="app-modal-button selected" data-period="last-30-days">Last 30 days</div>
+                    <div class="app-modal-button" data-period="last-month">Last Month</div>
+                    <div class="app-modal-button" data-period="start-from">Starting From</div>
+                    <div class="app-modal-button" data-period="custom">Custom Range</div>
 
-                    <div id="cancel-session-filter" class="app-options-cancel-button">Cancel</div>
-                    <div id="apply-session-filter" class="app-options-ok-button">Apply</div>
+                    <div id="cancel-session-filter" class="app-modal-cancel-button">Cancel</div>
+                    <div id="apply-session-filter" class="app-modal-ok-button">Apply</div>
                 </div>
                 <div id="session-period-datepicker" class="calendar"></div>
             </div>
+            <div id="session-filter-background" class="app-modal-background"></div>
         </div>
         <div class="app-content" style="height:100%;overflow: hidden" data-no-scroll="true">
             <div class="sessions-summary">
@@ -149,7 +150,7 @@
             <div style="display:table;height:100%;width:100%">
                 <div style="display:table-row;width:100%">
                     <div id="summary-congrats" class="summary-session">
-                        <div class="summary-congrats-title vw_font-size6">congrats</div>
+                        <div class="summary-congrats-title vw_font-size6">Congrats!</div>
                         <div class="summary-icon">
                             <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
                                  viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
@@ -171,7 +172,7 @@
                             </path>
                             </svg>
                         </div>
-                        <div class="summary-label vw_font-size4" style="text-align: center;margin-top: -10px;">Session</div>
+                        <div class="summary-label vw_font-size4" style="text-align: center;margin-top: -10px;">Session Finished</div>
                         <div id="summary-congrats-session" class="summary-current-session vw_font-size3"></div>
                     </div>
                     <div id="summary-details" class="summary-session" style="display: none">

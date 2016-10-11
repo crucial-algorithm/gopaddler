@@ -49,7 +49,7 @@ body {
     border: 0;
 }
 
-.app-option:after {
+.app-modal-open:after {
     content: '';
     display: inline-block;
     width: 0;
@@ -61,7 +61,27 @@ body {
     vertical-align: middle;
 }
 
-.app-options-dropdown {
+.app-modal-wrapper {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 3000;
+    background-color: rgba(0, 0, 0, .3);
+}
+
+.app-modal-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, .3);
+}
+
+.app-modal {
     position: absolute;
     top: 0;
     left: 0;
@@ -80,24 +100,7 @@ body {
     box-shadow: 0 1px 5px 0 rgba(0, 0, 0, .3);
 }
 
-.app-options {
-    display: none;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 3000;
-    background-color: rgba(0, 0, 0, .3);
-}
-
-.app-options-line {
-    display: block;
-    height: 40px;
-    line-height: 40px;
-}
-
-.app-options-line {
+.app-modal-button {
     display: block;
     height: 44px;
     line-height: 44px;
@@ -110,11 +113,11 @@ body {
     text-transform: uppercase;
 }
 
-.app-options-line.selected {
+.app-modal-button.selected {
     background-color: #3B3D62;
 }
 
-.app-options-ok-button {
+.app-modal-ok-button {
     position: absolute;
     bottom: 20px;
     right: 20px;
@@ -130,7 +133,7 @@ body {
     text-transform: uppercase;
 }
 
-.app-options-cancel-button {
+.app-modal-cancel-button {
     position: absolute;
     bottom: 20px;
     left: 20px;
@@ -781,6 +784,15 @@ body {
 
 .session-row-delete-btn.cancel {
     background-color: #F59146;
+}
+
+.session-row-empty {
+    padding: 20px 20px;
+    background-color: #EFEFF4;
+    color: #7E8C8D;
+    font-size: 12px;
+    text-align: center;
+    font-weight: bold;
 }
 
 #sessions-wrapper {

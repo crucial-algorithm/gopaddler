@@ -56,7 +56,7 @@ function addSessionsToSessionList(sessions) {
 
     // add each session to the session list
     sessions.forEach(function (session) {
-        var $li       = $('<li class="session-row vh_height20" data-id="' + session.id + '"></li>'),
+        var $li       = $('<li class="session-row" data-id="' + session.id + '"></li>'),
             $main     = $('<div class="session-row-data-wrapper"></div>'),
             sessionAt = moment(new Date(session.getSessionStart())),
             duration  = moment.duration(session.getSessionEnd() - session.getSessionStart()),
@@ -76,10 +76,9 @@ function addSessionsToSessionList(sessions) {
         }
 
         $('<div class="session-row-data"></div>')
-            .append($("<div style=\"display:table-cell\"/>").html(sessionAt.format("MMM D")))
-            .append($("<div style=\"display:table-cell\"/>").html(sessionAt.format("HH:mm") + 'h'))
-            .append($("<div style=\"display:table-cell;text-transform:none\"/>").html(dDisplay))
-            .append($("<div style=\"display:table-cell\"/>").html('<b>' + utils.round2(distance || 0) + ' ' + appContext.getUnit('distance') + '</b>'))
+            .append($('<div/>').html('<label class="session-row-label">' + sessionAt.format('HH:mm') + 'h</label>' + sessionAt.format('MMM D')))
+            .append($('<div/>').html('<label class="session-row-label">duration</label>' + dDisplay))
+            .append($('<div/>').html('<label class="session-row-label">distance</label>' + '<b>' + utils.round2(distance || 0) + ' ' + appContext.getUnit('distance') + '</b>'))
             .appendTo($main);
 
         // on a session tap, open session-summary with its details
@@ -149,7 +148,7 @@ function filterSessionsByPeriod(context) {
             context.preferences().setDefaultEndDate(null);
             break;
         case START_FROM_PERIOD_FILTER:
-            $sessionPeriodFilterButton.html('Starting from ' + filterStartDate.format('YYYY-MM-DD'));
+            $sessionPeriodFilterButton.html('Since ' + filterStartDate.format('YYYY-MM-DD'));
             context.preferences().setDefaultSessionFilter(START_FROM_PERIOD_FILTER);
             context.preferences().setDefaultStartDate(filterStartDate.valueOf());
             context.preferences().setDefaultEndDate(filterEndDate.valueOf());

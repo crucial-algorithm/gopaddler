@@ -63,7 +63,7 @@ function SettingsView(page, settings) {
         var layout = $layout.is(':checked');
         Settings.saveSettings(units, wifi, layout);
 
-        // update referece that is being used globally
+        // update reference that is being used globally
         settings.setUnits(units);
         settings.setSyncOnlyOnWifi(wifi);
         settings.setRestoreLayout(layout);

@@ -40,9 +40,9 @@ App.controller('home', function (page, request) {
         context = new Context(settings);
         new HomeView(page, context, request);
     }).fail(function (error, defaultSettings) {
-            settings = defaultSettings;
-            context = new Context(settings);
-        });
+        settings = defaultSettings;
+        context = new Context(settings);
+    });
 });
 
 /**
@@ -71,6 +71,7 @@ App.controller('settings', function (page) {
  */
 App.controller('sessions', function (page) {
     analytics.setView('sessions');
+    context = new Context(context.preferences());
     new SessionsView(page, context);
 });
 

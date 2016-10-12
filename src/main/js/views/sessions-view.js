@@ -1,5 +1,7 @@
 'use strict';
 
+var Context = require('../context').Context;
+
 var LAST_30_DAYS_PERIOD_FILTER = 'last-30-days',
     LAST_MONTH_PERIOD_FILTER   = 'last-month',
     START_FROM_PERIOD_FILTER   = 'start-from',
@@ -335,6 +337,10 @@ function SessionsView(page, context) {
     $summaryDistance = $page.find('#total-distance');
     $summarySpeed    = $page.find('#top-speed');
     $summaryTime     = $page.find('#total-duration');
+
+    // set unit labes according to user preference
+    $page.find('#sessions-summary-distance-unit').html(context.getUnit('distance'));
+    $page.find('#sessions-summary-speed-unit').html(context.getUnit('speed'));
 
     // bind event to back button
     $back.on('touchstart', function () {

@@ -3,7 +3,7 @@
 var fs = require('fs');
 var plist = require('plist');
 
-var FILEPATH = 'platforms/ios/Paddler/Paddler-Info.plist';
+var FILEPATH = 'platforms/ios/GoPaddler/GoPaddler-Info.plist';
 
 function overridePlist(context) {
     var xml = fs.readFileSync(FILEPATH, 'utf8');
@@ -12,6 +12,15 @@ function overridePlist(context) {
     obj.UIStatusBarHidden = true;
     obj.UIViewControllerBasedStatusBarAppearance = false;
     obj.CFBundleDisplayName = "Paddler";
+
+    obj.UISupportedInterfaceOrientations = [
+        "UIInterfaceOrientationPortrait",
+        "UIInterfaceOrientationLandscapeRight"
+    ];
+    obj["UISupportedInterfaceOrientations~ipad"] = [
+        "UIInterfaceOrientationPortrait",
+        "UIInterfaceOrientationLandscapeRight"
+    ];
 
     xml = plist.build(obj);
     fs.writeFileSync(FILEPATH, xml, {encoding: 'utf8'});

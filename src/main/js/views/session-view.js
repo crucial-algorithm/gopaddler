@@ -364,7 +364,7 @@ SessionView.prototype.confirm = function (onresume, onfinish) {
     $finish.on('touchend', function () {
         onfinish.apply(self, []);
     });
-}
+};
 
 
 function saveLayout(top, middle, bottom, large) {

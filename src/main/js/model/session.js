@@ -3,6 +3,7 @@
 var db = require('../db.js');
 var SessionDetail = require('./session-detail').SessionDetail;
 var utils = require('../utils/utils.js');
+var MeasureEnhancement = require('../core/measure-enhancement').MeasureEnhancement;
 
 function Session(sessionStart, angleZ, noiseX, noiseZ, factorX, factorZ, axis, distance, avgSpm, topSpm, avgSpeed, topSpeed, sessionEnd) {
     this.connection = db.getConnection();
@@ -221,35 +222,87 @@ Session.prototype.create = function () {
 
 Session.prototype.finish = function () {
     var self = this, defer = $.Deferred();
-    self.connection.executeSql("select max(distance) total_distance, avg(speed) avg_speed, max(speed) max_speed, avg(spm) avg_spm, max(spm) top_spm, " +
-        " max(efficiency) max_ef, avg(efficiency) avg_ef FROM session_data where session = ?", [self.id], function (res) {
 
-        var record = res.rows.item(0);
+    var sessionEndAt = new Date().getTime();
 
-        self.setSessionEnd(new Date().getTime());
-        self.setDistance(record.total_distance);
-        self.setAvgSpeed(record.avg_speed);
-        self.setTopSpeed(record.max_speed);
-        self.setAvgSpm(record.avg_spm);
-        self.setTopSpm(record.top_spm);
-        self.setAvgEfficiency(record.avg_ef);
-        self.setTopEfficiency(record.max_ef);
+    self.detail().then(function (rows) {
+
+        var measureEnhancement = new MeasureEnhancement();
+        var maxSpm = measureEnhancement.getMaxSPM(rows);
+
+        var distance = 0, avgSpeed, avgSpm, avgSpmEfficiency
+            , totalSpeed = 0, totalSpm = 0, totalEfficiency = 0
+            , maxSpeed = 0, maxSpmEfficiency = 0;
+
+        var length = rows.length;
+        for (var i = 0; i < length; i++) {
+            distance = rows[i].distance;
+            totalSpeed += rows[i].speed;
+            totalSpm += rows[i].spm;
+            totalEfficiency += rows[i].spmEfficiency;
+
+
+            if (rows[i].speed > maxSpeed) maxSpeed = rows[i].speed;
+            if (rows[i].spmEfficiency > maxSpmEfficiency) maxSpmEfficiency = rows[i].spmEfficiency;
+        }
+
+        avgSpeed = totalSpeed / length;
+        avgSpm = totalSpm / length;
+        avgSpmEfficiency = totalEfficiency / length;
+
+        self.setSessionEnd(sessionEndAt);
+        self.setDistance(distance);
+        self.setAvgSpeed(avgSpeed);
+        self.setTopSpeed(maxSpeed);
+        self.setAvgSpm(avgSpm);
+        self.setTopSpm(maxSpm);
+        self.setAvgEfficiency(avgSpmEfficiency);
+        self.setTopEfficiency(maxSpmEfficiency);
 
         self.connection.executeSql("update session set distance = ?, avg_spm = ?, top_spm = ?, avg_speed = ?, top_speed = ?, session_end = ? where id = ?"
-            , [record.total_distance, record.avg_spm, record.top_spm, record.avg_speed, record.max_speed, self.getSessionEnd(), self.id]
+            , [distance, avgSpm, maxSpm, avgSpeed, maxSpeed, sessionEndAt, self.id]
             , function (a) {
                 defer.resolve(this);
             }, function (a) {
                 console.log('error', a);
                 defer.reject(this);
-            })
-
-
-    }, function (error) {
-        console.log('Error creating session: ' + error.message);
-        defer.reject(this);
+            });
     });
     return defer;
+};
+
+/**
+ * Get session_data for this session
+ * @returns {*}
+ */
+Session.prototype.detail = function () {
+    var self = this,
+        defer = $.Deferred();
+
+    SessionDetail.get(self.getId(), function (rows) {
+
+        var dataPoints = [],
+            row;
+
+        for (var j = 0; j < rows.length; j++) {
+
+            row = rows[j];
+
+            dataPoints.push({
+                timestamp: row.getTimestamp(),
+                distance: utils.round2(row.getDistance()),
+                speed: utils.round2(row.getSpeed()),
+                spm: row.getSpm(),
+                spmEfficiency: utils.round2(row.getEfficiency()),
+                latitude: row.getLatitude(),
+                longitude: row.getLongitude()
+            });
+        }
+
+        defer.resolve(dataPoints);
+    });
+
+    return defer.promise();
 };
 
 Session.delete = function (id) {

@@ -42,3 +42,27 @@ Test cases are stored in local PostgreSQL database
 ##### Running
     > cd src/test/js
     > mocha .
+
+
+
+### Frequent Issues ###
+#### Lock orientation not working in IOS
+Make sure that plist hook is defining the accepted view modes:
+```
+    obj.UISupportedInterfaceOrientations = [
+        "UIInterfaceOrientationPortrait",
+        "UIInterfaceOrientationLandscapeRight"
+    ];
+    obj["UISupportedInterfaceOrientations~ipad"] = [
+        "UIInterfaceOrientationPortrait",
+        "UIInterfaceOrientationLandscapeRight"
+    ];
+```
+If truly desperate, edit ./platforms/ios/CordovaLib/Classes/Public/CDVViewController.m to the following:
+
+```
+- (BOOL)shouldAutorotate
+{
+    return FALSE;
+}
+```

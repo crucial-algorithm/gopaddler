@@ -25,7 +25,7 @@
 
 .date-picker-wrapper .month-wrapper {
     border: 0;
-    padding: 10px 20px;
+    padding: 10px;
     width: 100% !important;
     height: 100%;
     box-sizing: border-box;
@@ -83,4 +83,17 @@
 .date-picker-wrapper .month-wrapper table .day.lastMonth,
 .date-picker-wrapper .month-wrapper table .day.nextMonth {
     display: block;
+}
+
+.date-picker-wrapper table .caption .next,
+.date-picker-wrapper table .caption .prev {
+    display: block;
+    height: 40px;
+    width: 27px;
+    line-height: 40px;
+}
+
+.date-picker-wrapper table .caption .next:hover,
+.date-picker-wrapper table .caption .prev:hover {
+    background-color: #E8E8E8;
 }

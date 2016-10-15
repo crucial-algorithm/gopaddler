@@ -25,54 +25,52 @@ function detectedBeforeMax(strokes) {
 }
 
 
-describe('Stroke Detector', function() {
-    describe('#', function () {
+describe('Stroke Detector', function () {
 
-        // actual test is to make sure 13 is not created at all
-        it('should create 13 paddle after 12 (fixed with abs in min seconds)', function (done) {
+    // actual test is to make sure 13 is not created at all
+    it('should create 13 paddle after 12 (fixed with abs in min seconds)', function (done) {
 
-            var calibration = new Calibration(2, 0.731365031532024, 7.99823059387206, null, 6.55196362152099, 0.839431295262873, 0.744263410302282);
-            var strokeDetector = new StrokeDetector(null, calibration);
+        var calibration = new Calibration(2, 0.731365031532024, 7.99823059387206, null, 6.55196362152099, 0.839431295262873, 0.744263410302282);
+        var strokeDetector = new StrokeDetector(null, calibration);
 
-            data.get(1).then(function (records) {
-                var strokes = loop(records, strokeDetector);
-                detectedBeforeMax(strokes);
-                assert.equal(12, strokes.length);
-                done();
-            }).catch(function(err){
-                  done(err);
-                });
+        data.get(1).then(function (records) {
+            var strokes = loop(records, strokeDetector);
+            detectedBeforeMax(strokes);
+            assert.equal(12, strokes.length);
+            done();
+        }).catch(function (err) {
+            done(err);
         });
-
-        it('Must validate 38 strokes', function (done) {
-
-            var calibration = new Calibration(2, 0.731365031532024, 7.99823059387206, null, 6.55196362152099, 0.839431295262873, 0.744263410302282);
-            var strokeDetector = new StrokeDetector(null, calibration);
-
-            data.get(2).then(function (records) {
-                var strokes = loop(records, strokeDetector);
-                detectedBeforeMax(strokes);
-                assert.equal(38, strokes.length);
-                done();
-            }).catch(function (err) {
-                    done(err);
-                });
-        });
-
-        it('Discard invalid max\'s', function (done) {
-
-            var calibration = new Calibration(2, 0.76343306868515, 7.83650540313721, null, 6.78269082183838, 0.807363258109747, 0.722466629306888);
-            var strokeDetector = new StrokeDetector(null, calibration);
-
-            data.get(3).then(function (records) {
-                var strokes = loop(records, strokeDetector);
-                detectedBeforeMax(strokes);
-                assert.equal(20, strokes.length);
-                done();
-            }).catch(function (err) {
-                    done(err);
-                });
-        });
-
     });
+
+    it('Must validate 38 strokes', function (done) {
+
+        var calibration = new Calibration(2, 0.731365031532024, 7.99823059387206, null, 6.55196362152099, 0.839431295262873, 0.744263410302282);
+        var strokeDetector = new StrokeDetector(null, calibration);
+
+        data.get(2).then(function (records) {
+            var strokes = loop(records, strokeDetector);
+            detectedBeforeMax(strokes);
+            assert.equal(38, strokes.length);
+            done();
+        }).catch(function (err) {
+            done(err);
+        });
+    });
+
+    it('Discard invalid max\'s', function (done) {
+
+        var calibration = new Calibration(2, 0.76343306868515, 7.83650540313721, null, 6.78269082183838, 0.807363258109747, 0.722466629306888);
+        var strokeDetector = new StrokeDetector(null, calibration);
+
+        data.get(3).then(function (records) {
+            var strokes = loop(records, strokeDetector);
+            detectedBeforeMax(strokes);
+            assert.equal(20, strokes.length);
+            done();
+        }).catch(function (err) {
+            done(err);
+        });
+    });
+
 });

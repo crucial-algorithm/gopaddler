@@ -74,5 +74,16 @@ describe('measure enhacement', function () {
     });
 
 
+    it('Should discard 144', function (done) {
+
+        data.getSessionData('AcWNEmrtXeE9W33yA').then(function (records) {
+            var value = measureEnhancement.getMaxSPM(records);
+            assert.notEqual(value, 144);
+            done();
+        }).catch(function (err) {
+            done(err);
+        });
+    });
+
 
 });

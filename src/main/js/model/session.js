@@ -5,7 +5,8 @@ var SessionDetail = require('./session-detail').SessionDetail;
 var utils = require('../utils/utils.js');
 var MeasureEnhancement = require('../core/measure-enhancement').MeasureEnhancement;
 
-function Session(sessionStart, angleZ, noiseX, noiseZ, factorX, factorZ, axis, distance, avgSpm, topSpm, avgSpeed, topSpeed, sessionEnd) {
+function Session(sessionStart, angleZ, noiseX, noiseZ, factorX, factorZ, axis, distance, avgSpm, topSpm
+    , avgSpeed, topSpeed, avgEfficiency, topEfficiency, sessionEnd) {
     this.connection = db.getConnection();
     this.id = null;
     this.remoteId = null;
@@ -23,8 +24,8 @@ function Session(sessionStart, angleZ, noiseX, noiseZ, factorX, factorZ, axis, d
     this.topSpm = topSpm;
     this.avgSpeed = avgSpeed;
     this.topSpeed = topSpeed;
-    this.topEfficiency = undefined;
-    this.avgEfficiency = undefined;
+    this.topEfficiency = topEfficiency;
+    this.avgEfficiency = avgEfficiency;
 
     this.dbgAttempt = undefined;
     this.dbgSyncedRows = 0;
@@ -130,7 +131,6 @@ Session.prototype.setTopEfficiency = function(value) {
     this.topEfficiency = value;
 };
 
-// TODO: create efficiency fields in table
 Session.prototype.getTopEfficiency = function(){
     return this.topEfficiency;
 };
@@ -236,14 +236,14 @@ Session.prototype.finish = function () {
 
         var length = rows.length;
         for (var i = 0; i < length; i++) {
-            distance = rows[i].distance;
-            totalSpeed += rows[i].speed;
-            totalSpm += rows[i].spm;
-            totalEfficiency += rows[i].spmEfficiency;
+            distance = rows[i].getDistance();
+            totalSpeed += rows[i].getSpeed();
+            totalSpm += rows[i].getSpm();
+            totalEfficiency += rows[i].getEfficiency();
 
 
-            if (rows[i].speed > maxSpeed) maxSpeed = rows[i].speed;
-            if (rows[i].spmEfficiency > maxSpmEfficiency) maxSpmEfficiency = rows[i].spmEfficiency;
+            if (rows[i].getSpeed() > maxSpeed) maxSpeed = rows[i].getSpeed();
+            if (rows[i].getEfficiency() > maxSpmEfficiency) maxSpmEfficiency = rows[i].getEfficiency();
         }
 
         avgSpeed = totalSpeed / length;
@@ -259,8 +259,9 @@ Session.prototype.finish = function () {
         self.setAvgEfficiency(avgSpmEfficiency);
         self.setTopEfficiency(maxSpmEfficiency);
 
-        self.connection.executeSql("update session set distance = ?, avg_spm = ?, top_spm = ?, avg_speed = ?, top_speed = ?, session_end = ? where id = ?"
-            , [distance, avgSpm, maxSpm, avgSpeed, maxSpeed, sessionEndAt, self.id]
+        self.connection.executeSql("update session set distance = ?, avg_spm = ?, top_spm = ?, avg_speed = ?" +
+            ", top_speed = ?, avg_efficiency = ?, top_efficiency = ?, session_end = ? where id = ?"
+            , [distance, avgSpm, maxSpm, avgSpeed, maxSpeed, avgSpmEfficiency, maxSpmEfficiency, sessionEndAt, self.id]
             , function (a) {
                 defer.resolve(this);
             }, function (a) {
@@ -288,15 +289,11 @@ Session.prototype.detail = function () {
 
             row = rows[j];
 
-            dataPoints.push({
-                timestamp: row.getTimestamp(),
-                distance: utils.round2(row.getDistance()),
-                speed: utils.round2(row.getSpeed()),
-                spm: row.getSpm(),
-                spmEfficiency: utils.round2(row.getEfficiency()),
-                latitude: row.getLatitude(),
-                longitude: row.getLongitude()
-            });
+            row.setDistance(utils.round2(row.getDistance()));
+            row.setSpeed(utils.round2(row.getSpeed()));
+            row.setEfficiency(utils.round2(row.getEfficiency()));
+
+            dataPoints.push(row);
         }
 
         defer.resolve(dataPoints);
@@ -499,6 +496,8 @@ function sessionFromDbRow(data) {
         data.top_spm,
         data.avg_speed,
         data.top_speed,
+        data.avg_efficiency,
+        data.top_efficiency,
         data.session_end
     );
 

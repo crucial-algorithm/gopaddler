@@ -1,6 +1,7 @@
 var pg = require('pg');
 var Promise = require("bluebird");
 var connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/paddler';
+var SessionDetail = require('../../main/js/model/session-detail').SessionDetail;
 
 
 exports.get = function (id) {
@@ -44,19 +45,15 @@ exports.getSessionData = function (id) {
         // Get a Postgres client from the connection pool
         pg.connect(connectionString, function (err, client, done) {
 
-            var query = client.query("SELECT event_at, spm, speed, distance, spm_efficiency FROM session_data " +
-                "WHERE session_id = $1 ORDER BY event_at", [id]);
+            var query = client.query("SELECT event_at, spm, speed, distance, spm_efficiency, 0 latitude, 0 longitude " +
+                " FROM session_data WHERE session_id = $1 ORDER BY event_at", [id]);
             var rows = [];
 
             // Stream results back one row at a time
             query.on('row', function (row) {
-                rows.push({
-                    event_at: parseInt(row.event_at),
-                    spm: parseInt(row.spm),
-                    speed: parseFloat(row.speed),
-                    distance: parseFloat(row.distance),
-                    spm_efficiency: parseFloat(row.spm_efficiency)
-                });
+                rows.push(new SessionDetail(id, parseFloat(row.event_at), parseFloat(row.distance)
+                    , parseFloat(row.speed), parseFloat(row.spm), parseFloat(row.spm_efficiency)
+                    , row.latitude, row.longitude));
             });
 
             // After all data is returned, close connection and return results

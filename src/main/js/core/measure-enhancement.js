@@ -69,24 +69,24 @@ MeasureEnhancement.prototype.getMaxSPM = function (records) {
 
     var top = records.concat().sort(sortDesc('spm'));
     top = top.slice(0, 21);
-    top = top.sort(sortAsc('event_at'));
+    top = top.sort(sortAsc('timestamp'));
 
     var avg, test = top.shift(), kept = [];
     for (var i = 0; i < records.length; i++) {
 
         // ignore matches at the beginning
         if (i < 5) {
-            if (records[i].event_at === test.event_at) {
+            if (records[i].getTimestamp() === test.getTimestamp()) {
                 test = top.shift();
             }
             continue;
         }
 
-        if (records[i].event_at === test.event_at) {
+        if (records[i].getTimestamp() === test.getTimestamp()) {
 
             avg = this.calculateAvgInZone(records, i, 'spm');
 
-            if (test.spm < 1.36 * avg && (test.speed > 0 || !this.isGpsActive(records, i))) {
+            if (test.getSpm() < 1.36 * avg && (test.getSpeed() > 0 || !this.isGpsActive(records, i))) {
                 kept.push(test);
             }
 
@@ -98,12 +98,12 @@ MeasureEnhancement.prototype.getMaxSPM = function (records) {
     }
 
     if (kept.length === 0) {
-        return records.sort(sortDesc('spm'))[0].spm;
+        return records.sort(sortDesc('spm'))[0].getSpm();
     }
 
 
     kept = kept.sort(sortDesc('spm'));
-    return kept[0].spm;
+    return kept[0].getSpm();
 };
 
 exports.MeasureEnhancement = MeasureEnhancement;

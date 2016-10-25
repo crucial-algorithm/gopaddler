@@ -15,59 +15,59 @@ function SessionDetail(session, timestamp, distance, speed, spm, efficiency, lat
 
 SessionDetail.prototype.getSession = function () {
     return this.session;
-}
+};
 
 SessionDetail.prototype.setSession = function (session) {
     this.session = session;
-}
+};
 
 SessionDetail.prototype.getTimestamp = function () {
     return this.timestamp;
-}
+};
 
 SessionDetail.prototype.setTimestamp = function (timestamp) {
     this.timestamp = timestamp;
-}
+};
 
 SessionDetail.prototype.getDistance = function () {
     return this.distance;
-}
+};
 
 SessionDetail.prototype.setDistance = function (distance) {
     this.distance = distance;
-}
+};
 
 SessionDetail.prototype.getSpeed = function () {
     return this.speed;
-}
+};
 
 SessionDetail.prototype.setSpeed = function (speed) {
     this.speed = speed;
-}
+};
 
 SessionDetail.prototype.getSpm = function () {
     return this.spm;
-}
+};
 
 SessionDetail.prototype.setSpm = function (spm) {
     this.spm = spm;
-}
+};
 
 SessionDetail.prototype.getEfficiency = function () {
     return this.efficiency;
-}
+};
 
 SessionDetail.prototype.setEfficiency = function (efficiency) {
     this.efficiency = efficiency;
-}
+};
 
 SessionDetail.prototype.getLatitude = function () {
     return this.latitude;
-}
+};
 
 SessionDetail.prototype.setLatitude = function (latitude) {
     this.latitude = latitude;
-}
+};
 
 SessionDetail.prototype.getLongitude = function () {
     return this.longitude;
@@ -75,7 +75,7 @@ SessionDetail.prototype.getLongitude = function () {
 
 SessionDetail.prototype.setLongitude = function (longitude) {
     this.longitude = longitude;
-}
+};
 
 SessionDetail.prototype.save = function () {
     this.connection.executeSql("INSERT INTO session_data (session, timestamp, distance, speed, spm, efficiency, latitude, longitude) VALUES (?,?,?,?,?,?,?,?)",
@@ -88,11 +88,13 @@ SessionDetail.prototype.save = function () {
 
 SessionDetail.get = function(sessionId, callback) {
     var connection = db.getConnection();
-    connection.executeSql("SELECT timestamp, distance, speed, spm, efficiency, latitude, longitude FROM session_data WHERE session = ?",[sessionId], function (res) {
+    connection.executeSql("SELECT timestamp, distance, speed, spm, efficiency, latitude, longitude FROM session_data WHERE session = ? ORDER BY id ASC",[sessionId], function (res) {
         var rows = [], data;
         for (var i = 0; i < res.rows.length; i++) {
             data = res.rows.item(i);
-            rows.push(new SessionDetail(sessionId, data.timestamp, data.distance, data.speed, data.spm, data.efficiency, data.latitude, data.longitude));
+            rows.push(new SessionDetail(sessionId, parseFloat(data.timestamp), parseFloat(data.distance)
+                , parseFloat(data.speed), parseFloat(data.spm), parseFloat(data.efficiency)
+                , parseFloat(data.latitude), parseFloat(data.longitude)));
         }
         callback(rows);
     }, function (error) {

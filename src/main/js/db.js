@@ -10,6 +10,11 @@ var ddl = [
             "units TEXT not null default 'K',",
             "sync_wifi integer not null default 1,",
             "restore_layout integer not null default 1",
+            "show_touch_events_tips integer not null default 1",
+            "show_calibration_tips integer not null default 1",
+            "default_session_filter TEXT DEFAULT NULL",
+            "default_start_date INTEGER",
+            "default_end_date INTEGER",
             ")"],
 
         ["CREATE TABLE IF NOT EXISTS session (",
@@ -26,8 +31,10 @@ var ddl = [
             "distance REAL,",
             "avg_spm REAL,",
             "avg_speed REAL,",
+            "avg_efficiency REAL,",
             "top_spm REAL,",
             "top_speed REAL,",
+            "top_efficiency REAL,",
             "synced INTEGER DEFAULT 0,",
             "synced_at INTEGER,",
             "dbg_file TEXT,",
@@ -46,21 +53,11 @@ var ddl = [
             "speed REAL,",
             "spm INTEGER,",
             "efficiency REAL",
+            "latitude REAL",
+            "longitude REAL",
+
             ")"],
         ["insert into settings (version) values (1)"]
-    ],
-    [
-        ["ALTER TABLE session_data add column latitude REAL"],
-        ["ALTER TABLE session_data add column longitude REAL"],
-        ["ALTER TABLE settings add column show_touch_events_tips integer not null default 1"],
-        ["ALTER TABLE settings add column show_calibration_tips integer not null default 1"],
-        ["UPDATE settings SET version = 2"]
-    ],
-    [
-        ["ALTER TABLE settings add column default_session_filter TEXT DEFAULT NULL"],
-        ["ALTER TABLE settings add column default_start_date INTEGER"],
-        ["ALTER TABLE settings add column default_end_date INTEGER"],
-        ["UPDATE settings SET version = 3"]
     ]
 ];
 
@@ -74,7 +71,7 @@ var error = function (e) {
 
 
 /**
- * This method should apply all changes in ddl (currently only applies for version 0)
+ * This method should apply all changes in ddl
  */
 function init() {
     connection = window.sqlitePlugin.openDatabase({name: "sessions.db", "location": 2});

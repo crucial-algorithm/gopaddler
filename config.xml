@@ -39,6 +39,10 @@
         <splash density="port-xhdpi" src="res/android/splash-port-xhdpi.png" />
         <splash density="port-xxhdpi" src="res/android/splash-port-xxhdpi.png" />
         <splash density="port-xxhdpi" src="res/android/splash-port-xxxhdpi.png" />
+
+        <preference name="android-minSdkVersion" value="19" />
+        <preference name="android-targetSdkVersion" value="21" />
+
     </platform>
     <platform name="ios">
         <icon height="60" src="res/ios/icon-60.png" width="60" />
@@ -59,8 +63,7 @@
         <splash height="1334" src="res/ios/screen/Default-750@2x~iphone6-portrait.png" width="750" />
         <splash height="2208" src="res/ios/screen/Default-1242@3x~iphone6s-portrait.png" width="1242" />
         <splash height="1242" src="res/ios/screen/Default-1242@3x~iphone6s-landscape.png" width="2208" />
-
-        <hook type="before_build" src="src/cordova/ios/plist.js" />
+        <hook src="src/cordova/ios/plist.js" type="before_build" />
     </platform>
     <preference name="FadeSplashScreen" value="true" />
     <preference name="AutoHideSplashScreen" value="true" />
@@ -68,8 +71,6 @@
     <preference name="SplashScreenDelay" value="3000" />
     <preference name="FadeSplashScreenDuration" value="1000" />
     <preference name="BackupWebStorage" value="local" />
-    <preference name="android-minSdkVersion" value="15" />
-    <preference name="android-targetSdkVersion" value="19" />
     <preference name="DisallowOverscroll" value="true" />
     <feature name="StatusBar">
         <param name="ios-package" onload="true" value="CDVStatusBar" />
@@ -93,7 +94,7 @@
         <variable name="APP_NAME" value="GoPaddler" />
     </plugin>
     <plugin name="cordova-plugin-powermanagement" spec="~1.0.3" />
-    <plugin name="cordova-plugin-device-motion" spec="~1.2.0" />
+    <plugin name="cordova-plugin-device-motion" spec="~1.2.2" />
     <plugin name="cordova-plugin-file" spec="~4.1.1" />
     <engine name="ios" spec="~4.2.1" />
     <engine name="android" spec="~5.2.2" />

@@ -94,7 +94,9 @@ SessionDetail.get = function(sessionId, callback) {
             data = res.rows.item(i);
             rows.push(new SessionDetail(sessionId, parseFloat(data.timestamp), parseFloat(data.distance)
                 , parseFloat(data.speed), parseFloat(data.spm), parseFloat(data.efficiency)
-                , parseFloat(data.latitude), parseFloat(data.longitude)));
+                // the following lines will fail if in equador!
+                , data.latitude ? parseFloat(data.latitude) : undefined
+                , data.longitude ? parseFloat(data.longitude) : undefined));
         }
         callback(rows);
     }, function (error) {

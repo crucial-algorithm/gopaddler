@@ -43,8 +43,8 @@ MeasureEnhancement.prototype.isGpsActive = function (records, i) {
 MeasureEnhancement.prototype.calculateAvgInZone = function (records, i, metric, offset) {
     offset = offset === undefined || offset === null ? 5 : offset;
 
-    var start = i - offset;
-    var stop = i + offset > records.length ? records.length : i + offset;
+    var start = (i - offset) < 0 ? 0 : i - offset;
+    var stop = i + offset >= records.length ? records.length - 1 : i + offset;
 
     var total = 0;
     for (var j = start; j <= stop; j++) {

@@ -43,7 +43,10 @@ Test cases are stored in local PostgreSQL database
     > cd src/test/js
     > mocha .
 
+### How do I do a release ###
 
+#### Android
+   > cordova build android --release
 
 ### Frequent Issues ###
 #### Lock orientation not working in IOS

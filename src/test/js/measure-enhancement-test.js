@@ -85,5 +85,18 @@ describe('measure enhacement', function () {
         });
     });
 
+    it('Should discard 12312', function (done) {
+
+        data.getSessionData('EYC44CTCFrZH2yWsG').then(function (records) {
+            var value = measureEnhancement.getMaxSPM(records);
+            assert.notEqual(value, 123123);
+            done();
+        }).catch(function (err) {
+            done(err);
+        });
+    });
+
+
+
 
 });

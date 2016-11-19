@@ -9,11 +9,11 @@ var ddl = [
             "version INTEGER NOT NULL,",
             "units TEXT not null default 'K',",
             "sync_wifi integer not null default 1,",
-            "restore_layout integer not null default 1",
-            "show_touch_events_tips integer not null default 1",
-            "show_calibration_tips integer not null default 1",
-            "default_session_filter TEXT DEFAULT NULL",
-            "default_start_date INTEGER",
+            "restore_layout integer not null default 1,",
+            "show_touch_events_tips integer not null default 1,",
+            "show_calibration_tips integer not null default 1,",
+            "default_session_filter TEXT DEFAULT NULL,",
+            "default_start_date INTEGER,",
             "default_end_date INTEGER",
             ")"],
 
@@ -52,10 +52,9 @@ var ddl = [
             "distance REAL,",
             "speed REAL,",
             "spm INTEGER,",
-            "efficiency REAL",
-            "latitude REAL",
+            "efficiency REAL,",
+            "latitude REAL,",
             "longitude REAL",
-
             ")"],
         ["insert into settings (version) values (1)"]
     ]

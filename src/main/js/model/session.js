@@ -228,7 +228,7 @@ Session.prototype.finish = function () {
     self.detail().then(function (rows) {
 
         var measureEnhancement = new MeasureEnhancement();
-        var maxSpm = measureEnhancement.getMaxSPM(rows);
+        var maxSpm = 0;
 
         var distance = 0, avgSpeed, avgSpm, avgSpmEfficiency
             , totalSpeed = 0, totalSpm = 0, totalEfficiency = 0
@@ -244,11 +244,19 @@ Session.prototype.finish = function () {
 
             if (rows[i].getSpeed() > maxSpeed) maxSpeed = rows[i].getSpeed();
             if (rows[i].getEfficiency() > maxSpmEfficiency) maxSpmEfficiency = rows[i].getEfficiency();
+            if (rows[i].getSpm() > maxSpm) maxSpm = rows[i].getSpm();
         }
 
         avgSpeed = totalSpeed / length;
         avgSpm = totalSpm / length;
         avgSpmEfficiency = totalEfficiency / length;
+
+        try {
+            maxSpm = measureEnhancement.getMaxSPM(rows);
+        } catch (err) {
+            console.log('failed to calculate max SPM', err);
+        }
+
 
         self.setSessionEnd(sessionEndAt);
         self.setDistance(distance);

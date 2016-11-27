@@ -90,7 +90,7 @@ function emulateCordova () {
                     accuracy: 1,
                     latitude: latitude,
                     longitude: longitude,
-                    speed: Math.random() * 10 + 10
+                    speed: parseInt(Math.random() * 3 + 12)
                 }
             })
         }, 1000);

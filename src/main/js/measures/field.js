@@ -160,6 +160,9 @@ Field.prototype.getType = function() {
 Field.prototype.convertInValueToDisplay = function (type, value) {
     var self = this;
 
+    if (value === undefined)
+        value = 0;
+
     if (self.convertToImperial) {
         if (type === 'speed')
             value = utils.kmToMiles(value);

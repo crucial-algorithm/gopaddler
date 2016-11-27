@@ -11,7 +11,9 @@ function overridePlist(context) {
 
     obj.UIStatusBarHidden = true;
     obj.UIViewControllerBasedStatusBarAppearance = false;
-    obj.CFBundleDisplayName = "Paddler";
+    obj.CFBundleDisplayName = "GoPaddler";
+    obj.NSLocationWhenInUseUsageDescription = "Track distance and speed";
+
 
     obj.UISupportedInterfaceOrientations = [
         "UIInterfaceOrientationPortrait",

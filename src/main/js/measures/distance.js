@@ -22,7 +22,7 @@ Distance.prototype.calculate = function (position) {
 
 Distance.prototype.getTakenAt = function () {
     return this.takenAt;
-}
+};
 
 Distance.prototype.getValue = function () {
     return this.distance;
@@ -30,10 +30,10 @@ Distance.prototype.getValue = function () {
 
 Distance.prototype.getLatitude = function () {
     return (this.previous || {coords: {}}).coords.latitude;
-}
+};
 
 Distance.prototype.getLongitude = function () {
     return (this.previous || {coords: {}}).coords.longitude;
-}
+};
 
 exports.Distance = Distance;

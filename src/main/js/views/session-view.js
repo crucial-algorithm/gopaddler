@@ -86,26 +86,22 @@ function SessionView(page, context) {
         large.setValue("timer", value);
     });
 
-
-
     // -- Handle GPS sensor data
-    var lastEfficiency = 0, lastInterval = 0, lastDisplayedSpeed = 0, lastGpsAt = 0;
+    var location = {timestamp: 0}, spm = {value: 0, interval: 0};
     gps.listen(function (position) {
         if (paused) return;
 
-        var values = {speed: 0, pace: 0, efficiency: 0, distance:0};
+        location = {speed: 0, pace: 0, efficiency: 0, distance: 0
+            , latitude: 0, longitude: 0
+            , timestamp: position.timestamp};
 
-        values.distance = distance.calculate(position);
-        values.speed = lastDisplayedSpeed = speed.calculate(position, values.distance);
-        values.efficiency = lastEfficiency = strokeEfficiency.calculate(values.speed, lastInterval);
-        values.pace = pace.calculate(values.speed);
+        location.distance = distance.calculate(position);
+        location.speed = speed.calculate(position, location.distance);
 
-        top.setValues(values);
-        middle.setValues(values);
-        bottom.setValues(values);
-        large.setValues(values);
-
-        lastGpsAt = position.timestamp;
+        location.efficiency = strokeEfficiency.calculate(location.speed, spm.interval);
+        location.pace = pace.calculate(location.speed);
+        location.latitude = position.coords.latitude;
+        location.longitude = position.coords.longitude;
 
     });
 
@@ -120,30 +116,46 @@ function SessionView(page, context) {
     };
 
     // -- handle stroke related data
-    var now;
-    strokeDetector.onStrokeRateChanged(function (spm, interval) {
+    strokeDetector.onStrokeRateChanged(function (value, interval) {
         if (paused) return;
-
-        // update fields using spm and efficiency
-        top.setValue('spm', spm);
-        middle.setValue('spm', spm);
-        bottom.setValue('spm', spm);
-        large.setValue('spm', spm);
-
-        // store data
-        now  = new Date().getTime();
-        new SessionDetail(session.getId(), now, distance.getValue(), lastDisplayedSpeed, spm
-            , lastEfficiency, distance.getLatitude(), distance.getLongitude()
-        ).save();
-
-        lastInterval = interval;
-
-        // this should not be here, but its the easiest way considering that stroke rate is updated every 1.5 sec
-        if (now - lastGpsAt > 5000) {
-            resetGpsData();
-        }
+        spm = {value: value, interval: interval};
     });
     strokeDetector.start();
+
+    self.persistIntervalId = setInterval(function persist() {
+        if (paused) return;
+
+        // store data
+        new SessionDetail(session.getId(), new Date().getTime(), location.distance, location.speed, spm.value
+            , location.efficiency, location.latitude, location.longitude
+        ).save();
+
+    }, 1000);
+
+    // refresh screen
+    self.uiIntervalId = setInterval(function refreshUI() {
+        if (paused) return;
+
+        var values = {
+            distance: location.distance,
+            speed: location.speed,
+            efficiency: location.efficiency,
+            pace: location.pace,
+            spm: spm.value
+        };
+
+        top.setValues(values);
+        middle.setValues(values);
+        bottom.setValues(values);
+        large.setValues(values);
+
+
+        // this should not be here, but its the easiest way considering that stroke rate is updated every 1.5 sec
+        if ((new Date().getTime()) - location.timestamp > 5000) {
+            resetGpsData();
+        }
+
+    }, 2005);
 
     var back = function () {
         if (context.preferences().isRestoreLayout()) {
@@ -164,8 +176,8 @@ function SessionView(page, context) {
         tx = true;
         document.PREVENT_SYNC = false;
 
-        clearInterval(self.intervalId);
-        clearInterval(self.speedIntervalId);
+        clearInterval(self.uiIntervalId);
+        clearInterval(self.persistIntervalId);
         timer.stop();
         gps.stop();
         strokeDetector.stop();

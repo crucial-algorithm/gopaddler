@@ -80,12 +80,12 @@ Calibrate.prototype.calculate = function (sumx, sumy, sumz) {
     factorZ = factorZ ? factorZ : 1;
 
     self.store(predominantAxis, angleZ, avgX, avgY, avgZ, factorX, factorZ);
-}
+};
 
 Calibrate.prototype.stop = function () {
     var self = this;
     navigator.accelerometer.clearWatch(self.watchId);
-}
+};
 
 Calibrate.prototype.store = function (predominant, angleZ, noiseX, noiseY, noiseZ, factorX, factorZ) {
     var round = function(value) {
@@ -93,7 +93,7 @@ Calibrate.prototype.store = function (predominant, angleZ, noiseX, noiseY, noise
     };
 
     new Calibration(predominant, round(angleZ), round(noiseX), round(noiseY), round(noiseZ), round(factorX), round(factorZ)).save();
-}
+};
 
 Calibrate.load = function () {
     var obj = JSON.parse(window.localStorage.getItem("calibration"));
@@ -101,7 +101,7 @@ Calibrate.load = function () {
         return undefined;
     }
     return new Calibration(obj.predominant, obj.angleZ, obj.noiseX, obj.noiseY, obj.noiseZ, obj.factorX, obj.factorZ);
-}
+};
 
 
 exports.Calibrate = Calibrate;

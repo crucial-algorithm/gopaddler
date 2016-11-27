@@ -42,34 +42,34 @@ function StrokeDetector(session, calibration, onStrokeDetected, onAccelerationTr
 
 StrokeDetector.exceptions = {
     SD_EXCP_STALLED:  "STALLED"
-}
+};
 
 StrokeDetector.prototype.onStrokeRateChanged = function (callback) {
     var self = this;
     self.onStrokeRateChangedListener = callback;
-}
+};
 
 StrokeDetector.prototype.onAccelerationTriggered = function (callback) {
     var self = this;
     self.onAccelerationTriggeredListener = callback;
-}
+};
 
 StrokeDetector.prototype.onThresholdChanged = function (callback) {
     var self = this;
     self.onThresholdChangedListener = callback;
-}
+};
 
 StrokeDetector.prototype.onStrokeDetected = function (callback) {
     var self = this;
     self.onStrokeDetectedListener = callback;
-}
+};
 
 StrokeDetector.prototype.stop = function () {
     var self = this;
     if (navigator.accelerometer)
         navigator.accelerometer.clearWatch(self.watchId);
     clearInterval(self.intervalId);
-}
+};
 
 StrokeDetector.prototype.start = function () {
     var self = this, value;
@@ -102,7 +102,7 @@ StrokeDetector.prototype.start = function () {
         console.log('hmmm... no navigator.accelerometer found?!?!');
     }
 
-    self.intervalId = setInterval(self.refreshSPM.bind(self), 1500);
+    self.intervalId = setInterval(self.refreshSPM.bind(self), 1995);
 };
 
 StrokeDetector.prototype.refreshSPM = function () {

@@ -36,9 +36,9 @@ GPS.prototype.start = function() {
         if (!self.isAcceptablePosition(position, self.currentPosition))
             return;
 
-        for (var i = 0, length = self.listeners.length; i < length; i++) {
-            self.listeners[i].apply(undefined, [position]);
-        }
+            for (var i = 0, length = self.listeners.length; i < length; i++) {
+                self.listeners[i].apply(undefined, [position]);
+            }
 
         self.currentPosition = position;
     };
@@ -91,11 +91,22 @@ GPS.prototype.isAcceptablePosition = function (position, currentPosition) {
     } else if (isSignificantlyOlder) {
         return false;
     }
+    
+    // don't notify if last update was less then 1 sec ago
+    if (timeDelta < 1000) {
+        return false;
+    }
+
 
     // Check whether the new location fix is more or less accurate
     var accuracyDelta = position.coords.accuracy - currentPosition.accuracy;
     var isMoreAccurate = accuracyDelta < 0;
     var isSignificantlyLessAccurate = accuracyDelta > 10;
+
+    // ignore position that haven't at least shifted 5 or 10 meters (depending or accuracy)
+    if (GPS.calcDistance(currentPosition, position) < (position.coords.accuracy < 10 ? 0.005 : 0.01)) {
+        return false;
+    }
 
     // Determine location quality using a combination of timeliness and accuracy
     if (isMoreAccurate) {

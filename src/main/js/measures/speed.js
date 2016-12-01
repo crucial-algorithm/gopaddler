@@ -14,7 +14,7 @@ Speed.prototype.calculate = function (position, dist) {
         return 0;
     }
 
-    this.positions.push(position);
+    this.positions.push({timestamp: position.timestamp, distance: dist});
 
     if (this.positions.length < 5) {
         this.value = position.coords.speed * 3.6;
@@ -27,7 +27,7 @@ Speed.prototype.calculate = function (position, dist) {
 
     var distance, delta;
 
-    distance = GPS.calcDistance(this.positions[4], this.positions[1]);
+    distance = this.positions[4].distance - this.positions[0].distance;
     delta = this.positions[4].timestamp - this.positions[0].timestamp;
 
     this.value = distance * (1 / (delta/1000/60/60));

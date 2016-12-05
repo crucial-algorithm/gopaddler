@@ -951,3 +951,106 @@ div[aria-live="polite"],  div[aria-live="polite"] > .slick-track{
     cursor: default !important;
     border: 3px solid rgba(255, 255, 255, 0);
 }
+
+.select-session {
+    width: 100%;
+}
+
+.select-session-play {
+    float: right;
+    width: 50%;
+    height: 100%;
+    background-color: #EF6156;
+}
+
+.select-session-available-sessions-wrapper {
+    float: left;
+    height: 100%;
+    width: 50%;
+    overflow: hidden;
+}
+
+.select-session-available-sessions {
+    width: 100%;
+}
+
+.select-session-start {
+    width: 70%;
+    height: 70%;
+    color: #fff;
+    background: url(../images/play.svg) no-repeat;
+    margin: auto;
+}
+.select-session-play > .label,  .select-session-play > .selected-session {
+    height: 15%;
+    text-align: center;
+    font-size: 4vw;
+    text-transform: uppercase;
+
+    color: white;
+    font-weight: bold;
+}
+.select-session-play > .label {
+    padding-top: 2%;
+}
+
+.select-session-play > .selected-session {
+    padding-bottom: 2%;
+}
+
+
+.select-session-available-sessions > li:nth-child(odd) {
+    background-color: #D3D3D3;
+}
+
+.select-session-available-sessions > li:nth-child(even) {
+    background-color: #E8E8E8;
+}
+
+.select-session-row {
+    display: block;
+    width: auto;
+    position: relative;
+    -webkit-transition: -webkit-transform 300ms ease;
+    -moz-transition: -moz-transform 300ms ease;
+    transition: transform 300ms ease;
+    height: 64px;
+}
+
+.select-session-row-wrapper {
+    width: 100%;
+    height: 100%;
+    display: table;
+}
+
+.select-session-free-session {
+    width:100%;
+    font-weight: bold;
+}
+
+.select-session-row-wrapper div {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: left;
+    padding-left: 8px;
+    text-transform: uppercase;
+}
+
+.select-session-row-wrapper div:first-child {
+    background-color: #3b3d62;
+    color: #FFFFFF;
+    width: 25%;
+    vertical-align: middle;
+    text-align: center;
+    padding-left: 0;
+}
+
+.select-session-available-sessions-wrapper > ul > li:nth-child(even) > div > div:first-child  {
+    background-color: #3f4173;
+}
+
+li.select-session-row.selected {
+    -moz-box-shadow: inset -8px 0 0 #3b3d62;
+    -webkit-box-shadow: inset -8px 0 0 #3b3d62;
+    box-shadow: inset -8px 0 0 #3b3d62;
+}

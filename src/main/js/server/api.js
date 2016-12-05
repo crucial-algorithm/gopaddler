@@ -1,22 +1,28 @@
 var Utils = require('../utils/utils.js');
 var lastEvent = undefined, retries = 0;
 
-//var asteroid = new Asteroid("local.gopaddler.com:3000", false);
-var asteroid = new Asteroid("app.gopaddler.com", true, function intercept (data) {
+var asteroid = new Asteroid("local.gopaddler.com:3000", false, function(data) {
     lastEvent = data;
 });
+
+// var asteroid = new Asteroid("app.gopaddler.com", true, function intercept (data) {
+//     lastEvent = data;
+// });
 
 var serverAvailable = function (d) {
     var defer = d || $.Deferred();
 
-    if (retries >= 3) defer.reject();
+    if (retries >= 3) {
+        defer.reject();
+        return;
+    }
 
     // If no network, server is for sure not available
     if (!Utils.isNetworkConnected()) {
         return defer.reject();
     }
 
-    if (lastEvent !== undefined) {
+    if (lastEvent === undefined) {
         retries++;
         setTimeout(function () {
             serverAvailable(defer);
@@ -241,6 +247,10 @@ exports.TrainingSessions = {
     save: function (trainingSession) {
 
         return _call('saveTrainingSession', trainingSession);
+    },
+
+    scheduled: function () {
+        return _call('listScheduledSessions');
     }
 };
 

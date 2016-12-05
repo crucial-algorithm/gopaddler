@@ -9,6 +9,7 @@ var SessionsView = require('./views/sessions-view.js').SessionsView;
 var CalibrationView = require('./views/calibration-view.js').CalibrationView;
 var CalibrationHelpView = require('./views/calibration-help-view.js').CalibrationHelpView;
 var SessionTipsView = require('./views/session-tips-view.js').SessionTipsView;
+var SelectSessionView = require('./views/select-session-view').SelectSessionView;
 var Api = require('./server/api');
 var utils = require('./utils/utils.js');
 var global = require('./global.js');
@@ -98,6 +99,12 @@ App.controller('calibration-help', function (page, request) {
     analytics.setView('calibration-help');
     new CalibrationHelpView(page, context, request);
 });
+
+App.controller('select-session', function (page, request) {
+    analytics.setView('select-session');
+    new SelectSessionView(page, context, request);
+});
+
 
 function onDeviceReady() {
     document.pd_device_ready = true;

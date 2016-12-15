@@ -148,12 +148,12 @@
                 <ul class="select-session-available-sessions">
                     <li class="select-session-row selected">
                         <div class="select-session-row-wrapper">
-                            <div style="width: 0"></div>
-                            <div class="select-session-free-session">Free Session</div>
+                            <div><label class="session-row-label">Saturday</label>Dec 10</div>
+                            <div><label class="session-row-label">Session</label><b>Free Session</b></div>
                         </div>
                     </li>
 
-                    <!--li class="select-session-row">
+                    <li class="select-session-row">
                         <div class="select-session-row-wrapper">
                             <div><label class="session-row-label">Saturday</label>Dec 10</div>
                             <div><label class="session-row-label">Session</label><b>10 x 5'/1'</b></div>
@@ -197,16 +197,26 @@
                             <div><label class="session-row-label">Saturday</label>Dec 03</div>
                             <div><label class="session-row-label">Session</label><b>10 x 5'/1'</b></div>
                         </div>
-                    </li-->
+                    </li>
 
 
                 </ul>
             </div>
 
             <div class="select-session-play" data-no-scroll="true">
-                <div class="label">Start</div>
-                <div class="select-session-start"></div>
                 <div class="selected-session">Free Session</div>
+                <div class="select-session-start">&nbsp;</div>
+                <div class="select-session-free-session-toggle">
+                    <div class="select-session-start-instantly">
+                        Start immediately
+                    </div>
+                    <div style="display:table-cell">
+                        <div class="onoffswitch start-immediately-switch">
+                            <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="start-immediately">
+                            <label class="onoffswitch-label toggle" for="start-immediately"></label>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

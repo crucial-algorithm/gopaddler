@@ -38,3 +38,16 @@
 .onoffswitch-checkbox:checked + .onoffswitch-label.toggle {
     background-color: #D05043;
 }
+
+.start-immediately-switch > .onoffswitch-checkbox:checked + .onoffswitch-label.toggle {
+    background-color: #3b3d62;
+}
+
+.start-immediately-switch > .onoffswitch-checkbox:checked + .onoffswitch-label:before {
+    background-color: #FFFFFF;
+}
+
+.start-immediately-switch > .onoffswitch-label:before {
+    background-color: #FFFFFF;
+}
+

@@ -66,7 +66,7 @@ function mapBrowserToNative() {
             navigator.notification.alert(
                 message,    // message
                 null,       // callback
-                "Paddler",  // title
+                "GoPaddler",  // title
                 'OK'        // buttonName
             );
         };

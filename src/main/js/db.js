@@ -59,8 +59,10 @@ var ddl = [
         ["insert into settings (version) values (1)"]
     ],
     [
-        ["ALTER TABLE session add column scheduled_session TEXT"],
-        ["ALTER TABLE settings add column start_immediately integer not null default 0"],
+        ["ALTER TABLE session add column scheduled_session_id TEXT"],
+        ["ALTER TABLE session add column scheduled_session_start integer"],
+        ["ALTER TABLE settings add column start_immediately integer default 0"],
+        ["ALTER TABLE session_data add column split INTEGER default -1"],
         ["UPDATE settings SET version = 2"]
     ]
 ];

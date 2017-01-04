@@ -115,6 +115,11 @@ function emulateCordova () {
     navigator.accelerometer.clearWatch = function (id) {
         clearInterval(id);
     };
+
+
+    navigator.connection = {
+        type: 2
+    };
 }
 
 jQuery.fn.center = function () {

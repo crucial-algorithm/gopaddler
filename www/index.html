@@ -137,7 +137,7 @@
 
     <div class="app-page" data-page="select-session">
         <div class="app-topbar paddler-topbar vh_height17">
-            <button class="app-button left paddler-back" alt="back" data-back></button>
+            <button class="app-button left paddler-back" data-back></button>
             <div class="paddler-title">
                 <div class="paddler-title-text vh_font-size6 vw_padding-right6">Choose your session</div>
             </div>
@@ -145,62 +145,7 @@
         <div class="app-content select-session" data-no-scroll="true">
 
             <div class="select-session-available-sessions-wrapper" data-no-scroll="true">
-                <ul class="select-session-available-sessions">
-                    <li class="select-session-row selected">
-                        <div class="select-session-row-wrapper">
-                            <div><label class="session-row-label">Saturday</label>Dec 10</div>
-                            <div><label class="session-row-label">Session</label><b>Free Session</b></div>
-                        </div>
-                    </li>
-
-                    <li class="select-session-row">
-                        <div class="select-session-row-wrapper">
-                            <div><label class="session-row-label">Saturday</label>Dec 10</div>
-                            <div><label class="session-row-label">Session</label><b>10 x 5'/1'</b></div>
-                        </div>
-                    </li>
-
-
-                    <li class="select-session-row">
-                        <div class="select-session-row-wrapper">
-                            <div><label class="session-row-label">Saturday</label>Dec 09</div>
-                            <div><label class="session-row-label">Session</label><b>10 x 5'/1'</b></div>
-                        </div>
-                    </li>
-
-                    <li class="select-session-row">
-                        <div class="select-session-row-wrapper">
-                            <div><label class="session-row-label">Saturday</label>Dec 08</div>
-                            <div><label class="session-row-label">Session</label><b>10 x 5'/1'</b></div>
-                        </div>
-                    </li>
-                    <li class="select-session-row">
-                        <div class="select-session-row-wrapper">
-                            <div><label class="session-row-label">Saturday</label>Dec 07</div>
-                            <div><label class="session-row-label">Session</label><b>10 x 5'/1'</b></div>
-                        </div>
-                    </li>
-                    <li class="select-session-row">
-                        <div class="select-session-row-wrapper">
-                            <div><label class="session-row-label">Saturday</label>Dec 05</div>
-                            <div><label class="session-row-label">Session</label><b>10 x 5'/1'</b></div>
-                        </div>
-                    </li>
-                    <li class="select-session-row">
-                        <div class="select-session-row-wrapper">
-                            <div><label class="session-row-label">Saturday</label>Dec 04</div>
-                            <div><label class="session-row-label">Session</label><b>10 x 5'/1'</b></div>
-                        </div>
-                    </li>
-                    <li class="select-session-row">
-                        <div class="select-session-row-wrapper">
-                            <div><label class="session-row-label">Saturday</label>Dec 03</div>
-                            <div><label class="session-row-label">Session</label><b>10 x 5'/1'</b></div>
-                        </div>
-                    </li>
-
-
-                </ul>
+                <ul class="select-session-available-sessions"></ul>
             </div>
 
             <div class="select-session-play" data-no-scroll="true">
@@ -208,12 +153,12 @@
                 <div class="select-session-start">&nbsp;</div>
                 <div class="select-session-free-session-toggle">
                     <div class="select-session-start-instantly">
-                        Start immediately
+                        Warm up before start
                     </div>
                     <div style="display:table-cell">
                         <div class="onoffswitch start-immediately-switch">
-                            <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="start-immediately">
-                            <label class="onoffswitch-label toggle" for="start-immediately"></label>
+                            <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="warmup-first" checked>
+                            <label class="onoffswitch-label toggle" for="warmup-first"></label>
                         </div>
                     </div>
                 </div>
@@ -516,6 +461,7 @@
     <script src="lib/hashids.min.js"></script>
     <script src="lib/slick.js"></script>
     <script src="lib/jquery.daterangepicker.min.js"></script>
+    <script src='lib/pulltorefresh.js'></script>
 
     <!-- Meteor -->
     <script src="lib/meteor/underscore.js"></script>

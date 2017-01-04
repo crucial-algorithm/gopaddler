@@ -1,13 +1,13 @@
 var Utils = require('../utils/utils.js');
 var lastEvent = undefined, retries = 0;
 
-var asteroid = new Asteroid("local.gopaddler.com:3000", false, function(data) {
-    lastEvent = data;
-});
-
-// var asteroid = new Asteroid("app.gopaddler.com", true, function intercept (data) {
+// var asteroid = new Asteroid("local.gopaddler.com:3000", false, function(data) {
 //     lastEvent = data;
 // });
+
+var asteroid = new Asteroid("app.gopaddler.com", true, function intercept (data) {
+    lastEvent = data;
+});
 
 var serverAvailable = function (d) {
     var defer = d || $.Deferred();

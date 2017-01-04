@@ -3,13 +3,12 @@
 var MeasureFactory = require('./measure.js').Measure;
 var utils = require('../utils/utils');
 
-var Field = function(element, type, size, context) {
+var Field = function(element, type, size, context, enableSplits) {
     var self = this;
     size = size || 'small';
     self.$element = $(element);
-    self.createDomStructure(size);
+    self.createDomStructure(size, (enableSplits === true));
     self.speed = size === 'small' ? 300 : 200;
-
 
     self.$measures = self.$element.find('.measures');
     self.length = self.$measures.find('div').length;
@@ -26,20 +25,25 @@ var Field = function(element, type, size, context) {
     self.init(type || 0, size);
 };
 
-Field.prototype.createDomStructure = function (size) {
+Field.prototype.createDomStructure = function (size, enableSplits) {
     this.$element.empty();
 
     if (size === 'small') {
-        $([
+        var dom = [
             '<div class="measures">',
             '    <div class="measure" data-type="timer"></div>',
+            '    <div class="measure" data-type="splits"></div>',
             '    <div class="measure" data-type="speed"></div>',
             '    <div class="measure" data-type="distance"></div>',
             '    <div class="measure" data-type="pace"></div>',
             '    <div class="measure" data-type="spm"></div>',
             '    <div class="measure" data-type="efficiency"></div>',
             '</div>'
-        ].join('')).appendTo(this.$element);
+        ];
+        if (enableSplits !== true)
+            dom.splice(2, 1); // remove splits if no planned session
+
+        $(dom.join('')).appendTo(this.$element);
     } else {
 
         $([
@@ -63,6 +67,11 @@ var FIELD_SETTINGS = {
     timer: {
         label: "Duration",
         init: '00:00:00'
+    },
+    splits: {
+        label: "Splits",
+        init: 'Stop warm up to start splits',
+        hint: true
     },
     speed: {
         label: "Speed",
@@ -100,7 +109,7 @@ Field.prototype.init = function (initialType, size) {
         options = FIELD_SETTINGS[type];
 
         instance = MeasureFactory.get(size, $dom, options.label, self.context.getUnit(type, size === 'large'), options.init);
-        instance.render();
+        instance.render(options.hint);
         self.positions[i] = {position: i, type: type, $dom: $dom, instance: instance};
         self.options[type] = options;
     });

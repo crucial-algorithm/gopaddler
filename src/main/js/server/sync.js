@@ -3,6 +3,7 @@
 var IO = require('../utils/io.js').IO;
 var Utils = require('../utils/utils.js');
 var Session = require('../model/session').Session;
+var ScheduledSession = require('../model/scheduled-session').ScheduledSession;
 var Api = require('../server/api');
 
 var processing = {};
@@ -163,9 +164,23 @@ function uploadDebugData(session) {
     return defer.promise();
 }
 
+function syncScheduledSessions () {
+    if (document.PREVENT_SYNC === true) return;
+
+    if (!Utils.onWifi()) {
+        return;
+    }
+
+    ScheduledSession.sync();
+}
+
 exports.start = function () {
     var self = this;
     setTimeout(function () {
         setInterval(sync.bind(self), 10000);
+        syncScheduledSessions();
+        setInterval(function () {
+            syncScheduledSessions();
+        }, 300000);
     }, 10000);
 };

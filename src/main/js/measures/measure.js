@@ -4,9 +4,9 @@ function SmallMeasure($parent, label, unit, value) {
     this.unit = unit;
     this.defaultValue = value;
 
-};
+}
 
-SmallMeasure.prototype.render = function () {
+SmallMeasure.prototype.render = function (hint) {
     this.$parent.empty();
 
     var $template = $('#template-small-measure').children().clone(true);
@@ -16,11 +16,33 @@ SmallMeasure.prototype.render = function () {
     this.$parent.find('.small-measure-units').html(this.unit);
 
     this.$value = this.$parent.find('.small-measure-value');
-    this.$value.html(this.defaultValue);
+    this.setValue(this.defaultValue);
+
+    if (hint === true) {
+        this.$value.addClass('blink');
+        this.hintEnabled = true;
+    }
 };
 
 SmallMeasure.prototype.setValue = function (value) {
-    this.$value.html(value);
+
+    if ((value + '').length > 10) {
+        this.$value.css({"font-size": "26px"});
+        this.fontSizeChanged = true;
+    } else if (this.fontSizeChanged) {
+        this.$value.css({"font-size": ""});
+        this.fontSizeChanged = false;
+    }
+
+    this.$value.text(value);
+    this.resetHint();
+};
+
+SmallMeasure.prototype.resetHint = function () {
+    if (this.hintEnabled === false) return;
+
+    this.$value.removeClass('blink');
+    this.hintEnabled = false;
 };
 
 
@@ -30,7 +52,7 @@ function LargeMeasure($parent, label, unit, value) {
     this.unit = unit;
     this.defaultValue = value;
 
-};
+}
 
 LargeMeasure.prototype.render = function () {
     this.$parent.empty();
@@ -42,11 +64,14 @@ LargeMeasure.prototype.render = function () {
 
 
     this.$value = this.$parent.find('.session-big-measure');
-    this.$value.html(this.defaultValue);
+    this.setValue(this.defaultValue);
 };
 
 LargeMeasure.prototype.setValue = function (value) {
-    if ((value + '').length > 4) {
+    if ((value + '').length > 10) {
+        this.$value.css({"font-size": "26px"});
+        this.fontSizeChanged = true;
+    } if ((value + '').length > 4) {
         this.$value.css({"font-size": "19vw"});
         this.fontSizeChanged = true;
     } else if ((value + '').length > 3) {
@@ -63,7 +88,8 @@ LargeMeasure.prototype.setValue = function (value) {
     this.$value.html(value);
 };
 
-function Measure(){}
+function Measure() {
+}
 
 Measure.get = function (type, $parent, label, unit, defaultValue) {
     if (type === 'small') {

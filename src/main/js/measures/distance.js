@@ -8,7 +8,11 @@ function Distance() {
     this.previous = undefined;
 
 }
-
+/**
+ * returns distance in km's
+ * @param position
+ * @returns {*|number}
+ */
 Distance.prototype.calculate = function (position) {
 
     if (this.previous !== undefined) {

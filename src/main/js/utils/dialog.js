@@ -29,6 +29,7 @@ function showModal($content, options) {
         }, 0);
     }
     $modal.appendTo($('body'));
+    $modal.on('tap')
 }
 
 function hideModal() {

@@ -28,7 +28,7 @@ function HomeView(page, context, request) {
             showNoCalibrationModal($(page), context);
             return false;
         }
-        context.navigate('session', false, undefined);
+        context.navigate('select-session', false, undefined);
     });
 
     $settings.on('tap', function () {
@@ -53,7 +53,7 @@ function HomeView(page, context, request) {
         manufacturer: device.manufacturer,
         isVirtual: device.isVirtual,
         serial: device.serial,
-        paddler: "0.8.6"
+        paddler: "0.8.7"
     });
 
 
@@ -73,8 +73,6 @@ HomeView.prototype.updateLastSessionDate = function () {
         }
     });
 };
-
-
 
 function showNoCalibrationModal($page, context) {
     var html = [
@@ -131,7 +129,5 @@ function showFirstCalibrationCompletedModal($page, context) {
 
     Dialog.showModal($body, {center: true});
 }
-
-
 
 exports.HomeView = HomeView;

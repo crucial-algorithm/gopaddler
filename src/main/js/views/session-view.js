@@ -14,6 +14,7 @@ var Timer = require('../measures/timer').Timer;
 var Distance = require('../measures/distance').Distance;
 var Speed = require('../measures/speed').Speed;
 var Pace = require('../measures/pace').Pace;
+var Splits = require('../measures/splits').Splits;
 
 var StrokeEfficiency = require('../measures/efficiency').StrokeEfficiency;
 
@@ -28,7 +29,7 @@ var DEFAULT_POSITIONS = {
 
 var SMALL = 'small', LARGE = 'large';
 
-function SessionView(page, context) {
+function SessionView(page, context, options) {
     var self = this;
     self.isDebugEnabled = !!Api.User.getProfile().debug;
 
@@ -39,10 +40,32 @@ function SessionView(page, context) {
     var distance = new Distance();
     var speed = new Speed();
     var pace = new Pace(context.preferences().isImperial());
+    var splits;
     var strokeEfficiency = new StrokeEfficiency();
     var strokeDetector = new StrokeDetector(session, calibration, null, self.debug(session));
+    var timer = new Timer();
     var paused = false;
 
+    function splitsHandler(value) {
+        if (paused) return;
+        top.setValue("splits", value);
+        middle.setValue("splits", value);
+        bottom.setValue("splits", value);
+        large.setValue("splits", value);
+    }
+
+    self.inWarmUp = false;
+    if (options && options.session) {
+        self.isScheduledSession = options.session !== undefined;
+        self.isWarmupFirst = options.warmUpFirst === true;
+        splits = new Splits(options.session.getSplits(), splitsHandler);
+        timer.setSplits(splits);
+        session.setScheduledSessionId(options.session.getId());
+        if (self.isWarmupFirst)
+            self.inWarmUp = true;
+    } else {
+        splits = new Splits();
+    }
 
     document.PREVENT_SYNC = true;
 
@@ -53,10 +76,10 @@ function SessionView(page, context) {
         fields = DEFAULT_POSITIONS;
     }
 
-    var top = new Field($('.session-small-measure.yellow', page), fields.top, SMALL, context);
-    var middle = new Field($('.session-small-measure.blue', page), fields.middle, SMALL, context);
-    var bottom = new Field($('.session-small-measure.red', page), fields.bottom, SMALL, context);
-    var large = new Field($('.session-left', page), fields.large, LARGE, context);
+    var top = new Field($('.session-small-measure.yellow', page), fields.top, SMALL, context, self.isScheduledSession);
+    var middle = new Field($('.session-small-measure.blue', page), fields.middle, SMALL, context, self.isScheduledSession);
+    var bottom = new Field($('.session-small-measure.red', page), fields.bottom, SMALL, context, self.isScheduledSession);
+    var large = new Field($('.session-left', page), fields.large, LARGE, context, self.isScheduledSession);
 
 
     // prevent drag using touch during session
@@ -77,14 +100,25 @@ function SessionView(page, context) {
 
 
     // -- initiate timer
-    var timer = new Timer();
-    timer.start(function (value) {
+    timer.start(function (value, timestamp) {
         if (paused) return;
         top.setValue("timer", value);
         middle.setValue("timer", value);
         bottom.setValue("timer", value);
         large.setValue("timer", value);
+
+        // store data
+        new SessionDetail(session.getId(), timestamp, location.distance, location.speed, spm.value
+            , location.efficiency, location.latitude, location.longitude, splits.getPosition()
+        ).save();
     });
+
+
+    if (self.isScheduledSession && !self.isWarmupFirst) {
+        session.setScheduledSessionStart(session.getSessionStart());
+        splits.start(splitsHandler, undefined, undefined);
+    }
+
 
     // -- Handle GPS sensor data
     var location = {timestamp: 0}, spm = {value: 0, interval: 0};
@@ -122,15 +156,6 @@ function SessionView(page, context) {
     });
     strokeDetector.start();
 
-    self.persistIntervalId = setInterval(function persist() {
-        if (paused) return;
-
-        // store data
-        new SessionDetail(session.getId(), new Date().getTime(), location.distance, location.speed, spm.value
-            , location.efficiency, location.latitude, location.longitude
-        ).save();
-
-    }, 1000);
 
     // refresh screen
     self.uiIntervalId = setInterval(function refreshUI() {
@@ -143,6 +168,8 @@ function SessionView(page, context) {
             pace: location.pace,
             spm: spm.value
         };
+
+        splits.setDistance(location.distance);
 
         top.setValues(values);
         middle.setValues(values);
@@ -177,7 +204,6 @@ function SessionView(page, context) {
         document.PREVENT_SYNC = false;
 
         clearInterval(self.uiIntervalId);
-        clearInterval(self.persistIntervalId);
         timer.stop();
         gps.stop();
         strokeDetector.stop();
@@ -198,23 +224,46 @@ function SessionView(page, context) {
             return true;
         }
 
-        timer.pause();
+        if (self.inWarmUp) {
+            // we started a scheduled session and we are still
+            // doing our warm up, but about to begin session
 
-        paused = true;
+            self.confirmFinishWarmUp(function onStartOnMinuteTurn() {
+                Dialog.hideModal();
+                splits.start(timer.getDuration(), Math.round(60 - timer.getDuration() / 1000 % 60), function onStart(timestamp) {
+                    // save offset in session
+                    session.setScheduledSessionStart(timestamp);
+                });
+                self.inWarmUp = false;
+            }, function onStartImmediately() {
 
-        self.confirm(function resume() {
-            paused = false;
-            timer.resume();
-            Dialog.hideModal();
-        }, function finish() {
-            clear();
-        });
+                Dialog.hideModal();
+                splits.start(timer.getDuration(), undefined, undefined);
+                session.setScheduledSessionStart(timer.getTimestamp());
+                self.inWarmUp = false;
+            }, function finish() {
+                clear();
+            });
+
+        } else {
+
+            timer.pause();
+            paused = true;
+
+            self.confirm(function resume() {
+                paused = false;
+                timer.resume();
+                Dialog.hideModal();
+            }, function finish() {
+                clear();
+            });
+        }
+
     };
 
     $page.on('appBeforeBack', function (e) {
         return confirmBeforeExit() === true;
     });
-
 
     var $pause, tapStarted = false, pauseCanceled = false, pauseTimeout, lastEvent, pauseAnimationStarted;
     $page.on('tapstart', function (e) {
@@ -345,16 +394,27 @@ SessionView.prototype.createSession = function (calibration) {
 
 SessionView.prototype.confirm = function (onresume, onfinish) {
     var self = this;
-    var $controls = $('<div class="session-controls"/>');
-    var $resume = $('<div class="session-resume">' +
-        '<div class="session-controls-outer-text">' +
-        '<div class="session-controls-inner-text vw_font-size3">resume</div>' +
-        '</div></div></div>');
-    var $finish = $('<div class="session-finish"><div class="session-controls-outer-text">' +
-        '<div class="session-controls-inner-text vw_font-size3">finish</div>' +
-        '</div></div></div>');
+    var $controls, $resume, $finish;
 
-    $controls.append($finish).append($resume);
+    $controls = $([
+        '<div class="session-controls">',
+        '    <div class="session-resume">',
+        '		<div class="session-controls-outer-text">',
+        '			<div class="session-controls-inner-text vw_font-size3">resume</div>',
+        '        </div>',
+        '    </div>',
+        '',
+        '    <div class="session-finish">',
+        '    	<div class="session-controls-outer-text">',
+        '    		<div class="session-controls-inner-text vw_font-size3">finish</div>',
+        '    	</div>',
+        '    </div>',
+        '</div>'
+    ].join(''));
+
+    $resume = $controls.find('.session-resume');
+    $finish = $controls.find('.session-finish');
+
     Dialog.showModal($controls, {});
 
     // make height equal to width and adjust margin accordingly
@@ -369,13 +429,91 @@ SessionView.prototype.confirm = function (onresume, onfinish) {
     }, 0);
 
     // add behavior
-    $resume.on('touchend', function () {
+    $resume.on('touchend', function (e) {
         onresume.apply(self, []);
+        e.preventDefault();
+        e.stopImmediatePropagation();
     });
 
-    $finish.on('touchend', function () {
+    $finish.on('touchend', function (e) {
         onfinish.apply(self, []);
+        e.preventDefault();
+        e.stopImmediatePropagation();
     });
+
+};
+
+
+SessionView.prototype.confirmFinishWarmUp = function (onStartOnMinuteTurn, onStartImmediately, onfinish) {
+    var self = this;
+    var $controls, $startOnMinuteTurn, $startImmediately, $finish;
+
+    $controls = $([
+        '    <div class="session-controls">',
+
+        '        <div class="session-finish">',
+        '            <div class="session-controls-outer-text">',
+        '                <div class="session-controls-inner-text vw_font-size3">finish</div>',
+        '            </div>',
+        '        </div>',
+
+        '        <div class="session-start-on-minute-turn">',
+        '            <div class="session-controls-outer-text">',
+        '                <div class="session-controls-inner-text vw_font-size3" style="font-size: 9px;">Start On <br>minute turn</div>',
+        '            </div>',
+        '        </div>',
+
+        '        <div class="session-start-immediately">',
+        '            <div class="session-controls-outer-text">',
+        '                <div class="session-controls-inner-text vw_font-size3" style="font-size: 9px;">Start Now',
+        '                </div>',
+        '            </div>',
+        '        </div>',
+
+        '    </div>'
+    ].join(''));
+
+    $startOnMinuteTurn = $controls.find('.session-start-on-minute-turn');
+    $startImmediately = $controls.find('.session-start-immediately');
+    $finish = $controls.find('.session-finish');
+
+    Dialog.showModal($controls, {});
+
+    // make height equal to width and adjust margin accordingly
+    var displayHeight = $controls.height();
+    setTimeout(function () {
+        var height = $finish.width();
+        var margin = (displayHeight - height) / 2;
+        $startImmediately.height($startImmediately.width());
+        $startOnMinuteTurn.height(height * .7);
+        $startOnMinuteTurn.width($startOnMinuteTurn.height());
+
+        $finish.height(height);
+
+        $startOnMinuteTurn.css({"margin-top": margin});
+        $finish.css({"margin-top": margin, "margin-bottom": margin});
+
+    }, 0);
+
+    // add behavior
+    $startOnMinuteTurn.on('touchend', function (e) {
+        onStartOnMinuteTurn.apply(self, []);
+        e.preventDefault();
+        e.stopImmediatePropagation();
+    });
+
+    $startImmediately.on('touchend', function (e) {
+        onStartImmediately.apply(self, []);
+        e.preventDefault();
+        e.stopImmediatePropagation();
+    });
+
+    $finish.on('touchend', function (e) {
+        onfinish.apply(self, []);
+        e.preventDefault();
+        e.stopImmediatePropagation();
+    });
+
 };
 
 

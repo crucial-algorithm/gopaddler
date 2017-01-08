@@ -9,6 +9,7 @@ var SessionsView = require('./views/sessions-view.js').SessionsView;
 var CalibrationView = require('./views/calibration-view.js').CalibrationView;
 var CalibrationHelpView = require('./views/calibration-help-view.js').CalibrationHelpView;
 var SessionTipsView = require('./views/session-tips-view.js').SessionTipsView;
+var SelectSessionView = require('./views/select-session-view').SelectSessionView;
 var Api = require('./server/api');
 var utils = require('./utils/utils.js');
 var global = require('./global.js');
@@ -20,6 +21,7 @@ var Context = require('./context').Context;
 
 var settings = undefined;
 var context = undefined;
+var environment = undefined;
 
 
 /**
@@ -37,20 +39,20 @@ App.controller('home', function (page, request) {
     screen.lockOrientation('landscape-secondary');
     Settings.loadSettings().then(function (s) {
         settings = s;
-        context = new Context(settings);
+        context = new Context(settings, environment);
         new HomeView(page, context, request);
     }).fail(function (error, defaultSettings) {
         settings = defaultSettings;
-        context = new Context(settings);
+        context = new Context(settings, environment);
     });
 });
 
 /**
  * New session page.
  */
-App.controller('session', function (page) {
+App.controller('session', function (page, scheduledSession) {
     analytics.setView('session');
-    new SessionView(page, context);
+    new SessionView(page, context, scheduledSession);
 });
 
 App.controller('session-summary', function (page, session) {
@@ -71,7 +73,7 @@ App.controller('settings', function (page) {
  */
 App.controller('sessions', function (page) {
     analytics.setView('sessions');
-    context = new Context(context.preferences());
+    context = new Context(context.preferences(), environment);
     new SessionsView(page, context);
 });
 
@@ -99,6 +101,12 @@ App.controller('calibration-help', function (page, request) {
     new CalibrationHelpView(page, context, request);
 });
 
+App.controller('select-session', function (page, request) {
+    analytics.setView('select-session');
+    new SelectSessionView(page, context, request);
+});
+
+
 function onDeviceReady() {
     document.pd_device_ready = true;
 
@@ -111,10 +119,19 @@ function onDeviceReady() {
     }, 2000);
 }
 
-if (navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry|IEMobile)/)) {
-    document.addEventListener("deviceready", onDeviceReady, false);
+if (navigator.userAgent === 'gp-dev-ck') {
+    environment = 'dev';
 } else {
-    // in browser, development mode!
+    environment = 'prod';
+}
+
+if (environment === 'prod') {
+    document.addEventListener("deviceready", onDeviceReady, false);
+    
+} else {
+    
+    // in browser (development mode!)
+    
     global.emulateCordova();
     loadDb();
     Api.User.set({
@@ -123,6 +140,7 @@ if (navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry|IEMobile)/))
             name: 'local-test-user'
         }
     });
+    
     // go direct to home, without going through authentication
     App.load('home');
 }

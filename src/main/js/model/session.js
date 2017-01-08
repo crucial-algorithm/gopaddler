@@ -11,6 +11,8 @@ function Session(sessionStart, angleZ, noiseX, noiseZ, factorX, factorZ, axis, d
     this.id = null;
     this.remoteId = null;
     this.sessionStart = sessionStart;
+    this.scheduledSessionId = null;
+    this.scheduledSessionStart = null;
     this.sessionEnd = sessionEnd;
     this.angleZ = angleZ;
     this.noiseX = noiseX;
@@ -51,6 +53,20 @@ Session.prototype.setSessionStart = function (sessionStart) {
 };
 Session.prototype.getSessionStart = function () {
     return this.sessionStart;
+};
+
+Session.prototype.setScheduledSessionId = function (id) {
+    this.scheduledSessionId = id;
+};
+Session.prototype.getScheduledSessionId = function () {
+    return this.scheduledSessionId;
+};
+
+Session.prototype.setScheduledSessionStart = function (timestamp) {
+    this.scheduledSessionStart = timestamp;
+};
+Session.prototype.getScheduledSessionStart = function () {
+    return this.scheduledSessionStart;
 };
 
 Session.prototype.setSessionEnd = function (sessionEnd) {
@@ -127,19 +143,19 @@ Session.prototype.getTopSpeed = function () {
     return this.topSpeed;
 };
 
-Session.prototype.setTopEfficiency = function(value) {
+Session.prototype.setTopEfficiency = function (value) {
     this.topEfficiency = value;
 };
 
-Session.prototype.getTopEfficiency = function(){
+Session.prototype.getTopEfficiency = function () {
     return this.topEfficiency;
 };
 
-Session.prototype.setAvgEfficiency = function(value) {
+Session.prototype.setAvgEfficiency = function (value) {
     this.avgEfficiency = value;
 };
 
-Session.prototype.getAvgEfficiency = function(){
+Session.prototype.getAvgEfficiency = function () {
     return this.avgEfficiency;
 };
 
@@ -189,7 +205,8 @@ Session.prototype.createAPISession = function () {
                 spm: row.getSpm(),
                 spmEfficiency: utils.round2(row.getEfficiency()),
                 latitude: row.getLatitude(),
-                longitude: row.getLongitude()
+                longitude: row.getLongitude(),
+                split: row.getSplit()
             });
         }
 
@@ -201,7 +218,9 @@ Session.prototype.createAPISession = function () {
             noiseZ: self.getNoiseZ(),
             factorX: self.getFactorX(),
             factorZ: self.getFactorZ(),
-            axis: self.getAxis()
+            axis: self.getAxis(),
+            coachTrainingSessionId: self.getScheduledSessionId(),
+            coachTrainingSessionStart: self.getScheduledSessionStart()
         });
     });
 
@@ -212,7 +231,6 @@ Session.prototype.create = function () {
     var self = this;
     self.connection.executeSql("INSERT INTO session (id, session_start, anglez, noisex, noisez, factorx, factorz, axis, dbg_file) VALUES (?,?,?,?,?,?,?,?,?)",
         [this.id, this.sessionStart, this.angleZ, this.noiseX, this.noiseZ, this.factorX, this.factorZ, this.axis, this.debugFile], function (res) {
-            console.log("Session #" + res.insertId + " created");
             self.id = res.insertId;
         }, function (error) {
             console.log(error.message);
@@ -268,8 +286,10 @@ Session.prototype.finish = function () {
         self.setTopEfficiency(maxSpmEfficiency);
 
         self.connection.executeSql("update session set distance = ?, avg_spm = ?, top_spm = ?, avg_speed = ?" +
-            ", top_speed = ?, avg_efficiency = ?, top_efficiency = ?, session_end = ? where id = ?"
-            , [distance, avgSpm, maxSpm, avgSpeed, maxSpeed, avgSpmEfficiency, maxSpmEfficiency, sessionEndAt, self.id]
+            ", top_speed = ?, avg_efficiency = ?, top_efficiency = ?, session_end = ?" +
+            ", scheduled_session_id = ?,  scheduled_session_start = ? where id = ?"
+            , [distance, avgSpm, maxSpm, avgSpeed, maxSpeed, avgSpmEfficiency, maxSpmEfficiency, sessionEndAt
+                , self.getScheduledSessionId(), self.getScheduledSessionStart(), self.id]
             , function (a) {
                 defer.resolve(this);
             }, function (a) {
@@ -513,6 +533,8 @@ function sessionFromDbRow(data) {
     session.setDebugAttempt(data.dbg_attempt);
     session.setRemoteId(data.remote_id);
     session.setDbgSyncedRows(data.dbg_sync_rows);
+    session.setScheduledSessionId(data.scheduled_session_id);
+    session.setScheduledSessionStart(data.scheduled_session_start);
 
     return session;
 }

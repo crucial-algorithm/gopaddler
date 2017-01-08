@@ -1,7 +1,7 @@
 'use strict';
 var db = require('../db');
 
-function SessionDetail(session, timestamp, distance, speed, spm, efficiency, latitude, longitude) {
+function SessionDetail(session, timestamp, distance, speed, spm, efficiency, latitude, longitude, split) {
     this.connection = db.getConnection();
     this.session = session;
     this.timestamp = timestamp;
@@ -11,6 +11,7 @@ function SessionDetail(session, timestamp, distance, speed, spm, efficiency, lat
     this.efficiency = efficiency || 0;
     this.latitude = latitude;
     this.longitude = longitude;
+    this.split = split;
 }
 
 SessionDetail.prototype.getSession = function () {
@@ -71,16 +72,20 @@ SessionDetail.prototype.setLatitude = function (latitude) {
 
 SessionDetail.prototype.getLongitude = function () {
     return this.longitude;
-}
+};
 
 SessionDetail.prototype.setLongitude = function (longitude) {
     this.longitude = longitude;
 };
 
+SessionDetail.prototype.getSplit = function () {
+    return this.split;
+};
+
 SessionDetail.prototype.save = function () {
-    this.connection.executeSql("INSERT INTO session_data (session, timestamp, distance, speed, spm, efficiency, latitude, longitude) VALUES (?,?,?,?,?,?,?,?)",
-        [this.session, this.timestamp, this.distance, this.speed, this.spm, this.efficiency, this.latitude, this.longitude], function (res) {
-            console.log("Session Data#" + res.insertId + " created");
+    this.connection.executeSql("INSERT INTO session_data (session, timestamp, distance, speed, spm, efficiency, latitude, longitude, split) VALUES (?,?,?,?,?,?,?,?,?)",
+        [this.session, this.timestamp, this.distance, this.speed, this.spm, this.efficiency, this.latitude, this.longitude, this.split], function (res) {
+            // intentinaly left blank
         }, function (error) {
             console.log('Error creating session: ' + error.message);
         });
@@ -88,7 +93,7 @@ SessionDetail.prototype.save = function () {
 
 SessionDetail.get = function(sessionId, callback) {
     var connection = db.getConnection();
-    connection.executeSql("SELECT timestamp, distance, speed, spm, efficiency, latitude, longitude FROM session_data WHERE session = ? ORDER BY id ASC",[sessionId], function (res) {
+    connection.executeSql("SELECT timestamp, distance, speed, spm, efficiency, latitude, longitude, split FROM session_data WHERE session = ? ORDER BY id ASC",[sessionId], function (res) {
         var rows = [], data;
         for (var i = 0; i < res.rows.length; i++) {
             data = res.rows.item(i);
@@ -96,7 +101,9 @@ SessionDetail.get = function(sessionId, callback) {
                 , parseFloat(data.speed), parseFloat(data.spm), parseFloat(data.efficiency)
                 // the following lines will fail if in equador!
                 , data.latitude ? parseFloat(data.latitude) : undefined
-                , data.longitude ? parseFloat(data.longitude) : undefined));
+                , data.longitude ? parseFloat(data.longitude) : undefined
+                , data.split
+            ));
         }
         callback(rows);
     }, function (error) {

@@ -10,6 +10,10 @@ var units = {
             label: {regular: "", large: ""},
             round: false
         },
+        splits: {
+            label: {regular: "", large: ""},
+            round: false
+        },
         speed: {
             label: {regular: "Km/h", large: "Km/h"},
             decimalPlaces: 1
@@ -33,6 +37,10 @@ var units = {
     },
     imperial: {
         timer: {
+            label: {regular: "", large: ""},
+            round: false
+        },
+        splits: {
             label: {regular: "", large: ""},
             round: false
         },
@@ -60,13 +68,18 @@ var units = {
 };
 
 
-function Context(settings) {
+function Context(settings, environment) {
     this._settings = settings;
+    this._environment = environment;
     this._system = this._settings.isImperial() ? 'imperial' : 'metric';
 }
 
 Context.prototype.preferences = function () {
     return this._settings;
+};
+
+Context.prototype.isDev = function () {
+    return this._environment === 'dev';
 };
 
 /**

@@ -5,27 +5,32 @@ var ScheduledSession = require('../model/scheduled-session').ScheduledSession;
 
 var mockupSessions = [
     {
-        coach: {},
-        expression: {text: "2 x (2'/1' + 4'/2' + 6'/3' + 8'/4')/4'' + 2 x (2'/1' + 4'/2' + 6'/3' + 8'/4')/4''"},
-        session: {
-            id: 1,
-            splits: [{_duration: 10, _recovery: false, _unit: 'seconds'}, {_duration: 0.1, _recovery: true, _unit: 'Kilometers'},{_duration: 10, _recovery: false, _unit: 'seconds'}, {_duration: 5, _recovery: true, _unit: 'seconds'}]
-        },
+        expression: "2 x (2'/1' + 4'/2' + 6'/3' + 8'/4')/4'' + 2 x (2'/1' + 4'/2' + 6'/3' + 8'/4')/4''",
+        id: 1,
+        splits: [{_duration: 10, _recovery: false, _unit: 'seconds'}, {_duration: 0.1, _recovery: true, _unit: 'Kilometers'},{_duration: 10, _recovery: false, _unit: 'seconds'}, {_duration: 5, _recovery: true, _unit: 'seconds'}],
         date: moment().add(-3, 'd')
     },
     {
-        coach: {},
-        expression: {text: "2 x (2'/1' + 4'/2' + 6'/3' + 8'/4')/4''"},
-        session: {
-            id: 1,
-            splits: [{_duration: 10, _recovery: false, _unit: 'seconds'}, {_duration: 2, _recovery: true, _unit: 'seconds'}]
-        },
+        expression: "2 x (2'/1' + 4'/2' + 6'/3' + 8'/4')/4''",
+        id: 1,
+        splits: [{_duration: 10, _recovery: false, _unit: 'seconds'}, {_duration: 2, _recovery: true, _unit: 'seconds'}],
         date: moment().add(-2, 'd')
     },
-    {coach: {}, expression: {text: "10 x 5'/1'"}, session: {id: 3, splits: [{_duration: 120, _recovery: false, _unit: 'seconds'}, {_duration: 60, _recovery: true, _unit: 'seconds'}]}, date: moment().add(-1, 'd')},
-    {coach: {}, expression: {text: "10 x 5'/1'"}, session: {id: 4, splits: [{_duration: 120, _recovery: false, _unit: 'seconds'}, {_duration: 60, _recovery: true, _unit: 'seconds'}]}, date: moment().add(-0, 'd')},
-    {coach: {}, expression: {text: "10 x 5'/1'"}, session: {id: 5, splits: [{_duration: 120, _recovery: false, _unit: 'seconds'}, {_duration: 60, _recovery: true, _unit: 'seconds'}]}, date: moment().add(1, 'd')},
-    {coach: {}, expression: {text: "10 x 5'/1'"}, session: {id: 6, splits: [{_duration: 120, _recovery: false, _unit: 'seconds'}, {_duration: 60, _recovery: true, _unit: 'seconds'}]}, date: moment().add(2, 'd')}
+    {
+        expression: "2 x (2'/1' + 4'/2' + 6'/3' + 8'/4')/4''", id: 1,
+        date: moment().add(0, 'd'),
+        splits: []
+    },
+    {
+        expression: "2 x (2'/1' + 4'/2' + 6'/3' + 8'/4')/4''", id: 1,
+        date: moment().add(0, 'd'),
+        splits: []
+    },
+    {
+        expression: "2 x (2'/1' + 4'/2' + 6'/3' + 8'/4')/4''", id: 1,
+        date: moment().add(0, 'd'),
+        splits: []
+    }
 ];
 
 
@@ -85,7 +90,13 @@ function SelectSessionView(page, context) {
 
     if (context.isDev()) {
         setTimeout(function () {
-           renderSessions(mockupSessions.splice(0));
+            var sessions = [], session;
+            for (var i = 0; i < mockupSessions.length; i++) {
+                session = new ScheduledSession();
+                session.fromJson(mockupSessions[i]);
+                sessions.push(session);
+            }
+           renderSessions(sessions);
         }, 0);
     } else {
         renderSessions(ScheduledSession.load() || []);

@@ -67,7 +67,7 @@ ScheduledSession.load = function () {
     var result = [], s;
     for (var i = 0; i < list.length; i++) {
         s = new ScheduledSession();
-        s.fromJson(list[i])
+        s.fromJson(list[i]);
         result.push(s);
     }
 

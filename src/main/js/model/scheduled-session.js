@@ -21,7 +21,7 @@ ScheduledSession.prototype.getId = function () {
 };
 
 ScheduledSession.prototype.getSplits = function () {
-    return this.splits;
+    return this.splits ? this.splits.slice(0) : null;
 };
 
 ScheduledSession.prototype.loadFromServerResponse = function (json) {

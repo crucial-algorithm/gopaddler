@@ -22,6 +22,8 @@ GPS.prototype.listen = function(callback) {
 GPS.prototype.start = function() {
     var self = this;
 
+    this.startTs = new Date().getTime();
+
     var onSuccess = function (position) {
         
         // first readings are always less accurate - discard them!
@@ -45,6 +47,10 @@ GPS.prototype.start = function() {
 
     var onError = function (error) {
         console.log(error);
+
+        if (new Date().getTime() - self.startTs > 80000)
+            return;
+
         var message, title;
         if (device.platform === 'iOS') {
             title = 'Location is disabled';

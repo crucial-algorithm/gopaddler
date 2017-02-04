@@ -51,3 +51,14 @@
     background-color: #FFFFFF;
 }
 
+
+.start-immediately-switch > .onoffswitch-label {
+    background-color: #D3D3D3;
+}
+
+.start-immediately-switch > .onoffswitch-checkbox:checked + .onoffswitch-label {
+    background-color: #D3D3D3;
+}
+.start-immediately-switch > .onoffswitch-checkbox:checked + .onoffswitch-label, .onoffswitch-checkbox:checked + .onoffswitch-label:before {
+    border-color: #D3D3D3;
+}

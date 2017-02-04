@@ -1,6 +1,7 @@
 'use strict';
 
 var utils = require('./utils/utils');
+var Api = require('./server/api');
 
 
 var units = {
@@ -143,6 +144,10 @@ Context.prototype.navigate = function (target, clear, args) {
         if (clear === true)
             App.removeFromStack();
     });
+};
+
+Context.prototype.userHasCoach = function () {
+    return Api.User.hasCoach();
 };
 
 exports.Context = Context;

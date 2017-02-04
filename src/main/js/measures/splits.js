@@ -14,7 +14,7 @@ function Splits(splits, listener) {
 Splits.prototype.start = function (duration, delay, onStart) {
 
     if (typeof delay === "number") {
-        this.splits.unshift({_duration: delay - 1, _unit: 'seconds'});
+        this.splits.unshift({_duration: delay, _unit: 'seconds'});
         this.delayed = true;
         this.onStart = onStart;
         this.started = false;
@@ -30,12 +30,12 @@ Splits.prototype.stop = function() {
 };
 
 /**
- * 
+ *
  * @param timestamp     Current timestamp on Timer
- * @param duration      Duration since session was started on Timer 
+ * @param duration      Duration since session was started on Timer
  */
 Splits.prototype.setTime = function (timestamp, duration) {
-    this.duration = duration;
+    this.duration = Math.round(duration/1000);
 
     if (!this.running)
         return;
@@ -46,12 +46,7 @@ Splits.prototype.setTime = function (timestamp, duration) {
     if (this.split.type() === UNITS_TYPE.DISTANCE_BASED)
         return;
 
-    if (this.splitStop - duration <= 0) {
-
-        this.nextSplit();
-
-        if (!this.split)
-            return;
+    if (this.splitStop - this.duration < 0) {
 
         // check if this is the first split after delay
         if (this.started !== true && this.delayed) {
@@ -59,17 +54,23 @@ Splits.prototype.setTime = function (timestamp, duration) {
             this.started = true;
         }
 
+        this.nextSplit();
+
+        if (!this.split)
+            return;
+
         // if next measure is distance based, show value formatted accordingly
         if (this.split.type() === UNITS_TYPE.DISTANCE_BASED) {
-            this.listener(this.split.getDistanceInKm());
+            this.listener(this.split.getDistanceInKm(), this.split.isRecovery());
+            return;
         }
-    } else {
-        this.listener(this.format(Math.round((this.split.getDurationInSeconds() * 1000 - (duration - this.splitStart)) / 1000)));
     }
+
+    this.listener(this.format((this.split.getDurationInSeconds() - 1 - (this.duration - this.splitStart))), this.split.isRecovery());
 };
 
 Splits.prototype.setDistance = function (distance) {
-    this.distance = distance;
+    this.distance = utils.round2(distance);
 
     if (!this.running) return;
 
@@ -80,7 +81,7 @@ Splits.prototype.setDistance = function (distance) {
 
     if (this.split.type() === UNITS_TYPE.TIME_BASED) return;
 
-    if (this.splitStop - distance <= 0) {
+    if (this.splitStop - this.distance <= 0) {
 
         this.nextSplit();
 
@@ -89,13 +90,12 @@ Splits.prototype.setDistance = function (distance) {
 
         // if next measure is timed based, show value formatted accordingly
         if (this.split.type() === UNITS_TYPE.TIME_BASED) {
-            this.listener(this.format(this.split.getDurationInSeconds()));
+            this.listener(this.format(this.split.getDurationInSeconds()), this.split.isRecovery());
+            return;
         }
-
-    } else {
-
-        this.listener(utils.round2(this.split.getDistanceInKm() - (distance - this.splitStart)));
     }
+
+    this.listener(utils.round2(this.split.getDistanceInKm() - (distance - this.splitStart)), this.split.isRecovery());
 };
 
 Splits.prototype.nextSplit = function () {
@@ -114,11 +114,11 @@ Splits.prototype.nextSplit = function () {
     this.split = new Interval(s._duration, s._unit, s._recovery);
 
     if (this.split.type() === UNITS_TYPE.DISTANCE_BASED) {
-        this.splitStart = this.distance;
+        this.splitStart = this.distance || 0;
         this.splitStop = this.splitStart + this.split.getDistanceInKm();
     } else {
         this.splitStart = this.duration;
-        this.splitStop = this.splitStart + this.split.getDurationInSeconds() * 1000;
+        this.splitStop = this.splitStart + this.split.getDurationInSeconds() - 1;
     }
 
 };
@@ -173,6 +173,9 @@ Interval.prototype.getDuration = function () {
     return this._duration;
 };
 
+Interval.prototype.isRecovery = function () {
+    return this._recovery;
+};
 
 Interval.prototype.getDurationInSeconds = function() {
     if (this.getUnit() === UNITS.minutes)

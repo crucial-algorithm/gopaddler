@@ -25,9 +25,31 @@ function emulateCordova () {
             var data = [
                 {version: 1, units: 'K', sync_wifi: true, restore_layout: true}
             ];
-            success({rows: {length: 14, item: function (index) {
-                return data[index];
+            success({
+                rows: {
+                    length: 14, item: function (index) {
+                        return data[index];
+                    }
+                }
+            })
+        } else if (sql.indexOf("FROM session_data") >= 0) {
+            var session = [
+                {id: 1, session:1, timestamp: 1, distance: 1, speed:  1, spm: 50, efficiency: 2.2, latitude: 1, longitude: 1, split: -1},
+                {id: 1, session:1, timestamp: 1, distance: 1, speed:  1, spm: 50, efficiency: 2.2, latitude: 1, longitude: 1, split: -1},
+                {id: 1, session:1, timestamp: 1, distance: 1, speed: 10, spm: 80, efficiency: 4.0, latitude: 1, longitude: 1, split: 0},
+                {id: 1, session:1, timestamp: 1, distance: 1, speed: 15, spm: 90, efficiency: 4.5, latitude: 1, longitude: 1, split: 0},
+                {id: 1, session:1, timestamp: 1, distance: 1, speed:  1, spm: 50, efficiency: 2.2, latitude: 1, longitude: 1, split: 1},
+                {id: 1, session:1, timestamp: 1, distance: 1, speed:  1, spm: 50, efficiency: 2.2, latitude: 1, longitude: 1, split: 1},
+                {id: 1, session:1, timestamp: 1, distance: 1, speed: 10, spm: 80, efficiency: 4.0, latitude: 1, longitude: 1, split: 2},
+                {id: 1, session:1, timestamp: 1, distance: 1, speed: 15, spm: 90, efficiency: 4.5, latitude: 1, longitude: 1, split: 2},
+                {id: 1, session:1, timestamp: 1, distance: 1, speed:  1, spm: 50, efficiency: 2.2, latitude: 1, longitude: 1, split: 3},
+                {id: 1, session:1, timestamp: 1, distance: 1, speed:  1, spm: 50, efficiency: 2.2, latitude: 1, longitude: 1, split: 3}
+            ];
+
+            success({rows: {length: session.length, item: function (index) {
+                return session[index];
             }}})
+
         } else {
             var data = [
                 {id: 1, session_start: new Date(), distance: 1, top_speed: 1, session_end: new Date(new Date().getTime() + 3600000)},

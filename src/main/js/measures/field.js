@@ -70,7 +70,7 @@ var FIELD_SETTINGS = {
     },
     splits: {
         label: "Splits",
-        init: 'Stop warm up to start splits',
+        init: 'Hold pause to begin session',
         hint: true
     },
     speed: {
@@ -214,6 +214,11 @@ Field.prototype.setValues = function (values) {
     if ('timer' in values) {
         this.time = values.timer;
     }
+};
+
+Field.prototype.setUnit = function (type, unit) {
+    if (this.current.type === type)
+        this.current.instance.setUnit(unit);
 };
 
 exports.Field = Field;

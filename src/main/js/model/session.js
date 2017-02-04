@@ -238,9 +238,9 @@ Session.prototype.create = function () {
     return this;
 };
 
-Session.prototype.finish = function () {
+Session.prototype.finish = function (splits) {
     var self = this, defer = $.Deferred();
-
+    
     var sessionEndAt = new Date().getTime();
 
     self.detail().then(function (rows) {
@@ -252,8 +252,14 @@ Session.prototype.finish = function () {
             , totalSpeed = 0, totalSpm = 0, totalEfficiency = 0
             , maxSpeed = 0, maxSpmEfficiency = 0;
 
-        var length = rows.length;
+        var length = rows.length, count = 0, split, hasSplits = splits.length > 0;
         for (var i = 0; i < length; i++) {
+            split = splits[rows[i].getSplit()];
+            if (hasSplits && (!split || split._recovery === true)) {
+                continue;
+            }
+            
+            count++;
             distance = rows[i].getDistance();
             totalSpeed += rows[i].getSpeed();
             totalSpm += rows[i].getSpm();
@@ -265,9 +271,9 @@ Session.prototype.finish = function () {
             if (rows[i].getSpm() > maxSpm) maxSpm = rows[i].getSpm();
         }
 
-        avgSpeed = totalSpeed / length;
-        avgSpm = totalSpm / length;
-        avgSpmEfficiency = totalEfficiency / length;
+        avgSpeed = totalSpeed / count;
+        avgSpm = totalSpm / count;
+        avgSpmEfficiency = totalEfficiency / count;
 
         try {
             maxSpm = measureEnhancement.getMaxSPM(rows);

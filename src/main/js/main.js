@@ -131,7 +131,6 @@ if (environment === 'prod') {
 } else {
     
     // in browser (development mode!)
-    
     global.emulateCordova();
     loadDb();
     Api.User.set({
@@ -147,7 +146,8 @@ if (environment === 'prod') {
 
 function loadDb() {
     db.init();
-    sync.start();
+    if (environment === 'prod')
+        sync.start();
 }
 
 function loadUi() {

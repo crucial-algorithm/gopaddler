@@ -46,12 +46,18 @@ function SessionView(page, context, options) {
     var timer = new Timer();
     var paused = false;
 
-    function splitsHandler(value) {
+    function splitsHandler(value, isRecovery) {
         if (paused) return;
+        var unit = isRecovery ? 'Recovery' : '';
+
         top.setValue("splits", value);
         middle.setValue("splits", value);
         bottom.setValue("splits", value);
         large.setValue("splits", value);
+        top.setUnit("splits", unit);
+        middle.setUnit("splits", unit);
+        bottom.setUnit("splits", unit);
+        large.setUnit("splits", unit);
     }
 
     self.inWarmUp = false;
@@ -116,7 +122,7 @@ function SessionView(page, context, options) {
 
     if (self.isScheduledSession && !self.isWarmupFirst) {
         session.setScheduledSessionStart(session.getSessionStart());
-        splits.start(splitsHandler, undefined, undefined);
+        splits.start(undefined, undefined, undefined);
     }
 
 
@@ -212,7 +218,7 @@ function SessionView(page, context, options) {
         if (self.isDebugEnabled)
             self.flushDebugBuffer();
 
-        session.finish().then(function () {
+        session.finish(options && options.session ? options.session.getSplits() : []).then(function () {
             Dialog.hideModal();
             back();
         });

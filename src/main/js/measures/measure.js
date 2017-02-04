@@ -45,6 +45,10 @@ SmallMeasure.prototype.resetHint = function () {
     this.hintEnabled = false;
 };
 
+SmallMeasure.prototype.setUnit = function (unit) {
+    this.$parent.find('.small-measure-units').html(unit);
+};
+
 
 function LargeMeasure($parent, label, unit, value) {
     this.$parent = $parent;
@@ -87,6 +91,8 @@ LargeMeasure.prototype.setValue = function (value) {
 
     this.$value.html(value);
 };
+
+LargeMeasure.prototype.setUnit = function () {};
 
 function Measure() {
 }

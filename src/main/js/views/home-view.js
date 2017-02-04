@@ -28,7 +28,10 @@ function HomeView(page, context, request) {
             showNoCalibrationModal($(page), context);
             return false;
         }
-        context.navigate('select-session', false, undefined);
+        if (context.userHasCoach())
+            context.navigate('select-session', false, undefined);
+        else
+            context.navigate('session', false, undefined);
     });
 
     $settings.on('tap', function () {

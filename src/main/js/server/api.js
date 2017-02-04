@@ -1,12 +1,12 @@
 var Utils = require('../utils/utils.js');
 var lastEvent = undefined, retries = 0;
 
-// var asteroid = new Asteroid("local.gopaddler.com:3000", false, function(data) {
-//     lastEvent = data;
-// });
+//var asteroid = new Asteroid("local.gopaddler.com:3000", false, function(data) {
+//    lastEvent = data;
+//});
 
 var asteroid = new Asteroid("app.gopaddler.com", true, function intercept (data) {
-    lastEvent = data;
+     lastEvent = data;
 });
 
 var serverAvailable = function (d) {
@@ -116,8 +116,14 @@ function _remoteLogin() {
  * @private
  */
 function _finishLogin(defer, user) {
-    _storeUser(user);
-    defer.resolve(user);
+    _call('hasCoach').then(function (value) {
+        user.hasCoach = value;
+    }).fail(function (err) {
+        console.log(err);
+    }).always(function () {
+        _storeUser(user);
+        defer.resolve(user);
+    });
 }
 
 
@@ -235,6 +241,10 @@ exports.User = {
 
     saveDevice: function (device) {
         return _call('saveUserDevice', device);
+    },
+
+    hasCoach: function () {
+        return asteroid.user.hasCoach === true;
     }
 };
 

@@ -1063,6 +1063,7 @@ div[aria-live="polite"],  div[aria-live="polite"] > .slick-track{
     vertical-align: middle;
     text-align: left;
     padding-left: 8px;
+    padding-right: 8px;
     text-transform: uppercase;
 }
 

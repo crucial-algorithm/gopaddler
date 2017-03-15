@@ -57,20 +57,20 @@ function _localLogin() {
 
     }).fail(function serverNotAvailable() {
 
-            if (serializedUser) {
+        if (serializedUser) {
 
-                user = JSON.parse(serializedUser);
+            user = JSON.parse(serializedUser);
 
-                asteroid.loggedIn = true;
-                asteroid.userId = user._id;
-                asteroid.user = user;
+            asteroid.loggedIn = true;
+            asteroid.userId = user._id;
+            asteroid.user = user;
 
-                _finishLogin(defer, user);
+            _finishLogin(defer, user);
 
-            } else {
+        } else {
 
-                defer.reject();
-            }
+            defer.reject();
+        }
     });
 
     return defer.promise();
@@ -116,10 +116,17 @@ function _remoteLogin() {
  * @private
  */
 function _finishLogin(defer, user) {
+
+    if (!Utils.isNetworkConnected()) {
+        defer.resolve(user);
+        return;
+    }
+
     _call('hasCoach').then(function (value) {
         user.hasCoach = value;
     }).fail(function (err) {
         console.log(err);
+        defer.resolve(user);
     }).always(function () {
         _storeUser(user);
         defer.resolve(user);

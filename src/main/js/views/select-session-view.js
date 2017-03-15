@@ -93,35 +93,32 @@ function SelectSessionView(page, context) {
         var elements = $();
         sessions = _sessions;
 
-        if (sessions.length > 0) {
+        sessions = sort(sessions);
 
-            sessions = sort(sessions);
+        for (var s = 0; s < sessions.length; s++) {
+            session = sessions[s];
 
-            for (var s = 0; s < sessions.length; s++) {
-                session = sessions[s];
-
-                if (session === null) {
-                    // Add free session
-                    elements = elements.add(['<li class="select-session-row " data-session-idx="-1">',
-                        '    <div class="select-session-row-wrapper">',
-                        '        <div><label class="session-row-label">' + moment().format('dddd') + '</label>' + moment().format('MMM DD') + '</div>',
-                        '        <div><label class="session-row-label"></label><span class="session-row-expression">Free Session</span></div>',
-                        '    </div>',
-                        '</li>'
-                    ].join(''));
-
-                    continue;
-                }
-
-                date = moment(session.getDate());
-                elements = elements.add(['<li class="select-session-row" data-session-idx="' + s + '">',
+            if (session === null) {
+                // Add free session
+                elements = elements.add(['<li class="select-session-row " data-session-idx="-1">',
                     '    <div class="select-session-row-wrapper">',
-                    '        <div><label class="session-row-label">' + date.format('dddd') + '</label>' + date.format('MMM DD') + '</div>',
-                    '        <div><label class="session-row-label"></label><span class="session-row-expression">' + session.getExpression() + '</span></div>',
+                    '        <div><label class="session-row-label">' + moment().format('dddd') + '</label>' + moment().format('MMM DD') + '</div>',
+                    '        <div><label class="session-row-label"></label><span class="session-row-expression">Free Session</span></div>',
                     '    </div>',
                     '</li>'
                 ].join(''));
+
+                continue;
             }
+
+            date = moment(session.getDate());
+            elements = elements.add(['<li class="select-session-row" data-session-idx="' + s + '">',
+                '    <div class="select-session-row-wrapper">',
+                '        <div><label class="session-row-label">' + date.format('dddd') + '</label>' + date.format('MMM DD') + '</div>',
+                '        <div><label class="session-row-label"></label><span class="session-row-expression">' + session.getExpression() + '</span></div>',
+                '    </div>',
+                '</li>'
+            ].join(''));
         }
 
         $list.empty();

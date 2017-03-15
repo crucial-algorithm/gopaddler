@@ -51,7 +51,7 @@ function SettingsView(page, settings) {
 
     $logout.find('.settings-facebook').html("Logout (" + Api.User.getProfile().name + ")");
     
-    $('[data-selector="version"]', page).html("v. 0.8.7 / u. " + Api.User.getId());
+    $('[data-selector="version"]', page).html("v. 0.8.8 / u. " + Api.User.getId());
 
     $('.settings-website-text', page).on('click', function () {
         window.open('https://app.gopaddler.com/', '_system');

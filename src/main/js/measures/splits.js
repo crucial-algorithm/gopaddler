@@ -27,6 +27,7 @@ Splits.prototype.start = function (duration, delay, onStart) {
 
 Splits.prototype.stop = function() {
     this.running = false;
+    this.position = -1;
 };
 
 /**

@@ -11,10 +11,6 @@ var processing = {};
 function sync() {
     if (document.PREVENT_SYNC === true) return;
 
-    if (!Utils.onWifi()) {
-        return;
-    }
-
     var isOffline = 'onLine' in navigator && !navigator.onLine;
 
     if (isOffline)
@@ -91,6 +87,13 @@ function uploadDebugData(session) {
         return defer.promise();
     }
 
+    if (!Utils.onWifi()) {
+        delete processing[session.getId()];
+        defer.resolve();
+        return defer.promise();
+    }
+
+
     loadFile(session.getDebugFile()).then(function (rows) {
 
         var i = 0;
@@ -166,10 +169,6 @@ function uploadDebugData(session) {
 
 function syncScheduledSessions () {
     if (document.PREVENT_SYNC === true) return;
-
-    if (!Utils.onWifi()) {
-        return;
-    }
 
     ScheduledSession.sync();
 }

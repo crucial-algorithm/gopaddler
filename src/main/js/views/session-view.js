@@ -46,6 +46,24 @@ function SessionView(page, context, options) {
     var timer = new Timer();
     var paused = false;
 
+    if (context.preferences().isShowBlackAndWhite()) {
+
+        $page.find(".session-right").addClass('black-and-white');
+        $page.find(".session-left").addClass('black-and-white');
+
+
+        $page.on('appShow', function () {
+            var width = $page.find(".session-left").width();
+            $page.find(".session-right").css({width: width - 1});
+            $page.find(".big-measure-label").addClass('black-and-white');
+            $page.find(".big-measure-units").addClass('black-and-white');
+            $page.find("#animation-pause-circle").attr('fill', '#000');
+            $page.find("#animation-pause-dash").attr('stroke', '#000');
+        });
+    } else {
+        $page.find(".app-content").removeClass('black-and-white');
+    }
+
     function splitsHandler(value, isRecovery) {
         if (paused) return;
         var unit = isRecovery ? 'Recovery' : '';
@@ -292,7 +310,7 @@ function SessionView(page, context, options) {
 
                 if (!$pause) $pause = $('#session-stop');
 
-                var svgPath = document.getElementById('pause-svg');
+                var svgPath = document.getElementById('animation-pause-dash');
                 var path = new ProgressBar.Path(svgPath, {
                     duration: 1000,
                     easing: 'easeIn'

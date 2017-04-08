@@ -9,7 +9,7 @@ function SettingsView(page, settings) {
         , $logout = $('#logout', page)
         , $page = $(page)
         , $units = $('#pick-units', page)
-        , $wifi = $('#wifi', page)
+        , $blackAndWhite = $('#black-and-white', page)
         , $calibrationHelp = $('.settings-calibrate-help', page)
         , $layout = $('#layout', page);
 
@@ -17,8 +17,8 @@ function SettingsView(page, settings) {
         $units.prop('checked', true);
     }
 
-    if (settings.isSyncOnlyOnWifi()) {
-        $wifi.prop('checked', true);
+    if (settings.isShowBlackAndWhite()) {
+        $blackAndWhite.prop('checked', true);
     }
 
     if (settings.isRestoreLayout()) {
@@ -59,13 +59,13 @@ function SettingsView(page, settings) {
 
     $page.on('appBeforeBack', function (e) {
         var units = $units.is(':checked') ? Settings.CONSTANTS.MI : Settings.CONSTANTS.KM;
-        var wifi = $wifi.is(':checked') ;
+        var blackAndWhite = $blackAndWhite.is(':checked') ;
         var layout = $layout.is(':checked');
-        Settings.saveSettings(units, wifi, layout);
+        Settings.saveSettings(units, blackAndWhite, layout);
 
         // update reference that is being used globally
         settings.setUnits(units);
-        settings.setSyncOnlyOnWifi(wifi);
+        settings.setShowBlackAndWhite(blackAndWhite);
         settings.setRestoreLayout(layout);
     });
 

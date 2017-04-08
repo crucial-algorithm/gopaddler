@@ -7,16 +7,17 @@ var CONSTANTS  = {
     MI: 'M'
 };
 
-function Settings(version, units, syncOnlyOnWifi, restoreLayout, showTouchGestures, showCalibrationTips, default_session_filter, default_start_date, default_end_date) {
+function Settings(version, units, syncOnlyOnWifi, restoreLayout, showTouchGestures
+    , showCalibrationTips, default_session_filter, default_start_date, default_end_date, showBlackAndWhite) {
     this._version = version;
     this._units = units;
-    this._syncOnlyOnWifi = syncOnlyOnWifi;
     this._restoreLayout = restoreLayout;
     this._showTouchGestures = showTouchGestures === undefined ? true : showTouchGestures;
     this._showCalibrationTips = showCalibrationTips === undefined ? true : showCalibrationTips;
     this._defaultSessionFilter = default_session_filter;
     this._defaultStartDate = default_start_date;
     this._defaultEndDate = default_end_date;
+    this._showBlackAndWhite = showBlackAndWhite;
 }
 
 Settings.prototype.getVersion = function() {
@@ -37,14 +38,6 @@ Settings.prototype.setUnits = function(units) {
 
 Settings.prototype.isImperial = function(){
     return this._units === CONSTANTS.MI;
-};
-
-Settings.prototype.isSyncOnlyOnWifi = function() {
-    return this._syncOnlyOnWifi;
-};
-
-Settings.prototype.setSyncOnlyOnWifi = function(syncOnlyOnWifi) {
-    this._syncOnlyOnWifi = syncOnlyOnWifi;
 };
 
 Settings.prototype.isRestoreLayout = function() {
@@ -95,6 +88,14 @@ Settings.prototype.setDefaultEndDate = function(defaultEndDate) {
     this._defaultEndDate = defaultEndDate;
 };
 
+Settings.prototype.isShowBlackAndWhite = function() {
+    return this._showBlackAndWhite;
+};
+
+Settings.prototype.setShowBlackAndWhite = function(showBlackAndWhite) {
+    this._showBlackAndWhite = showBlackAndWhite;
+};
+
 
 
 Settings.prototype.touchGesturesShown = function () {
@@ -126,7 +127,9 @@ function loadSettings() {
                 row.show_calibration_tips === 1,
                 row.default_session_filter,
                 row.default_start_date,
-                row.default_end_date
+                row.default_end_date,
+                row.black_and_white
+
             ));
     }, function error(e) {
         console.log('error loding settings... defaulting');
@@ -136,10 +139,10 @@ function loadSettings() {
     return defer.promise();
 }
 
-function saveSettings(units, syncOnWikiOnly, restoreLayout) {
+function saveSettings(units, showBlackAndWhite, restoreLayout) {
     var connection = db.getConnection();
-    connection.executeSql("update settings set units = ?, sync_wifi = ?, restore_layout = ?"
-        , [units, syncOnWikiOnly ? 1 : 0, restoreLayout ? 1 : 0]);
+    connection.executeSql("update settings set units = ?, black_and_white = ?, restore_layout = ?"
+        , [units, showBlackAndWhite ? 1 : 0, restoreLayout ? 1 : 0]);
 }
 
 exports.loadSettings = loadSettings;

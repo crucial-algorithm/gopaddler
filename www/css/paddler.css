@@ -347,6 +347,7 @@ body {
     height: 100%;
     width: 50%;
     background-color: #3b3d62;
+    color: #fff;
 }
 .session-right {
     float: right;
@@ -359,7 +360,6 @@ body {
     display: table;
     height: 100%;
     width: 100%;
-    color: #fff;
     vertical-align: middle;
     text-align: center;
 }
@@ -1086,9 +1086,6 @@ li.select-session-row.selected {
     box-shadow: inset -8px 0 0 #ef6156;
 }
 
-
-
-
 .select-session-start-instantly {
     display: table-cell;
     color: white;
@@ -1097,4 +1094,32 @@ li.select-session-row.selected {
     text-transform: capitalize;
     font-weight: bolder;
     text-align: right;
+}
+
+
+.black-and-white > .yellow{
+    background-color: #FFFFFF;
+}
+
+.black-and-white > .blue {
+    background-color: #FFFFFF;
+}
+
+.black-and-white > .red {
+    background-color: #FFFFFF;
+}
+
+.black-and-white.session-left {
+    background-color: #FFFFFF;
+    color: #000000;
+    border-right: 1px solid;
+}
+
+.black-and-white > .session-small-measure {
+    color: #000000;
+    border-bottom: 1px solid;
+}
+
+.black-and-white.big-measure-label, .black-and-white.big-measure-units {
+    color: #000000;
 }

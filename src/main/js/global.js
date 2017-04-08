@@ -23,7 +23,7 @@ function emulateCordova () {
             success({insertId: 1234});
         } else if (sql === "SELECT * FROM settings") {
             var data = [
-                {version: 1, units: 'K', sync_wifi: true, restore_layout: true}
+                {version: 1, units: 'K', black_and_white: true, restore_layout: true}
             ];
             success({
                 rows: {

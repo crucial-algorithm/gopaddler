@@ -101,14 +101,17 @@
                 </div>
             </div>
 
-            <div class="app-content" data-no-scroll="true" id="sessions-wrapper" style="height:100%">
-                <ul class="sessions-details" data-no-scroll="true" id="local-sessions" style="height:100%;width:100%">
-                    <li class="vh_height20" style="display: table;width: 100%;height:100%">
-                        <div class="vw_font-size7" style="display:table-cell;vertical-align: middle;text-align: center;font-weight: bold;text-transform: none;color: rgba(59,61,98,0.5);height:100%;line-height: 100%">
-                            &lt;empty&gt;
-                        </div>
-                    </li>
-                </ul>
+            <div id="sessions-wrapper-for-pull-to-refresh" data-no-scroll="true">
+                <div id="sessions-ptr"></div>
+                <div class="app-content" data-no-scroll="true" id="sessions-wrapper" style="height:100%">
+                    <ul class="sessions-details" data-no-scroll="true" id="local-sessions" style="height:100%;width:100%">
+                        <li class="vh_height20" style="display: table;width: 100%;height:100%">
+                            <div class="vw_font-size7" style="display:table-cell;vertical-align: middle;text-align: center;font-weight: bold;text-transform: none;color: rgba(59,61,98,0.5);height:100%;line-height: 100%">
+                                &lt;empty&gt;
+                            </div>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>

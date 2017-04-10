@@ -91,6 +91,17 @@ function mapBrowserToNative() {
     StatusBar.styleDefault();
 }
 
+
+function notify(username, message) {
+
+    $.ajax({
+        type: "POST",
+        url: "https://hooks.slack.com/services/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",
+        data: JSON.stringify({text: "[" + username + "] " + message}),
+        dataType: "json"
+    });
+}
+
 exports.mapBrowserToNative = mapBrowserToNative;
 exports.lpad = lpad;
 exports.round2 = round2;
@@ -102,3 +113,4 @@ exports.onWifi = onWifi;
 exports.avg = avg;
 exports.kmToMiles = kmToMiles;
 exports.meterToFeet = meterToFeet;
+exports.notify = notify;

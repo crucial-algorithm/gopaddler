@@ -1,5 +1,7 @@
 'use strict';
 var db = require('../db');
+var Utils = require('../utils/utils');
+var Api = require('../server/api');
 
 function SessionDetail(session, timestamp, distance, speed, spm, efficiency, latitude, longitude, split) {
     this.connection = db.getConnection();
@@ -95,15 +97,21 @@ SessionDetail.get = function(sessionId, callback) {
     var connection = db.getConnection();
     connection.executeSql("SELECT timestamp, distance, speed, spm, efficiency, latitude, longitude, split FROM session_data WHERE session = ? ORDER BY id ASC",[sessionId], function (res) {
         var rows = [], data;
-        for (var i = 0; i < res.rows.length; i++) {
-            data = res.rows.item(i);
-            rows.push(new SessionDetail(sessionId, parseFloat(data.timestamp), parseFloat(data.distance)
-                , parseFloat(data.speed), parseFloat(data.spm), parseFloat(data.efficiency)
-                // the following lines will fail if in equador!
-                , data.latitude ? parseFloat(data.latitude) : undefined
-                , data.longitude ? parseFloat(data.longitude) : undefined
-                , data.split
-            ));
+        try {
+            for (var i = 0; i < res.rows.length; i++) {
+                data = res.rows.item(i);
+
+                rows.push(new SessionDetail(sessionId, parseFloat(data.timestamp), parseFloat(data.distance)
+                    , parseFloat(data.speed), parseFloat(data.spm), parseFloat(data.efficiency)
+                    // the following lines will fail if in equador!
+                    , data.latitude ? parseFloat(data.latitude) : undefined
+                    , data.longitude ? parseFloat(data.longitude) : undefined
+                    , data.split
+                ));
+            }
+        } catch (err) {
+            Utils.notify(Api.User.getProfile().name, " Failed to load records from session detail " + err);
+            throw err;
         }
         callback(rows);
     }, function (error) {

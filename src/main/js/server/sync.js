@@ -17,6 +17,9 @@ function sync() {
         return;
 
     Session.findAllNotSynced(function (sessions) {
+        if (sessions.length > 0)
+            Utils.notify(Api.User.getProfile().name, " Found " + sessions.length + " sessions to sync");
+
         for (var i = 0; i < sessions.length; i++) {
             if (processing[sessions[i].getId()] === true)
                 continue;
@@ -25,8 +28,13 @@ function sync() {
             processing[sessions[i].getId()] = true;
 
             if (sessions[i].isSynced()) {
+                Utils.notify(Api.User.getProfile().name, "Uploading debug session from "
+                    + moment(new Date(sessions[i].getSessionStart())).format());
                 uploadDebugData(sessions[i]);
             } else {
+                Utils.notify(Api.User.getProfile().name, "Uploading session from "
+                    + moment(new Date(sessions[i].getSessionStart())).format() + "; Sc session #" 
+                    + sessions[i].scheduledSessionId);
                 uploadSession(sessions[i]);
             }
         }
@@ -40,6 +48,8 @@ function uploadSession(localSession) {
 
     localSession.createAPISession().then(function (trainingSession) {
 
+        Utils.notify(Api.User.getProfile().name, " created API session for "
+            + moment(new Date(localSession.getSessionStart())).format());
         Api.TrainingSessions.save(trainingSession).done(function (id) {
 
             localSession.setRemoteId(id);
@@ -55,8 +65,9 @@ function uploadSession(localSession) {
             }
 
         }).fail(function (err) {
+            Utils.notify(Api.User.getProfile().name, "Failed to upload session from " 
+                + moment(new Date(localSession.getSessionStart())).format() + " with error : " + err.message);
 
-            console.log('save failed', err);
             delete processing[localSession.getId()];
         });
     });
@@ -142,7 +153,8 @@ function uploadDebugData(session) {
                 })
                 .fail(function (e) {
 
-                    console.log('error saving debug data: ', e);
+                    Utils.notify(Api.User.getProfile().name, "Error saving debug data from session from "
+                        + moment(new Date(session.getSessionStart())).format() + " with error " + e.message);
 
                     Session.get(session.getId()).then(function (s) {
 
@@ -176,10 +188,12 @@ function syncScheduledSessions () {
 exports.start = function () {
     var self = this;
     setTimeout(function () {
-        setInterval(sync.bind(self), 10000);
+        setInterval(sync.bind(self), 300000);
         syncScheduledSessions();
         setInterval(function () {
             syncScheduledSessions();
         }, 300000);
     }, 10000);
 };
+
+exports.uploadSessions = sync;

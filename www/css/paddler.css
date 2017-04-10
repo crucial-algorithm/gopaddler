@@ -732,6 +732,12 @@ body {
     padding: 0 5% 0 5%;
 }
 
+#sessions-wrapper-for-pull-to-refresh {
+    float: right;
+    width: 60%;
+    overflow: hidden;
+}
+
 .session-table {
     display: table;
     width: 100%;

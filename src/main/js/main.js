@@ -40,6 +40,10 @@ App.controller('home', function (page, request) {
     Settings.loadSettings().then(function (s) {
         settings = s;
         context = new Context(settings, environment);
+
+        if (environment === 'prod')
+            sync.start(context);
+        
         new HomeView(page, context, request);
     }).fail(function (error, defaultSettings) {
         settings = defaultSettings;
@@ -146,8 +150,6 @@ if (environment === 'prod') {
 
 function loadDb() {
     db.init();
-    if (environment === 'prod')
-        sync.start();
 }
 
 function loadUi() {

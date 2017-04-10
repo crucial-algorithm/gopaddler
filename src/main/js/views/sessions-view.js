@@ -1,6 +1,7 @@
 'use strict';
 
 var Context = require('../context').Context;
+var Sync = require('../server/sync');
 
 var LAST_30_DAYS_PERIOD_FILTER = 'last-30-days',
     LAST_MONTH_PERIOD_FILTER   = 'last-month',
@@ -383,6 +384,9 @@ function SessionsView(page, context) {
     filterSessionsByPeriod(context);
 
     $page.on('appShow', function () {
+        var height = $(document.body).height() - $page.find('.paddler-topbar').height();
+
+        $("#sessions-wrapper-for-pull-to-refresh").height(height);
 
         // initialize and bind events to session filter
         setupSessionFilter($page, context);
@@ -394,6 +398,17 @@ function SessionsView(page, context) {
             list: true,
             left: 0,
             right: width
+        });
+
+        PullToRefresh.init({
+            mainElement: '#sessions-ptr',
+            getStyles: function(){return ".__PREFIX__ptr {\n pointer-events: none;\n  font-size: 0.85em;\n  font-weight: bold;\n  top: 0;\n  height: 0;\n  transition: height 0.3s, min-height 0.3s;\n  text-align: center;\n  width: 100%;\n  overflow: hidden;\n  display: flex;\n  align-items: flex-end;\n  align-content: stretch;\n}\n.__PREFIX__box {\n  padding: 10px;\n  flex-basis: 100%;\n}\n.__PREFIX__pull {\n  transition: none;\n}\n.__PREFIX__text {\n  margin-top: .33em;\n  color: rgba(0, 0, 0, 0.3);\n}\n.__PREFIX__icon {\n  color: rgba(0, 0, 0, 0.3);\n  transition: transform .3s;\n}\n.__PREFIX__release .__PREFIX__icon {\n  transform: rotate(180deg);\n}";},
+            instructionsPullToRefresh: 'Pull down to upload',
+            instructionsReleaseToRefresh: 'Release to upload',
+            instructionsRefreshing: 'Uploading',
+            onRefresh: function () {
+                Sync.uploadSessions();
+            }
         });
 
         iScroll = new IScroll($('#sessions-wrapper', page)[0], {});

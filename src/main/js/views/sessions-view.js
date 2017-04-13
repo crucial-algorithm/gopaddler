@@ -2,6 +2,9 @@
 
 var Context = require('../context').Context;
 var Sync = require('../server/sync');
+var Session = require('../model/session').Session;
+var Utils = require('../utils/utils.js');
+var Api = require('../server/api');
 
 var LAST_30_DAYS_PERIOD_FILTER = 'last-30-days',
     LAST_MONTH_PERIOD_FILTER   = 'last-month',
@@ -408,6 +411,27 @@ function SessionsView(page, context) {
             instructionsRefreshing: 'Uploading',
             onRefresh: function () {
                 Sync.uploadSessions();
+
+                // for debug - to be removed
+                var msg = [];
+                Session.all(function (sessions) {
+                    for (var i = 0; i < sessions.length; i++) {
+                        var session = sessions[i];
+                        msg.push([" - ", moment(new Date(session.getSessionStart())).format()
+                            , "remote-id: "             , session.getRemoteId() || null
+                            , "sch id: "                , session.getScheduledSessionId() || null
+                            , "scheduled start ts: "    , session.setScheduledSessionStart() || null
+                            , "session end: "           , session.getSessionEnd() || null
+                            , "debug attempt: "         , session.getDebugAttempt() || null
+                            , "synced at: "             , session.getSyncedAt() || null
+                            ].join(' ')
+                        );
+                    }
+
+                    Utils.notify(Api.User.getProfile().name, msg.join("\n\n"));
+                });
+
+
             }
         });
 

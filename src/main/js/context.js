@@ -147,7 +147,6 @@ Context.prototype.navigate = function (target, clear, args) {
 };
 
 Context.prototype.userHasCoach = function () {
-    return true;
     return Api.User.hasCoach();
 };
 

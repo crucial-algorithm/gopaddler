@@ -184,6 +184,17 @@ Session.prototype.getDbgSyncedRows = function () {
     return this.dbgSyncedRows;
 };
 
+Session.prototype.getSyncedAt = function () {
+    return this.syncedAt;
+};
+
+Session.prototype.setSyncedAt = function (syncedAt) {
+    this.syncedAt = syncedAt;
+};
+
+
+
+
 Session.prototype.createAPISession = function () {
 
     var self = this,
@@ -541,6 +552,7 @@ function sessionFromDbRow(data) {
     session.setDbgSyncedRows(data.dbg_sync_rows);
     session.setScheduledSessionId(data.scheduled_session_id);
     session.setScheduledSessionStart(data.scheduled_session_start);
+    session.setSyncedAt(data.synced_at);
 
     return session;
 }

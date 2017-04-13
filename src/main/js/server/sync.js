@@ -19,6 +19,8 @@ function sync() {
     Session.findAllNotSynced(function (sessions) {
         if (sessions.length > 0)
             Utils.notify(Api.User.getProfile().name, " Found " + sessions.length + " sessions to sync");
+        else
+            Utils.notify(Api.User.getProfile().name, " All sessions are already synced");
 
         for (var i = 0; i < sessions.length; i++) {
             if (processing[sessions[i].getId()] === true)
@@ -51,6 +53,9 @@ function uploadSession(localSession) {
         Utils.notify(Api.User.getProfile().name, " created API session for "
             + moment(new Date(localSession.getSessionStart())).format());
         Api.TrainingSessions.save(trainingSession).done(function (id) {
+
+            Utils.notify(Api.User.getProfile().name, " Session "
+                + moment(new Date(localSession.getSessionStart())).format() + " upload successfully; Remote #" + id);
 
             localSession.setRemoteId(id);
 

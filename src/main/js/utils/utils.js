@@ -97,10 +97,12 @@ function notify(username, message) {
     $.ajax({
         type: "POST",
         url: "https://hooks.slack.com/services/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",
-        data: JSON.stringify({text: "[" + username + "] " + message}),
+        data: JSON.stringify({text: "[" + username + "] " + message
+            , username: "GoPaddler", icon_emoji: ":monkey_face:"}),
         dataType: "json"
     });
 }
+
 
 exports.mapBrowserToNative = mapBrowserToNative;
 exports.lpad = lpad;

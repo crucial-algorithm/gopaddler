@@ -53,8 +53,8 @@ function SessionView(page, context, options) {
 
 
         $page.on('appShow', function () {
-            var width = $page.find(".session-left").width();
-            $page.find(".session-right").css({width: width - 1});
+            var width = $page.width();
+            $page.find(".session-left").css({width: Math.floor(width/2) - 1});
             $page.find(".big-measure-label").addClass('black-and-white');
             $page.find(".big-measure-units").addClass('black-and-white');
             $page.find("#animation-pause-circle").attr('fill', '#000');

@@ -30,13 +30,8 @@ function sync() {
             processing[sessions[i].getId()] = true;
 
             if (sessions[i].isSynced()) {
-                Utils.notify(Api.User.getProfile().name, "Uploading debug session from "
-                    + moment(new Date(sessions[i].getSessionStart())).format());
                 uploadDebugData(sessions[i]);
             } else {
-                Utils.notify(Api.User.getProfile().name, "Uploading session from "
-                    + moment(new Date(sessions[i].getSessionStart())).format() + "; Sc session #" 
-                    + sessions[i].scheduledSessionId);
                 uploadSession(sessions[i]);
             }
         }
@@ -47,6 +42,10 @@ function sync() {
 function uploadSession(localSession) {
 
     var defer = $.Deferred();
+
+    Utils.notify(Api.User.getProfile().name, "Uploading session from "
+        + moment(new Date(localSession.getSessionStart())).format() + "; Sc session #"
+        + localSession.scheduledSessionId);
 
     localSession.createAPISession().then(function (trainingSession) {
 
@@ -80,7 +79,6 @@ function uploadSession(localSession) {
     return defer.promise();
 }
 
-
 function loadFile(filename) {
     var defer = $.Deferred();
     IO.open(filename).then(IO.read).then(function (csv) {
@@ -89,15 +87,21 @@ function loadFile(filename) {
     return defer.promise();
 }
 
-
 function uploadDebugData(session) {
 
     var self = this,
         sensorData = [],
         record,
-        defer = $.Deferred();
+        defer = $.Deferred(),
+        isDebugEnabled = !!Api.User.getProfile().debug;
 
     if (!session.getDebugFile()) {
+        delete processing[session.getId()];
+        defer.resolve();
+        return defer.promise();
+    }
+
+    if (!isDebugEnabled) {
         delete processing[session.getId()];
         defer.resolve();
         return defer.promise();
@@ -108,6 +112,9 @@ function uploadDebugData(session) {
         defer.resolve();
         return defer.promise();
     }
+
+    Utils.notify(Api.User.getProfile().name, "Uploading debug session from "
+        + moment(new Date(session.getSessionStart())).format());
 
 
     loadFile(session.getDebugFile()).then(function (rows) {

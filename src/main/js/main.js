@@ -137,15 +137,7 @@ if (environment === 'prod') {
     // in browser (development mode!)
     global.emulateCordova();
     loadDb();
-    Api.User.set({
-        _id: -1,
-        profile: {
-            name: 'local-test-user'
-        }
-    });
-    
-    // go direct to home, without going through authentication
-    App.load('home');
+    loadUi();
 }
 
 function loadDb() {

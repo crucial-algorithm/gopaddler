@@ -1,20 +1,41 @@
 var Utils = require('../utils/utils.js');
+var createClass = require('asteroid').createClass;
+var facebook = require('../asteroid/facebook');
+var Asteroid = createClass([facebook]);
 var lastEvent = undefined, retries = 0;
 
 //var asteroid = new Asteroid("local.gopaddler.com:3000", false, function(data) {
 //    lastEvent = data;
 //});
 
-var asteroid = new Asteroid("app.gopaddler.com", true, function intercept (data) {
-     lastEvent = data;
+var asteroid = new Asteroid({
+    endpoint: "wss://app.gopaddler.com/websocket"
 });
+
+
+asteroid.on('connected', function () {
+    console.log("connected");
+});
+
+asteroid.on('disconnected', function () {
+    console.log("disconnected");
+});
+
+asteroid.on('loggedIn', function () {
+    console.log("loggedIn");
+});
+
+asteroid.on('loggedOut', function () {
+    console.log("loggedOut");
+});
+
 
 var serverAvailable = function (d) {
     var defer = d || $.Deferred();
 
     if (retries >= 3) {
         defer.reject();
-        return;
+        return defer.promise();
     }
 
     // If no network, server is for sure not available
@@ -94,7 +115,7 @@ function _remoteLogin() {
 
             _finishLogin(defer, user);
 
-        }).catch(function (err) {
+        }).fail(function (err) {
 
             defer.reject(err);
         });
@@ -122,13 +143,15 @@ function _finishLogin(defer, user) {
         return;
     }
 
+    _storeUser(user);
+
     _call('hasCoach').then(function (value) {
         user.hasCoach = value;
+        _storeUser(user);
     }).fail(function (err) {
         console.log(err);
         defer.resolve(user);
     }).always(function () {
-        _storeUser(user);
         defer.resolve(user);
     });
 }
@@ -155,7 +178,7 @@ function _call() {
 
     var defer = $.Deferred();
 
-    asteroid.call.apply(asteroid, arguments).result.then(function (response) {
+    asteroid.call.apply(asteroid, arguments).then(function (response) {
 
         defer.resolve(response);
 

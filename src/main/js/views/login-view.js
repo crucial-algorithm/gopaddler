@@ -4,6 +4,8 @@ var Api = require('../server/api');
 
 function LoginView(page) {
 
+    screen.lockOrientation('portrait');
+
     var $page = $(page), img;
 
     if (window.devicePixelRatio == 0.75) {

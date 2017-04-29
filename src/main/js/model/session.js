@@ -175,7 +175,7 @@ Session.prototype.getDebugAttempt = function () {
 };
 
 Session.prototype.setSynced = function (synced) {
-    this.synced = synced;
+    this.synced = (synced === true);
 };
 
 Session.prototype.isSynced = function () {
@@ -228,7 +228,7 @@ Session.prototype.createAPISession = function () {
         }
 
         defer.resolve({
-            date: new Date(self.getSessionStart()),
+            timestamp: new Date(self.getSessionStart()).getTime(),
             data: dataPoints,
             angleZ: self.getAngleZ(),
             noiseX: self.getNoiseX(),
@@ -559,7 +559,7 @@ function sessionFromDbRow(data) {
     session.setScheduledSessionId(data.scheduled_session_id);
     session.setScheduledSessionStart(data.scheduled_session_start);
     session.setSyncedAt(data.synced_at);
-    session.setSynced(data.synced);
+    session.setSynced(data.synced === 1);
 
     return session;
 }

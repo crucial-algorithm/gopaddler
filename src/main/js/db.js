@@ -67,10 +67,20 @@ var ddl = [
         ["UPDATE settings SET version = 2"]
     ],
 
+    // v. 0.8.9
     [
         ["ALTER TABLE settings add column black_and_white integer default 0"],
         ["UPDATE settings SET version = 3"]
+    ],
+
+
+    // v. 0.9.2
+    [
+        ["UPDATE session set synced = 0 WHERE remote_id like 'ignored:%'"],
+        ["UPDATE settings SET version = 4"]
     ]
+
+
 ];
 
 

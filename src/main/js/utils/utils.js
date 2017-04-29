@@ -93,6 +93,10 @@ function mapBrowserToNative() {
 
 
 function notify(username, message) {
+    if (navigator.userAgent === 'gp-dev-ck') {
+        console.log("[" + username + "] " + message);
+        return;
+    }
 
     $.ajax({
         type: "POST",

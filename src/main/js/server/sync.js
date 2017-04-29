@@ -22,19 +22,21 @@ function sync() {
         else
             Utils.notify(Api.User.getProfile().name, " All sessions are already synced");
 
-        for (var i = 0; i < sessions.length; i++) {
-            if (processing[sessions[i].getId()] === true)
-                continue;
+        (function loop(sessions) {
+            var session = sessions.shift();
 
-            // set lock
-            processing[sessions[i].getId()] = true;
+            uploadSession(session)
+                .then(function () {
+                    if (sessions.length > 0)
+                        loop(sessions);
+                })
+                .fail(function () {
+                    if (sessions.length > 0)
+                        loop(sessions);
+                });
 
-            if (sessions[i].isSynced()) {
-                uploadDebugData(sessions[i]);
-            } else {
-                uploadSession(sessions[i]);
-            }
-        }
+        })(sessions);
+
     });
 }
 
@@ -68,11 +70,15 @@ function uploadSession(localSession) {
                 uploadDebugData(localSession);
             }
 
-        }).fail(function (err) {
-            Utils.notify(Api.User.getProfile().name, "Failed to upload session from " 
+            defer.resolve();
+
+        })
+            .fail(function (err) {
+            Utils.notify(Api.User.getProfile().name, "Failed to upload session from "
                 + moment(new Date(localSession.getSessionStart())).format() + " with error : " + err.message);
 
             delete processing[localSession.getId()];
+            defer.reject(err);
         });
     });
 
@@ -208,4 +214,5 @@ exports.start = function () {
     }, 10000);
 };
 
+exports.uploadSession = uploadSession;
 exports.uploadSessions = sync;

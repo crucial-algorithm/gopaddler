@@ -33,6 +33,8 @@
         refreshTimeout: 500,
         getMarkup: _ptrMarkup,
         getStyles: _ptrStyles,
+        // hack by JFR
+        isBlock: function(){},
         onInit: function () {},
         onRefresh: function () { return location.reload(); },
         resistanceFunction: function (t) { return Math.min(1, t / 2.5); },
@@ -123,6 +125,11 @@
                 }
             } else {
                 pullMoveY = e.touches[0].screenY;
+            }
+
+            // hack by JFR
+            if (_SETTINGS.isBlock(_state) === true) {
+                return;
             }
 
             if (!_enable || _state === 'refreshing') {

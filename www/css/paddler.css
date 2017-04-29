@@ -774,10 +774,10 @@ body {
     text-align: center;
 }
 
-.session-row-data div{
+.session-row-data div {
     display: table-cell;
     height: 100%;
-    width: 37.5%;
+    width: 30%;
     max-width: 25%;
     line-height: 100%;
     vertical-align: middle;
@@ -807,8 +807,8 @@ body {
     color: #84332C;
 }
 
-.session-row-delete {
-    width: 25%;
+.session-row-actions {
+    width: 40%;
     height: 100%;
     display: inline-block;
     vertical-align: top;
@@ -818,11 +818,22 @@ body {
     display: table-cell;
     vertical-align: middle;
     line-height: 100%;
-    width: 100%;
+    width: 50%;
     height: 100%;
     text-align: center;
     color: #ffffff;
     background-color: #F4563D;
+}
+
+.session-row-upload-btn {
+    display: table-cell;
+    vertical-align: middle;
+    line-height: 100%;
+    width: 50%;
+    height: 100%;
+    text-align: center;
+    color: #ffffff;
+    background-color: #7E8C8D;
 }
 
 .session-row-delete-btn.cancel {
@@ -1128,4 +1139,32 @@ li.select-session-row.selected {
 
 .black-and-white.big-measure-label, .black-and-white.big-measure-units {
     color: #000000;
+}
+
+
+.progress-line, .progress-line:before {
+    height: 3px;
+    width: 100%;
+    margin: 0;
+}
+.progress-line {
+    background-color: #3b3d62;
+    display: -webkit-flex;
+    display: flex;
+}
+.progress-line:before {
+    background-color: #7e8c8d;
+    content: '';
+    -webkit-animation: running-progress 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    animation: running-progress 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+@-webkit-keyframes running-progress {
+    0% { margin-left: 0px; margin-right: 100%; }
+    50% { margin-left: 25%; margin-right: 0%; }
+    100% { margin-left: 100%; margin-right: 0; }
+}
+@keyframes running-progress {
+    0% { margin-left: 0px; margin-right: 100%; }
+    50% { margin-left: 25%; margin-right: 0%; }
+    100% { margin-left: 100%; margin-right: 0; }
 }

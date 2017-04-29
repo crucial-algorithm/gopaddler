@@ -28,6 +28,7 @@ function Session(sessionStart, angleZ, noiseX, noiseZ, factorX, factorZ, axis, d
     this.topSpeed = topSpeed;
     this.topEfficiency = topEfficiency;
     this.avgEfficiency = avgEfficiency;
+    this.synced = false;
 
     this.dbgAttempt = undefined;
     this.dbgSyncedRows = 0;
@@ -172,8 +173,13 @@ Session.prototype.setDebugAttempt = function (attempt) {
 Session.prototype.getDebugAttempt = function () {
     return this.dbgAttempt;
 };
+
+Session.prototype.setSynced = function (synced) {
+    this.synced = synced;
+};
+
 Session.prototype.isSynced = function () {
-    return !!(this.remoteId);
+    return this.synced;
 };
 
 Session.prototype.setDbgSyncedRows = function (rows) {
@@ -553,6 +559,7 @@ function sessionFromDbRow(data) {
     session.setScheduledSessionId(data.scheduled_session_id);
     session.setScheduledSessionStart(data.scheduled_session_start);
     session.setSyncedAt(data.synced_at);
+    session.setSynced(data.synced);
 
     return session;
 }

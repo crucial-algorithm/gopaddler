@@ -20,6 +20,7 @@ var LAST_30_DAYS_PERIOD_FILTER = 'last-30-days',
     appContext,
     $page,
     $sessionList,
+    $firstLiInList,
     $summaryDistance,
     $summarySpeed,
     $summaryTime,
@@ -130,6 +131,8 @@ function addSessionsToSessionList(sessions) {
 
         $li.appendTo($sessionList);
     });
+
+    $firstLiInList = $sessionList.find('li:first');
 
     // update summary
     time = Math.floor(totalDuration / 1000);
@@ -442,7 +445,7 @@ function SessionsView(page, context) {
             right: width
         });
 
-        var $li = $sessionList.find('li:first');
+        $firstLiInList = $sessionList.find('li:first');
         PullToRefresh.init({
             mainElement: '#sessions-ptr',
             getStyles: function () {
@@ -452,7 +455,7 @@ function SessionsView(page, context) {
             instructionsReleaseToRefresh: 'Release to sync',
             instructionsRefreshing: 'Syncing sessions',
             isBlock: function () {
-                return $li.position().top < 0;
+                return $firstLiInList.position().top < 0;
             },
             onRefresh: function () {
                 self.uploadUnsyncedSessions($page);

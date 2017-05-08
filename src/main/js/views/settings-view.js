@@ -49,12 +49,13 @@ function SettingsView(page, settings) {
         $back.off('touchstart');
     });
 
-    $logout.find('.settings-facebook').html("Logout (" + Api.User.getProfile().name + ")");
-    
-    $('[data-selector="version"]', page).html("v. 0.9.2 / u. " + Api.User.getId());
+    $logout.find('.settings-facebook').html("Logout ("
+        + ( Api.User.getProfile().name ? Api.User.getProfile().name : Api.User.getProfile().email ) + ")");
+
+    $('[data-selector="version"]', page).html("v. " + __VERSION__ + " / u. " + Api.User.getId());
 
     $('.settings-website-text', page).on('click', function () {
-        window.open('https://app.gopaddler.com/', '_system');
+        window.open(__WEB_URL__, '_system');
     });
 
     $page.on('appBeforeBack', function (e) {

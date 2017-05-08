@@ -38,7 +38,7 @@ function HomeView(page, context, request) {
         App.load('settings');
     });
 
-    $page.find('.home-username-bold').html(Api.User.getProfile().name);
+    $page.find('.home-username-bold').html(Api.User.getProfile().name ? Api.User.getProfile().name : Api.User.getProfile().email);
 
     self.updateLastSessionDate();
 
@@ -56,7 +56,7 @@ function HomeView(page, context, request) {
         manufacturer: device.manufacturer,
         isVirtual: device.isVirtual,
         serial: device.serial,
-        paddler: "0.9.2"
+        paddler: __VERSION__
     });
 
 

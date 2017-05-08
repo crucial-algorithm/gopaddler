@@ -2,31 +2,27 @@ var Utils = require('../utils/utils.js');
 var createClass = require('asteroid').createClass;
 var facebook = require('../asteroid/facebook');
 var Asteroid = createClass([facebook]);
-var lastEvent = undefined, retries = 0;
-
-//var asteroid = new Asteroid("local.gopaddler.com:3000", false, function(data) {
-//    lastEvent = data;
-//});
+var connected = false, loggedIn = false, retries = 0;
 
 var asteroid = new Asteroid({
-    endpoint: "wss://app.gopaddler.com/websocket"
+    endpoint: __WS_ENDPOINT__
 });
 
 
 asteroid.on('connected', function () {
-    console.log("connected");
+    connected = true;
 });
 
 asteroid.on('disconnected', function () {
-    console.log("disconnected");
+    connected = false;
 });
 
 asteroid.on('loggedIn', function () {
-    console.log("loggedIn");
+    loggedIn = true;
 });
 
 asteroid.on('loggedOut', function () {
-    console.log("loggedOut");
+    loggedIn = false;
 });
 
 
@@ -43,20 +39,15 @@ var serverAvailable = function (d) {
         return defer.reject();
     }
 
-    if (lastEvent === undefined) {
-        retries++;
-        setTimeout(function () {
-            serverAvailable(defer);
-        }, 1000);
-    } else {
-
-        if (lastEvent && (lastEvent.type === "socket_close"
-            || lastEvent.type === "socket_error")) {
-            defer.reject();
-        } else {
-            defer.resolve();
-        }
+    if (connected) {
+        return defer.resolve();
     }
+
+    retries++;
+    setTimeout(function () {
+        serverAvailable(defer);
+    }, 1000);
+
     return defer.promise();
 };
 
@@ -73,26 +64,18 @@ function _localLogin() {
         serializedUser = localStorage.getItem('user'),
         user;
 
-    serverAvailable().done(function serverIsAvailable() {
+    if (!serializedUser) {
         defer.reject();
+        return;
+    }
 
-    }).fail(function serverNotAvailable() {
+    user = JSON.parse(serializedUser);
 
-        if (serializedUser) {
+    asteroid.loggedIn = true;
+    asteroid.userId = user._id;
+    asteroid.user = user;
 
-            user = JSON.parse(serializedUser);
-
-            asteroid.loggedIn = true;
-            asteroid.userId = user._id;
-            asteroid.user = user;
-
-            _finishLogin(defer, user);
-
-        } else {
-
-            defer.reject();
-        }
-    });
+    _finishLogin(defer, user);
 
     return defer.promise();
 }
@@ -109,34 +92,55 @@ function _remoteLogin() {
 
     var defer = $.Deferred();
 
-    if (Utils.isNetworkConnected()) {
+    if (!Utils.isNetworkConnected()) {
+        defer.reject();
+        return defer.promise();
+    }
 
-        asteroid.loginWithFacebook().then(function (user) {
-
-            _finishLogin(defer, user);
-
+    if (_getLoginMethod() === 'password') {
+        checkLoginStatus().then(function () {
+            _localLogin().then(defer.resolve).fail(defer.reject);
         }).fail(function (err) {
-
             defer.reject(err);
         });
+        return defer.promise();
+    }
 
-    } else {
+    // facebook login
+    _loginWithFacebook().then(defer.resolve).fail(defer.reject);
 
-        defer.reject('No network');
+    return defer.promise();
+}
+
+function _loginWithFacebook() {
+    var defer = $.Deferred();
+    try {
+        asteroid.loginWithFacebook().then(function (user) {
+            _finishLogin(defer, user, 'facebook');
+
+        }).fail(function (err) {
+            defer.reject(err);
+        });
+    } catch (err) {
+        defer.reject();
     }
 
     return defer.promise();
 }
 
+function checkLoginStatus() {
+    return _call('loginStatus')
+}
 
 /**
  *
  * @param defer
  * @param user
+ * @param method Login method: password or facebook
  *
  * @private
  */
-function _finishLogin(defer, user) {
+function _finishLogin(defer, user, method) {
 
     if (!Utils.isNetworkConnected()) {
         defer.resolve(user);
@@ -144,6 +148,13 @@ function _finishLogin(defer, user) {
     }
 
     _storeUser(user);
+    if (method)
+        _setLoginMethod(method);
+
+    if (!loggedIn) {
+        defer.resolve(user);
+        return;
+    }
 
     _call('hasCoach').then(function (value) {
         user.hasCoach = value;
@@ -190,7 +201,6 @@ function _call() {
     return defer.promise();
 }
 
-
 /**
  * Authentication methods.
  */
@@ -200,20 +210,50 @@ exports.Auth = {
 
         var defer = $.Deferred();
 
-        _localLogin().done(function (user) {
+        serverAvailable().done(function serverIsAvailable() {
 
-            defer.resolve(user);
-
-            // even if the local authentication succeeds go ahead and try to login remotely
-            _remoteLogin();
+            _remoteLogin().done(defer.resolve).fail(defer.reject);
 
         }).fail(function () {
+            _localLogin().done(defer.resolve).fail(defer.reject);
 
-            // local login failed, let's try the remote login
-            _remoteLogin().done(defer.resolve).fail(defer.reject);
         });
 
         return defer.promise();
+    },
+
+    loginWithFacebook: _loginWithFacebook,
+
+    loginWithPassword: function (email, password) {
+        var defer = $.Deferred();
+
+        if (!Utils.isNetworkConnected()) {
+            defer.reject();
+            return defer.promise();
+        }
+
+        asteroid.loginWithPassword({email: email, password: password}).then(function (auth) {
+            _finishLogin(defer, {
+                "_id": auth.id,
+                "profile": {
+                    "name": null,
+                    "avatar": null,
+                    "email": email,
+                    "country": null,
+                    "gender": null,
+                    "birthdate": null,
+                    "about": null,
+                    "debug": false,
+                    "device": null
+                },
+                "services": null
+            }, 'password');
+        }).catch(function (err) {
+            defer.reject(err);
+        });
+
+        return defer.promise();
+        
     },
 
 
@@ -225,6 +265,7 @@ exports.Auth = {
 
             // remove from local storage
             localStorage.removeItem('user');
+            localStorage.removeItem('login_method');
 
             // set values to undefined
             asteroid.user = undefined;
@@ -240,6 +281,15 @@ exports.Auth = {
         return defer.promise();
     }
 };
+
+
+function _getLoginMethod() {
+    return JSON.parse(localStorage.getItem("login_method")) === 'password' ? 'password' : 'facebook';
+}
+
+function _setLoginMethod(method) {
+    localStorage.setItem('login_method', JSON.stringify(method));
+}
 
 
 /**

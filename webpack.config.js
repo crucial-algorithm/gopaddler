@@ -5,7 +5,7 @@ var env = process.env.NODE_ENV;
 
 var CONFIG = {
     common: {
-        version: "0.9.2"
+        version: "0.9.3"
     },
     dev : {
         server: "http://local.gopaddler.com:3000",

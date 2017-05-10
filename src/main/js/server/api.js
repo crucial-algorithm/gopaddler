@@ -232,9 +232,9 @@ exports.Auth = {
             return defer.promise();
         }
 
-        asteroid.loginWithPassword({email: email, password: password}).then(function (auth) {
+        asteroid.loginWithPassword({email: email, password: password}).then(function (id) {
             _finishLogin(defer, {
-                "_id": auth.id,
+                "_id": id,
                 "profile": {
                     "name": null,
                     "avatar": null,

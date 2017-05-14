@@ -17,6 +17,7 @@ body {
 
 .paddler-topbar {
     background-color: #7E8C8D;
+    height: 16vh;
 }
 
 .paddler-title {
@@ -36,6 +37,8 @@ body {
     text-overflow: ellipsis;
     white-space: nowrap;
     vertical-align: middle;
+    font-size: 6vh;
+    padding-right: 6vw;
 }
 
 .app-topbar .app-button[data-back].left.paddler-back {
@@ -191,12 +194,14 @@ body {
 }
 
 .home-last-record {
-    color: rgba(255,255,255,0.6);;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 3vw;
 }
 
 .home-username {
     color: rgba(255,255,255,0.6);
     display: block;
+    font-size: 3vw;
 }
 
 .home-username-bold {
@@ -231,6 +236,7 @@ body {
     width: 80%;
     text-align: right;
     padding-right: 1%;
+    font-size: 9vw;
 }
 
 .sessions-icon {
@@ -291,11 +297,14 @@ body {
 
 .wizard-left {
     width: 50%;
+    height: 65vh;
+    margin-top: 20vh;
     float:left;
 }
 
 .wizard-right {
     width: 50%;
+    height: 60vh;
     float: right;
     line-height: 100%;
     font-size: 38px;
@@ -315,10 +324,10 @@ body {
 
 .got-it {
     position: fixed;
-    top: 85vh;
+    top: 83vh;
     right: 2%;
     background-color: #EF6156;
-    height: 10vh;
+    height: 12vh;
     width: 18vw;
     text-transform: uppercase;
     text-align: center;
@@ -337,6 +346,8 @@ body {
 
 .slidshow-centered-text {
     width: 80%;
+    height: 60vh;
+    margin-top: 20vh;
     margin-left: 10%;
     line-height: 100%;
     font-size: 38px;
@@ -367,6 +378,7 @@ body {
 .session-big-measure {
     display: table-cell;
     vertical-align: middle;
+    font-size: 40vw;
 }
 
 .big-measure-units, .big-measure-label {
@@ -430,6 +442,7 @@ body {
 .small-measure-value {
     width: 96%;
     height: 70%;
+    font-size: 10vw;
     text-align: right;
     font-weight: bold;
     display: inline-block;
@@ -508,6 +521,7 @@ body {
     text-align: center;
     color: rgba(255,255,255,0.9);
     margin-top: 23px;
+    font-size: 6vw;
 }
 
 .summary-thumbs-up-icon {
@@ -523,6 +537,7 @@ body {
 .summary-stats-left {
     width: 50%;
     float: left;
+    height: 100%;
 }
 
 .summary-stats-right {
@@ -541,6 +556,15 @@ body {
     line-height: 20px;
 }
 
+.summary-label-highlight {
+    color: rgba(255,255,255,0.9);
+    line-height: 20px;
+    font-size: 4vw;
+    text-align: center;
+    margin-top: -10px;
+    font-weight: bold;
+}
+
 .summary-value {
     height: 10vh;
     color: #ffffff;
@@ -554,6 +578,7 @@ body {
     color: rgba(255,255,255,0.9);
     text-align: center;
     margin-top: 5%;
+    font-size: 3vw;
 }
 
 .summary-finish-btn {
@@ -579,6 +604,7 @@ body {
     font-weight: bold;
     text-align: center;
     text-transform: uppercase;
+    font-size: 3vw;
 }
 
 .template {
@@ -586,12 +612,13 @@ body {
 }
 
 .settings-website {
-    width: 50%;
-    height: 100%;
+    width: 100%;
+    height: 20vh;
     float: left;
     background-color: #3b3d62;
     display: table;
     color:#fff;
+    font-size: 3vw;
 }
 
 .settings-website-text {
@@ -603,14 +630,10 @@ body {
     font-weight: bold;
 }
 
-.settings-options {
-    width: 50%;
-    float: right;
-}
-
 .settings-row {
     display: table;
     width: 100%;
+    height: 16vh;
     color: #FFFFFF;
     text-transform: uppercase;
     background-color: #313455;
@@ -646,6 +669,7 @@ body {
 .settings-option {
     display: table-cell;
     height: 100%;
+    width: 80%;
     vertical-align: middle;
     text-align: left;
     padding-left: 3%;
@@ -714,6 +738,24 @@ body {
     list-style: none;
 }
 
+.session-details-ptr-li {
+    display: table;
+    width: 100%;
+    height: 20vh;
+}
+
+.session-details-ptr-div {
+    font-size: 7vw;
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    font-weight: bold;
+    text-transform: none;
+    color: rgba(59, 61, 98, 0.5);
+    height: 100%;
+    line-height: 100%
+}
+
 #sessions-wrapper {
     overflow: hidden;
 }
@@ -730,6 +772,7 @@ body {
     text-transform: uppercase;
     font-weight: bold;
     padding: 0 5% 0 5%;
+    font-size: 7vw;
 }
 
 #sessions-wrapper-for-pull-to-refresh {
@@ -888,6 +931,7 @@ body {
     -webkit-border-radius:4px;
     color:#FFFFFF;
     padding:2px 0px;
+    font-size: 5vw;
 }
 
 

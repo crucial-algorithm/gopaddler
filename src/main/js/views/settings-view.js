@@ -49,10 +49,13 @@ function SettingsView(page, settings) {
         $back.off('touchstart');
     });
 
-    $logout.find('.settings-facebook').html("Logout ("
-        + ( Api.User.getProfile().name ? Api.User.getProfile().name : Api.User.getProfile().email ) + ")");
+    var user = Api.User.getProfile().name ? Api.User.getProfile().name : Api.User.getProfile().email;
 
-    $('[data-selector="version"]', page).html("v. " + __VERSION__ + " / u. " + Api.User.getId());
+    user += " / " + Api.User.getId();
+
+    $logout.find('.settings-facebook').html("Logout (" + user + ")");
+
+    $('[data-selector="version"]', page).html(__VERSION__);
 
     $('.settings-website-text', page).on('click', function () {
         window.open(__WEB_URL__, '_system');

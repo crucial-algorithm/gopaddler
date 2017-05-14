@@ -14,10 +14,6 @@
     <link rel="stylesheet" href="css/slick.css">
     <link rel="stylesheet" href="css/daterangepicker.min.css">
     <link rel="stylesheet" href="css/vendor-override.css">
-
-    <script src="lib/vunit-0.2.0.min.js"></script>
-    <script src="js/polyfils.js"></script>
-
 </head>
 
   <body>
@@ -29,31 +25,31 @@
           <div class="home-sessions-btn" id="btn-sessions">
               <div class="home-row-wrapper">
                   <div class="home-icon sessions-icon">&nbsp;</div>
-                  <div class="home-last-record vw_font-size3">Last record: <span class="home-last-record-date"></span></div>
-                  <div class="home-row-title vw_font-size9" >sessions</div>
+                  <div class="home-last-record">Last record: <span class="home-last-record-date"></span></div>
+                  <div class="home-row-title" >sessions</div>
               </div>
           </div>
           <div class="home-start-session-btn" id="btn-session">
               <div class="home-row-wrapper">
                   <div class="home-icon start-icon">&nbsp;</div>
-                  <div class="home-username vw_font-size3">Hi, <span class="home-username-bold"></span>!</div>
-                  <div class="home-row-title vw_font-size9" style="font-weight: bold">start session</div>
+                  <div class="home-username">Hi, <span class="home-username-bold"></span>!</div>
+                  <div class="home-row-title " style="font-weight: bold">start session</div>
               </div>
           </div>
           <div class="home-settings-btn" id="btn-settings">
               <div class="home-row-wrapper">
                   <div class="home-icon settings-icon">&nbsp;</div>
-                  <div class="home-row-title vw_font-size9">settings</div>
+                  <div class="home-row-title">settings</div>
               </div>
           </div>
       </div>
     </div>
 
     <div class="app-page" data-page="sessions" data-no-scroll="true">
-        <div class="app-topbar paddler-topbar vh_height17">
+        <div class="app-topbar paddler-topbar">
             <button class="app-button left paddler-back" alt="back" data-back></button>
             <div class="paddler-title">
-                <div id="session-period-filter-button" class="paddler-title-text vh_font-size6 vw_padding-right6 app-modal-open">Last 30 days</div>
+                <div id="session-period-filter-button" class="paddler-title-text app-modal-open">Last 30 days</div>
             </div>
         </div>
         <div id="session-period-filter" class="app-modal-wrapper">
@@ -77,7 +73,7 @@
                     <div class="sessions-summary-label">
                         Total Distance (<span id="sessions-summary-distance-unit"></span>)
                     </div>
-                    <div class="sessions-summary-value vw_font-size7" id="total-distance">
+                    <div class="sessions-summary-value" id="total-distance">
                         0.0
                     </div>
                 </div>
@@ -86,7 +82,7 @@
                     <div class="sessions-summary-label">
                         Top speed (<span id="sessions-summary-speed-unit"></span>)
                     </div>
-                    <div class="sessions-summary-value vw_font-size7" id="top-speed">
+                    <div class="sessions-summary-value" id="top-speed">
                         0.0
                     </div>
                 </div>
@@ -95,7 +91,7 @@
                     <div class="sessions-summary-label">
                         Total Time
                     </div>
-                    <div class="sessions-summary-value vw_font-size7" id="total-duration">
+                    <div class="sessions-summary-value" id="total-duration">
                         00:00:00
                     </div>
                 </div>
@@ -105,8 +101,8 @@
                 <div id="sessions-ptr"></div>
                 <div class="app-content" data-no-scroll="true" id="sessions-wrapper" style="height:100%">
                     <ul class="sessions-details" data-no-scroll="true" id="local-sessions" style="height:100%;width:100%">
-                        <li class="vh_height20" style="display: table;width: 100%;height:100%">
-                            <div class="vw_font-size7" style="display:table-cell;vertical-align: middle;text-align: center;font-weight: bold;text-transform: none;color: rgba(59,61,98,0.5);height:100%;line-height: 100%">
+                        <li class="session-details-ptr-li">
+                            <div class="session-details-ptr-div">
                                 &lt;empty&gt;
                             </div>
                         </li>
@@ -139,10 +135,10 @@
     </div>
 
     <div class="app-page" data-page="select-session">
-        <div class="app-topbar paddler-topbar vh_height17">
+        <div class="app-topbar paddler-topbar">
             <button class="app-button left paddler-back" data-back></button>
             <div class="paddler-title">
-                <div class="paddler-title-text vh_font-size6 vw_padding-right6">Choose your session</div>
+                <div class="paddler-title-text">Choose your session</div>
             </div>
         </div>
         <div class="app-content select-session" data-no-scroll="true">
@@ -176,16 +172,16 @@
     </div>
 
     <div class="app-page" data-page="session-summary">
-        <div class="app-topbar paddler-topbar vh_height17" style="display:table">
+        <div class="app-topbar paddler-topbar" style="display:table">
             <button class="app-button left paddler-back" id="summary-back" alt="back" data-back style="display: none"></button>
             <div class="summary-finish-btn" id="summary-finish"><b>Finish</b></div>
-            <div class="paddler-title-text vh_font-size6 vw_padding-right6">Summary</div>
+            <div class="paddler-title-text">Summary</div>
         </div>
         <div class="app-content" style="height:100%" data-no-scroll="true">
             <div style="display:table;height:100%;width:100%">
                 <div style="display:table-row;width:100%">
                     <div id="summary-congrats" class="summary-session">
-                        <div class="summary-congrats-title vw_font-size6">Congrats!</div>
+                        <div class="summary-congrats-title">Congrats!</div>
                         <div class="summary-icon">
                             <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
                                  viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
@@ -207,21 +203,21 @@
                             </path>
                             </svg>
                         </div>
-                        <div class="summary-label vw_font-size4" style="text-align: center;margin-top: -10px;">Session Finished</div>
-                        <div id="summary-congrats-session" class="summary-current-session vw_font-size3"></div>
+                        <div class="summary-label-highlight">Session Finished</div>
+                        <div id="summary-congrats-session" class="summary-current-session"></div>
                     </div>
                     <div id="summary-details" class="summary-session" style="display: none">
                         <div class="summary-icon" style="margin-top: 23px;">
                             <img src="images/flag.svg">
                         </div>
-                        <div class="summary-label vw_font-size4" style="text-align: center;margin-top: -10px;">Session Details</div>
-                        <div id="summary-details-session" class="summary-current-session vw_font-size3"></div>
+                        <div class="summary-label-highlight">Session Details</div>
+                        <div id="summary-details-session" class="summary-current-session"></div>
                     </div>
                     <div class="summary-stats">
 
 
                         <div class="summary-stats-row">
-                            <div class="summary-stats-left vh_height20">
+                            <div class="summary-stats-left">
                                 <div class="summary-label">Duration</div>
                                 <div class="summary-value" data-selector="duration"></div>
                             </div>
@@ -231,7 +227,7 @@
                             </div>
                         </div>
 
-                        <div class="summary-stats-row vh_height20">
+                        <div class="summary-stats-row">
                             <div class="summary-stats-left">
                                 <div class="summary-label">Avg Speed</div>
                                 <div class="summary-value" data-selector="avg-speed"></div>
@@ -242,7 +238,7 @@
                             </div>
                         </div>
 
-                        <div class="summary-stats-row vh_height20">
+                        <div class="summary-stats-row">
                             <div class="summary-stats-left">
                                 <div class="summary-label">Avg SPM</div>
                                 <div class="summary-value" data-selector="avg-spm"></div>
@@ -253,7 +249,7 @@
                             </div>
                         </div>
 
-                        <div class="summary-stats-row vh_height20">
+                        <div class="summary-stats-row">
                             <div class="summary-stats-left">
                                 <div class="summary-label">Avg DPS</div>
                                 <div class="summary-value" data-selector="avg-efficiency"></div>
@@ -271,71 +267,69 @@
     </div>
 
     <div class="app-page" data-page="settings">
-        <div class="app-topbar paddler-topbar vh_height17">
+        <div class="app-topbar paddler-topbar">
             <button class="app-button left paddler-back" alt="back" data-back></button>
             <div class="paddler-title">
-                <div class="paddler-title-text vh_font-size6 vw_padding-right6">Settings</div>
+                <div class="paddler-title-text">Settings</div>
             </div>
         </div>
         <div class="app-content" style="height:100%" data-no-scroll="true">
-            <div class="settings-split">
-                <div class="settings-website vh_height45 vw_font-size3">
-                    <div class="settings-website-text">
-                        <p>Visit <a style="color:#D05043;text-decoration: none" href="javascript:;">app.gopaddler.com</a></p>
-                        <p data-selector="version">&nbsp;</p>
 
+            <div class="settings-row odd" id="units">
+                <div class="settings-option" style="width:65%">
+                    Units
+                </div>
+                <div class="settings-option" style="width:15%;padding:0;text-align:right">KM</div>
+                <div class="settings-option" style="width:10%">
+                    <div class="onoffswitch">
+                        <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="pick-units">
+                        <label class="onoffswitch-label" for="pick-units"></label>
                     </div>
                 </div>
-                <div class="settings-options">
-                    <div class="settings-row odd vh_height15" id="units">
-                        <div class="settings-option" style="width:60%">
-                            Units
-                        </div>
-                        <div class="settings-option" style="width:15%;padding:0;text-align:right">KM</div>
-                        <div class="settings-option" style="width:10%">
-                            <div class="onoffswitch">
-                                <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="pick-units">
-                                <label class="onoffswitch-label" for="pick-units"></label>
-                            </div>
-                        </div>
-                        <div class="settings-option" style="width:15%">Mi</div>
-                    </div>
-                    <div class="settings-row vh_height15" id="tbd1">
-                        <div class="settings-option">
-                            black and white
-                        </div>
-                        <div class="settings-option" style="width:30%">
-                            <div class="onoffswitch">
-                                <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="black-and-white">
-                                <label class="onoffswitch-label toggle" for="black-and-white"></label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="settings-row odd vh_height15" id="tbd2">
-                        <div class="settings-option">
-                            Save session layout
-                        </div>
-                        <div class="settings-option" style="width:30%">
-                            <div class="onoffswitch">
-                                <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="layout">
-                                <label class="onoffswitch-label toggle" for="layout"></label>
-                            </div>
-                        </div>
+                <div class="settings-option" style="width:15%">Mi</div>
+            </div>
+            <div class="settings-row" id="tbd1">
+                <div class="settings-option">
+                    black and white
+                </div>
+                <div class="settings-option" style="width:30%">
+                    <div class="onoffswitch">
+                        <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="black-and-white">
+                        <label class="onoffswitch-label toggle" for="black-and-white"></label>
                     </div>
                 </div>
             </div>
-            <div class="settings-row vh_height19">
+            <div class="settings-row odd" id="tbd2">
+                <div class="settings-option">
+                    Save session layout
+                </div>
+                <div class="settings-option" style="width:30%">
+                    <div class="onoffswitch">
+                        <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="layout">
+                        <label class="onoffswitch-label toggle" for="layout"></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-row">
                 <div class="settings-calibrate" id="calibration">
                     Calibrate
                 </div>
                 <div class="settings-calibrate-help">Learn how</div>
             </div>
-            <div class="settings-row vh_height20" id="logout">
+            <div class="settings-row" id="logout">
                 <!--div class="settings-facebook-icon"></div-->
                 <div class="settings-facebook">
                     Logout
                 </div>
             </div>
+
+            <div class="settings-row">
+                <div class="settings-option">
+                    Version <span data-selector="version">&nbsp;</span>. For more, visit <a style="color:#D05043;text-decoration: none" href="javascript:;">app.gopaddler.com</a>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -353,7 +347,7 @@
 
     <div class="app-page" data-page="calibration">
         <div class="app-content calibrate-running" data-no-scroll="true">
-            <div class="calibrate listening blink vw_font-size5">Calibrating...</div>
+            <div class="calibrate listening blink">Calibrating...</div>
         </div>
     </div>
 
@@ -362,10 +356,10 @@
             <div data-selector="slick" style="width:100%;height: 100%;">
                 <!-- step 1 -->
                 <div>
-                    <div class="wizard-left vh_height65 vh_margin-top20">
+                    <div class="wizard-left">
                         <img src="images/cal_step_1.png" width="70%" class="calibration-wizard-img"/>
                     </div>
-                    <div class="wizard-right vh_height60 calibration-wizard-text">
+                    <div class="wizard-right calibration-wizard-text">
                         <h1>Mount Phone</h1>
                         <p>Secure your device in a fixed position</p>
                         <p>Make sure it is firm so it doesn't vibrate</p>
@@ -374,10 +368,10 @@
 
                 <!-- step 2 -->
                 <div>
-                    <div class="wizard-left vh_height65 vh_margin-top20">
+                    <div class="wizard-left">
                         <img src="images/cal_step_2.png" width="70%" class="calibration-wizard-img"/>
                     </div>
-                    <div class="wizard-right vh_height60 calibration-wizard-text">
+                    <div class="wizard-right calibration-wizard-text">
                         <h1>Calibrate</h1>
                         <p>Keep the boat leveled and stable<p/>
                         <p>Always calibrate while in land</p>
@@ -387,20 +381,20 @@
 
                 <!-- step 3 -->
                 <div data-step="3">
-                    <div class="wizard-left vh_height65 vh_margin-top20">
+                    <div class="wizard-left">
                         <img src="images/cal_step_3.png" width="70%" class="calibration-wizard-img"/>
                     </div>
-                    <div class="wizard-right vh_height60 calibration-wizard-text">
+                    <div class="wizard-right calibration-wizard-text">
                         <h1>Go</h1>
                         <p>Once done, you are ready to go!</p>
                     </div>
-                    <div class="got-it vh_top83 vh_height12 vw_width18 vh_line-height12">Got it</div>
+                    <div class="got-it">Got it</div>
                 </div>
 
                 <!-- step 4 -->
                 <div data-step="4">
-                    <div class="slidshow-centered-text vh_height60 vh_margin-top20">Now, mount your phone in the boat and hit start</div>
-                    <div class="got-it vh_top83 vh_height12 vw_width18 vh_line-height12">Start</div>
+                    <div class="slidshow-centered-text">Now, mount your phone in the boat and hit start</div>
+                    <div class="got-it">Start</div>
                 </div>
 
             </div>
@@ -411,7 +405,7 @@
         <div class="app-content wizard" data-no-scroll="true">
             <div data-selector="slick" style="width:100%; height:100%">
                 <div>
-                    <div class="wizard-left vh_height60 vh_margin-top20">
+                    <div class="wizard-left">
                         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" width="100%" height="100%" viewBox="0 0 516.375 516.375" style="enable-background:new 0 0 516.375 516.375;" xml:space="preserve">
                             <g>
                                 <rect x="210.375" y="325.125" width="95.625" height="19.125" fill="rgba(255,255,255,0.8)"/>
@@ -423,11 +417,11 @@
                             </g>
                         </svg>
                     </div>
-                    <div class="wizard-right vh_height60 vh_margin-top20"><h1>Hold to pause</h1></div>
+                    <div class="wizard-right"><h1>Hold to pause</h1></div>
                 </div>
 
                 <div>
-                    <div class="wizard-left vh_height60 vh_margin-top20">
+                    <div class="wizard-left">
                         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" width="100%" height="100%" viewBox="0 0 300 400" style="enable-background:new 0 0 516.375 516.375;" xml:space="preserve">
                             <g>
                                 <rect x="75.544" y="248.625" width="95.625" height="19.125" fill="rgba(255,255,255,0.8)"/>
@@ -437,8 +431,8 @@
                             </g>
                         </svg>
                     </div>
-                    <div class="wizard-right vh_height60 vh_margin-top20">Swipe to swap metrics</div>
-                    <div class="got-it vh_top83 vh_height12 vw_width18 vh_line-height12">Got it</div>
+                    <div class="wizard-right">Swipe to swap metrics</div>
+                    <div class="got-it">Got it</div>
                 </div>
             </div>
         </div>
@@ -449,14 +443,14 @@
             <div class="small-measure-label"></div>
             <div class="small-measure-units"></div>
         </div>
-        <div class="small-measure-value vw_font-size10"></div>
+        <div class="small-measure-value"></div>
     </div>
 
     <div class="template" id="template-large-measure">
         <div style="position:relative;height: 100%">
             <div class="big-measure-label"></div>
             <div class="session-big-mesaure-container">
-                <span class="session-big-measure vw_font-size40">0</span>
+                <span class="session-big-measure">0</span>
             </div>
             <div class="big-measure-units"></div>
         </div>

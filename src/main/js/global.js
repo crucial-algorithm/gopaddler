@@ -17,6 +17,10 @@ function emulateCordova () {
     var _open = window.openDatabase;
     window.sqlitePlugin = window;
 
+    window.cordova = {
+        InAppBrowser: {open: window.open}
+    };
+
     var executeSql = function (sql, args, success, error) {
         success = success || function(){};
         if (sql.toLowerCase().substr(0, 3) === 'ins') {
@@ -92,7 +96,12 @@ function emulateCordova () {
         }, setUserId: function () {
     }};
 
-    window.screen.lockOrientation = function(){};
+    window.screen = {
+        orientation: {
+            lock: function () {
+            }
+        }
+    };
     window.device = {};
 
     navigator.geolocation.watchPosition = function (callback) {

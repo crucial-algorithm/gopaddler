@@ -10,6 +10,7 @@ var CalibrationView = require('./views/calibration-view.js').CalibrationView;
 var CalibrationHelpView = require('./views/calibration-help-view.js').CalibrationHelpView;
 var SessionTipsView = require('./views/session-tips-view.js').SessionTipsView;
 var SelectSessionView = require('./views/select-session-view').SelectSessionView;
+var LoginWithPassword = require('./views/login-with-password-view').LoginWithPasswordView;
 var Api = require('./server/api');
 var utils = require('./utils/utils.js');
 var global = require('./global.js');
@@ -29,14 +30,17 @@ var environment = undefined;
  */
 App.controller('login', function (page) {
     analytics.setView('login');
-    screen.lockOrientation('portrait');
     new LoginView(page);
+});
+
+App.controller('login-with-password', function (page) {
+    analytics.setView('login-with-password');
+    new LoginWithPassword(page);
 });
 
 App.controller('home', function (page, request) {
     analytics.setView('home');
     analytics.setUser(Api.User.getId());
-    screen.lockOrientation('landscape-secondary');
     Settings.loadSettings().then(function (s) {
         settings = s;
         context = new Context(settings, environment);
@@ -125,6 +129,7 @@ function onDeviceReady() {
 
 if (navigator.userAgent === 'gp-dev-ck') {
     environment = 'dev';
+    document.PREVENT_SYNC = true;
 } else {
     environment = 'prod';
 }
@@ -148,9 +153,27 @@ function loadUi() {
 
     analytics.init();
 
+    // hack - for some reason, when not connected, screen orientation may not be properly set
+    checkOrientationHack();
+
+    Api.Server.connect();
+
     Api.Auth.login().done(function () {
         App.load('home');
     }).fail(function () {
         App.load('login');
     });
+}
+
+
+function checkOrientationHack() {
+    if (!utils.isNetworkConnected()) {
+
+        var reloaded = JSON.parse(localStorage.getItem('forced-reload'));
+        if ( !reloaded || (new Date().getTime() - reloaded) > 5000) {
+
+            localStorage.setItem('forced-reload', JSON.stringify(new Date().getTime()));
+            location.reload();
+        }
+    }
 }

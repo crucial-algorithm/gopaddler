@@ -4,26 +4,7 @@ var facebook = require('../asteroid/facebook');
 var Asteroid = createClass([facebook]);
 var connected = false, loggedIn = false, retries = 0;
 
-var asteroid = new Asteroid({
-    endpoint: __WS_ENDPOINT__
-});
-
-
-asteroid.on('connected', function () {
-    connected = true;
-});
-
-asteroid.on('disconnected', function () {
-    connected = false;
-});
-
-asteroid.on('loggedIn', function () {
-    loggedIn = true;
-});
-
-asteroid.on('loggedOut', function () {
-    loggedIn = false;
-});
+var asteroid = {};
 
 
 var serverAvailable = function (d) {
@@ -66,7 +47,7 @@ function _localLogin() {
 
     if (!serializedUser) {
         defer.reject();
-        return;
+        return defer.promise();
     }
 
     user = JSON.parse(serializedUser);
@@ -198,6 +179,12 @@ function _call() {
         defer.reject(err);
     });
 
+    setTimeout(function () {
+        if (defer.state() === 'pending') {
+            defer.reject({error: 408, reason: "timeout"});
+        }
+    }, 30000);
+
     return defer.promise();
 }
 
@@ -279,6 +266,22 @@ exports.Auth = {
 
 
         return defer.promise();
+    },
+
+    createAccount: function (email, password, name) {
+        return _call("gpCreateUser", {
+            email: email,
+            password: password,
+            profile: {
+                name: name
+            }
+        })
+    },
+
+    forgotPassword: function (email) {
+        return _call("gpRecoverPassword", {
+            email: email
+        })
     }
 };
 
@@ -353,5 +356,35 @@ exports.DebugSessions = {
     save: function (debugSession) {
 
         return _call('saveTrainingSessionDebug', debugSession);
+    }
+};
+
+
+exports.Server = {
+
+    connect: function () {
+
+        if (!Utils.isNetworkConnected()) return;
+
+        asteroid = new Asteroid({
+            endpoint: __WS_ENDPOINT__
+        });
+
+
+        asteroid.on('connected', function () {
+            connected = true;
+        });
+
+        asteroid.on('disconnected', function () {
+            connected = false;
+        });
+
+        asteroid.on('loggedIn', function () {
+            loggedIn = true;
+        });
+
+        asteroid.on('loggedOut', function () {
+            loggedIn = false;
+        });
     }
 };

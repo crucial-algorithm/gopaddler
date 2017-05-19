@@ -8,6 +8,8 @@ var Dialog = require('../utils/dialog');
 function HomeView(page, context, request) {
     request = request || {};
 
+    screen.orientation.lock('landscape-secondary');
+
     var $page = $(page)
         , self = this
         , $sessions = $page.find('#btn-sessions')

@@ -30,6 +30,9 @@ function extend() {
 }
 
 
+if (env !== 'dev' && env !== 'prod')
+    throw 'Unknown env. Allowed are: "dev" or "prod" ';
+
 var config = extend({}, CONFIG.common, CONFIG[env]);
 
 

@@ -78,8 +78,13 @@ var ddl = [
     [
         ["UPDATE session set synced = 0 WHERE remote_id like 'ignored:%'"],
         ["UPDATE settings SET version = 4"]
-    ]
+    ],
 
+    // v. 0.9.7
+    [
+        ["ALTER TABLE session add column expression TEXT"],
+        ["UPDATE settings SET version = 5"]
+    ]
 
 ];
 

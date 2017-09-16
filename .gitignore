@@ -1,0 +1,18 @@
+# Mac
+.DS_Store
+
+# Node
+npm-debug.log
+/node_modules
+
+# Cordova
+/platforms
+/plugins
+
+www/dist/app.js
+www/dist/app.js.map
+
+.gradle
+src.zip
+
+.idea

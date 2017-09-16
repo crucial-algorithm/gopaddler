@@ -80,7 +80,7 @@ ScheduledSession.sync = function () {
         var s, result = [];
         for (var i = 0; i < sessions.length; i++) {
             s = new ScheduledSession();
-            s.loadFromServerResponse(sessions[i])
+            s.loadFromServerResponse(sessions[i]);
             result.push(s);
         }
 

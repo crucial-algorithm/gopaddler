@@ -332,6 +332,13 @@ exports.User = {
 };
 
 
+var liveListeners = {
+    start: [],
+    pause: [],
+    finish: [],
+    sync: []
+}, commandListenerID;
+
 /**
  * Training Session methods.
  */
@@ -344,6 +351,90 @@ exports.TrainingSessions = {
 
     scheduled: function () {
         return _call('listScheduledSessions');
+    },
+
+    live: {
+
+        deviceReady: function () {
+            return _call('deviceReadyToStart');
+        },
+
+        deviceDisconnected: function () {
+            return _call('deviceDisconnected');
+        },
+
+        update: function (data, status) {
+            return _call('liveUpdt', [data.timestamp, /*data.duration*/ 4500000, data.speed
+                , Utils.round2(data.distance), /*data.spm*/ 120, /*Utils.round2(data.efficiency)*/ 3.13], status);
+//            return _call('liveUpdt', [1505446698341, 10, 41.55154967, -8.394433698, 12, -0.3914519846, 0.3148375154, 9.834183693], status);
+
+        },
+
+        commandSynced: function (id) {
+            return _call('commandSyncedInDevice', id);
+        },
+
+        startListening: function () {
+            if (commandListenerID) return;
+            var sub = asteroid.subscribe('coachRemoteCommands');
+            commandListenerID = sub.id;
+
+            asteroid.ddp.on("added", function (collection, id, fields) {
+                console.log('Element added to collection collection', collection);
+                console.log(id);
+                console.log(fields);
+            });
+
+            asteroid.ddp.on("changed", function (msg) {
+                // console.log('Element changed to collection collection', msg.collection);
+                // console.log(msg.id);
+                // console.log(msg.fields);
+
+                if (msg.collection !== "liveDevices")
+                    return;
+
+                if (!msg.fields.commands)
+                    return;
+
+                var commands = msg.fields.commands, listeners;
+
+                for (var i = 0, l = commands.length; i < l; i++) {
+
+                    if (commands[i].synced === true) {
+                        continue;
+                    }
+
+                    listeners = liveListeners[commands[i].command];
+                    if (listeners && listeners.length > 0) {
+                        for (var lst = 0, lstLen = listeners.length; lst < lstLen; lst++) {
+                            listeners[lst].apply({}, [commands[i].id, commands[i].payload]);
+                        }
+                    }
+                }
+            });
+        },
+
+        stopListening: function () {
+            asteroid.unsubscribe(commandListenerID);
+        },
+
+        /**
+         * Register callbacks for coach commands
+         * @param event
+         * @param callback
+         */
+        on: function (event, callback) {
+            liveListeners[event].push(callback);
+        },
+
+        clearCommandListeners: function () {
+            liveListeners = {
+                start: [],
+                pause: [],
+                finish: [],
+                sync: []
+            }
+        }
     }
 };
 

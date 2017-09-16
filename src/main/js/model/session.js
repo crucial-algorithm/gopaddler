@@ -30,6 +30,8 @@ function Session(sessionStart, angleZ, noiseX, noiseZ, factorX, factorZ, axis, d
     this.avgEfficiency = avgEfficiency;
     this.synced = false;
 
+    this.expression = null;
+
     this.dbgAttempt = undefined;
     this.dbgSyncedRows = 0;
     return this;
@@ -167,6 +169,13 @@ Session.prototype.getDistance = function () {
     return this.distance;
 };
 
+Session.prototype.setExpression = function (expression) {
+    this.expression = expression;
+};
+Session.prototype.getExpression = function () {
+    return this.expression;
+};
+
 Session.prototype.setDebugAttempt = function (attempt) {
     this.dbgAttempt = attempt;
 };
@@ -255,7 +264,7 @@ Session.prototype.create = function () {
     return this;
 };
 
-Session.prototype.finish = function (splits) {
+Session.prototype.finish = function (splits, expression) {
     var self = this, defer = $.Deferred();
     
     var sessionEndAt = new Date().getTime();
@@ -307,12 +316,13 @@ Session.prototype.finish = function (splits) {
         self.setTopSpm(maxSpm);
         self.setAvgEfficiency(avgSpmEfficiency);
         self.setTopEfficiency(maxSpmEfficiency);
+        self.setExpression(expression);
 
         self.connection.executeSql("update session set distance = ?, avg_spm = ?, top_spm = ?, avg_speed = ?" +
             ", top_speed = ?, avg_efficiency = ?, top_efficiency = ?, session_end = ?" +
-            ", scheduled_session_id = ?,  scheduled_session_start = ? where id = ?"
+            ", scheduled_session_id = ?,  scheduled_session_start = ?, expression = ? where id = ?"
             , [distance, avgSpm, maxSpm, avgSpeed, maxSpeed, avgSpmEfficiency, maxSpmEfficiency, sessionEndAt
-                , self.getScheduledSessionId(), self.getScheduledSessionStart(), self.id]
+                , self.getScheduledSessionId(), self.getScheduledSessionStart(), self.getExpression(), self.id]
             , function (a) {
                 defer.resolve(this);
             }, function (a) {

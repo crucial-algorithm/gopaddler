@@ -1,7 +1,7 @@
 {
     "android": {
         "release": {
-            "keystore": "../keystore/android.jks",
+            "keystore": "../../data/keystore/android.jks",
             "storePassword": "",
             "alias": "GoPaddlerAndroidKey",
             "password" : "",

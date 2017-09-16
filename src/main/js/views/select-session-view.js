@@ -20,7 +20,9 @@ var mockupSessions = [
 
 
 function SelectSessionView(page, context) {
-    var $page = $(page)
+    var self = this
+        , $page = $(page)
+        , $back = $('.paddler-back', page)
         , $selectedSession = $page.find('.selected-session')
         , $title = $page.find('.paddler-topbar')
         , $listWrapper = $page.find('.select-session-available-sessions-wrapper')
@@ -50,6 +52,45 @@ function SelectSessionView(page, context) {
 
     });
 
+    Api.TrainingSessions.live.deviceReady();
+    self.deviceActiveIntervalId = setInterval(function () {
+        Api.TrainingSessions.live.deviceReady();
+    }, 60000);
+
+
+    var expressions = {};
+    Api.TrainingSessions.live.startListening();
+
+    Api.TrainingSessions.live.on('start', function (commandId, expression) {
+        console.log('start session', expression, "[", commandId, "]");
+
+        if (expressions[expression]) {
+            $warmUpFirst.prop('checked', false);
+            start(null, {text: expression, splits: expressions[expression]});
+            Api.TrainingSessions.live.commandSynced(commandId);
+        } else {
+            console.log("expression", expression, "not found");
+        }
+    });
+
+    Api.TrainingSessions.live.on('sync', function (commandId, session) {
+        expressions[session.expression] = session.splits;
+        Api.TrainingSessions.live.commandSynced(commandId);
+        console.log('sync session', session)
+    });
+
+    $back.on('click', function () {
+        App.back('home', function () {
+        });
+    });
+
+
+    $page.on('appBeforeBack', function (e) {
+        clearInterval(self.deviceActiveIntervalId);
+        Api.TrainingSessions.live.deviceDisconnected();
+        Api.TrainingSessions.live.clearCommandListeners();
+    });
+
     $list.on('tap', 'li', function selectSessionHandler(e) {
         $list.find('li').removeClass('selected');
         var $li = $(this);
@@ -68,10 +109,7 @@ function SelectSessionView(page, context) {
     });
 
     $start.on('tap', function () {
-        context.navigate('session', false, {
-            session: session,
-            warmUpFirst: $warmUpFirst.is(':checked')
-        });
+        start(session, null);
     });
 
     if (context.isDev()) {
@@ -86,6 +124,16 @@ function SelectSessionView(page, context) {
         }, 0);
     } else {
         renderSessions(ScheduledSession.load() || []);
+    }
+
+    function start(session, expression) {
+        clearInterval(self.deviceActiveIntervalId);
+        Api.TrainingSessions.live.clearCommandListeners();
+        context.navigate('session', false, {
+            session: session,
+            expression: expression,
+            warmUpFirst: $warmUpFirst.is(':checked')
+        });
     }
 
     function renderSessions(_sessions) {

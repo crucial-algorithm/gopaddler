@@ -1,6 +1,8 @@
 'use strict';
 
-var utils = require('../utils/utils.js');
+var utils = require('../utils/utils.js')
+    , Api = require('../server/api');
+
 
 function SessionSummaryView(page, context, sessionSummaryArguments) {
     var self           = this,
@@ -42,6 +44,15 @@ function SessionSummaryView(page, context, sessionSummaryArguments) {
     var maxSPM = context.displayMetric('spm', session.getTopSpm());
     var avgEfficiency = context.displayMetric('efficiency', session.getAvgEfficiency());
     var maxEfficiency = context.displayMetric('efficiency', session.getTopEfficiency());
+
+    Api.TrainingSessions.live.update({
+        spm: avgSPM,
+        timestamp: null,
+        distance: distance,
+        speed: avgSpeed,
+        efficiency: avgEfficiency,
+        duration: duration
+    }, 'finished');
 
     $duration.html('<b>' + durationFormatted + '</b>' + ' H');
     $distance.html('<b>' + distance + '</b> ' + context.getUnit('distance'));

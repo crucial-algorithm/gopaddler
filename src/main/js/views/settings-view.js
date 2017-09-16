@@ -39,10 +39,10 @@ function SettingsView(page, settings) {
         });
     });
 
-    $back.on('tap', function () {
-        App.back('home', function () {
-        });
-    });
+    // $back.on('tap', function () {
+    //     App.back('home', function () {
+    //     });
+    // });
 
     $(page).on('appDestroy', function () {
         $calibration.off('touchstart');

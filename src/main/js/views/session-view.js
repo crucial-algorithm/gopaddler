@@ -79,17 +79,29 @@ function SessionView(page, context, options) {
     }
 
     self.inWarmUp = false;
-    if (options && options.session) {
-        self.isScheduledSession = options.session !== undefined;
+    self.isWarmupFirst = false;
+    self.splitsDefinition = [];
+    self.expression = options.expression ? options.expression.text : null;
+    options = options || {};
+
+    self.hasSplitsDefinited = !!(options.session || options.expression);
+
+    if (self.hasSplitsDefinited) {
         self.isWarmupFirst = options.warmUpFirst === true;
-        splits = new Splits(options.session.getSplits(), splitsHandler);
+        self.splitsDefinition = options.session ? options.session.getSplits() : options.expression.splits;
+        splits = new Splits(self.splitsDefinition, splitsHandler);
         timer.setSplits(splits);
-        session.setScheduledSessionId(options.session.getId());
-        if (self.isWarmupFirst)
-            self.inWarmUp = true;
+
     } else {
         splits = new Splits();
     }
+
+    if (options.session) {
+        session.setScheduledSessionId(options.session.getId());
+    }
+
+    if (self.isWarmupFirst)
+        self.inWarmUp = true;
 
     document.PREVENT_SYNC = true;
 
@@ -100,10 +112,10 @@ function SessionView(page, context, options) {
         fields = DEFAULT_POSITIONS;
     }
 
-    var top = new Field($('.session-small-measure.yellow', page), fields.top, SMALL, context, self.isScheduledSession);
-    var middle = new Field($('.session-small-measure.blue', page), fields.middle, SMALL, context, self.isScheduledSession);
-    var bottom = new Field($('.session-small-measure.red', page), fields.bottom, SMALL, context, self.isScheduledSession);
-    var large = new Field($('.session-left', page), fields.large, LARGE, context, self.isScheduledSession);
+    var top = new Field($('.session-small-measure.yellow', page), fields.top, SMALL, context, self.hasSplitsDefinited);
+    var middle = new Field($('.session-small-measure.blue', page), fields.middle, SMALL, context, self.hasSplitsDefinited);
+    var bottom = new Field($('.session-small-measure.red', page), fields.bottom, SMALL, context, self.hasSplitsDefinited);
+    var large = new Field($('.session-left', page), fields.large, LARGE, context, self.hasSplitsDefinited);
 
 
     // prevent drag using touch during session
@@ -135,10 +147,19 @@ function SessionView(page, context, options) {
         new SessionDetail(session.getId(), timestamp, location.distance, location.speed, spm.value
             , location.efficiency, location.latitude, location.longitude, splits.getPosition()
         ).save();
+
+        Api.TrainingSessions.live.update({
+            spm: spm.value,
+            timestamp: timestamp,
+            distance: location.distance,
+            speed: utils.round2(location.speed),
+            efficiency: location.efficiency,
+            duration: timer.getDuration()
+        }, 'running');
     });
 
 
-    if (self.isScheduledSession && !self.isWarmupFirst) {
+    if (self.hasSplitsDefinited && !self.isWarmupFirst) {
         session.setScheduledSessionStart(session.getSessionStart());
         splits.start(undefined, undefined, undefined);
     }
@@ -180,8 +201,15 @@ function SessionView(page, context, options) {
     });
     strokeDetector.start();
 
+    // -- listen to server side commands
+    var isRemoteCommand = false;
+    Api.TrainingSessions.live.on('finish', function (commandId) {
+        Api.TrainingSessions.live.commandSynced(commandId);
+        isRemoteCommand = true;
+        clear();
+    });
 
-    // refresh screen
+    // -- refresh screen
     self.uiIntervalId = setInterval(function refreshUI() {
         if (paused) return;
 
@@ -216,14 +244,17 @@ function SessionView(page, context, options) {
         }
 
         document.removeEventListener('touchmove', preventDrag, false);
-
-        App.load('session-summary', { session: session, isPastSession: false }, undefined, function () {
-            App.removeFromStack();
-        });
+        if (isRemoteCommand && context.userHasCoach()) {
+            context.navigate('select-session', false, undefined);
+        } else {
+            App.load('session-summary', {session: session, isPastSession: false}, undefined, function () {
+                App.removeFromStack();
+            });
+        }
     };
 
     var tx = false;
-    var clear = function () {
+    var clear = function (callback) {
         tx = true;
         document.PREVENT_SYNC = false;
 
@@ -236,7 +267,7 @@ function SessionView(page, context, options) {
         if (self.isDebugEnabled)
             self.flushDebugBuffer();
 
-        session.finish(options && options.session ? options.session.getSplits() : []).then(function () {
+        session.finish(self.splitsDefinition, self.expression).then(function () {
             Dialog.hideModal();
             back();
         });

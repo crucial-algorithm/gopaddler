@@ -34,6 +34,7 @@ function showModal($content, options) {
 }
 
 function hideModal() {
+    if (!$modal) return;
     $modal.remove();
     $modal = undefined;
 }

@@ -363,15 +363,25 @@ exports.TrainingSessions = {
             return _call('deviceDisconnected');
         },
 
+        started: function (startedAt) {
+            return _call('deviceStarted', startedAt)
+        },
+
+        finished: function () {
+            return _call('deviceFinished')
+        },
+
         update: function (data, status) {
-            return _call('liveUpdt', [data.timestamp, /*data.duration*/ 4500000, data.speed
-                , Utils.round2(data.distance), /*data.spm*/ 120, /*Utils.round2(data.efficiency)*/ 3.13], status);
+            return _call('liveUpdt', [data.timestamp, data.duration, data.speed
+                , Utils.round2(data.distance), /*data.spm*/ 120, /*Utils.round2(data.efficiency)*/ 3.13, data.start], status);
 //            return _call('liveUpdt', [1505446698341, 10, 41.55154967, -8.394433698, 12, -0.3914519846, 0.3148375154, 9.834183693], status);
 
         },
 
         commandSynced: function (id) {
-            return _call('commandSyncedInDevice', id);
+            setTimeout(function () {
+                _call('commandSyncedInDevice', id)
+            }, 3000);
         },
 
         startListening: function () {

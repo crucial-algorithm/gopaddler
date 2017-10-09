@@ -246,7 +246,9 @@ Session.prototype.createAPISession = function () {
             factorZ: self.getFactorZ(),
             axis: self.getAxis(),
             coachTrainingSessionId: self.getScheduledSessionId(),
-            coachTrainingSessionStart: self.getScheduledSessionStart()
+            coachTrainingSessionStart: self.getScheduledSessionStart(),
+            expression: self.getExpression(),
+            version: 1
         });
     });
 
@@ -278,13 +280,18 @@ Session.prototype.finish = function (splits, expression) {
             , totalSpeed = 0, totalSpm = 0, totalEfficiency = 0
             , maxSpeed = 0, maxSpmEfficiency = 0;
 
-        var length = rows.length, count = 0, split, hasSplits = splits.length > 0;
+        var length = rows.length, count = 0, split, hasSplits = !!(splits && splits.length > 0);
         for (var i = 0; i < length; i++) {
-            split = splits[rows[i].getSplit()];
-            if (hasSplits && (!split || split._recovery === true)) {
-                continue;
+
+            if (hasSplits) {
+
+                split = splits[rows[i].getSplit()];
+
+                if (!split || split._recovery === true) {
+                    continue;
+                }
             }
-            
+
             count++;
             distance = rows[i].getDistance();
             totalSpeed += rows[i].getSpeed();
@@ -570,6 +577,7 @@ function sessionFromDbRow(data) {
     session.setScheduledSessionStart(data.scheduled_session_start);
     session.setSyncedAt(data.synced_at);
     session.setSynced(data.synced === 1);
+    session.setExpression(data.expression);
 
     return session;
 }

@@ -29,6 +29,17 @@ var DEFAULT_POSITIONS = {
 
 var SMALL = 'small', LARGE = 'large';
 
+/**
+ *
+ * @param page
+ * @param context
+ * @param options Object {expression: String
+ *             , splits: Array
+ *             , isWarmUpFirst: boolean
+ *             , remoteScheduledSessionId: String
+ *             , groupKey: String}
+ * @constructor
+ */
 function SessionView(page, context, options) {
     var self = this;
     self.isDebugEnabled = !!Api.User.getProfile().debug;
@@ -78,30 +89,25 @@ function SessionView(page, context, options) {
         large.setUnit("splits", unit);
     }
 
-    self.inWarmUp = false;
-    self.isWarmupFirst = false;
-    self.splitsDefinition = [];
-    self.expression = options.expression ? options.expression.text : null;
     options = options || {};
 
-    self.hasSplitsDefinited = !!(options.session || options.expression);
+    self.isWarmupFirst = options.isWarmupFirst === true;
+    self.inWarmUp = self.isWarmupFirst;
+    self.splitsDefinition = options.splits;
+    self.expression = options.expression;
+    self.groupKey = options.groupKey;
 
-    if (self.hasSplitsDefinited) {
-        self.isWarmupFirst = options.warmUpFirst === true;
-        self.splitsDefinition = options.session ? options.session.getSplits() : options.expression.splits;
+    session.setScheduledSessionId(options.remoteScheduledSessionId);
+
+    self.hasSplitsDefined = !!options.splits;
+
+    if (self.hasSplitsDefined) {
         splits = new Splits(self.splitsDefinition, splitsHandler);
         timer.setSplits(splits);
 
     } else {
         splits = new Splits();
     }
-
-    if (options.session) {
-        session.setScheduledSessionId(options.session.getId());
-    }
-
-    if (self.isWarmupFirst)
-        self.inWarmUp = true;
 
     document.PREVENT_SYNC = true;
 
@@ -112,10 +118,10 @@ function SessionView(page, context, options) {
         fields = DEFAULT_POSITIONS;
     }
 
-    var top = new Field($('.session-small-measure.yellow', page), fields.top, SMALL, context, self.hasSplitsDefinited);
-    var middle = new Field($('.session-small-measure.blue', page), fields.middle, SMALL, context, self.hasSplitsDefinited);
-    var bottom = new Field($('.session-small-measure.red', page), fields.bottom, SMALL, context, self.hasSplitsDefinited);
-    var large = new Field($('.session-left', page), fields.large, LARGE, context, self.hasSplitsDefinited);
+    var top = new Field($('.session-small-measure.yellow', page), fields.top, SMALL, context, self.hasSplitsDefined);
+    var middle = new Field($('.session-small-measure.blue', page), fields.middle, SMALL, context, self.hasSplitsDefined);
+    var bottom = new Field($('.session-small-measure.red', page), fields.bottom, SMALL, context, self.hasSplitsDefined);
+    var large = new Field($('.session-left', page), fields.large, LARGE, context, self.hasSplitsDefined);
 
 
     // prevent drag using touch during session
@@ -136,7 +142,8 @@ function SessionView(page, context, options) {
 
 
     // -- initiate timer
-    timer.start(function (value, timestamp) {
+    var comm =  Math.round(Math.random() * 4) + 1, iterator = new utils.EndlessIterator(1, 5);
+    var startAt = timer.start(function (value, timestamp) {
         if (paused) return;
         top.setValue("timer", value);
         middle.setValue("timer", value);
@@ -148,18 +155,25 @@ function SessionView(page, context, options) {
             , location.efficiency, location.latitude, location.longitude, splits.getPosition()
         ).save();
 
-        Api.TrainingSessions.live.update({
-            spm: spm.value,
-            timestamp: timestamp,
-            distance: location.distance,
-            speed: utils.round2(location.speed),
-            efficiency: location.efficiency,
-            duration: timer.getDuration()
-        }, 'running');
+        if (comm === iterator.next()) {
+            Api.TrainingSessions.live.update({
+                group: self.groupKey,
+                spm: spm.value,
+                timestamp: timestamp,
+                distance: location.distance,
+                speed: utils.round2(location.speed),
+                efficiency: location.efficiency,
+                duration: timer.getDuration()
+            }, 'running');
+        }
     });
 
+    session.setSessionStart(startAt);
+    Api.TrainingSessions.live.started(startAt, self.groupKey);
 
-    if (self.hasSplitsDefinited && !self.isWarmupFirst) {
+
+    // -- start splits immediately
+    if (self.hasSplitsDefined && !self.isWarmupFirst) {
         session.setScheduledSessionStart(session.getSessionStart());
         splits.start(undefined, undefined, undefined);
     }
@@ -411,7 +425,7 @@ SessionView.prototype.debug = function (session) {
     self.sensorDataFileError = false;
     return function onAccelerationTriggered(acceleration, value) {
 
-        if (self.sensorDataFileError == true) {
+        if (self.sensorDataFileError === true) {
             self.sensorData = [];
             return;
         }
@@ -435,7 +449,7 @@ SessionView.prototype.flushDebugBuffer = function () {
 };
 
 SessionView.prototype.createSession = function (calibration) {
-    var session = new Session(new Date().getTime() // TODO: handle timezone!!!
+    var session = new Session(/* session start = */ null
         , calibration.getAngleZ()
         , calibration.getNoiseX()
         , calibration.getNoiseZ()

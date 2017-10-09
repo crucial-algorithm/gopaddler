@@ -108,6 +108,21 @@ function notify(username, message) {
 }
 
 
+function EndlessIterator(from, to) {
+    var position = from - 1;
+
+    this.next = function () {
+        position++;
+
+        if (position > to) {
+            position = from;
+        }
+
+        return position;
+    }
+}
+
+
 exports.mapBrowserToNative = mapBrowserToNative;
 exports.lpad = lpad;
 exports.round2 = round2;
@@ -120,3 +135,4 @@ exports.avg = avg;
 exports.kmToMiles = kmToMiles;
 exports.meterToFeet = meterToFeet;
 exports.notify = notify;
+exports.EndlessIterator = EndlessIterator;

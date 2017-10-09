@@ -45,13 +45,15 @@ function SessionSummaryView(page, context, sessionSummaryArguments) {
     var avgEfficiency = context.displayMetric('efficiency', session.getAvgEfficiency());
     var maxEfficiency = context.displayMetric('efficiency', session.getTopEfficiency());
 
+    Api.TrainingSessions.live.finished();
+
     Api.TrainingSessions.live.update({
         spm: avgSPM,
-        timestamp: null,
+        timestamp: new Date().getTime(),
         distance: distance,
         speed: avgSpeed,
         efficiency: avgEfficiency,
-        duration: duration
+        duration: duration.asMilliseconds()
     }, 'finished');
 
     $duration.html('<b>' + durationFormatted + '</b>' + ' H');

@@ -13,7 +13,7 @@ function Timer() {
 
 Timer.prototype.start = function(listener) {
     this.listener = listener;
-    this.timer();
+    return this.timer();
 };
 
 Timer.prototype.setSplits = function (splits) {
@@ -61,6 +61,8 @@ Timer.prototype.timer = function(offset) {
             self.splits.setTime.apply(self.splits, [self.timestamp, time]);
 
     }, 1000);
+
+    return start;
 };
 
 Timer.prototype.zeroPad = function (value) {

@@ -64,13 +64,15 @@ function SelectSessionView(page, context) {
     Api.TrainingSessions.live.on('start', function (commandId, expression) {
         console.log('start session', expression, "[", commandId, "]");
 
-        if (expressions[expression]) {
-            $warmUpFirst.prop('checked', false);
-            start(null, {text: expression, splits: expressions[expression]});
-            Api.TrainingSessions.live.commandSynced(commandId);
-        } else {
+        if (expression && !expressions[expression]) {
             console.log("expression", expression, "not found");
+            Api.TrainingSessions.live.commandSynced(commandId);
+            return;
         }
+
+        $warmUpFirst.prop('checked', false);
+        Api.TrainingSessions.live.commandSynced(commandId);
+        start(expression, expressions[expression], null, commandId);
     });
 
     Api.TrainingSessions.live.on('sync', function (commandId, session) {
@@ -109,7 +111,10 @@ function SelectSessionView(page, context) {
     });
 
     $start.on('tap', function () {
-        start(session, null);
+        if (session)
+            start(session.getExpression(), session.getSplits(), session.getId(), null);
+        else
+            start(null, null, null, null);
     });
 
     if (context.isDev()) {
@@ -126,13 +131,23 @@ function SelectSessionView(page, context) {
         renderSessions(ScheduledSession.load() || []);
     }
 
-    function start(session, expression) {
+
+    /**
+     *
+     * @param expression
+     * @param splits
+     * @param remoteScheduledSessionId
+     * @param groupKey                  Id that identifies this device was started under a specific command
+     */
+    function start(expression, splits, remoteScheduledSessionId, groupKey) {
         clearInterval(self.deviceActiveIntervalId);
         Api.TrainingSessions.live.clearCommandListeners();
         context.navigate('session', false, {
-            session: session,
             expression: expression,
-            warmUpFirst: $warmUpFirst.is(':checked')
+            splits: splits,
+            isWarmUpFirst: $warmUpFirst.is(':checked'),
+            remoteScheduledSessionId: remoteScheduledSessionId,
+            groupKey: groupKey
         });
     }
 

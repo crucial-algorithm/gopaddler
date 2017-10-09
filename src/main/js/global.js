@@ -88,7 +88,12 @@ function emulateCordova () {
         }
     };
 
-    navigator.connection = navigator.connection || {};
+    if (!navigator.connection) {
+        navigator.connection = {
+            type: 2
+        };
+    }
+
     window.Connection = {"WIFI": 1, "ETHERNET": 2};
 
     window.analytics = {startTrackerWithId: function () {
@@ -147,10 +152,6 @@ function emulateCordova () {
         clearInterval(id);
     };
 
-
-    navigator.connection = {
-        type: 2
-    };
 }
 
 jQuery.fn.center = function () {

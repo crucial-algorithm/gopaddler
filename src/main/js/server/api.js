@@ -3,6 +3,7 @@ var createClass = require('asteroid').createClass;
 var facebook = require('../asteroid/facebook');
 var Asteroid = createClass([facebook]);
 var connected = false, loggedIn = false, retries = 0;
+var lastUserAddedMsg = null;
 
 var asteroid = {};
 
@@ -55,6 +56,11 @@ function _localLogin() {
     asteroid.loggedIn = true;
     asteroid.userId = user._id;
     asteroid.user = user;
+
+    if (lastUserAddedMsg) {
+        asteroid.user.profile.liveUpdateEvery = lastUserAddedMsg.fields.profile.liveUpdateEvery;
+        asteroid.user.profile.debug = lastUserAddedMsg.fields.profile.debug;
+    }
 
     _finishLogin(defer, user);
 
@@ -220,21 +226,34 @@ exports.Auth = {
         }
 
         asteroid.loginWithPassword({email: email, password: password}).then(function (id) {
-            _finishLogin(defer, {
-                "_id": id,
-                "profile": {
-                    "name": null,
-                    "avatar": null,
-                    "email": email,
-                    "country": null,
-                    "gender": null,
-                    "birthdate": null,
-                    "about": null,
-                    "debug": false,
-                    "device": null
-                },
-                "services": null
-            }, 'password');
+
+            var user;
+            if (lastUserAddedMsg && id === lastUserAddedMsg.id) {
+                user = {
+                    "_id": id,
+                    "profile": lastUserAddedMsg.fields.profile,
+                    "services": lastUserAddedMsg.fields.services,
+                    "emails": lastUserAddedMsg.fields.emails
+                }
+            } else {
+                user = {
+                    "_id": id,
+                    "profile": {
+                        "name": null,
+                        "avatar": null,
+                        "email": email,
+                        "country": null,
+                        "gender": null,
+                        "birthdate": null,
+                        "about": null,
+                        "debug": false,
+                        "device": null
+                    },
+                    "services": null
+                };
+            }
+
+            _finishLogin(defer, user, 'password');
         }).catch(function (err) {
             defer.reject(err);
         });
@@ -471,6 +490,13 @@ exports.Server = {
             endpoint: __WS_ENDPOINT__
         });
 
+        asteroid.ddp.on("added", function (payload) {
+            if (payload.collection !== 'users') {
+                return;
+            }
+
+            lastUserAddedMsg = payload;
+        });
 
         asteroid.on('connected', function () {
             connected = true;

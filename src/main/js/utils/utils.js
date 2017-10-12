@@ -107,9 +107,13 @@ function notify(username, message) {
     });
 }
 
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 function EndlessIterator(from, to) {
     var position = from - 1;
+    var random = getRandomInt(from, to);
 
     this.next = function () {
         position++;
@@ -119,6 +123,15 @@ function EndlessIterator(from, to) {
         }
 
         return position;
+    };
+
+    /**
+     * Acquired position at a regular step
+     * Locked means that position matches the step
+     * @returns {boolean}
+     */
+    this.locked = function () {
+        return position === random;
     }
 }
 

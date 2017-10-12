@@ -142,7 +142,7 @@ function SessionView(page, context, options) {
 
 
     // -- initiate timer
-    var comm =  Math.round(Math.random() * 4) + 1, iterator = new utils.EndlessIterator(1, 5);
+    var iterator = new utils.EndlessIterator(1, Api.User.getProfile().liveUpdateEvery || 3);
     var startAt = timer.start(function (value, timestamp) {
         if (paused) return;
         top.setValue("timer", value);
@@ -155,7 +155,8 @@ function SessionView(page, context, options) {
             , location.efficiency, location.latitude, location.longitude, splits.getPosition()
         ).save();
 
-        if (comm === iterator.next()) {
+        iterator.next();
+        if (iterator.locked()) {
             Api.TrainingSessions.live.update({
                 group: self.groupKey,
                 spm: spm.value,

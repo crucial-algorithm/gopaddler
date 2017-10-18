@@ -176,6 +176,13 @@ function _call() {
 
     var defer = $.Deferred();
 
+    if (!Utils.isNetworkConnected()) {
+        setTimeout(function () {
+            defer.reject({error: 504, reason: "no internet connection"});
+        }, 0);
+        return defer.promise();
+    }
+
     asteroid.call.apply(asteroid, arguments).then(function (response) {
 
         defer.resolve(response);
@@ -356,7 +363,7 @@ var liveListeners = {
     pause: [],
     finish: [],
     sync: []
-}, commandListenerID;
+}, commandListenerID, lastPingAt = null;
 
 /**
  * Training Session methods.
@@ -391,16 +398,19 @@ exports.TrainingSessions = {
         },
 
         update: function (data, status) {
-            return _call('liveUpdt', [data.timestamp, data.duration, data.speed
+
+            if (lastPingAt !== null && new Date().getTime() - lastPingAt > 6 * 60 * 1000) {
+                return;
+            }
+
+            _call('liveUpdt', [data.timestamp, data.duration, data.speed
                 , Utils.round2(data.distance), /*data.spm*/ 120, /*Utils.round2(data.efficiency)*/ 3.13, data.start], status);
 //            return _call('liveUpdt', [1505446698341, 10, 41.55154967, -8.394433698, 12, -0.3914519846, 0.3148375154, 9.834183693], status);
 
         },
 
         commandSynced: function (id) {
-            setTimeout(function () {
-                _call('commandSyncedInDevice', id)
-            }, 3000);
+            _call('commandSyncedInDevice', id)
         },
 
         startListening: function () {
@@ -415,9 +425,6 @@ exports.TrainingSessions = {
             });
 
             asteroid.ddp.on("changed", function (msg) {
-                // console.log('Element changed to collection collection', msg.collection);
-                // console.log(msg.id);
-                // console.log(msg.fields);
 
                 if (msg.collection !== "liveDevices")
                     return;
@@ -431,6 +438,11 @@ exports.TrainingSessions = {
 
                     if (commands[i].synced === true) {
                         continue;
+                    }
+
+                    if (commands[i].command === 'ping') {
+                        console.log('ping received');
+                        lastPingAt = new Date().getTime();
                     }
 
                     listeners = liveListeners[commands[i].command];

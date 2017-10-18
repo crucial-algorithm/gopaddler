@@ -513,7 +513,6 @@ SessionView.prototype.confirm = function (onresume, onfinish) {
 
 };
 
-
 SessionView.prototype.confirmFinishWarmUp = function (onStartOnMinuteTurn, onStartImmediately, onfinish) {
     var self = this;
     var $controls, $startOnMinuteTurn, $startImmediately, $finish;
@@ -585,7 +584,6 @@ SessionView.prototype.confirmFinishWarmUp = function (onStartOnMinuteTurn, onSta
     });
 
 };
-
 
 function saveLayout(top, middle, bottom, large) {
     window.localStorage.setItem("layout", JSON.stringify({

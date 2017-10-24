@@ -82,10 +82,10 @@ HomeView.prototype.updateLastSessionDate = function () {
 function showNoCalibrationModal($page, context) {
     var html = [
         '<div class="info-modal-body">',
-            '<div class="info-modal-title vh_height10 vh_line-height10">No calibration found</div>',
-            '<div class="info-modal-content vh_height26"">',
-                '<p style="text-align: center">Before you start, we need to adjust to your mount system!</p>',
-                '<p class="vh_line-height11" style="text-align: center">Don\'t worry - it will only take a few seconds...</p>',
+            '<div class="info-modal-title">No calibration found</div>',
+            '<div class="info-modal-content"">',
+                '<p>Before you start, we need to adjust to your mount system!</p>',
+                '<p>Don\'t worry - it will only take a few seconds...</p>',
             '</div>',
             '<div class="info-modal-controls vh_height15 vh_line-height15">',
                 '<div class="info-modal-secondary-action">Try it</div>',
@@ -115,13 +115,13 @@ function showNoCalibrationModal($page, context) {
 function showFirstCalibrationCompletedModal($page, context) {
     var html = [
         '<div class="info-modal-body">',
-        '<div class="info-modal-title vh_height10 vh_line-height10">Calibration completed</div>',
-        '<div class="info-modal-content vh_height26"">',
-        '<p style="text-align: center">Thanks... now you can go ahead and start a new session</p>',
-        '</div>',
-        '<div class="info-modal-controls vh_height15 vh_line-height15">',
-        '<div class="info-modal-primary-action">OK</div>',
-        '</div>',
+        '   <div class="info-modal-title">Calibration completed</div>',
+        '   <div class="info-modal-content"">',
+        '       <p>Thanks... now you can go ahead and start a new session</p>',
+        '   </div>',
+        '   <div class="info-modal-controls">',
+        '       <div class="info-modal-primary-action">OK</div>',
+        '   </div>',
         '</div>'
     ];
 

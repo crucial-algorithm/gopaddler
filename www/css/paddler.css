@@ -262,15 +262,25 @@ body {
     text-align: center;
     vertical-align: middle;
     font-weight: bold;
-
+    height: 10vh;
+    line-height: 10vh;
 }
 .info-modal-content {
     padding: 2% 2% 0 2%;
+    height: 26vh;
+
+}
+
+.info-modal-content > p {
+    line-height: 10vh;
+    text-align: center;
 }
 
 .info-modal-controls {
     display: table;
     width: 100%;
+    height: 15vh;
+    line-height: 15vh;
 }
 
 .info-modal-secondary-action {

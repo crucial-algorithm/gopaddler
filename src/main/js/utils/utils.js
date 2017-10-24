@@ -113,7 +113,14 @@ function getRandomInt(min, max) {
 
 function EndlessIterator(from, to) {
     var position = from - 1;
-    var random = getRandomInt(from, to);
+    var random;
+
+    // not proper behavior, but required for the usage in session-view! handle from = 1 and to = 0
+    if (from > to) {
+        return new NeverLockIterator();
+    }
+
+    random = getRandomInt(from, to);
 
     this.next = function () {
         position++;
@@ -132,6 +139,14 @@ function EndlessIterator(from, to) {
      */
     this.locked = function () {
         return position === random;
+    }
+}
+
+function NeverLockIterator() {
+    this.next = function () {
+    };
+    this.locked = function () {
+        return false;
     }
 }
 

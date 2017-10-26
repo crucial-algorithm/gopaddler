@@ -7,7 +7,6 @@ var lastUserAddedMsg = null;
 
 var asteroid = {};
 
-
 var serverAvailable = function (d) {
     var defer = d || $.Deferred();
 
@@ -66,7 +65,6 @@ function _localLogin() {
 
     return defer.promise();
 }
-
 
 /**
  * Authenticate the user remotely.
@@ -154,7 +152,6 @@ function _finishLogin(defer, user, method) {
     });
 }
 
-
 /**
  * Register the user for this session and persist it in the local storage.
  *
@@ -166,7 +163,6 @@ function _storeUser(user) {
     asteroid.user = user;
     localStorage.setItem('user', JSON.stringify(user));
 }
-
 
 /**
  *
@@ -311,7 +307,6 @@ exports.Auth = {
     }
 };
 
-
 function _getLoginMethod() {
     return JSON.parse(localStorage.getItem("login_method")) === 'password' ? 'password' : 'facebook';
 }
@@ -320,10 +315,12 @@ function _setLoginMethod(method) {
     localStorage.setItem('login_method', JSON.stringify(method));
 }
 
-
 /**
  * Users methods.
  */
+function isLiveUpdate() {
+    return asteroid.user.profile.liveUpdateEvery > 0;
+}
 exports.User = {
 
 
@@ -354,9 +351,10 @@ exports.User = {
 
     hasCoach: function () {
         return asteroid.user.hasCoach === true;
-    }
-};
+    },
 
+    isLiveUpdate: isLiveUpdate
+};
 
 var liveListeners = {
     start: [],
@@ -382,23 +380,39 @@ exports.TrainingSessions = {
     live: {
 
         deviceReady: function () {
-            return _call('deviceReadyToStart');
+            if (!isLiveUpdate())
+                return;
+
+            _call('deviceReadyToStart');
         },
 
         deviceDisconnected: function () {
-            return _call('deviceDisconnected');
+            if (!isLiveUpdate())
+                return;
+
+            _call('deviceDisconnected');
         },
 
         started: function (startedAt) {
-            return _call('deviceStarted', startedAt)
+            if (!isLiveUpdate())
+                return;
+
+            _call('deviceStarted', startedAt)
         },
 
         finished: function () {
-            return _call('deviceFinished')
+            if (!isLiveUpdate())
+                return;
+
+            _call('deviceFinished')
         },
 
         update: function (data, status) {
 
+            if (!isLiveUpdate())
+                return;
+
+            // Check if coach is watching
             if (lastPingAt !== null && new Date().getTime() - lastPingAt > 6 * 60 * 1000) {
                 return;
             }
@@ -410,10 +424,17 @@ exports.TrainingSessions = {
         },
 
         commandSynced: function (id) {
+            if (!isLiveUpdate())
+                return;
+
             _call('commandSyncedInDevice', id)
         },
 
         startListening: function () {
+
+            if (!isLiveUpdate())
+                return;
+
             if (commandListenerID) return;
             var sub = asteroid.subscribe('coachRemoteCommands');
             commandListenerID = sub.id;
@@ -456,6 +477,9 @@ exports.TrainingSessions = {
         },
 
         stopListening: function () {
+            if (!isLiveUpdate())
+                return;
+
             asteroid.unsubscribe(commandListenerID);
         },
 
@@ -465,6 +489,9 @@ exports.TrainingSessions = {
          * @param callback
          */
         on: function (event, callback) {
+            if (!isLiveUpdate())
+                return;
+
             liveListeners[event].push(callback);
         },
 

@@ -140,10 +140,9 @@ function SessionView(page, context, options) {
         e.preventDefault();
     });
 
-    // prepare iterator for live update, taking in consideration that it may have been set not to update:
-    //     liveUpdateFrequency === 0
-    var frequency = Api.User.getProfile().liveUpdateEvery, iterator;
-    iterator = new utils.EndlessIterator(1, typeof frequency === "number" && frequency > 0 ? frequency : 0);
+    // prepare iterator for live update
+    var frequency = Api.User.getProfile().liveUpdateEvery;
+    var iterator = new utils.EndlessIterator(1, frequency);
 
     // -- initiate timer
     var startAt = timer.start(function (value, timestamp) {

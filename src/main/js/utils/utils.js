@@ -111,9 +111,16 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+function numberOrZero(n) {
+    return typeof n === "number" ? n : 0
+
+}
+
 function EndlessIterator(from, to) {
     var position = from - 1;
     var random;
+
+    to = numberOrZero(to);
 
     // not proper behavior, but required for the usage in session-view! handle from = 1 and to = 0
     if (from > to) {

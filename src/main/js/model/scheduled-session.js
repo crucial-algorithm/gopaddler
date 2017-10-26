@@ -76,6 +76,12 @@ ScheduledSession.load = function () {
 
 ScheduledSession.sync = function () {
     var deferred = $.Deferred();
+
+    if (!Api.User.hasCoach()) {
+        deferred.resolve([]);
+        return deferred.promise();
+    }
+
     Api.TrainingSessions.scheduled().then(function (sessions) {
         var s, result = [];
         for (var i = 0; i < sessions.length; i++) {

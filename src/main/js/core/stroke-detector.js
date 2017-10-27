@@ -4,7 +4,7 @@ var utils = require('../utils/utils');
 
 var SPM_STROKE_COUNT = 8;
 
-function StrokeDetector(session, calibration, onStrokeDetected, onAccelerationTriggered) {
+function StrokeDetector(calibration, onStrokeDetected, onAccelerationTriggered) {
     var self = this;
     self.watchId = undefined;
 
@@ -27,7 +27,6 @@ function StrokeDetector(session, calibration, onStrokeDetected, onAccelerationTr
     self.lastEvent = undefined;
 
     self.intervalId = undefined;
-    self.session = session;
     self.debugAcceleration = [];
     self.calibration = calibration;
 

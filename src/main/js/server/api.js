@@ -418,9 +418,7 @@ exports.TrainingSessions = {
             }
 
             _call('liveUpdt', [data.timestamp, data.duration, data.speed
-                , Utils.round2(data.distance), /*data.spm*/ 120, /*Utils.round2(data.efficiency)*/ 3.13, data.start], status);
-//            return _call('liveUpdt', [1505446698341, 10, 41.55154967, -8.394433698, 12, -0.3914519846, 0.3148375154, 9.834183693], status);
-
+                , Utils.round2(data.distance), data.spm, Utils.round2(data.efficiency), data.start], status);
         },
 
         commandSynced: function (id) {

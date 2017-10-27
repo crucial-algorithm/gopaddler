@@ -53,7 +53,7 @@ function SessionView(page, context, options) {
     var pace = new Pace(context.preferences().isImperial());
     var splits;
     var strokeEfficiency = new StrokeEfficiency();
-    var strokeDetector = new StrokeDetector(session, calibration, null, self.debug(session));
+    var strokeDetector;
     var timer = new Timer();
     var paused = false;
 
@@ -172,6 +172,7 @@ function SessionView(page, context, options) {
     });
 
     session.setSessionStart(startAt);
+    session.persist();
     Api.TrainingSessions.live.started(startAt, self.groupKey);
 
 
@@ -212,6 +213,7 @@ function SessionView(page, context, options) {
     };
 
     // -- handle stroke related data
+    strokeDetector = new StrokeDetector(calibration, null, self.debug(session));
     strokeDetector.onStrokeRateChanged(function (value, interval) {
         if (paused) return;
         spm = {value: value, interval: interval};
@@ -461,7 +463,7 @@ SessionView.prototype.createSession = function (calibration) {
         , calibration.getPredominant()
     );
 
-    return session.create();
+    return session;
 };
 
 SessionView.prototype.confirm = function (onresume, onfinish) {

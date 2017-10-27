@@ -255,7 +255,7 @@ Session.prototype.createAPISession = function () {
     return defer.promise();
 };
 
-Session.prototype.create = function () {
+Session.prototype.persist = function () {
     var self = this;
     self.connection.executeSql("INSERT INTO session (id, session_start, anglez, noisex, noisez, factorx, factorz, axis, dbg_file) VALUES (?,?,?,?,?,?,?,?,?)",
         [this.id, this.sessionStart, this.angleZ, this.noiseX, this.noiseZ, this.factorX, this.factorZ, this.axis, this.debugFile], function (res) {

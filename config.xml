@@ -44,22 +44,48 @@
         <preference name="android-targetSdkVersion" value="21" />
     </platform>
     <platform name="ios">
+        <icon height="20" src="res/ios/icon-20.png" width="20" />
         <icon height="29" src="res/ios/icon-small.png" width="29" />
         <icon height="40" src="res/ios/icon-40.png" width="40" />
+        <icon height="48" src="res/ios/icon-48.png" width="48" />
         <icon height="50" src="res/ios/icon-50.png" width="50" />
+        <icon height="55" src="res/ios/icon-55.png" width="55" />
         <icon height="57" src="res/ios/icon-57.png" width="57" />
         <icon height="58" src="res/ios/icon-small@2x.png" width="58" />
+        <icon height="60" src="res/ios/icon-60.png" width="60" />
         <icon height="72" src="res/ios/icon-72.png" width="72" />
         <icon height="76" src="res/ios/icon-76.png" width="76" />
         <icon height="80" src="res/ios/icon-40@2x.png" width="80" />
         <icon height="87" src="res/ios/icon-29@3x.png" width="87" />
+        <icon height="88" src="res/ios/icon-88.png" width="88" />
         <icon height="100" src="res/ios/icon-50@2x.png" width="100" />
         <icon height="114" src="res/ios/icon-57@2x.png" width="114" />
         <icon height="120" src="res/ios/icon-60@2x.png" width="120" />
         <icon height="144" src="res/ios/icon-72@2x.png" width="144" />
         <icon height="152" src="res/ios/icon-76@2x.png" width="152" />
         <icon height="167" src="res/ios/icon-83.5@2x.png" width="167" />
+        <icon height="172" src="res/ios/icon-172.png" width="172" />
         <icon height="180" src="res/ios/icon-60@3x.png" width="180" />
+        <icon height="196" src="res/ios/icon-196.png" width="196" />
+        <icon height="1024" src="res/ios/icon-1024.png" width="1024" />
+        <splash height="1242" src="res/ios/screen/Default-1242@3x~iphone6s-landscape_2248x1242.png" width="2248" />
+        <splash height="2248" src="res/ios/screen/Default-1242@3x~iphone6s-portrait_1242x2248.png" width="1242" />
+        <splash height="1136" src="res/ios/screen/Default-568h@2x~iphone_640x1136.png" width="640" />
+        <splash height="750" src="res/ios/screen/Default-750@2x~iphone6-landscape_1334x750.png" width="1334" />
+        <splash height="1334" src="res/ios/screen/Default-750@2x~iphone6-portrait_750x1334.png" width="750" />
+        <splash height="1496" src="res/ios/screen/Default-Landscape@2x~ipad_2048x1496.png" width="2048" />
+        <splash height="1536" src="res/ios/screen/Default-Landscape@2x~ipad_2048x1536.png" width="2048" />
+        <splash height="748" src="res/ios/screen/Default-Landscape~ipad_1024x748.png" width="1024" />
+        <splash height="768" src="res/ios/screen/Default-Landscape~ipad_1024x768.png" width="1024" />
+        <splash height="2008" src="res/ios/screen/Default-Portrait@2x~ipad_1536x2008.png" width="1536" />
+        <splash height="2048" src="res/ios/screen/Default-Portrait@2x~ipad_1536x2048.png" width="1536" />
+        <splash height="1024" src="res/ios/screen/Default-Portrait~ipad_768x1024.png" width="768" />
+        <splash height="1004" src="res/ios/screen/Default_768x1004.png" width="768" />
+        <splash height="960" src="res/ios/screen/Default@2x~iphone_640x960.png" width="640" />
+        <splash height="2008" src="res/ios/screen/Default~ipad.png" width="1536" />
+        <splash height="480" src="res/ios/screen/Default~iphone.png" width="320" />
+        <splash height="1242" src="res/ios/screen/Default-736h.png" width="2208" />
+        <splash height="2208" src="res/ios/screen/Default-Landscape-736h.png" width="1242" />
         <hook src="src/cordova/ios/plist.js" type="before_build" />
     </platform>
     <preference name="FadeSplashScreen" value="true" />
@@ -75,20 +101,18 @@
     <preference name="AndroidPersistentFileLocation" value="Compatibility" />
     <preference name="Fullscreen" value="true" />
     <preference name="StatusBarOverlaysWebView" value="true" />
-    <engine name="ios" spec="^4.4.0" />
     <engine name="android" spec="^6.3.0" />
+    <engine name="ios" spec="^4.5.3" />
     <plugin name="cordova-plugin-statusbar" spec="^2.2.3" />
     <plugin name="cordova-plugin-network-information" spec="^1.3.3" />
     <plugin name="cordova-plugin-device" spec="^1.1.6" />
     <plugin name="cordova-plugin-inappbrowser" spec="^1.7.1" />
-    <plugin name="cordova-plugin-console" spec="^1.0.7" />
     <plugin name="cordova-plugin-device-motion" spec="^1.2.5" />
     <plugin name="cordova-plugin-dialogs" spec="^1.3.3" />
     <plugin name="cordova-plugin-google-analytics" spec="^1.8.2" />
     <plugin name="cordova-plugin-ios-longpress-fix" spec="^1.1.0" />
     <plugin name="cordova-plugin-powermanagement" spec="^1.0.5" />
     <plugin name="cordova-plugin-screen-orientation" spec="^2.0.1" />
-    <plugin name="cordova-plugin-splashscreen" spec="^4.0.3" />
     <plugin name="cordova-plugin-whitelist" spec="^1.3.2" />
     <plugin name="cordova-sqlite-storage" spec="^2.0.4" />
     <plugin name="cordova-plugin-facebook4" spec="^1.7.4">
@@ -100,4 +124,5 @@
     <plugin name="cordova-plugin-geolocation" spec="^2.4.3">
         <variable name="GEOLOCATION_USAGE_DESCRIPTION" value=" " />
     </plugin>
+    <plugin name="cordova-plugin-splashscreen" spec="^4.0.3" />
 </widget>

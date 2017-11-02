@@ -30,7 +30,8 @@
     "es6-promise-plugin": "git+https://github.com/vstirbu/PromisesPlugin.git",
     "html-loader": "^0.4.5",
     "webpack": "^2.5.1",
-    "zerver": "0.15.19"
+    "zerver": "0.15.19",
+    "cordova-plugin-bluetoothle": "~4.4.2"
   },
   "scripts": {
     "start": "zerver www",
@@ -75,7 +76,8 @@
       "cordova-plugin-file": {},
       "cordova-plugin-geolocation": {
         "GEOLOCATION_USAGE_DESCRIPTION": " "
-      }
+      },
+      "cordova-plugin-bluetoothle": {}
     }
   }
 }

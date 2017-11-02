@@ -34,6 +34,10 @@ var units = {
         pace: {
             label: {regular: "Min/Km", large: "Min/Km"},
             round: false
+        },
+        heartRate: {
+            label: {regular: "BPM", large: "BPM"},
+            round: false
         }
     },
     imperial: {
@@ -63,6 +67,10 @@ var units = {
         },
         pace: {
             label: {regular: "Min/Mi", large: "Min/Mi"},
+            round: false
+        },
+        heartRate: {
+            label: {regular: "BPM", large: "BPM"},
             round: false
         }
     }

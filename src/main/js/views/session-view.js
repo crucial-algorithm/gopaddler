@@ -2,6 +2,7 @@
 
 var IO = require('../utils/io.js').IO;
 var GPS = require('../utils/gps').GPS;
+var Bluetooth = require('../device/bluetooth').Bluetooth;
 var Dialog = require('../utils/dialog');
 var utils = require('../utils/utils');
 var Calibration = require('../model/calibration').Calibration;
@@ -48,6 +49,15 @@ function SessionView(page, context, options) {
     var calibration = Calibration.load() || Calibration.blank();
     var session = self.createSession(calibration);
     var gps = new GPS();
+    var bluetooth = new Bluetooth();
+    new Promise(function (resolve, reject) {
+        bluetooth.start()
+    }).then(
+        function () {
+            bluetooth.scan();
+        }
+    );
+
     var distance = new Distance();
     var speed = new Speed();
     var pace = new Pace(context.preferences().isImperial());

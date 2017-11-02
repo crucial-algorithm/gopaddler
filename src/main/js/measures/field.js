@@ -38,6 +38,7 @@ Field.prototype.createDomStructure = function (size, enableSplits) {
             '    <div class="measure" data-type="pace"></div>',
             '    <div class="measure" data-type="spm"></div>',
             '    <div class="measure" data-type="efficiency"></div>',
+            '    <div class="measure" data-type="heartRate"></div>',
             '</div>'
         ];
         if (enableSplits !== true)
@@ -53,6 +54,7 @@ Field.prototype.createDomStructure = function (size, enableSplits) {
             '    <div class="measure" data-type="pace"></div>',
             '    <div class="measure" data-type="spm"></div>',
             '    <div class="measure" data-type="efficiency"></div>',
+            '    <div class="measure" data-type="heartRate"></div>',
             '</div>'
         ].join('')).appendTo(this.$element);
     }
@@ -91,6 +93,10 @@ var FIELD_SETTINGS = {
     },
     pace: {
         label: "Pace",
+        init: 0
+    },
+    heartRate: {
+        label: "Heart Rate",
         init: 0
     }
 };

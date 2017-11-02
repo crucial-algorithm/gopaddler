@@ -100,4 +100,5 @@
     <plugin name="cordova-plugin-geolocation" spec="^2.4.3">
         <variable name="GEOLOCATION_USAGE_DESCRIPTION" value=" " />
     </plugin>
+    <plugin name="cordova-plugin-bluetoothle" spec="~4.4.2" />
 </widget>

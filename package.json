@@ -9,6 +9,7 @@
     "asteroid": "^2.0.3",
     "cordova-android": "^6.3.0",
     "cordova-ios": "^4.5.3",
+    "cordova-plugin-background-mode-bluetooth-central": "^1.0.0",
     "cordova-plugin-compat": "^1.2.0",
     "cordova-plugin-device": "^1.1.6",
     "cordova-plugin-device-motion": "^1.2.5",
@@ -29,7 +30,8 @@
     "es6-promise-plugin": "git+https://github.com/vstirbu/PromisesPlugin.git",
     "html-loader": "^0.4.5",
     "webpack": "^2.5.1",
-    "zerver": "0.15.19"
+    "zerver": "0.15.19",
+    "cordova-plugin-bluetoothle": "~4.4.2"
   },
   "scripts": {
     "start": "zerver www",
@@ -56,6 +58,7 @@
       "cordova-plugin-network-information": {},
       "cordova-plugin-device": {},
       "cordova-plugin-inappbrowser": {},
+      "cordova-plugin-console": {},
       "cordova-plugin-device-motion": {},
       "cordova-plugin-dialogs": {},
       "cordova-plugin-google-analytics": {},
@@ -73,7 +76,8 @@
       "cordova-plugin-geolocation": {
         "GEOLOCATION_USAGE_DESCRIPTION": " "
       },
-      "cordova-plugin-splashscreen": {}
+      "cordova-plugin-splashscreen": {},
+      "cordova-plugin-background-mode-bluetooth-central": {}
     }
   }
 }

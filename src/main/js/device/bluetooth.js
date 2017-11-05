@@ -4,22 +4,24 @@ function Bluetooth () {
     var self = this;
     self.isEnabled = false;
     self.foundDevices = [];
+    self.uuids = {};
 }
 
 function startScanSuccess(result) {
+    var self = this;
     console.log("startScanSuccess(" + result.status + ")");
 
     if (result.status === "scanStarted") {
         console.log("Scanning for devices (will continue to scan until you select a device)...", "status");
     } else if (result.status === "scanResult") {
-        if (!foundDevices.some(function (device) {
+        if (!self.foundDevices.some(function (device) {
                 return device.address === result.address;
 
             })) {
 
             console.log('FOUND DEVICE:');
             console.log(result);
-            foundDevices.push(result);
+            self.foundDevices.push(result);
             connect(result.address);
         }
     }
@@ -214,44 +216,74 @@ function readSuccess(result) {
 }
 
 function stopScanSuccess() {
+    var self = this;
 
-    if (!foundDevices.length) {
+    if (!self.foundDevices.length) {
 
         console.log("NO DEVICES FOUND");
     }
     else {
 
-        console.log("Found " + foundDevices.length + " devices.", "status");
+        console.log("Found " + self.foundDevices.length + " devices.", "status");
     }
 }
 
-Bluetooth.prototype.start = function (successHandler, failureHandler) {
-    bluetoothle.initialize(
-        // initializeSuccess,
-        function (result) {
-            if (result.status === "enabled") {
-                console.log("Bluetooth is enabled.");
-                console.log(result);
-            } else {
-                console.log("Bluetooth is not enabled:", "status");
-                console.log(result, "status");
-            }
-        },
-        {
-            'request': true, // Should user be prompted to enable Bluetooth
-            'statusReceiver': false, // false - Should change in Bluetooth status notifications be sent.
-            'restoreKey' : "gopaddler-app" // A unique string to identify your app.
-        }
-    );
+Bluetooth.prototype.isEnabled = function () {
+    return new Promise(function (resolve, reject) {
+        bluetoothle.isEnabled(function (result) {
+            result.status === "enabled" ? resolve() : reject();
+        });
+    });
 };
 
+Bluetooth.prototype.start = function () {
+    var self  = this;
+
+    return new Promise(function (resolve, reject) {
+
+        bluetoothle.initialize(
+            // initializeSuccess,
+            function (result) {
+                if (result.status === "enabled") {
+                    resolve(result);
+                } else {
+                    reject(result);
+                }
+            },
+            {
+                'request': true, // Should user be prompted to enable Bluetooth
+                'statusReceiver': true, // true - Should change in Bluetooth status notifications be sent.
+                'restoreKey': "gopaddler-app" // A unique string to identify your app.
+            }
+        );
+    });
+};
+
+
+Bluetooth.prototype.listen = function (callback) {
+    var self = this;
+    self.start().then(function () {
+        // bluetooth enabled
+        console.log('bluetooth enabled, ready to scan for devices');
+        self.scan();
+
+        // TODO: connect...
+
+    }).catch(function () {
+        // bluetooth disabled
+        console.log('bluetooth disabled');
+    })
+};
+
+
 Bluetooth.prototype.scan = function () {
+    var self = this;
     bluetoothle.startScan(
-        startScanSuccess,
-        handleError,
+        startScanSuccess.bind(self),
+        handleError.bind(self),
         { services: [] }
     );
-}
+};
 
 Bluetooth.prototype.stop = function () {
     bluetoothle.stopScan();
@@ -274,19 +306,18 @@ function initializeSuccess(result) {
         console.log(result, "status");
     }
 }
-
 function handleError(error) {
-    var msg;
+    var self = this, msg;
 
     if (error.error && error.message) {
         var errorItems = [];
         if (error.service) {
-            errorItems.push("service: " + (uuids[error.service] || error.service));
+            errorItems.push("service: " + (self.uuids[error.service] || error.service));
         }
 
         if (error.characteristic) {
 
-            errorItems.push("characteristic: " + (uuids[error.characteristic] || error.characteristic));
+            errorItems.push("characteristic: " + (self.uuids[error.characteristic] || error.characteristic));
         }
 
         msg = "Error on " + error.error + ": " + error.message + (errorItems.length && (" (" + errorItems.join(", ") + ")"));

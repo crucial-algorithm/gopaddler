@@ -125,4 +125,5 @@
         <variable name="GEOLOCATION_USAGE_DESCRIPTION" value=" " />
     </plugin>
     <plugin name="cordova-plugin-splashscreen" spec="^4.0.3" />
+    <plugin name="cordova-plugin-background-mode-bluetooth-central" spec="^1.0.0" />
 </widget>

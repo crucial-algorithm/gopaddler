@@ -5,9 +5,9 @@ var ScheduledSession = require('../model/scheduled-session').ScheduledSession;
 
 var mockupSessions = [
     {
-        expression: "10''/5'' + 10''/5''",
+        expression: "20''/10'' + 20''/10''",
         id: 1,
-        splits: [{_duration: 10, _recovery: false, _unit: 'seconds'}, {_duration: 5, _recovery: true, _unit: 'seconds'},{_duration: 10, _recovery: false, _unit: 'seconds'}, {_duration: 5, _recovery: true, _unit: 'seconds'}],
+        splits: [{_duration: 20, _recovery: false, _unit: 'seconds'}, {_duration: 10, _recovery: true, _unit: 'seconds'},{_duration: 20, _recovery: false, _unit: 'seconds'}, {_duration: 10, _recovery: true, _unit: 'seconds'}],
         date: moment().add(-3, 'd')
     },
     {

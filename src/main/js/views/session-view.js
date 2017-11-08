@@ -98,15 +98,16 @@ function SessionView(page, context, options) {
 
     options = options || {};
 
-    self.isWarmupFirst = options.isWarmupFirst === true;
-    self.inWarmUp = self.isWarmupFirst;
+    self.isWarmUpFirst = options.isWarmUpFirst === true;
+    self.hasSplitsDefined = !!options.splits;
+    self.inWarmUp = self.hasSplitsDefined && self.isWarmUpFirst;
     self.splitsDefinition = options.splits;
     self.expression = options.expression;
     self.groupKey = options.groupKey;
 
     session.setScheduledSessionId(options.remoteScheduledSessionId);
 
-    self.hasSplitsDefined = !!options.splits;
+
 
     if (self.hasSplitsDefined) {
         splits = new Splits(self.splitsDefinition, splitsHandler);
@@ -184,7 +185,7 @@ function SessionView(page, context, options) {
 
 
     // -- start splits immediately
-    if (self.hasSplitsDefined && !self.isWarmupFirst) {
+    if (self.hasSplitsDefined && !self.isWarmUpFirst) {
         session.setScheduledSessionStart(session.getSessionStart());
         splits.start(undefined, undefined, undefined);
     }

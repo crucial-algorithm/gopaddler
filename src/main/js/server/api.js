@@ -319,7 +319,7 @@ function _setLoginMethod(method) {
  * Users methods.
  */
 function isLiveUpdate() {
-    return asteroid.user.profile.liveUpdateEvery > 0;
+    return asteroid.user.profile.liveUpdateEvery > 0 && Utils.isNetworkConnected();
 }
 exports.User = {
 

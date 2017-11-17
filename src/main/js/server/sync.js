@@ -5,6 +5,7 @@ var Utils = require('../utils/utils.js');
 var Session = require('../model/session').Session;
 var ScheduledSession = require('../model/scheduled-session').ScheduledSession;
 var Api = require('../server/api');
+var audit = require('../server/audit');
 
 var processing = {}, debugProcessing = {};
 
@@ -228,6 +229,21 @@ function syncScheduledSessions () {
     ScheduledSession.sync();
 }
 
+function postAuditData() {
+    if (document.PREVENT_SYNC === true) return;
+
+    var exceptions = window.localStorage.getItem('exceptions');
+    if (!exceptions) return;
+
+    exceptions = JSON.parse(exceptions);
+    while(exceptions.length > 0 ) {
+        audit.postException({exception: exceptions.pop()});
+    }
+
+    window.localStorage.setTime('exceptions', JSON.stringify([]));
+
+}
+
 var syncStarted = false;
 exports.start = function () {
     var self = this;
@@ -237,7 +253,9 @@ exports.start = function () {
     setTimeout(function () {
         setInterval(sync.bind(self), 300000);
         setInterval(syncScheduledSessions.bind(self), 300000);
+//        setInterval(postAuditData.bind(self), 300000);
         syncScheduledSessions();
+//        postAuditData();
     }, 10000);
     syncStarted = true;
 };

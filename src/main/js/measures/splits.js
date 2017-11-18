@@ -6,7 +6,11 @@ var Sound = require('../utils/sound').Sound;
 var sound;
 
 function Splits(splits, listener) {
-    this.splits = splits || [];
+    this.splits = [];
+
+    if (splits) {
+        this.splits = splits.slice();
+    }
 
     if (!sound)  sound = new Sound();
 

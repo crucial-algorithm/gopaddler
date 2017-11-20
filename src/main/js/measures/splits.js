@@ -58,7 +58,7 @@ Splits.prototype.setTime = function (timestamp, duration) {
 
     var gap = this.splitStop - this.duration;
 
-    if (this.split.isRecovery() && gap === 4) {
+    if (this.split.isRecovery() && gap === 5) {
         sound.playStartCountDown();
     } else if (!this.split.isRecovery() && gap === 2) {
         sound.playFinishCountDown();

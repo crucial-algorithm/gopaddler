@@ -53,10 +53,24 @@ module.exports = {
         })
     ],
     module: {
-        rules: [
+        loaders: [
             {
-                test: /\.html$/,
-                use: [ "html-loader" ]
+                test: /\.svg$/,
+                loader: "file-loader"
+            },
+            {
+                test: /\.jpg$/,
+                loader: "file-loader"
+            }, {
+                test: /\.png$/,
+                loader: "url-loader?mimetype=image/png"
+            }, {
+                test: /\.art.html$/,
+                loader: "art-template-loader",
+                options: {
+                    // art-template options (if necessary)
+                    // @see https://github.com/aui/art-template
+                }
             }
         ]
     }

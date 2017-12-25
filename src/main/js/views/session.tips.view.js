@@ -1,7 +1,10 @@
 'use strict';
 
+var template = require('./session.tips.art.html');
+
 
 function SessionTipsView(page, context) {
+    context.render(page, template());
     var $page = $(page)
         , $content = $page.find('[data-selector="slick"]')
         , $gotIt = $page.find('.got-it');

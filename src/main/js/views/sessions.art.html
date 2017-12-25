@@ -1,0 +1,64 @@
+<div class="app-topbar paddler-topbar">
+    <button class="app-button left paddler-back" alt="back" data-back></button>
+    <div class="paddler-title">
+        <div id="session-period-filter-button" class="paddler-title-text app-modal-open">Last 30 days</div>
+    </div>
+</div>
+<div id="session-period-filter" class="app-modal-wrapper">
+    <div class="app-modal">
+        <div class="date-options">
+            <div class="app-modal-button selected" data-period="last-30-days">Last 30 days</div>
+            <div class="app-modal-button" data-period="last-month">Last Month</div>
+            <div class="app-modal-button" data-period="start-from">Starting From</div>
+            <div class="app-modal-button" data-period="custom">Custom Range</div>
+
+            <div id="cancel-session-filter" class="app-modal-cancel-button">Cancel</div>
+            <div id="apply-session-filter" class="app-modal-ok-button">Apply</div>
+        </div>
+        <div id="session-period-datepicker" class="calendar"></div>
+    </div>
+    <div id="session-filter-background" class="app-modal-background"></div>
+</div>
+<div class="app-content" style="height:100%;overflow: hidden" data-no-scroll="true">
+    <div class="sessions-summary">
+        <div>
+            <div class="sessions-summary-label">
+                Total Distance (<span id="sessions-summary-distance-unit"></span>)
+            </div>
+            <div class="sessions-summary-value" id="total-distance">
+                0.0
+            </div>
+        </div>
+
+        <div>
+            <div class="sessions-summary-label">
+                Top speed (<span id="sessions-summary-speed-unit"></span>)
+            </div>
+            <div class="sessions-summary-value" id="top-speed">
+                0.0
+            </div>
+        </div>
+
+        <div>
+            <div class="sessions-summary-label">
+                Total Time
+            </div>
+            <div class="sessions-summary-value" id="total-duration">
+                00:00:00
+            </div>
+        </div>
+    </div>
+
+    <div id="sessions-wrapper-for-pull-to-refresh" data-no-scroll="true">
+        <div id="sessions-ptr"></div>
+        <div class="app-content" data-no-scroll="true" id="sessions-wrapper" style="height:100%">
+            <ul class="sessions-details" data-no-scroll="true" id="local-sessions" style="height:100%;width:100%">
+                <li class="session-details-ptr-li">
+                    <div class="session-details-ptr-div">
+                        &lt;empty&gt;
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

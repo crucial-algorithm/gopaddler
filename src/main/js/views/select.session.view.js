@@ -1,6 +1,7 @@
 'use strict';
 var Api = require('../server/api');
 var ScheduledSession = require('../model/scheduled-session').ScheduledSession;
+var template = require('./select.session.art.html');
 
 
 var mockupSessions = [
@@ -20,6 +21,8 @@ var mockupSessions = [
 
 
 function SelectSessionView(page, context) {
+    context.render(page, template());
+
     var self = this
         , $page = $(page)
         , $back = $('.paddler-back', page)
@@ -81,11 +84,10 @@ function SelectSessionView(page, context) {
         console.log('sync session', session)
     });
 
-    $back.on('click', function () {
+    $back.off('click').on('click', function () {
         App.back('home', function () {
         });
     });
-
 
     $page.on('appBeforeBack', function (e) {
         clearInterval(self.deviceActiveIntervalId);

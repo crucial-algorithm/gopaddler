@@ -1,8 +1,11 @@
 'use strict';
 
 var Calibrate = require('../core/calibrate.js').Calibrate;
+var template = require('./calibration.view.art.html');
 
 function CalibrationView(page, context, request) {
+    context.render(page, template());
+
     var $page = $(page)
         , $content = $page.find('.app-content')
         , $calibrate = $page.find('.calibrate')

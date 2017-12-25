@@ -150,4 +150,23 @@ Context.prototype.userHasCoach = function () {
     return Api.User.hasCoach();
 };
 
+
+Context.prototype.render = function (page, template) {
+    var $page = $(page), $content;
+    $page.append(template);
+
+
+    if (($content = $page.find('[data-no-scroll="true"]')).length) {
+        $content.height($(window).height())
+    }
+
+    $page.find('.paddler-back').off('click').on('click', function () {
+        App.back();
+    });
+
+    $page.find('[data-back]').off('click').on('click', function () {
+        App.back();
+    })
+};
+
 exports.Context = Context;

@@ -2,8 +2,10 @@
 
 var Settings = require('../model/settings');
 var Api = require('../server/api');
+var template = require('./settings.art.html');
 
-function SettingsView(page, settings) {
+function SettingsView(page, context, settings) {
+    context.render(page, template());
     var $calibration = $('#calibration', page)
         , $back = $('.back-button', page)
         , $logout = $('#logout', page)

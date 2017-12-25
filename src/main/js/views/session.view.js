@@ -19,6 +19,7 @@ var Splits = require('../measures/splits').Splits;
 var StrokeEfficiency = require('../measures/efficiency').StrokeEfficiency;
 
 var Field = require('../measures/field.js').Field;
+var template = require('./session.view.art.html');
 
 var DEFAULT_POSITIONS = {
     top: 'timer',
@@ -43,6 +44,8 @@ var SMALL = 'small', LARGE = 'large';
 function SessionView(page, context, options) {
     var self = this;
     self.isDebugEnabled = !!Api.User.getProfile().debug;
+
+    context.render(page, template());
 
     var $page = $(page);
     var calibration = Calibration.load() || Calibration.blank();

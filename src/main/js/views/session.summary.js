@@ -1,10 +1,13 @@
 'use strict';
 
 var utils = require('../utils/utils.js')
-    , Api = require('../server/api');
+    , Api = require('../server/api')
+    , template = require('./session.summary.art.html');
 
 
 function SessionSummaryView(page, context, sessionSummaryArguments) {
+    context.render(page, template());
+
     var self           = this,
         session        = sessionSummaryArguments.session,
         isPastSession  = sessionSummaryArguments.isPastSession,

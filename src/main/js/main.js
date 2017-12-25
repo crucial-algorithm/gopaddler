@@ -1,16 +1,16 @@
 'use strict';
 
-var SessionView = require('./views/session-view.js').SessionView;
-var SessionSummaryView = require('./views/session-summary.js').SessionSummaryView;
-var SettingsView = require('./views/settings-view.js').SettingsView;
-var HomeView = require('./views/home-view.js').HomeView;
-var LoginView = require('./views/login-view.js').LoginView;
-var SessionsView = require('./views/sessions-view.js').SessionsView;
-var CalibrationView = require('./views/calibration-view.js').CalibrationView;
-var CalibrationHelpView = require('./views/calibration-help-view.js').CalibrationHelpView;
-var SessionTipsView = require('./views/session-tips-view.js').SessionTipsView;
-var SelectSessionView = require('./views/select-session-view').SelectSessionView;
-var LoginWithPassword = require('./views/login-with-password-view').LoginWithPasswordView;
+var SessionView = require('./views/session.view.js').SessionView;
+var SessionSummaryView = require('./views/session.summary.js').SessionSummaryView;
+var SettingsView = require('./views/settings.view.js').SettingsView;
+var HomeView = require('./views/home.view.js').HomeView;
+var LoginView = require('./views/login.view.js').LoginView;
+var SessionsView = require('./views/sessions.view.js').SessionsView;
+var CalibrationView = require('./views/calibration.view.js').CalibrationView;
+var CalibrationHelpView = require('./views/calibration.help.view.js').CalibrationHelpView;
+var SessionTipsView = require('./views/session.tips.view.js').SessionTipsView;
+var SelectSessionView = require('./views/select.session.view').SelectSessionView;
+var LoginWithPassword = require('./views/login.with.password.view').LoginWithPasswordView;
 var Api = require('./server/api');
 var utils = require('./utils/utils.js');
 var global = require('./global.js');
@@ -30,12 +30,12 @@ var environment = undefined;
  */
 App.controller('login', function (page) {
     analytics.setView('login');
-    new LoginView(page);
+    new LoginView(page, context);
 });
 
 App.controller('login-with-password', function (page) {
     analytics.setView('login-with-password');
-    new LoginWithPassword(page);
+    new LoginWithPassword(page, context);
 });
 
 App.controller('home', function (page, request) {
@@ -73,7 +73,7 @@ App.controller('session-summary', function (page, session) {
  */
 App.controller('settings', function (page) {
     analytics.setView('settings');
-    new SettingsView(page, settings);
+    new SettingsView(page, context, settings);
 });
 
 /**

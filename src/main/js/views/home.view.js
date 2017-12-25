@@ -4,9 +4,12 @@ var Calibration = require('../model/calibration.js').Calibration;
 var Session = require('../model/session.js').Session;
 var Api = require('../server/api');
 var Dialog = require('../utils/dialog');
+var template = require('./home.art.html');
 
 function HomeView(page, context, request) {
     request = request || {};
+
+    context.render(page, template());
 
     screen.orientation.lock('landscape-secondary');
 

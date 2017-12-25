@@ -363,6 +363,7 @@ function SessionsView(page, context) {
     var self = this,
         $back = $('.back-button', page);
 
+    context.render(page, require('./sessions.art.html')());
     appContext = context;
     $page = $(page);
     $sessionList = $page.find('#local-sessions');

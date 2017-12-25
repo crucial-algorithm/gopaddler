@@ -8,7 +8,8 @@ var CONSTANTS  = {
 };
 
 function Settings(version, units, syncOnlyOnWifi, restoreLayout, showTouchGestures
-    , showCalibrationTips, default_session_filter, default_start_date, default_end_date, showBlackAndWhite) {
+    , showCalibrationTips, default_session_filter, default_start_date, default_end_date
+    , showBlackAndWhite, portraitMode) {
     this._version = version;
     this._units = units;
     this._restoreLayout = restoreLayout;
@@ -18,6 +19,7 @@ function Settings(version, units, syncOnlyOnWifi, restoreLayout, showTouchGestur
     this._defaultStartDate = default_start_date;
     this._defaultEndDate = default_end_date;
     this._showBlackAndWhite = showBlackAndWhite;
+    this._portraitMode = portraitMode;
 }
 
 Settings.prototype.getVersion = function() {
@@ -96,19 +98,27 @@ Settings.prototype.setShowBlackAndWhite = function(showBlackAndWhite) {
     this._showBlackAndWhite = showBlackAndWhite;
 };
 
+Settings.prototype.isPortraitMode = function() {
+    return this._portraitMode === true;
+};
+
+Settings.prototype.setPortraitMode = function(isPortraitMode) {
+    this._portraitMode = isPortraitMode;
+};
+
 
 
 Settings.prototype.touchGesturesShown = function () {
     var connection = db.getConnection();
     connection.executeSql("update settings set show_touch_events_tips = ?", [0]);
     this.setShowTouchGestures(false);
-}
+};
 
 Settings.prototype.calibrationTipsShown = function () {
     var connection = db.getConnection();
     connection.executeSql("update settings set show_calibration_tips = ?", [0]);
     this.setShowCalibrationTips(false);
-}
+};
 
 
 function loadSettings() {
@@ -128,8 +138,8 @@ function loadSettings() {
                 row.default_session_filter,
                 row.default_start_date,
                 row.default_end_date,
-                row.black_and_white
-
+                row.black_and_white,
+                row.portrait_mode
             ));
     }, function error(e) {
         console.log('error loding settings... defaulting');
@@ -139,10 +149,10 @@ function loadSettings() {
     return defer.promise();
 }
 
-function saveSettings(units, showBlackAndWhite, restoreLayout) {
+function saveSettings(units, showBlackAndWhite, restoreLayout, portraitMode) {
     var connection = db.getConnection();
-    connection.executeSql("update settings set units = ?, black_and_white = ?, restore_layout = ?"
-        , [units, showBlackAndWhite ? 1 : 0, restoreLayout ? 1 : 0]);
+    connection.executeSql("update settings set units = ?, black_and_white = ?, restore_layout = ?, portrait_mode = ?"
+        , [units, showBlackAndWhite ? 1 : 0, restoreLayout ? 1 : 0, portraitMode ? 1 : 0]);
 }
 
 exports.loadSettings = loadSettings;

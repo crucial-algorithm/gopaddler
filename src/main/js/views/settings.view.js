@@ -13,7 +13,8 @@ function SettingsView(page, context, settings) {
         , $units = $('#pick-units', page)
         , $blackAndWhite = $('#black-and-white', page)
         , $calibrationHelp = $('.settings-calibrate-help', page)
-        , $layout = $('#layout', page);
+        , $layout = $('#layout', page)
+        , $portraitMode = $('#portrait-mode', page);
 
     if (settings.getUnits() === Settings.CONSTANTS.MI) {
         $units.prop('checked', true);
@@ -25,6 +26,10 @@ function SettingsView(page, context, settings) {
 
     if (settings.isRestoreLayout()) {
         $layout.prop('checked', true);
+    }
+
+    if (settings.isPortraitMode()) {
+        $portraitMode.prop('checked', true);
     }
 
     $calibration.on('tap', function () {
@@ -40,11 +45,6 @@ function SettingsView(page, context, settings) {
             App.load('login');
         });
     });
-
-    // $back.on('tap', function () {
-    //     App.back('home', function () {
-    //     });
-    // });
 
     $(page).on('appDestroy', function () {
         $calibration.off('touchstart');
@@ -67,12 +67,14 @@ function SettingsView(page, context, settings) {
         var units = $units.is(':checked') ? Settings.CONSTANTS.MI : Settings.CONSTANTS.KM;
         var blackAndWhite = $blackAndWhite.is(':checked') ;
         var layout = $layout.is(':checked');
-        Settings.saveSettings(units, blackAndWhite, layout);
+        var isPortraitMode = $portraitMode.is(':checked');
+        Settings.saveSettings(units, blackAndWhite, layout, isPortraitMode);
 
         // update reference that is being used globally
         settings.setUnits(units);
         settings.setShowBlackAndWhite(blackAndWhite);
         settings.setRestoreLayout(layout);
+        settings.setPortraitMode(isPortraitMode);
     });
 
 }

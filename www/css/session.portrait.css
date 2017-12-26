@@ -1,15 +1,14 @@
 .session-large-measure {
     width: 100%;
-    height: 55vh;
+    height: 49vh;
 }
 
 .session-small-measures {
     width: 100%;
-    height: 45vh;
 }
 
 .session-small-measure {
-    height: 15vh;
+    height: 17vh;
     position: relative;
     color:#fff;
     overflow: hidden;
@@ -31,7 +30,7 @@
     position: relative;
     width: 100%;
     height: 100%;
-    line-height: 15vh;
+    line-height: 18vh;
     font-size: 10vh;
     text-align: center;
     font-weight: bold;

@@ -52,12 +52,6 @@
     font-size: 7vw;
 }
 
-.sessions-list {
-    float: right;
-    width: 60%;
-    overflow: hidden;
-}
-
 .session-row {
     white-space: nowrap;
     height: 64px;

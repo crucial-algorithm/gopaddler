@@ -1,10 +1,10 @@
-<link rel="stylesheet" href="/css/sessions.css">
+<link rel="stylesheet" href="css/sessions.css">
 
 {{if isPortraitMode}}
-    <link rel="stylesheet" href="/css/portrait.css">
-    <link rel="stylesheet" href="/css/sessions.portrait.css">
+    <link rel="stylesheet" href="css/portrait.css">
+    <link rel="stylesheet" href="css/sessions.portrait.css">
 {{else}}
-    <link rel="stylesheet" href="/css/sessions.landscape.css">
+    <link rel="stylesheet" href="css/sessions.landscape.css">
 {{/if}}
 
 
@@ -35,8 +35,7 @@
     </div>
     <div id="session-filter-background" class="app-modal-background"></div>
 </div>
-<div class="app-content sessions {{if isPortraitMode}}portrait-sessions{{/if}}"
-        data-no-scroll="true">
+<div class="app-content sessions {{if isPortraitMode}}portrait-sessions{{/if}}">
     <div class="sessions-summary">
         <div>
             <div class="sessions-summary-label">
@@ -66,10 +65,10 @@
         </div>
     </div>
 
-    <div id="sessions-wrapper-for-pull-to-refresh" class="sessions-list" data-no-scroll="true">
+    <div id="sessions-wrapper-for-pull-to-refresh" class="sessions-list">
         <div id="sessions-ptr"></div>
-        <div class="app-content" data-no-scroll="true" id="sessions-wrapper" style="height:100%">
-            <ul class="sessions-details" data-no-scroll="true" id="local-sessions" style="height:100%;width:100%">
+        <div class="app-content" id="sessions-wrapper" style="height:100%">
+            <ul class="sessions-details" id="local-sessions" style="height:100%;width:100%">
                 <li class="session-details-ptr-li">
                     <div class="session-details-ptr-div">
                         &lt;empty&gt;

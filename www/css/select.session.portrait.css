@@ -1,7 +1,6 @@
 .select-session-available-sessions-wrapper {
     height: 44vh;
     width: 100%;
-    overflow: hidden;
 }
 
 .select-session-play {
@@ -24,7 +23,7 @@
 .select-session-play > .select-session-free-session-toggle {
     display: table;
     font-size: 4vw;
-    width: 60%;
+    width: 100%;
     position: absolute;
     bottom: 20px;
     right: 4px;

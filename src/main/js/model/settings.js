@@ -139,7 +139,7 @@ function loadSettings() {
                 row.default_start_date,
                 row.default_end_date,
                 row.black_and_white,
-                row.portrait_mode
+                row.portrait_mode === 1
             ));
     }, function error(e) {
         console.log('error loding settings... defaulting');
@@ -159,11 +159,3 @@ exports.loadSettings = loadSettings;
 exports.saveSettings = saveSettings;
 exports.Settings = Settings;
 exports.CONSTANTS  = CONSTANTS;
-
-
-
-
-
-
-
-

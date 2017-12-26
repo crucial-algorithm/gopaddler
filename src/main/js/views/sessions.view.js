@@ -433,9 +433,10 @@ function SessionsView(page, context) {
     filterSessionsByPeriod(context);
 
     $page.on('appShow', function () {
-        var height = $(document.body).height() - $page.find('.paddler-topbar').height();
-
-        $("#sessions-wrapper-for-pull-to-refresh").height(height);
+        if (!context.isPortraitMode()) {
+            var height = $(document.body).height() - $page.find('.paddler-topbar').height();
+            $("#sessions-wrapper-for-pull-to-refresh").height(height);
+        }
 
         // initialize and bind events to session filter
         setupSessionFilter($page, context);

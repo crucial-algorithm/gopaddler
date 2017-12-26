@@ -2,6 +2,7 @@
 var Api = require('../server/api');
 var ScheduledSession = require('../model/scheduled-session').ScheduledSession;
 var template = require('./select.session.art.html');
+var iscroll = null;
 
 
 var mockupSessions = [
@@ -55,7 +56,7 @@ function SelectSessionView(page, context) {
             }
         });
 
-        new IScroll('.select-session-available-sessions-container', {});
+        iscroll = new IScroll('.select-session-available-sessions-container', {});
 
     });
 
@@ -194,6 +195,7 @@ function SelectSessionView(page, context) {
         $list.append(elements);
         setTimeout(function () {
             $list.find('li:first').trigger('tap');
+            if (iscroll) iscroll.refresh();
         }, 0)
     }
 }

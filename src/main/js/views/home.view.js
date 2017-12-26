@@ -16,7 +16,7 @@ function HomeView(page, context, request) {
         context.render(page, landscape());
     }
 
-    screen.orientation.lock('landscape-secondary');
+    screen.orientation.lock(context.isPortraitMode() ? 'portrait' : 'landscape-secondary');
 
     var $page = $(page)
         , self = this

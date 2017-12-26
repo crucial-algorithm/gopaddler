@@ -1,10 +1,10 @@
-<link rel="stylesheet" href="/css/select.session.css">
+<link rel="stylesheet" href="css/select.session.css">
 
 {{if isPortraitMode}}
-    <link rel="stylesheet" href="/css/portrait.css">
-    <link rel="stylesheet" href="/css/select.session.portrait.css">
+    <link rel="stylesheet" href="css/portrait.css">
+    <link rel="stylesheet" href="css/select.session.portrait.css">
 {{else}}
-    <link rel="stylesheet" href="/css/select.session.landscape.css">
+    <link rel="stylesheet" href="css/select.session.landscape.css">
 {{/if}}
 
 <div class="{{if isPortraitMode}}portrait-paddler-topbar{{/if}} app-topbar paddler-topbar">
@@ -19,10 +19,9 @@
 
     <div class="select-session-available-sessions-wrapper">
         <div id="ptr"></div>
-        <div class="select-session-available-sessions-container" style="width:100%;height:100%;overflow: hidden">
+        <div class="select-session-available-sessions-container">
             <ul class="select-session-available-sessions"></ul>
         </div>
-
     </div>
 
     <div class="select-session-play">

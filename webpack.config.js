@@ -5,7 +5,7 @@ var viewMode = process.env.VIEW_MODE || 'landscape';
 var isPortraitMode = false;
 
 if (viewMode === 'portrait') {
-    isPortraitMode = true;
+    isPortraitMode = 1;
 }
 
 var CONFIG = {

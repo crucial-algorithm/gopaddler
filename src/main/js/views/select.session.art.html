@@ -1,13 +1,23 @@
-<div class="app-topbar paddler-topbar">
-    <button class="app-button left paddler-back" data-back data-manual-back></button>
+<link rel="stylesheet" href="/css/select.session.css">
+
+{{if isPortraitMode}}
+    <link rel="stylesheet" href="/css/portrait.css">
+    <link rel="stylesheet" href="/css/select.session.portrait.css">
+{{else}}
+    <link rel="stylesheet" href="/css/select.session.landscape.css">
+{{/if}}
+
+<div class="{{if isPortraitMode}}portrait-paddler-topbar{{/if}} app-topbar paddler-topbar">
+    <button class="{{if isPortraitMode}}portrait-back-button{{/if}}
+        app-button left paddler-back" data-back data-manual-back></button>
     <div class="paddler-title">
         <div class="paddler-title-text">Choose your session</div>
     </div>
 </div>
-<div class="app-content select-session" data-no-scroll="true">
 
+<div class="app-content select-session">
 
-    <div class="select-session-available-sessions-wrapper" data-no-scroll="true">
+    <div class="select-session-available-sessions-wrapper">
         <div id="ptr"></div>
         <div class="select-session-available-sessions-container" style="width:100%;height:100%;overflow: hidden">
             <ul class="select-session-available-sessions"></ul>
@@ -15,8 +25,7 @@
 
     </div>
 
-
-    <div class="select-session-play" data-no-scroll="true">
+    <div class="select-session-play">
         <div class="selected-session">Free Session</div>
         <div class="select-session-start">&nbsp;</div>
         <div class="select-session-free-session-toggle">

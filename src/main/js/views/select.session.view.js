@@ -21,7 +21,8 @@ var mockupSessions = [
 
 
 function SelectSessionView(page, context) {
-    context.render(page, template());
+    context.render(page, template({isPortraitMode: context.isPortraitMode()
+        , isLandscapeMode: !context.isPortraitMode()}));
 
     var self = this
         , $page = $(page)
@@ -36,9 +37,12 @@ function SelectSessionView(page, context) {
         , $body = $(document.body);
 
     $page.on('appShow', function () {
-        var height = $body.height() - $title.height();
-        $page.find('.select-session-play').height(height);
-        $listWrapper.height(height);
+
+        if (!context.isPortraitMode()) {
+            var height = $body.height() - $title.height();
+            $page.find('.select-session-play').height(height);
+            $listWrapper.height(height);
+        }
 
         PullToRefresh.init({
             mainElement: '#ptr',
@@ -167,8 +171,8 @@ function SelectSessionView(page, context) {
                 // Add free session
                 elements = elements.add(['<li class="select-session-row " data-session-idx="-1">',
                     '    <div class="select-session-row-wrapper">',
-                    '        <div><label class="session-row-label">' + moment().format('dddd') + '</label>' + moment().format('MMM DD') + '</div>',
-                    '        <div><label class="session-row-label"></label><span class="session-row-expression">Free Session</span></div>',
+                    '        <div><label class="select-session-date-label">' + moment().format('dddd') + '</label>' + moment().format('MMM DD') + '</div>',
+                    '        <div><label class="select-session-date-label"></label><span class="session-row-expression">Free Session</span></div>',
                     '    </div>',
                     '</li>'
                 ].join(''));
@@ -179,8 +183,8 @@ function SelectSessionView(page, context) {
             date = moment(session.getDate());
             elements = elements.add(['<li class="select-session-row" data-session-idx="' + s + '">',
                 '    <div class="select-session-row-wrapper">',
-                '        <div><label class="session-row-label">' + date.format('dddd') + '</label>' + date.format('MMM DD') + '</div>',
-                '        <div><label class="session-row-label"></label><span class="session-row-expression">' + session.getExpression() + '</span></div>',
+                '        <div><label class="select-session-date-label">' + date.format('dddd') + '</label>' + date.format('MMM DD') + '</div>',
+                '        <div><label class="select-session-date-label"></label><span class="session-row-expression">' + session.getExpression() + '</span></div>',
                 '    </div>',
                 '</li>'
             ].join(''));

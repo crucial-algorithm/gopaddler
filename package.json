@@ -37,6 +37,7 @@
   "scripts": {
     "start": "zerver www",
     "build:dev": "NODE_ENV=dev node_modules/webpack/bin/webpack.js --progress --colors --watch",
+    "build:dev-portrait": "NODE_ENV=dev;VIEW_MODE=portrait node_modules/webpack/bin/webpack.js --progress --colors --watch",
     "build:prod": "NODE_ENV=prod node_modules/webpack/bin/webpack.js -p"
   },
   "description": "GoPaddler mobile app",

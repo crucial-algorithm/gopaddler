@@ -30,7 +30,7 @@ var environment = undefined;
  */
 App.controller('login', function (page) {
     analytics.setView('login');
-    new LoginView(page, context);
+    new LoginView(page);
 });
 
 App.controller('login-with-password', function (page) {
@@ -47,7 +47,7 @@ App.controller('home', function (page, request) {
 
         if (environment === 'prod')
             sync.start(context);
-        
+
         new HomeView(page, context, request);
     }).fail(function (error, defaultSettings) {
         settings = defaultSettings;
@@ -136,9 +136,9 @@ if (navigator.userAgent === 'gp-dev-ck') {
 
 if (environment === 'prod') {
     document.addEventListener("deviceready", onDeviceReady, false);
-    
+
 } else {
-    
+
     // in browser (development mode!)
     global.emulateCordova();
     loadDb();

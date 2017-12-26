@@ -4,6 +4,7 @@ var Sync = require('../server/sync');
 var Session = require('../model/session').Session;
 var Utils = require('../utils/utils.js');
 var Api = require('../server/api');
+var template = require('./sessions.art.html');
 
 var LAST_30_DAYS_PERIOD_FILTER = 'last-30-days',
     LAST_MONTH_PERIOD_FILTER = 'last-month',
@@ -360,10 +361,11 @@ function setupSessionFilter($page, context) {
  * @param context
  */
 function SessionsView(page, context) {
+    context.render(page, template({isPortraitMode: context.isPortraitMode()
+        , isLandscapeMode: !context.isPortraitMode()}));
+
     var self = this,
         $back = $('.back-button', page);
-
-    context.render(page, require('./sessions.art.html')());
     appContext = context;
     $page = $(page);
     $sessionList = $page.find('#local-sessions');

@@ -83,6 +83,10 @@ Context.prototype.isDev = function () {
     return this._environment === 'dev';
 };
 
+Context.prototype.isPortraitMode = function () {
+    return this._settings.isPortraitMode();
+};
+
 /**
  *
  * @param type

@@ -1,11 +1,25 @@
-<div class="app-topbar paddler-topbar">
-    <button class="app-button left paddler-back" alt="back" data-back></button>
+<link rel="stylesheet" href="/css/sessions.css">
+
+{{if isPortraitMode}}
+    <link rel="stylesheet" href="/css/portrait.css">
+    <link rel="stylesheet" href="/css/sessions.portrait.css">
+{{else}}
+    <link rel="stylesheet" href="/css/sessions.landscape.css">
+{{/if}}
+
+
+<div class="{{if isPortraitMode}} portrait-paddler-topbar {{/if}}app-topbar paddler-topbar">
+    <button class="{{if isPortraitMode}}portrait-back-button{{/if}}
+        app-button left paddler-back" alt="back" data-back></button>
     <div class="paddler-title">
         <div id="session-period-filter-button" class="paddler-title-text app-modal-open">Last 30 days</div>
     </div>
 </div>
 <div id="session-period-filter" class="app-modal-wrapper">
     <div class="app-modal">
+        {{if isPortraitMode}}
+            <div id="session-period-datepicker" class="calendar"></div>
+        {{/if}}
         <div class="date-options">
             <div class="app-modal-button selected" data-period="last-30-days">Last 30 days</div>
             <div class="app-modal-button" data-period="last-month">Last Month</div>
@@ -15,11 +29,14 @@
             <div id="cancel-session-filter" class="app-modal-cancel-button">Cancel</div>
             <div id="apply-session-filter" class="app-modal-ok-button">Apply</div>
         </div>
-        <div id="session-period-datepicker" class="calendar"></div>
+        {{if isLandscapeMode}}
+            <div id="session-period-datepicker" class="calendar"></div>
+        {{/if}}
     </div>
     <div id="session-filter-background" class="app-modal-background"></div>
 </div>
-<div class="app-content" style="height:100%;overflow: hidden" data-no-scroll="true">
+<div class="app-content sessions {{if isPortraitMode}}portrait-sessions{{/if}}"
+        data-no-scroll="true">
     <div class="sessions-summary">
         <div>
             <div class="sessions-summary-label">
@@ -49,7 +66,7 @@
         </div>
     </div>
 
-    <div id="sessions-wrapper-for-pull-to-refresh" data-no-scroll="true">
+    <div id="sessions-wrapper-for-pull-to-refresh" class="sessions-list" data-no-scroll="true">
         <div id="sessions-ptr"></div>
         <div class="app-content" data-no-scroll="true" id="sessions-wrapper" style="height:100%">
             <ul class="sessions-details" data-no-scroll="true" id="local-sessions" style="height:100%;width:100%">

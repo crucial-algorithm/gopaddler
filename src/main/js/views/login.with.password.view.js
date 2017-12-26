@@ -1,18 +1,14 @@
 'use strict';
 
 var Api = require('../server/api');
-var template = require('./login.with.password.art.html');
-
 
 var $login, $create, $forgot;
 
 function LoginWithPasswordView(page, context) {
-    context.render(page, template());
-
     screen.orientation.lock('portrait');
 
     var $page = $(page), running = false;
-    
+
     $login = $('.login-form', page);
     $create = $('.create-account-form', page);
     $forgot = $('.forgot-password-form', page);

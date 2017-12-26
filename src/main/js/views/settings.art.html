@@ -1,10 +1,16 @@
-<div class="app-topbar paddler-topbar">
-    <button class="app-button left paddler-back" alt="back" data-back></button>
+{{if isPortraitMode}}
+    <link rel="stylesheet" href="/css/portrait.css">
+    <link rel="stylesheet" href="/css/settings.portrait.css">
+{{/if}}
+
+<div class="{{if isPortraitMode}} portrait-paddler-topbar {{/if}}app-topbar paddler-topbar">
+    <button class="{{if isPortraitMode}}portrait-back-button{{/if}}
+        app-button left paddler-back" alt="back" data-back></button>
     <div class="paddler-title">
         <div class="paddler-title-text">Settings</div>
     </div>
 </div>
-<div class="app-content" style="height:100%;background-color:#2C2D49">
+<div class="app-content settings {{if isPortraitMode}} portrait-settings-content {{/if}}">
 
     <div class="settings-row odd" id="units">
         <div class="settings-option" style="width:65%">

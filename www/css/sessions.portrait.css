@@ -1,0 +1,137 @@
+.app-content.portrait-sessions .sessions-summary {
+    width: 100%;
+    height: 30vh;
+    background-color: #3b3d62;
+    color: #fff;
+}
+
+.app-content.portrait-sessions .sessions-list {
+    float: none;
+    width: 100%
+}
+
+.sessions-summary-label {
+    text-transform: uppercase;
+    color: #AEAEAE;
+    padding: 4% 5% 0 5%;
+    width: 100%;
+    font-weight: bold;
+}
+
+.app-modal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 80vw;
+    height: 88vh;
+    min-width: 260px;
+    min-height: 460px;
+    z-index: 4000;
+    background-color: #FFFFFF;
+    padding: 0;
+    margin: auto;
+    -webkit-box-shadow: 0 1px 5px 0 rgba(0, 0, 0, .3);
+    -moz-box-shadow: 0 1px 5px 0 rgba(0, 0, 0, .3);
+    box-shadow: 0 1px 5px 0 rgba(0, 0, 0, .3);
+}
+
+.calendar {
+    display: inline-block;
+    width: 80vw;
+    height: 44vh;
+    box-sizing: border-box;
+}
+
+.date-options {
+    position: relative;
+    display: inline-block;
+    width: 80vw;
+    height: 44vh;
+    box-sizing: border-box;
+    vertical-align: top;
+    background-color: #E8E8E8;
+    padding: 20px;
+}
+
+.app-modal-open:after {
+    content: '';
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 6px 6px 0 6px;
+    border-color: #FFFFFF transparent transparent transparent;
+    margin-left: 6px;
+    vertical-align: middle;
+}
+
+.app-modal-wrapper {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 3000;
+    background-color: rgba(0, 0, 0, .3);
+}
+
+.app-modal-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, .3);
+}
+
+.app-modal-button {
+    display: block;
+    height: 44px;
+    line-height: 44px;
+    padding: 0 10px;
+    margin-bottom: 4px;
+    background-color: #c3c3c3;
+    color: #FFFFFF;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.app-modal-button.selected {
+    background-color: #3B3D62;
+}
+
+.app-modal-ok-button {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    height: 34px;
+    margin: 0;
+    background-color: #EF6156;
+    display: block;
+    line-height: 34px;
+    padding: 0 10px;
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.app-modal-cancel-button {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    height: 34px;
+    margin: 0;
+    background-color: #E8E8E8;
+    color: #7E8C8D;
+    display: block;
+    line-height: 34px;
+    padding: 0 10px;
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+}

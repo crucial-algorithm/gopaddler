@@ -1,0 +1,11 @@
+.portrait-paddler-topbar {
+    height: 12.5vh
+}
+
+.portrait-paddler-topbar .paddler-title-text {
+    font-size: 6vw;
+}
+
+.app-topbar .app-button[data-back].left.paddler-back.portrait-back-button {
+    width: 16vw;
+}

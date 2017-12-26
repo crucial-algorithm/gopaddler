@@ -2,11 +2,8 @@
 
 var Api = require('../server/api');
 var Dialog = require('../utils/dialog');
-var template = require('./login.art.html');
 
 function LoginView(page, context) {
-    context.render(page, template);
-
     screen.orientation.lock('portrait');
 
     var $page = $(page), img;

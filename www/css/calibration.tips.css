@@ -1,0 +1,28 @@
+.wizard-image {
+    width: 50%;
+    height: 65vh;
+    margin-top: 20vh;
+    float:left;
+}
+
+.wizard-text {
+    width: 50%;
+    height: 60vh;
+    float: right;
+    line-height: 100%;
+    font-size: 38px;
+}
+
+.got-it {
+    position: fixed;
+    top: 83vh;
+    right: 2%;
+    background-color: #EF6156;
+    height: 12vh;
+    width: 18vw;
+    text-transform: uppercase;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 12vh;
+    font-weight: bold;
+}

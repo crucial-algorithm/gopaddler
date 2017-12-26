@@ -5,7 +5,7 @@ var Api = require('../server/api');
 var template = require('./settings.art.html');
 
 function SettingsView(page, context, settings) {
-    context.render(page, template());
+    context.render(page, template({isPortraitMode: context.isPortraitMode()}));
     var $calibration = $('#calibration', page)
         , $back = $('.back-button', page)
         , $logout = $('#logout', page)

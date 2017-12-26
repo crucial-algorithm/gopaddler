@@ -1,0 +1,22 @@
+.portrait-home-user-info {
+    background-color: pink;
+    height: 55vh;
+}
+
+.portrait-home-actions {
+    height: 45vh;
+}
+
+.portrait-home-actions-menu {
+    display: table;
+    height: 15vh;
+    width: 100%;
+}
+
+.portrait-home-row-title {
+    text-align: left;
+}
+
+.portrait-home-menu-icon {
+    background-position: left
+}

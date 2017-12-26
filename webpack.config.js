@@ -1,7 +1,12 @@
 var webpack = require("webpack");
 
 var env = process.env.NODE_ENV;
+var viewMode = process.env.VIEW_MODE || 'landscape';
+var isPortraitMode = false;
 
+if (viewMode === 'portrait') {
+    isPortraitMode = true;
+}
 
 var CONFIG = {
     common: {
@@ -49,7 +54,8 @@ module.exports = {
         new webpack.DefinePlugin({
             __WS_ENDPOINT__: JSON.stringify(config.endpoint),
             __WEB_URL__: JSON.stringify(config.server),
-            __VERSION__: JSON.stringify(config.version)
+            __VERSION__: JSON.stringify(config.version),
+            __IS_PORTRAIT_MODE__: JSON.stringify(isPortraitMode)
         })
     ],
     module: {

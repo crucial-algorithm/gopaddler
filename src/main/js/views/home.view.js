@@ -4,12 +4,17 @@ var Calibration = require('../model/calibration.js').Calibration;
 var Session = require('../model/session.js').Session;
 var Api = require('../server/api');
 var Dialog = require('../utils/dialog');
-var template = require('./home.art.html');
+var landscape = require('./home.art.html');
+var portrait = require('./home.portrait.art.html');
 
 function HomeView(page, context, request) {
     request = request || {};
 
-    context.render(page, template());
+    if (context.isPortraitMode()) {
+        context.render(page, portrait());
+    } else {
+        context.render(page, landscape());
+    }
 
     screen.orientation.lock('landscape-secondary');
 

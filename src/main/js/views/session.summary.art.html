@@ -1,11 +1,21 @@
-<div class="app-topbar paddler-topbar" style="display:table">
-    <button class="app-button left paddler-back" id="summary-back" alt="back" data-back style="display: none"></button>
+<link rel="stylesheet" href="/css/session.summary.css">
+{{if isPortraitMode}}
+    <link rel="stylesheet" href="/css/portrait.css">
+    <link rel="stylesheet" href="/css/session.summary.portrait.css">
+{{else}}
+    <link rel="stylesheet" href="/css/session.summary.landscape.css">
+{{/if}}
+
+<div class="{{if isPortraitMode}} portrait-paddler-topbar {{/if}}
+        app-topbar paddler-topbar" style="display:table">
+    <button class="{{if isPortraitMode}}portrait-back-button{{/if}}
+        app-button left paddler-back" id="summary-back" alt="back" data-back style="display: none"></button>
     <div class="summary-finish-btn" id="summary-finish"><b>Finish</b></div>
     <div class="paddler-title-text">Summary</div>
 </div>
 <div class="app-content" style="height:100%" data-no-scroll="true">
-    <div style="display:table;height:100%;width:100%">
-        <div style="display:table-row;width:100%">
+    <div class="summary-layout">
+        <div>
             <div id="summary-congrats" class="summary-session">
                 <div class="summary-congrats-title">Congrats!</div>
                 <div class="summary-icon">

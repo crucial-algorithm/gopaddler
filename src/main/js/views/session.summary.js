@@ -6,7 +6,7 @@ var utils = require('../utils/utils.js')
 
 
 function SessionSummaryView(page, context, sessionSummaryArguments) {
-    context.render(page, template());
+    context.render(page, template({isPortraitMode: context.isPortraitMode()}));
 
     var self           = this,
         session        = sessionSummaryArguments.session,
@@ -30,7 +30,12 @@ function SessionSummaryView(page, context, sessionSummaryArguments) {
         $finish.hide();
         $congrats.hide();
         $back.show();
-        $details.css('display', 'table-cell');
+        if (context.isPortraitMode()) {
+            $details.css('display', 'block');
+        } else {
+            $details.css('display', 'table-cell');
+        }
+
     }
 
     $page.find('#summary-congrats-session').html(moment(session.getSessionStart()).format('MMMM Do YYYY, HH:mm') + 'h');

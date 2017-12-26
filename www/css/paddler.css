@@ -185,24 +185,6 @@ body {
     font-weight: bold;
 }
 
-.wizard {
-    background-color: #3b3d62;
-    color: #ffffff;
-    width: 100%;
-}
-
-.wizard-text h1 {
-    font-size: 34px;
-    line-height: 38px;
-}
-
-.wizard-text p {
-    font-size: 20px;
-    line-height: 30px;
-    padding: 2% 2%;
-    color: rgba(255,255,255,0.7);
-}
-
 .calibration-wizard-img {
    padding-left: 15%
 }

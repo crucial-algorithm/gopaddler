@@ -1,8 +1,9 @@
-function SmallMeasure($parent, label, unit, value) {
+function SmallMeasure($parent, label, unit, value, isPortraitMode) {
     this.$parent = $parent;
     this.label = label;
     this.unit = unit;
     this.defaultValue = value;
+    this.isPortraitMode = isPortraitMode;
 
 }
 
@@ -50,11 +51,12 @@ SmallMeasure.prototype.setUnit = function (unit) {
 };
 
 
-function LargeMeasure($parent, label, unit, value) {
+function LargeMeasure($parent, label, unit, value, isPortraitMode) {
     this.$parent = $parent;
     this.label = label;
     this.unit = unit;
     this.defaultValue = value;
+    this.isPortraitMode = isPortraitMode;
 
 }
 
@@ -73,16 +75,16 @@ LargeMeasure.prototype.render = function () {
 
 LargeMeasure.prototype.setValue = function (value) {
     if ((value + '').length > 10) {
-        this.$value.css({"font-size": "26px"});
+        this.$value.css({"font-size": this.isPortraitMode ? "8vh" : "26px"});
         this.fontSizeChanged = true;
     } if ((value + '').length > 4) {
-        this.$value.css({"font-size": "19vw"});
+        this.$value.css({"font-size": this.isPortraitMode ? "18vh" : "19vw"});
         this.fontSizeChanged = true;
     } else if ((value + '').length > 3) {
-        this.$value.css({"font-size": "25vw"});
+        this.$value.css({"font-size": this.isPortraitMode ? "24vh" : "25vw"});
         this.fontSizeChanged = true;
     } else if ((value + '').length > 2) {
-        this.$value.css({"font-size": "30vw"});
+        this.$value.css({"font-size": this.isPortraitMode ? "30vh" : "30vw"});
         this.fontSizeChanged = true;
     } else if (value < 100 && this.fontSizeChanged) {
         this.$value.css({"font-size": null});
@@ -97,11 +99,11 @@ LargeMeasure.prototype.setUnit = function () {};
 function Measure() {
 }
 
-Measure.get = function (type, $parent, label, unit, defaultValue) {
+Measure.get = function (type, $parent, label, unit, defaultValue, isPortraitMode) {
     if (type === 'small') {
-        return new SmallMeasure($parent, label, unit, defaultValue);
+        return new SmallMeasure($parent, label, unit, defaultValue, isPortraitMode);
     } else {
-        return new LargeMeasure($parent, label, unit, defaultValue);
+        return new LargeMeasure($parent, label, unit, defaultValue, isPortraitMode);
     }
 };
 

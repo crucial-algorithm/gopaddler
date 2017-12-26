@@ -1,6 +1,15 @@
+<link rel="stylesheet" href="/css/session.css">
+
+{{if isPortraitMode}}
+    <link rel="stylesheet" href="/css/portrait.css">
+    <link rel="stylesheet" href="/css/session.portrait.css">
+{{else}}
+    <link rel="stylesheet" href="/css/session.landscape.css">
+{{/if}}
+
 <div class="app-content" data-no-scroll="true" id="session">
-    <div class="session-left"></div>
-    <div class="session-right">
+    <div class="session-large-measure"></div>
+    <div class="session-small-measures">
         <div class="session-small-measure yellow">&nbsp;</div>
         <div class="session-small-measure blue">&nbsp;</div>
         <div class="session-small-measure red">&nbsp;</div>

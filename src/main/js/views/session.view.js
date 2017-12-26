@@ -45,7 +45,7 @@ function SessionView(page, context, options) {
     var self = this;
     self.isDebugEnabled = !!Api.User.getProfile().debug;
 
-    context.render(page, template());
+    context.render(page, template({isPortraitMode: context.isPortraitMode()}));
 
     var $page = $(page);
     var calibration = Calibration.load() || Calibration.blank();
@@ -62,13 +62,17 @@ function SessionView(page, context, options) {
 
     if (context.preferences().isShowBlackAndWhite()) {
 
-        $page.find(".session-right").addClass('black-and-white');
-        $page.find(".session-left").addClass('black-and-white');
+        $page.find(".session-small-measures").addClass('black-and-white');
+        $page.find(".session-large-measure").addClass('black-and-white');
 
 
         $page.on('appShow', function () {
-            var width = $page.width();
-            $page.find(".session-left").css({width: Math.floor(width/2) - 1});
+
+            if(!context.isPortraitMode()) {
+                var width = $page.width();
+                $page.find(".session-large-measure").css({width: Math.floor(width/2) - 1});
+            }
+            
             $page.find(".big-measure-label").addClass('black-and-white');
             $page.find(".big-measure-units").addClass('black-and-white');
             $page.find("#animation-pause-circle").attr('fill', '#000');
@@ -125,7 +129,7 @@ function SessionView(page, context, options) {
     var top = new Field($('.session-small-measure.yellow', page), fields.top, SMALL, context, self.hasSplitsDefined);
     var middle = new Field($('.session-small-measure.blue', page), fields.middle, SMALL, context, self.hasSplitsDefined);
     var bottom = new Field($('.session-small-measure.red', page), fields.bottom, SMALL, context, self.hasSplitsDefined);
-    var large = new Field($('.session-left', page), fields.large, LARGE, context, self.hasSplitsDefined);
+    var large = new Field($('.session-large-measure', page), fields.large, LARGE, context, self.hasSplitsDefined);
 
 
     // prevent drag using touch during session

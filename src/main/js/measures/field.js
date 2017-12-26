@@ -108,12 +108,11 @@ Field.prototype.init = function (initialType, size) {
 
         options = FIELD_SETTINGS[type];
 
-        instance = MeasureFactory.get(size, $dom, options.label, self.context.getUnit(type, size === 'large'), options.init);
+        instance = MeasureFactory.get(size, $dom, options.label, self.context.getUnit(type, size === 'large'), options.init, self.context.isPortraitMode());
         instance.render(options.hint);
         self.positions[i] = {position: i, type: type, $dom: $dom, instance: instance};
         self.options[type] = options;
     });
-
 
     // -- init slick and handle slick events
     setTimeout(function (position, initialType) {

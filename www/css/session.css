@@ -1,0 +1,86 @@
+.session-large-measure {
+    background-color: #3b3d62;
+    color: #fff;
+}
+
+.session-big-mesaure-container {
+    display: table;
+    height: 100%;
+    width: 100%;
+    vertical-align: middle;
+    text-align: center;
+}
+
+
+.big-measure-units, .big-measure-label {
+    text-align: center;
+    line-height: 100%;
+    width: 100%;
+    color: #B8B5C1;
+    position: absolute;
+}
+
+.big-measure-units {
+    bottom: 10%;
+}
+
+.big-measure-label {
+    top: 10%;
+}
+
+.measures {
+    height: 100%;
+}
+
+.measures .measure {
+    height: 100%;
+}
+
+.small-measure-line {
+    display:table-row;
+}
+
+.session-controls {
+    width: 100%;
+    height: 100%;
+}
+
+.session-resume {
+    border-radius: 50%;
+    width: 40%;
+    margin: 0 5% 0 5%;
+    color: #fff;
+    float: left;
+    background: #5650EF url(../images/play.svg) no-repeat center center;
+    background-size: 90%;
+}
+
+.session-finish {
+    border-radius: 50%;
+    width: 40%;
+    margin: 0 5% 0 5%;
+    background: #EF6156 url(../images/flag.svg) no-repeat 50% 50%;
+    background-size: 70%;
+    color: #fff;
+    float: right;
+}
+
+.session-start-immediately {
+    border-radius: 50%;
+    width: 20%;
+    margin: -15px 5% 0 25%;
+    color: #fff;
+    float: left;
+    background: #F59146 url(../images/play.svg) no-repeat center center;
+    background-size: 90%;
+}
+
+.session-start-on-minute-turn {
+    border-radius: 50%;
+    width: 40%;
+    margin: 0 5% 0 5%;
+    color: #fff;
+    float: left;
+    background: #5650EF url(../images/play.svg) no-repeat center center;
+    background-size: 90%;
+}

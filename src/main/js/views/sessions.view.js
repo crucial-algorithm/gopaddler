@@ -432,7 +432,7 @@ function SessionsView(page, context) {
 
     filterSessionsByPeriod(context);
 
-    $page.on('appShow', function () {
+    $page.off('appShow').on('appShow', function () {
         if (!context.isPortraitMode()) {
             var height = $(document.body).height() - $page.find('.paddler-topbar').height();
             $("#sessions-wrapper-for-pull-to-refresh").height(height);

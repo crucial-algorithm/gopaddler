@@ -6,12 +6,17 @@ var Api = require('../server/api');
 var Dialog = require('../utils/dialog');
 var landscape = require('./home.art.html');
 var portrait = require('./home.portrait.art.html');
+var Chart = require('chart.js');
+require('chartjs-plugin-datalabels');
 
 function HomeView(page, context, request) {
     request = request || {};
 
+    var name = Api.User.getProfile().name ? Api.User.getProfile().name
+        : Api.User.getProfile().email;
+
     if (context.isPortraitMode()) {
-        context.render(page, portrait());
+        context.render(page, portrait({name: name}));
     } else {
         context.render(page, landscape());
     }
@@ -48,12 +53,17 @@ function HomeView(page, context, request) {
         App.load('settings');
     });
 
-    $page.find('.home-username-bold').html(Api.User.getProfile().name ? Api.User.getProfile().name : Api.User.getProfile().email);
+    $page.find('.home-username-bold').html(name);
 
     self.updateLastSessionDate();
 
-    $page.on('appShow', function () {
+    $page.off('appShow').on('appShow', function () {
         self.updateLastSessionDate();
+        if (context.isPortraitMode()) {
+            setTimeout(function() {
+                self.loadChart();
+            }, 0);
+        }
     });
 
     // store device information
@@ -86,6 +96,77 @@ HomeView.prototype.updateLastSessionDate = function () {
         }
     });
 };
+
+HomeView.prototype.loadChart = function() {
+    var $ctx = $("#home-chart-metrics");
+
+    Session.getFromDate(moment().add(-15, 'days').toDate().getTime(), function(sessions) {
+        var data = [],
+            labels = [],
+            session, backgroundColor = [],
+            borderColor = [],
+            indexedData = {},
+            day, index = [], total = 0;
+
+        var indexed = indexSessionsByDay(sessions);
+        eachDayInLastXDays(15, function(cal) {
+            var distance;
+            if (indexed[cal.day]) {
+                distance = sumSessions(indexed[cal.day]);
+            } else {
+                distance = 0;
+            }
+
+            total += distance;
+            data.push(distance);
+            labels.push(day);
+            backgroundColor.push('rgba(239, 97, 86, .2)');
+            borderColor.push('rgba(239, 97, 86, 1)');
+        });
+
+        if (total ===0) {
+            $('.portrait-home-user-info-chart')
+                .append($('<h1>No sessions yet... start paddling</h1>'));
+        }
+
+        new Chart($ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: backgroundColor,
+                    borderColor: borderColor,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                legend: {
+                    display: false
+                },
+                tooltips: {
+                    enabled: false
+                },
+                scales: {
+                    yAxes: [{
+                        display: false
+                    }],
+                    xAxes: [{
+                        display: false
+                    }]
+                },
+                plugins: {
+                   datalabels: {
+                      display: true,
+                      align: 'end',
+                      anchor: 'end',
+                      formatter: Math.round
+                   }
+                }
+            }
+        });
+    });
+}
 
 function showNoCalibrationModal($page, context) {
     var html = [
@@ -141,6 +222,44 @@ function showFirstCalibrationCompletedModal($page, context) {
     });
 
     Dialog.showModal($body, {center: true});
+}
+
+function eachDayInLastXDays(x, callback) {
+    var today = new Date();
+    var begin = moment().add(-x, 'days');
+    var now = begin;
+    for (var i = 0; i <= x; i++) {
+        callback.apply({}, [{
+            date: now.toDate(),
+            day: now.format('YYYY-MM-DD')
+        }]);
+        now = now.add(1, 'days');
+    }
+}
+
+function indexSessionsByDay(sessions) {
+    var session, index = {}, day;
+    for (var i = 0, l = sessions.length; i < l; i++) {
+        session = sessions[i];
+        day = moment(session.getSessionStart()).format('YYYY-MM-DD');
+        if (!index[day]) {
+            index[day] = [];
+        }
+        index[day].push(session);
+    }
+    return index;
+}
+
+function sumSessions(sessions) {
+    if (sessions.length === 1)
+        return sessions[0].getDistance();
+
+    var sum = 0;
+    for (var i = 0, l = sessions.length; i < l; i++) {
+        sum += sessions[i].getDistance();
+    }
+
+    return sum;
 }
 
 exports.HomeView = HomeView;

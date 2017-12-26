@@ -66,13 +66,13 @@ function SessionView(page, context, options) {
         $page.find(".session-large-measure").addClass('black-and-white');
 
 
-        $page.on('appShow', function () {
+        $page.off('appShow').on('appShow', function () {
 
             if(!context.isPortraitMode()) {
                 var width = $page.width();
                 $page.find(".session-large-measure").css({width: Math.floor(width/2) - 1});
             }
-            
+
             $page.find(".big-measure-label").addClass('black-and-white');
             $page.find(".big-measure-units").addClass('black-and-white');
             $page.find("#animation-pause-circle").attr('fill', '#000');

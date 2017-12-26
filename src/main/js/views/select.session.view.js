@@ -37,7 +37,8 @@ function SelectSessionView(page, context) {
         , sessions, session
         , $body = $(document.body);
 
-    $page.on('appShow', function () {
+    $page.off('appShow').on('appShow', function () {
+        console.log('select.session.view: appShow');
 
         if (!context.isPortraitMode()) {
             var height = $body.height() - $title.height();

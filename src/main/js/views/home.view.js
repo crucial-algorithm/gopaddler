@@ -38,7 +38,7 @@ function HomeView(page, context, request) {
     });
 
     $session.on('tap', function () {
-        var calibration = Calibration.load();
+        var calibration = Calibration.load(context.isPortraitMode());
         if (calibration === undefined) {
             showNoCalibrationModal($(page), context);
             return false;
@@ -103,10 +103,9 @@ HomeView.prototype.loadChart = function() {
     Session.getFromDate(moment().add(-15, 'days').toDate().getTime(), function(sessions) {
         var data = [],
             labels = [],
-            session, backgroundColor = [],
+            backgroundColor = [],
             borderColor = [],
-            indexedData = {},
-            day, index = [], total = 0;
+            day, total = 0;
 
         var indexed = indexSessionsByDay(sessions);
         eachDayInLastXDays(15, function(cal) {
@@ -124,10 +123,6 @@ HomeView.prototype.loadChart = function() {
             borderColor.push('rgba(239, 97, 86, 1)');
         });
 
-        if (total ===0) {
-            $('.portrait-home-user-info-chart')
-                .append($('<h1>No sessions yet... start paddling</h1>'));
-        }
 
         new Chart($ctx, {
             type: 'bar',
@@ -165,6 +160,12 @@ HomeView.prototype.loadChart = function() {
                 }
             }
         });
+
+        if (total ===0) {
+            $('.portrait-home-user-info-chart')
+                .prepend($('<h1>No sessions yet... start paddling</h1>'));
+        }
+
     });
 }
 
@@ -225,9 +226,7 @@ function showFirstCalibrationCompletedModal($page, context) {
 }
 
 function eachDayInLastXDays(x, callback) {
-    var today = new Date();
-    var begin = moment().add(-x, 'days');
-    var now = begin;
+    var now = moment().add(-x, 'days');
     for (var i = 0; i <= x; i++) {
         callback.apply({}, [{
             date: now.toDate(),

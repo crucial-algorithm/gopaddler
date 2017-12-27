@@ -16,7 +16,7 @@ function CalibrationView(page, context, request) {
     }, 0);
 
     setTimeout(function () {
-        var cal = new Calibrate(function () {
+        var cal = new Calibrate(context.isPortraitMode(), function () {
             $calibrate.removeClass('listening');
             $calibrate.addClass('finished');
             $calibrate.html("Done!");

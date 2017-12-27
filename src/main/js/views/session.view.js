@@ -48,7 +48,7 @@ function SessionView(page, context, options) {
     context.render(page, template({isPortraitMode: context.isPortraitMode()}));
 
     var $page = $(page);
-    var calibration = Calibration.load() || Calibration.blank();
+    var calibration = Calibration.load(context.isPortraitMode()) || Calibration.blank();
     var session = self.createSession(calibration);
     var gps = new GPS();
     var distance = new Distance();

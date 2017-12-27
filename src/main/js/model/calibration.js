@@ -1,6 +1,6 @@
 'use strict';
 
-function Calibration(predominant, angleZ, noiseX, noiseY, noiseZ, factorX, factorZ) {
+function Calibration(predominant, angleZ, noiseX, noiseY, noiseZ, factorX, factorY, factorZ) {
     var self = this;
     self.predominant = predominant;
     self.angleZ = angleZ;
@@ -8,6 +8,7 @@ function Calibration(predominant, angleZ, noiseX, noiseY, noiseZ, factorX, facto
     self.noiseY = noiseY;
     self.noiseZ = noiseZ;
     self.factorX = factorX;
+    self.factorY = factorY;
     self.factorZ = factorZ;
 }
 
@@ -63,6 +64,14 @@ Calibration.prototype.setFactorX = function (factorX) {
     this.factorX = factorX;
 };
 
+Calibration.prototype.getFactorY = function () {
+    return this.factorY;
+};
+
+Calibration.prototype.setFactorY = function (factorY) {
+    this.factorY = factorY;
+};
+
 Calibration.prototype.getFactorZ = function () {
     return this.factorZ;
 };
@@ -71,29 +80,31 @@ Calibration.prototype.setFactorX = function (factorZ) {
     this.factorZ = factorZ;
 };
 
-Calibration.prototype.save = function () {
-    window.localStorage.setItem("calibration", JSON.stringify({
+Calibration.prototype.save = function (isPortraitMode) {
+    window.localStorage.setItem(isPortraitMode ? "calibration.portrait" : "calibration", JSON.stringify({
         predominant: this.predominant,
         angleZ: this.angleZ,
         noiseX: this.noiseX,
         noiseY: this.noiseY,
         noiseZ: this.noiseZ,
         factorX: this.factorX,
+        factorY: this.factorY,
         factorZ: this.factorZ
     }));
 };
 
 
-Calibration.load = function () {
-    var obj = JSON.parse(window.localStorage.getItem("calibration"));
+Calibration.load = function (isPortraitMode) {
+    var obj = JSON.parse(window.localStorage.getItem(isPortraitMode ? "calibration.portrait" : "calibration"));
     if (!obj) {
         return undefined;
     }
-    return new Calibration(obj.predominant, obj.angleZ, obj.noiseX, obj.noiseY, obj.noiseZ, obj.factorX, obj.factorZ);
+    return new Calibration(obj.predominant, obj.angleZ
+        , obj.noiseX, obj.noiseY, obj.noiseZ, obj.factorX, obj.factorY, obj.factorZ);
 };
 
 Calibration.blank = function () {
-    return new Calibration(0, 0, 0, 0, 0, 0, 0);
+    return new Calibration(0, 0, 0, 0, 0, 0, 0, 0);
 };
 
 exports.Calibration = Calibration;

@@ -39,3 +39,21 @@
     padding: 2% 2%;
     color: rgba(255,255,255,0.7);
 }
+
+.calibration-help-step-1 {
+    background: #3b3d62 url(../images/cal_step_1.png) no-repeat center center;
+    background-size: contain;
+    height: 40vh;
+}
+
+.calibration-help-step-2 {
+    background: #3b3d62 url(../images/cal_step_2.png) no-repeat center center;
+    background-size: contain;
+    height: 40vh;
+}
+
+.calibration-help-step-3 {
+    background: #3b3d62 url(../images/cal_step_2.png) no-repeat center center;
+    background-size: contain;
+    height: 40vh;
+}

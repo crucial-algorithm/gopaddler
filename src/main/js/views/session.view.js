@@ -7,7 +7,6 @@ var utils = require('../utils/utils');
 var Calibration = require('../model/calibration').Calibration;
 var Session = require('../model/session').Session;
 var SessionDetail = require('../model/session-detail').SessionDetail;
-var db = require('../db').Session;
 var Api = require('../server/api');
 var StrokeDetector = require('../core/stroke-detector').StrokeDetector;
 var Timer = require('../measures/timer').Timer;
@@ -20,6 +19,7 @@ var StrokeEfficiency = require('../measures/efficiency').StrokeEfficiency;
 
 var Field = require('../measures/field.js').Field;
 var template = require('./session.view.art.html');
+var Unlock = require('../utils/widgets/unlock').Unlock;
 
 var DEFAULT_POSITIONS = {
     top: 'timer',
@@ -347,76 +347,12 @@ function SessionView(page, context, options) {
         return confirmBeforeExit() === true;
     });
 
-    var $pause, tapStarted = false, pauseCanceled = false, pauseTimeout, lastEvent, pauseAnimationStarted;
-    $page.on('tapstart', function (e) {
-        if (!e.originalEvent.touches) return;
-
-        lastEvent = e;
-        tapStarted = true;
-        pauseCanceled = false;
-        pauseAnimationStarted = false;
-        pauseTimeout = setTimeout(function (event) {
-            return function () {
-                if (pauseCanceled === true || event !== lastEvent) {
-                    pauseCanceled = false;
-                    tapStarted = false;
-                    pauseAnimationStarted = false;
-                    return;
-                }
-
-                var width = $page.width() * .4;
-
-                if (!$pause) $pause = $('#session-stop');
-
-                var svgPath = document.getElementById('animation-pause-dash');
-                var path = new ProgressBar.Path(svgPath, {
-                    duration: 1000,
-                    easing: 'easeIn'
-                });
-
-                $pause.css({top: e.originalEvent.touches[0].clientY - (width / 2), left: e.originalEvent.touches[0].clientX - (width / 2)});
-                $pause.show();
-
-                $('body').css({overflow: 'hidden'});
-                pauseAnimationStarted = true;
-                path.animate(1, function () {
-                    Dialog.hideModal();
-                    if (pauseCanceled === true || event !== lastEvent) {
-                        return;
-                    }
-
-                    setTimeout(function () {
-                        $pause.hide();
-                        confirmBeforeExit();
-                    }, 20);
-                });
-
-                // try to prevent touch move on android, by placing a fixed backdrop on top of the animation
-                Dialog.showModal($('<div/>'), {color: ' rgba(0,0,0,0.1)'});
-            }
-        }(lastEvent), 450);
+    var unlock = new Unlock();
+    unlock.onUnlocked(function () {
+        confirmBeforeExit();
     });
-
-    $page.on('tapend', function () {
-        if ($pause !== undefined)
-            $pause.hide();
-
-        if (tapStarted)
-            pauseCanceled = true;
-
-        clearTimeout(pauseTimeout);
-    });
-
-    $page.on('measureSwapStarted', function () {
-        // if already showing pause animation, let it do it
-        if (pauseAnimationStarted)
-            return;
-
-        // not showing pause, but tap started? Discard... user is changing measures
-        if (tapStarted)
-            pauseCanceled = true;
-
-        clearTimeout(pauseTimeout);
+    $page.on('tap', function () {
+        unlock.show();
     });
 }
 

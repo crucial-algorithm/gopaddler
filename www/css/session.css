@@ -84,3 +84,36 @@
     background: #5650EF url(../images/play.svg) no-repeat center center;
     background-size: 90%;
 }
+
+.session-slide-to-unlock {
+    position: fixed;
+    height: 60px;
+    bottom: 10px;
+    left: 2%;
+    width: 96%;
+    background-color: #696969a3;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.session-slide-to-unlock-handle {
+    width: 200%;
+    position: absolute;
+    top: 0;
+    left:0;
+    cursor: pointer;
+    height: 50px;
+    font-size: 6vw;
+}
+
+.session-slide-to-unlock-handle-text {
+    left: 50%;
+    width: 50%;
+    position: absolute;
+    top: 0;
+    height: 60px;
+    font-size: 24px;
+    line-height: 60px;
+    text-align: center;
+    color: #e6e6e6;
+}

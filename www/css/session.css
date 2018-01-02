@@ -91,7 +91,7 @@
     bottom: 10px;
     left: 2%;
     width: 96%;
-    background-color: #696969a3;
+    background-color: rgba(105, 105, 105, 0.5);
     border-radius: 14px;
     overflow: hidden;
 }

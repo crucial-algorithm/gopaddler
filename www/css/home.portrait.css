@@ -1,3 +1,7 @@
+.app-content.portrait-home {
+    background-color: #F59146;
+}
+
 .portrait-home-user-info {
     background-color: #3b3d62;
     height: 55vh;
@@ -56,4 +60,9 @@
 
 .portrait-home-menu-icon {
     background-position: left
+}
+
+.modal-portrait .info-modal-content > p {
+    line-height: 5vh;
+    font-size: 3vh;
 }

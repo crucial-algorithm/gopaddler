@@ -59,18 +59,18 @@ body {
 
 .home-sessions-btn {
     height: 33.33%;
-    background-color: #3B3D63!important;
+    background-color: #3B3D63;
     color: #FFF
 }
 
 .home-start-session-btn {
-    height: 33.33%!important;
-    background-color: #EF6156!important;
+    height: 33.33%;
+    background-color: #EF6156;
 }
 
 .home-settings-btn {
-    height: 33.33%!important;
-    background-color: #F59146!important;
+    height: 33.33%;
+    background-color: #F59146;
 }
 
 .home-last-record, .home-username {

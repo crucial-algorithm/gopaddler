@@ -1,5 +1,9 @@
 .portrait-paddler-topbar {
-    height: 12.5vh
+    height: 12vh
+}
+
+.portrait-paddler-topbar.app-topbar.paddler-topbar {
+    height: 12vh;
 }
 
 .portrait-paddler-topbar .paddler-title-text {
@@ -8,4 +12,8 @@
 
 .app-topbar .app-button[data-back].left.paddler-back.portrait-back-button {
     width: 16vw;
+}
+
+.portrait-app-content .app-content {
+    height: 88vh
 }

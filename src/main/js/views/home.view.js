@@ -167,11 +167,11 @@ HomeView.prototype.loadChart = function() {
         }
 
     });
-}
+};
 
 function showNoCalibrationModal($page, context) {
     var html = [
-        '<div class="info-modal-body">',
+        '<div class="info-modal-body {{in-portrait-mode}}">',
             '<div class="info-modal-title">No calibration found</div>',
             '<div class="info-modal-content"">',
                 '<p>Before you start, we need to adjust to your mount system!</p>',
@@ -184,7 +184,8 @@ function showNoCalibrationModal($page, context) {
         '</div>'
     ];
 
-    var $body = $(html.join(''))
+    var $body = $(html.join('')
+            .replace('{{in-portrait-mode}}', context.isPortraitMode() ? ' modal-portrait' : ''))
         , $skip = $body.find('.info-modal-secondary-action')
         , $calibrate = $body.find('.info-modal-primary-action');
 

@@ -24,13 +24,14 @@ var settings = undefined;
 var context = undefined;
 var environment = undefined;
 
-function forceAppShow(page) {
+function enrichPageArg(page) {
     var $page = $(page);
+    var deferred = $.Deferred();
+
     $page.off('appShow').on('appShow', function() {
-        setTimeout(function() {
-            $(page).trigger('appShow')
-        }, 200);
+        deferred.resolve();
     });
+    page.onShown = deferred.promise();
 }
 
 /**
@@ -38,20 +39,20 @@ function forceAppShow(page) {
  */
 App.controller('login', function (page) {
     analytics.setView('login');
-    forceAppShow(page);
+    enrichPageArg(page);
     new LoginView(page);
 });
 
 App.controller('login-with-password', function (page) {
     analytics.setView('login-with-password');
-    forceAppShow(page);
+    enrichPageArg(page);
     new LoginWithPassword(page, context);
 });
 
 App.controller('home', function (page, request) {
     analytics.setView('home');
     analytics.setUser(Api.User.getId());
-    forceAppShow(page);
+    enrichPageArg(page);
     Settings.loadSettings().then(function (s) {
         settings = s;
         context = new Context(settings, environment);
@@ -71,13 +72,13 @@ App.controller('home', function (page, request) {
  */
 App.controller('session', function (page, scheduledSession) {
     analytics.setView('session');
-    forceAppShow(page);
+    enrichPageArg(page);
     new SessionView(page, context, scheduledSession);
 });
 
 App.controller('session-summary', function (page, session) {
     analytics.setView('session-summary');
-    forceAppShow(page);
+    enrichPageArg(page);
     new SessionSummaryView(page, context, session);
 });
 
@@ -86,7 +87,7 @@ App.controller('session-summary', function (page, session) {
  */
 App.controller('settings', function (page) {
     analytics.setView('settings');
-    forceAppShow(page);
+    enrichPageArg(page);
     new SettingsView(page, context, settings);
 });
 
@@ -95,7 +96,7 @@ App.controller('settings', function (page) {
  */
 App.controller('sessions', function (page) {
     analytics.setView('sessions');
-    forceAppShow(page);
+    enrichPageArg(page);
     context = new Context(context.preferences(), environment);
     new SessionsView(page, context);
 });
@@ -105,7 +106,7 @@ App.controller('sessions', function (page) {
  */
 App.controller('calibration', function (page, request) {
     analytics.setView('calibration');
-    forceAppShow(page);
+    enrichPageArg(page);
     new CalibrationView(page, context, request);
 });
 
@@ -114,7 +115,7 @@ App.controller('calibration', function (page, request) {
  */
 App.controller('session-basic-touch-tutorial', function (page) {
     analytics.setView('session-touch-tips-tutorial');
-    forceAppShow(page);
+    enrichPageArg(page);
     new SessionTipsView(page, context);
 });
 
@@ -123,13 +124,13 @@ App.controller('session-basic-touch-tutorial', function (page) {
  */
 App.controller('calibration-help', function (page, request) {
     analytics.setView('calibration-help');
-    forceAppShow(page);
+    enrichPageArg(page);
     new CalibrationHelpView(page, context, request);
 });
 
 App.controller('select-session', function (page, request) {
     analytics.setView('select-session');
-    forceAppShow(page);
+    enrichPageArg(page);
     new SelectSessionView(page, context, request);
 });
 

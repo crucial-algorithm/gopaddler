@@ -43,9 +43,15 @@ var SMALL = 'small', LARGE = 'large';
  */
 function SessionView(page, context, options) {
     var self = this;
-    self.isDebugEnabled = !!Api.User.getProfile().debug;
-
     context.render(page, template({isPortraitMode: context.isPortraitMode()}));
+    page.onShown.then(function () {
+        self.render.apply(self, [page, context, options])
+    });
+}
+
+SessionView.prototype.render = function (page, context, options) {
+    var self = this;
+    self.isDebugEnabled = !!Api.User.getProfile().debug;
 
     var $page = $(page);
     var calibration = Calibration.load(context.isPortraitMode()) || Calibration.blank();
@@ -65,19 +71,16 @@ function SessionView(page, context, options) {
         $page.find(".session-small-measures").addClass('black-and-white');
         $page.find(".session-large-measure").addClass('black-and-white');
 
+        if(!context.isPortraitMode()) {
+            var width = $page.width();
+            $page.find(".session-large-measure").css({width: Math.floor(width/2) - 1});
+        }
 
-        $page.off('appShow').on('appShow', function () {
+        $page.find(".big-measure-label").addClass('black-and-white');
+        $page.find(".big-measure-units").addClass('black-and-white');
+        $page.find("#animation-pause-circle").attr('fill', '#000');
+        $page.find("#animation-pause-dash").attr('stroke', '#000');
 
-            if(!context.isPortraitMode()) {
-                var width = $page.width();
-                $page.find(".session-large-measure").css({width: Math.floor(width/2) - 1});
-            }
-
-            $page.find(".big-measure-label").addClass('black-and-white');
-            $page.find(".big-measure-units").addClass('black-and-white');
-            $page.find("#animation-pause-circle").attr('fill', '#000');
-            $page.find("#animation-pause-dash").attr('stroke', '#000');
-        });
     } else {
         $page.find(".app-content").removeClass('black-and-white');
     }
@@ -354,7 +357,7 @@ function SessionView(page, context, options) {
     $page.on('tap', function () {
         unlock.show();
     });
-}
+};
 
 SessionView.prototype.debug = function (session) {
     var self = this;

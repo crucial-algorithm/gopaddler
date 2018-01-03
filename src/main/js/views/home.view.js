@@ -57,7 +57,7 @@ function HomeView(page, context, request) {
 
     self.updateLastSessionDate();
 
-    $page.off('appShow').on('appShow', function () {
+    page.onShown.then(function () {
         self.updateLastSessionDate();
         if (context.isPortraitMode()) {
             setTimeout(function() {

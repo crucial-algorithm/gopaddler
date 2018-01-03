@@ -1,6 +1,7 @@
 'use strict';
 var Api = require('../server/api');
 var ScheduledSession = require('../model/scheduled-session').ScheduledSession;
+var Utils = require('../utils/utils');
 var template = require('./select.session.art.html');
 var iscroll = null;
 
@@ -25,40 +26,34 @@ function SelectSessionView(page, context) {
     context.render(page, template({isPortraitMode: context.isPortraitMode()
         , isLandscapeMode: !context.isPortraitMode()}));
 
+    var self = this;
+    page.onShown.then(function () {
+        self.render.apply(self, [page, context]);
+    });
+}
+
+SelectSessionView.prototype.render = function (page, context) {
     var self = this
         , $page = $(page)
         , $back = $('.paddler-back', page)
         , $selectedSession = $page.find('.selected-session')
-        , $title = $page.find('.paddler-topbar')
-        , $listWrapper = $page.find('.select-session-available-sessions-wrapper')
         , $list = $page.find('.select-session-available-sessions')
         , $start = $page.find('.select-session-start')
         , $warmUpFirst = $page.find('#warmup-first')
-        , sessions, session
-        , $body = $(document.body);
+        , sessions, session;
 
-    $page.off('appShow').on('appShow', function () {
 
-        if (!context.isPortraitMode()) {
-            var height = $body.height() - $title.height();
-            $page.find('.select-session-play').height(height);
-            $listWrapper.height(height);
+    PullToRefresh.init({
+        mainElement: '#ptr',
+        getStyles: function(){return ".__PREFIX__ptr {\n pointer-events: none;\n  font-size: 0.85em;\n  font-weight: bold;\n  top: 0;\n  height: 0;\n  transition: height 0.3s, min-height 0.3s;\n  text-align: center;\n  width: 100%;\n  overflow: hidden;\n  display: flex;\n  align-items: flex-end;\n  align-content: stretch;\n}\n.__PREFIX__box {\n  padding: 10px;\n  flex-basis: 100%;\n}\n.__PREFIX__pull {\n  transition: none;\n}\n.__PREFIX__text {\n  margin-top: .33em;\n  color: rgba(0, 0, 0, 0.3);\n}\n.__PREFIX__icon {\n  color: rgba(0, 0, 0, 0.3);\n  transition: transform .3s;\n}\n.__PREFIX__release .__PREFIX__icon {\n  transform: rotate(180deg);\n}";},
+        onRefresh: function () {
+            ScheduledSession.sync().then(renderSessions).fail(function (err) {
+                console.log(err);
+                renderSessions([]);
+            })
         }
-
-        PullToRefresh.init({
-            mainElement: '#ptr',
-            getStyles: function(){return ".__PREFIX__ptr {\n pointer-events: none;\n  font-size: 0.85em;\n  font-weight: bold;\n  top: 0;\n  height: 0;\n  transition: height 0.3s, min-height 0.3s;\n  text-align: center;\n  width: 100%;\n  overflow: hidden;\n  display: flex;\n  align-items: flex-end;\n  align-content: stretch;\n}\n.__PREFIX__box {\n  padding: 10px;\n  flex-basis: 100%;\n}\n.__PREFIX__pull {\n  transition: none;\n}\n.__PREFIX__text {\n  margin-top: .33em;\n  color: rgba(0, 0, 0, 0.3);\n}\n.__PREFIX__icon {\n  color: rgba(0, 0, 0, 0.3);\n  transition: transform .3s;\n}\n.__PREFIX__release .__PREFIX__icon {\n  transform: rotate(180deg);\n}";},
-            onRefresh: function () {
-                ScheduledSession.sync().then(renderSessions).fail(function (err) {
-                    console.log(err);
-                    renderSessions([]);
-                })
-            }
-        });
-
-        iscroll = new IScroll('.select-session-available-sessions-container', {});
-
     });
+    iscroll = new IScroll('.select-session-available-sessions-container', {});
 
     Api.TrainingSessions.live.deviceReady();
     self.deviceActiveIntervalId = setInterval(function () {
@@ -115,6 +110,7 @@ function SelectSessionView(page, context) {
             value = sessions[idx].getExpression();
 
         $selectedSession.text(value);
+//        Utils.forceSafariToReflow($('.select-session-play')[0]);
     });
 
     $start.on('tap', function () {
@@ -132,7 +128,7 @@ function SelectSessionView(page, context) {
                 session.fromJson(mockupSessions[i]);
                 sessions.push(session);
             }
-           renderSessions(sessions);
+            renderSessions(sessions);
         }, 0);
     } else {
         renderSessions(ScheduledSession.load() || []);
@@ -195,10 +191,9 @@ function SelectSessionView(page, context) {
         $list.append(elements);
         setTimeout(function () {
             $list.find('li:first').trigger('tap');
-            if (iscroll) iscroll.refresh();
         }, 0)
     }
-}
+};
 
 function sort(sessions) {
 

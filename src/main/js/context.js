@@ -73,6 +73,7 @@ function Context(settings, environment) {
     this._settings = settings;
     this._environment = environment;
     this._system = this._settings.isImperial() ? 'imperial' : 'metric';
+    this.ui = new UI(this);
 }
 
 Context.prototype.preferences = function () {
@@ -171,6 +172,48 @@ Context.prototype.render = function (page, template) {
     $page.find('[data-back]').off('click').on('click', function () {
         App.back();
     })
+};
+
+
+var UI = function (ctx) {
+    return {
+        infiniteProgressBarForLi: function ($insertAfterElem, isInfinite) {
+            var $progress = $('<div class="progress-line"/>');
+            var $container = $('<li/>');
+            var $alignLi = $('<li style="height: 0"/>');
+
+            if (isInfinite === false) {
+                $progress
+                    .removeClass('progress-line')
+                    .addClass('progress-waiting-cancel');
+            }
+
+            if (ctx.isPortraitMode()) {
+                $container = $progress;
+            } else {
+                $progress.appendTo($container);
+            }
+
+            $container.insertAfter($insertAfterElem);
+            $alignLi.insertAfter($container);
+
+            return {
+                cleanup: function () {
+                    $container.remove();
+                    $alignLi.remove();
+                },
+
+                $progress: function() {
+                    return $progress
+                },
+
+                $container: function () {
+                    return $container;
+                }
+            }
+
+        }
+    }
 };
 
 exports.Context = Context;

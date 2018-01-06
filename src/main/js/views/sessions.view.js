@@ -529,10 +529,7 @@ SessionsView.prototype.uploadSession = function ($button, session) {
     }
 
     var start = new Date().getTime();
-    var $row = $('<li/>').insertAfter($button.closest('li'));
-    $('<li/>').insertAfter($row);
-    var $progress = $('<div class="progress-line"/>').appendTo($row);
-
+    var progress = appContext.ui.infiniteProgressBarForLi($button.closest('li'));
 
     Sync.uploadSession(session)
         .then(function () {
@@ -549,18 +546,21 @@ SessionsView.prototype.uploadSession = function ($button, session) {
         var diff;
         if ((diff = (new Date().getTime()) - start) < 2000) {
             setTimeout(function () {
-                $progress.remove();
-                if (success === true)
+                progress.cleanup();
+                if (success === true) {
                     $button.closest('li').find('[data-selector="synced"]').html('yes');
+                }
                 defer.resolve();
             }, 2000 - diff);
         } else {
-            $progress.remove();
-            if (success === true)
+            progress.cleanup();
+            if (success === true) {
                 $button.closest('li').find('[data-selector="synced"]').html('yes');
+            }
             defer.resolve();
         }
     }
+
     return defer.promise();
 };
 
@@ -585,16 +585,17 @@ SessionsView.prototype.uploadUnsyncedSessions = function ($page) {
     })(sessionKeys);
 };
 
+
+// TODO: resolver o problema da animação!!
 function animateDeleteAction($button, sessionId, callback) {
     var self = this;
 
     // add progress in order to wait for delete
     var $parent = $button.closest('li');
-    var $row = $('<li/>').insertAfter($parent);
-    $('<li/>').insertAfter($row);
-    var $progress = $('<div class="progress-waiting-cancel"/>').appendTo($row);
+    var progress = appContext.ui.infiniteProgressBarForLi($parent);
+    var $progress = progress.$progress();
 
-    self.progress[sessionId] = {$dom: $row, start: new Date().getTime()};
+    self.progress[sessionId] = {$dom: progress.$container(), start: new Date().getTime()};
 
     $({
         property: 0
@@ -605,12 +606,12 @@ function animateDeleteAction($button, sessionId, callback) {
         step: function () {
             var _percent = Math.round(this.property);
             $progress.css("width", _percent + "%");
-            if (_percent == 105) {
+            if (_percent === 105) {
                 $progress.addClass("done");
             }
         },
         complete: function () {
-            $progress.remove();
+            progress.cleanup();
             callback.apply(self, [$parent]);
         }
     });

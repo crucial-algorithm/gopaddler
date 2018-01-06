@@ -5,6 +5,11 @@
     color: #fff;
 }
 
+.sessions-details {
+    color: #fff;
+    text-transform: uppercase;
+}
+
 .sessions-list {
     width: 100%;
     height: 52vh;

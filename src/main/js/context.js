@@ -2,6 +2,7 @@
 
 var utils = require('./utils/utils');
 var Api = require('./server/api');
+var Dialog = require('./utils/widgets/dialog');
 
 
 var units = {
@@ -212,7 +213,22 @@ var UI = function (ctx) {
                 }
             }
 
+        },
+
+        modal: {
+            alert: function (title, message, primary) {
+                return Dialog.alert(ctx.isPortraitMode(), title, message, primary);
+            },
+
+            undecorated: function ($content) {
+                return Dialog.undecorated(ctx.isPortraitMode(), $content);
+            },
+
+            confirm: function(title, message, primary, secondary) {
+                return Dialog.confirm(ctx.isPortraitMode(), title, message, primary, secondary);
+            }
         }
+
     }
 };
 

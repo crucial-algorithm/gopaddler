@@ -1,6 +1,4 @@
 'use strict';
-var utils = require('../utils/utils');
-var GPS = require('../utils/gps').GPS;
 
 function Speed() {
     this.value = 0;

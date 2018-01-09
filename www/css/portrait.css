@@ -17,3 +17,20 @@
 .portrait-app-content .app-content {
     height: 88vh
 }
+
+.modal-portrait .info-modal-content > p {
+    line-height: 5vh;
+    font-size: 3vh;
+}
+
+.modal-portrait .info-modal-title {
+    line-height: 10vh;
+    font-size: 3vh;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.modal-portrait .info-modal-controls {
+    font-weight: 600;
+    font-size: 6vw;
+}

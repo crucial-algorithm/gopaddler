@@ -110,7 +110,7 @@ SelectSessionView.prototype.render = function (page, context) {
             value = sessions[idx].getExpression();
 
         $selectedSession.text(value);
-//        Utils.forceSafariToReflow($('.select-session-play')[0]);
+        Utils.forceSafariToReflow($('.select-session-play')[0]);
     });
 
     $start.on('tap', function () {

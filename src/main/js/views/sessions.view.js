@@ -586,7 +586,6 @@ SessionsView.prototype.uploadUnsyncedSessions = function ($page) {
 };
 
 
-// TODO: resolver o problema da animação!!
 function animateDeleteAction($button, sessionId, callback) {
     var self = this;
 

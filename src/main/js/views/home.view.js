@@ -3,7 +3,6 @@
 var Calibration = require('../model/calibration.js').Calibration;
 var Session = require('../model/session.js').Session;
 var Api = require('../server/api');
-var Dialog = require('../utils/dialog');
 var landscape = require('./home.art.html');
 var portrait = require('./home.portrait.art.html');
 var Chart = require('chart.js');
@@ -40,7 +39,7 @@ function HomeView(page, context, request) {
     $session.on('tap', function () {
         var calibration = Calibration.load(context.isPortraitMode());
         if (calibration === undefined) {
-            showNoCalibrationModal($(page), context);
+            showNoCalibrationModal(context);
             return false;
         }
         if (context.userHasCoach())
@@ -82,7 +81,7 @@ function HomeView(page, context, request) {
 
     // check if we are comming from calibration and show dialog if that's the case
    if (request.from === 'calibration') {
-       showFirstCalibrationCompletedModal($(page), context);
+       showFirstCalibrationCompletedModal(context);
    }
 }
 
@@ -169,61 +168,34 @@ HomeView.prototype.loadChart = function() {
     });
 };
 
-function showNoCalibrationModal($page, context) {
-    var html = [
-        '<div class="info-modal-body {{in-portrait-mode}}">',
-            '<div class="info-modal-title">No calibration found</div>',
-            '<div class="info-modal-content"">',
-                '<p>Before you start, we need to adjust to your mount system!</p>',
-                '<p>Don\'t worry - it will only take a few seconds...</p>',
-            '</div>',
-            '<div class="info-modal-controls vh_height15 vh_line-height15">',
-                '<div class="info-modal-secondary-action">Try it</div>',
-                '<div class="info-modal-primary-action">Calibrate</div>',
-            '</div>',
-        '</div>'
-    ];
+function showNoCalibrationModal(context) {
+    var message = [
+        '<p>Before you start, we need to adjust to your mount system!</p>',
+        '<p>Don\'t worry - it will only take a few seconds...</p>'
+    ].join('');
 
-    var $body = $(html.join('')
-            .replace('{{in-portrait-mode}}', context.isPortraitMode() ? ' modal-portrait' : ''))
-        , $skip = $body.find('.info-modal-secondary-action')
-        , $calibrate = $body.find('.info-modal-primary-action');
-
-    $skip.on('tap', function () {
-        Dialog.hideModal();
-        context.navigate('session', true);
-
-    });
-
-    $calibrate.on('tap', function () {
-        Dialog.hideModal();
-        context.navigate('calibration', true, {from: "start-session"});
-    });
-
-    Dialog.showModal($body, {center: true});
+    context.ui.modal.confirm('No calibration found', message
+        , {
+            text: "Calibrate", callback: function calibrate() {
+                context.navigate('calibration', true, {from: "start-session"});
+            }
+        }
+        , {
+            text: "Try it", callback: function skip() {
+                if (context.userHasCoach())
+                    context.navigate('select-session', false, undefined);
+                else
+                    context.navigate('session', false, undefined);
+            }
+        }
+    );
 }
 
-function showFirstCalibrationCompletedModal($page, context) {
-    var html = [
-        '<div class="info-modal-body">',
-        '   <div class="info-modal-title">Calibration completed</div>',
-        '   <div class="info-modal-content"">',
-        '       <p>Thanks... now you can go ahead and start a new session</p>',
-        '   </div>',
-        '   <div class="info-modal-controls">',
-        '       <div class="info-modal-primary-action">OK</div>',
-        '   </div>',
-        '</div>'
-    ];
-
-    var $body = $(html.join(''))
-        , $ok = $body.find('.info-modal-primary-action');
-
-    $ok.on('tap', function () {
-        Dialog.hideModal();
-    });
-
-    Dialog.showModal($body, {center: true});
+function showFirstCalibrationCompletedModal(context) {
+    context.ui.modal.alert('Calibration completed'
+        , '<p>Thanks... now you can go ahead and start a new session</p>'
+        , {text: "OK"}
+    );
 }
 
 function eachDayInLastXDays(x, callback) {

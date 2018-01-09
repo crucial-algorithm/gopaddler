@@ -167,6 +167,16 @@ function forceSafariToReflow(dom) {
     dom.style.display='';
 }
 
+function guid() {
+    function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000)
+            .toString(16)
+            .substring(1);
+    }
+    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+        s4() + '-' + s4() + s4() + s4();
+}
+
 
 exports.mapBrowserToNative = mapBrowserToNative;
 exports.lpad = lpad;
@@ -182,3 +192,4 @@ exports.meterToFeet = meterToFeet;
 exports.notify = notify;
 exports.EndlessIterator = EndlessIterator;
 exports.forceSafariToReflow = forceSafariToReflow;
+exports.guid = guid;

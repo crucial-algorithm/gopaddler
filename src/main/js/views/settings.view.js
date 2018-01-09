@@ -3,6 +3,7 @@
 var Settings = require('../model/settings');
 var Api = require('../server/api');
 var template = require('./settings.art.html');
+var Calibration = require('../model/calibration').Calibration;
 
 function SettingsView(page, context, settings) {
     context.render(page, template({isPortraitMode: context.isPortraitMode()}));
@@ -64,17 +65,64 @@ function SettingsView(page, context, settings) {
     });
 
     $page.on('appBeforeBack', function (e) {
+
         var units = $units.is(':checked') ? Settings.CONSTANTS.MI : Settings.CONSTANTS.KM;
         var blackAndWhite = $blackAndWhite.is(':checked') ;
         var layout = $layout.is(':checked');
         var isPortraitMode = $portraitMode.is(':checked');
-        Settings.saveSettings(units, blackAndWhite, layout, isPortraitMode);
 
-        // update reference that is being used globally
-        settings.setUnits(units);
-        settings.setShowBlackAndWhite(blackAndWhite);
-        settings.setRestoreLayout(layout);
-        settings.setPortraitMode(isPortraitMode);
+        if (isPortraitMode !== settings.isPortraitMode()) {
+            context.ui.modal.confirm('Orientation Changed'
+                ,  '<p>Change in screen orientation requires new calibration</p>' +
+                   '<p>Are you sure you want to continue?</p>'
+                , {text: "Yes", callback: persist.bind(self)}
+                , {text: "No", callback: discard.bind(self)});
+
+        } else {
+            persist();
+        }
+
+        /*  Helpers  */
+        /*-----------*/
+        function persist() {
+            Settings.saveSettings(units, blackAndWhite, layout, isPortraitMode);
+
+            var screenOrientationChanged = isPortraitMode !== settings.isPortraitMode();
+            if (screenOrientationChanged) {
+                setTimeout(function () {
+                    context.ui.modal.alert('Applying changes...', '<p>Your screen will be blank for a few seconds</p>', {
+                        text: "ok",
+                        callback: function () {
+                            Calibration.clear();
+                            window.location.reload();
+                        }
+                    })
+                }, 0);
+            } else {
+
+                // update reference that is being used globally
+                settings.setUnits(units);
+                settings.setShowBlackAndWhite(blackAndWhite);
+                settings.setRestoreLayout(layout);
+                settings.setPortraitMode(isPortraitMode);
+            }
+        }
+
+        /**
+         * Updates everything except for portrait / landscape mode
+         */
+        function discard() {
+            Settings.saveSettings(units, blackAndWhite, layout, settings.isPortraitMode());
+
+            // update reference that is being used globally
+            settings.setUnits(units);
+            settings.setShowBlackAndWhite(blackAndWhite);
+            settings.setRestoreLayout(layout);
+            context.navigate('home', true);
+        }
+
+        return isPortraitMode === settings.isPortraitMode();
+
     });
 
 }

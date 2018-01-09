@@ -2,7 +2,7 @@
 
 var IO = require('../utils/io.js').IO;
 var GPS = require('../utils/gps').GPS;
-var Dialog = require('../utils/dialog');
+var Dialog = require('../utils/widgets/dialog');
 var utils = require('../utils/utils');
 var Calibration = require('../model/calibration').Calibration;
 var Session = require('../model/session').Session;
@@ -44,6 +44,7 @@ var SMALL = 'small', LARGE = 'large';
 function SessionView(page, context, options) {
     var self = this;
     context.render(page, template({isPortraitMode: context.isPortraitMode()}));
+    self.appContext = context;
     page.onShown.then(function () {
         self.render.apply(self, [page, context, options])
     });
@@ -56,7 +57,7 @@ SessionView.prototype.render = function (page, context, options) {
     var $page = $(page);
     var calibration = Calibration.load(context.isPortraitMode()) || Calibration.blank();
     var session = self.createSession(calibration);
-    var gps = new GPS();
+    var gps = new GPS(context);
     var distance = new Distance();
     var speed = new Speed();
     var pace = new Pace(context.preferences().isImperial());
@@ -417,7 +418,7 @@ SessionView.prototype.confirm = function (onresume, onfinish) {
     var self = this;
     var $controls, $resume, $finish;
 
-    $controls = $([
+    var modal = self.appContext.ui.modal.undecorated([
         '<div class="session-controls">',
         '    <div class="session-resume">',
         '		<div class="session-controls-outer-text">',
@@ -433,10 +434,10 @@ SessionView.prototype.confirm = function (onresume, onfinish) {
         '</div>'
     ].join(''));
 
-    $resume = $controls.find('.session-resume');
-    $finish = $controls.find('.session-finish');
+    $controls = modal.$modal.find('.session-controls');
+    $resume = modal.$modal.find('.session-resume');
+    $finish = modal.$modal.find('.session-finish');
 
-    Dialog.showModal($controls, {});
 
     // make height equal to width and adjust margin accordingly
     var displayHeight = $controls.height();
@@ -468,9 +469,8 @@ SessionView.prototype.confirmFinishWarmUp = function (onStartOnMinuteTurn, onSta
     var self = this;
     var $controls, $startOnMinuteTurn, $startImmediately, $finish;
 
-    $controls = $([
+    var modal = self.appContext.ui.modal.undecorated([
         '    <div class="session-controls">',
-
         '        <div class="session-finish">',
         '            <div class="session-controls-outer-text">',
         '                <div class="session-controls-inner-text">finish</div>',
@@ -493,11 +493,11 @@ SessionView.prototype.confirmFinishWarmUp = function (onStartOnMinuteTurn, onSta
         '    </div>'
     ].join(''));
 
-    $startOnMinuteTurn = $controls.find('.session-start-on-minute-turn');
-    $startImmediately = $controls.find('.session-start-immediately');
-    $finish = $controls.find('.session-finish');
+    $controls = modal.$modal.find('.session-controls');
 
-    Dialog.showModal($controls, {});
+    $startOnMinuteTurn = modal.$modal.find('.session-start-on-minute-turn');
+    $startImmediately = modal.$modal.find('.session-start-immediately');
+    $finish = modal.$modal.find('.session-finish');
 
     // make height equal to width and adjust margin accordingly
     var displayHeight = $controls.height();

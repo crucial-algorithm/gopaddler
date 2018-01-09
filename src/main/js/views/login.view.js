@@ -1,7 +1,6 @@
 'use strict';
 
 var Api = require('../server/api');
-var Dialog = require('../utils/dialog');
 
 function LoginView(page, context) {
     screen.orientation.lock('portrait');

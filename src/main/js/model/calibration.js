@@ -107,4 +107,9 @@ Calibration.blank = function () {
     return new Calibration(0, 0, 0, 0, 0, 0, 0, 0);
 };
 
+Calibration.clear = function () {
+    window.localStorage.removeItem('calibration');
+    window.localStorage.removeItem('calibration.portrait');
+};
+
 exports.Calibration = Calibration;

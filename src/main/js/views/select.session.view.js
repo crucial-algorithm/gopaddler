@@ -122,6 +122,10 @@ SelectSessionView.prototype.render = function (page, context) {
             start(null, null, null, null);
     });
 
+    $('.select-session-play input').on('change', function () {
+        Utils.forceSafariToReflow($('.select-session-play')[0]);
+    });
+
     if (context.isDev()) {
         setTimeout(function () {
             var sessions = [], session;

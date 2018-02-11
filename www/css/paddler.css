@@ -613,3 +613,18 @@ div[aria-live="polite"],  div[aria-live="polite"] > .slick-track{
     display: none;
     margin: 0 0 15px;
 }
+
+
+ul.list-widget {
+    overflow: hidden;
+}
+
+ul.list-widget > li:nth-child(odd) {
+    background-color: #D3D3D3
+}
+
+ul.list-widget > li:nth-child(even) {
+    background-color: #E8E8E8
+}
+
+

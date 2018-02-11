@@ -35,7 +35,7 @@
     </div>
     <div id="session-filter-background" class="app-modal-background"></div>
 </div>
-<div class="app-content sessions {{if isPortraitMode}}portrait-sessions{{/if}}">
+<div data-no-scroll="true" class="app-content sessions {{if isPortraitMode}}portrait-sessions{{/if}}">
     <div class="sessions-summary">
         <div>
             <div class="sessions-summary-label">
@@ -64,17 +64,5 @@
             </div>
         </div>
     </div>
-
-    <div id="sessions-wrapper-for-pull-to-refresh" class="sessions-list">
-        <div id="sessions-ptr"></div>
-        <div class="app-content" id="sessions-wrapper" style="height:100%">
-            <ul class="sessions-details" id="local-sessions" style="height:100%;width:100%">
-                <li class="session-details-ptr-li">
-                    <div class="session-details-ptr-div">
-                        &lt;empty&gt;
-                    </div>
-                </li>
-            </ul>
-        </div>
-    </div>
+    <div id="sessions-wrapper-for-pull-to-refresh" class="sessions-list"></div>
 </div>

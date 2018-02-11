@@ -1,8 +1,8 @@
 var playStartCountDown, playFinishCountDown, playFinish;
 
 var START_COUNTDOWN_FILE = "start.mp3"
-    , FINISH_COUNTDOWN_FILE = "finish.mp3"
-    , FINISH_FILE = "finish-immediately.mp3";
+    , FINISH_COUNTDOWN_FILE = "finish.m4a"
+    , FINISH_FILE = "finish-immediately.m4a";
 
 
 

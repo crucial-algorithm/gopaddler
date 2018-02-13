@@ -18,7 +18,6 @@ var LAST_30_DAYS_PERIOD_FILTER = 'last-30-days',
 
     appContext,
     $page,
-    $sessionList,
     $summaryDistance,
     $summarySpeed,
     $summaryTime,
@@ -43,12 +42,11 @@ function addSessionsToSessionList(sessions) {
         minutes = 0,
         seconds = 0;
 
-    $sessionList.empty().css('height', 'auto');
 
     if (sessions.length === 0) {
-        var $noSessions = $('<li class="session-row-empty">You have no sessions for the selected period.</li>');
-
-        $noSessions.appendTo($sessionList);
+        sessionsListWidget.clear();
+        sessionsListWidget
+            .appendRow($('<li class="session-row-empty">You have no sessions for the selected period.</li>'));
 
         sessionsListWidget.refresh();
 
@@ -128,7 +126,9 @@ function addSessionsToSessionList(sessions) {
         totalDuration += duration;
         totalSpeed = Math.max(speed, totalSpeed);
 
-        sessionsListWidget.appendRow($li);
+        sessionsListWidget.appendRow($li, false);
+        sessionsListWidget.appendRow($('<li style="display: none;"><div class="progress-line" style="width:1%;"></div></li>'), true);
+        sessionsListWidget.appendRow($('<li style="width:1%;height:0;"></li>'), true);
     });
 
     // update summary
@@ -358,7 +358,6 @@ function SessionsView(page, context) {
         $back = $('.back-button', page);
     appContext = context;
     $page = $(page);
-    $sessionList = $page.find('#local-sessions');
 
     // initialize calendar as undefined so date are retrieved from preferences and not it
     $calendar = undefined;
@@ -384,7 +383,7 @@ function SessionsView(page, context) {
     // handle delete
     self.lock = {};
     self.progress = {};
-    $sessionList.on('touchstart', '.session-row-delete-btn', function (e) {
+    $page.on('touchstart', '.session-row-delete-btn', function (e) {
         var $el = $(event.target);
         var sessionId = $el.attr('session-id');
 
@@ -398,7 +397,7 @@ function SessionsView(page, context) {
         e.stopImmediatePropagation();
     });
 
-    $sessionList.on('touchstart', '.session-row-upload-btn', function (e) {
+    $page.on('touchstart', '.session-row-upload-btn', function (e) {
         var $el = $(event.target);
         var sessionId = parseInt($el.attr('session-id'))
             , session = sessionsDict[sessionId];
@@ -458,7 +457,7 @@ SessionsView.prototype.confirmDelete = function ($button, sessionId) {
     $button.addClass('cancel');
     $button.text('cancel');
 
-    animateDeleteAction.apply(self, [$button, sessionId, function () {
+    animateDeleteAction.apply(self, [$button, sessionId, function ($row, $progress, $spacer) {
         Session.delete(parseInt(sessionId))
             .then(function () {
 
@@ -466,7 +465,9 @@ SessionsView.prototype.confirmDelete = function ($button, sessionId) {
                     return;
                 }
 
-                $button.closest('li').remove();
+                $row.remove();
+                $progress.remove();
+                $spacer.remove();
                 sessionsListWidget.refresh();
 
                 filterSessionsByPeriod(appContext);
@@ -481,8 +482,8 @@ SessionsView.prototype.cancelDelete = function ($button, sessionId) {
     self.lock[sessionId] = false;
     $button.removeClass('cancel');
     $button.text('delete');
-    self.progress[sessionId].$dom.next().remove();
-    self.progress[sessionId].$dom.remove();
+    self.progress[sessionId].$li.hide();
+    self.progress[sessionId].$dom.stop();
 };
 
 SessionsView.prototype.uploadSession = function ($button, session) {
@@ -561,10 +562,14 @@ function animateDeleteAction($button, sessionId, callback) {
 
     // add progress in order to wait for delete
     var $parent = $button.closest('li');
-    var progress = appContext.ui.infiniteProgressBarForLi($parent);
-    var $progress = progress.$progress();
+    var $li = $parent.next();
+    var $progress = $li.find('div');
+    var id = Utils.guid();
 
-    self.progress[sessionId] = {$dom: progress.$container(), start: new Date().getTime()};
+    self.progress[sessionId] = {$dom: $progress, $li: $li, start: new Date().getTime(), id: id};
+
+    $li.show();
+    $progress.css("width", "1%");
 
     $({
         property: 0
@@ -575,13 +580,11 @@ function animateDeleteAction($button, sessionId, callback) {
         step: function () {
             var _percent = Math.round(this.property);
             $progress.css("width", _percent + "%");
-            if (_percent === 105) {
-                $progress.addClass("done");
-            }
         },
         complete: function () {
-            progress.cleanup();
-            callback.apply(self, [$parent]);
+            if (self.lock[sessionId] !== true || self.progress[sessionId].id !== id) return;
+            $li.hide();
+            callback.apply(self, [/* row = */ $parent, /* progress = */ $li, /*spacer = */ $li.next()]);
         }
     });
 }

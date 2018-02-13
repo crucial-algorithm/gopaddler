@@ -76,10 +76,13 @@ List.prototype.refresh = function () {
 
 List.prototype.clear = function () {
     this.$ul.empty();
-}
+};
 
-List.prototype.appendRow = function ($row) {
-    this.$ul.append($row.attr('data-selector', 'row'));
+List.prototype.appendRow = function ($row, stripped) {
+    if (stripped === true)
+        this.$ul.append($row);
+    else
+        this.$ul.append($row.attr('data-selector', 'row'));
 };
 
 exports.List = List;

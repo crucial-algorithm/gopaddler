@@ -19,13 +19,6 @@
     float: right;
     width: 60%;
     overflow: hidden;
-    background: repeating-linear-gradient(
-            45deg,
-            #E8E8E8,
-            #E8E8E8 10px,
-            #f7f4f4 10px,
-            #f7f4f4 20px
-    );
 }
 
 .sessions-summary-label {

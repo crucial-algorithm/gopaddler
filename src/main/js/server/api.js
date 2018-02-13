@@ -59,6 +59,7 @@ function _localLogin() {
     if (lastUserAddedMsg) {
         asteroid.user.profile.liveUpdateEvery = lastUserAddedMsg.fields.profile.liveUpdateEvery;
         asteroid.user.profile.debug = lastUserAddedMsg.fields.profile.debug;
+        asteroid.user.profile.boat = lastUserAddedMsg.fields.profile.boat;
     }
 
     _finishLogin(defer, user);
@@ -344,9 +345,17 @@ exports.User = {
         return asteroid.user.profile;
     },
 
+    hasChosenBoat: function () {
+        return asteroid.user.profile.boat === 'K' || asteroid.user.profile.boat === "C"
+    },
 
     saveDevice: function (device) {
         return _call('saveUserDevice', device);
+    },
+
+    saveBoat: function (choice) {
+        asteroid.user.profile.boat = choice;
+        return _call('saveUserBoat', choice);
     },
 
     hasCoach: function () {

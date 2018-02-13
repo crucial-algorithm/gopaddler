@@ -12,7 +12,21 @@
 </div>
 <div class="app-content settings {{if isPortraitMode}} portrait-settings-content {{/if}}">
 
-    <div class="settings-row odd" id="units">
+    <div class="settings-row odd" id="boat">
+        <div class="settings-option" style="width:65%">
+            Type of boat
+        </div>
+        <div class="settings-option" style="width:15%;padding:0;text-align:right">K1</div>
+        <div class="settings-option" style="width:10%">
+            <div class="onoffswitch">
+                <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="pick-boat">
+                <label class="onoffswitch-label" for="pick-boat"></label>
+            </div>
+        </div>
+        <div class="settings-option" style="width:15%">C1</div>
+    </div>
+
+    <div class="settings-row" id="units">
         <div class="settings-option" style="width:65%">
             Units
         </div>
@@ -25,7 +39,7 @@
         </div>
         <div class="settings-option" style="width:15%">Mi</div>
     </div>
-    <div class="settings-row">
+    <div class="settings-row odd">
         <div class="settings-option">
             black and white
         </div>
@@ -36,7 +50,7 @@
             </div>
         </div>
     </div>
-    <div class="settings-row odd">
+    <div class="settings-row">
         <div class="settings-option">
             Save session layout
         </div>
@@ -47,7 +61,7 @@
             </div>
         </div>
     </div>
-    <div class="settings-row">
+    <div class="settings-row odd">
         <div class="settings-option">
             portrait mode
         </div>

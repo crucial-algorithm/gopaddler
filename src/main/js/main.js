@@ -11,6 +11,7 @@ var CalibrationHelpView = require('./views/calibration.help.view.js').Calibratio
 var SessionTipsView = require('./views/session.tips.view.js').SessionTipsView;
 var SelectSessionView = require('./views/select.session.view').SelectSessionView;
 var LoginWithPassword = require('./views/login.with.password.view').LoginWithPasswordView;
+var ChooseBoatView = require('./views/choose.boat.view').ChooseBoatView;
 var Api = require('./server/api');
 var utils = require('./utils/utils.js');
 var global = require('./global.js');
@@ -134,6 +135,21 @@ App.controller('select-session', function (page, request) {
     new SelectSessionView(page, context, request);
 });
 
+App.controller('choose-boat', function (page, request) {
+    analytics.setView('choose-boat');
+    enrichPageArg(page);
+    Settings.loadSettings().then(function (s) {
+        settings = s;
+        context = new Context(settings, environment);
+        new ChooseBoatView(page, context)
+    }).fail(function (error, defaultSettings) {
+        settings = defaultSettings;
+        context = new Context(settings, environment);
+        new ChooseBoatView(page, context)
+    });
+
+});
+
 
 function onDeviceReady() {
     document.pd_device_ready = true;
@@ -179,7 +195,10 @@ function loadUi() {
     Api.Server.connect();
 
     Api.Auth.login().done(function () {
-        App.load('home');
+        if (Api.User.hasChosenBoat())
+            App.load('home');
+        else
+            App.load('choose-boat');
     }).fail(function () {
         App.load('login');
     });

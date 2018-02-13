@@ -90,7 +90,15 @@ var ddl = [
     [
         ["ALTER TABLE settings add column portrait_mode integer default 0"],
         ["UPDATE settings SET version = 6"]
+    ],
+
+    // v.0.9.9
+    [
+        ["ALTER TABLE settings add column boat TEXT"],
+        ["ALTER TABLE settings add column gps_rate integer default 0"],
+        ["UPDATE settings SET version = 7"]
     ]
+
 ];
 
 

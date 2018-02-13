@@ -628,3 +628,11 @@ ul.list-widget > li:nth-child(even) {
 }
 
 
+
+.app-content.choose-boat > .choose-boat-k {
+    float: left;
+}
+
+.app-content.choose-boat > .choose-boat-c {
+    float: right;
+}

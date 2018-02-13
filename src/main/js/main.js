@@ -138,7 +138,16 @@ App.controller('select-session', function (page, request) {
 App.controller('choose-boat', function (page, request) {
     analytics.setView('choose-boat');
     enrichPageArg(page);
-    new ChooseBoatView(page, context)
+    Settings.loadSettings().then(function (s) {
+        settings = s;
+        context = new Context(settings, environment);
+        new ChooseBoatView(page, context)
+    }).fail(function (error, defaultSettings) {
+        settings = defaultSettings;
+        context = new Context(settings, environment);
+        new ChooseBoatView(page, context)
+    });
+
 });
 
 
@@ -186,7 +195,10 @@ function loadUi() {
     Api.Server.connect();
 
     Api.Auth.login().done(function () {
-        App.load('home');
+        if (Api.User.hasChosenBoat())
+            App.load('home');
+        else
+            App.load('choose-boat');
     }).fail(function () {
         App.load('login');
     });

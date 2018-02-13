@@ -12,10 +12,15 @@ function SettingsView(page, context, settings) {
         , $logout = $('#logout', page)
         , $page = $(page)
         , $units = $('#pick-units', page)
+        , $boat = $('#pick-boat', page)
         , $blackAndWhite = $('#black-and-white', page)
         , $calibrationHelp = $('.settings-calibrate-help', page)
         , $layout = $('#layout', page)
         , $portraitMode = $('#portrait-mode', page);
+
+    if (Api.User.getProfile().boat === "C") {
+        $boat.prop('checked', true)
+    }
 
     if (settings.getUnits() === Settings.CONSTANTS.MI) {
         $units.prop('checked', true);
@@ -62,6 +67,25 @@ function SettingsView(page, context, settings) {
 
     $('.settings-website-text', page).on('click', function () {
         window.open(__WEB_URL__, '_system');
+    });
+
+    $boat.on('change', function () {
+        var choice = $boat.is(':checked') ? "C" : "K";
+        Api.User.saveBoat(choice).fail(function (err) {
+            var title = "Update boat failed", text = '<p>We ran unto trouble.</p><p>Please do try again later</p>';
+            if (err && err.error === 504) {
+                text = "<p>Internet connection is required to perform this operation</p>";
+            }
+
+            if (err && err.error === 408) {
+                text = "<p>Server is unavailable!</p><p>Will be back soon!</p>"
+            }
+
+            context.ui.modal.alert(title, text, {text: "ok"});
+
+            $boat.prop('checked', !$boat.is(':checked'));
+
+        })
     });
 
     $page.on('appBeforeBack', function (e) {

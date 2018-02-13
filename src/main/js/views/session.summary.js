@@ -2,6 +2,7 @@
 
 var utils = require('../utils/utils.js')
     , Api = require('../server/api')
+    , sync = require('../server/sync')
     , template = require('./session.summary.art.html');
 
 
@@ -36,6 +37,8 @@ function SessionSummaryView(page, context, sessionSummaryArguments) {
             $details.css('display', 'table-cell');
         }
 
+    } else {
+        sync.uploadSessions();
     }
 
     $page.find('#summary-congrats-session').html(moment(session.getSessionStart()).format('MMMM Do YYYY, HH:mm') + 'h');

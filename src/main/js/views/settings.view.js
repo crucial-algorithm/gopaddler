@@ -15,6 +15,7 @@ function SettingsView(page, context, settings) {
         , $boat = $('#pick-boat', page)
         , $blackAndWhite = $('#black-and-white', page)
         , $calibrationHelp = $('.settings-calibrate-help', page)
+        , $gpsUpdateRate = $('#gps-update-rate', page)
         , $layout = $('#layout', page)
         , $portraitMode = $('#portrait-mode', page);
 
@@ -44,6 +45,10 @@ function SettingsView(page, context, settings) {
 
     $calibrationHelp.on('tap', function () {
         App.load('calibration-help');
+    });
+
+    $gpsUpdateRate.on('tap', function () {
+        App.load('define-gps-update-rate');
     });
 
     $logout.on('tap', function () {
@@ -149,6 +154,10 @@ function SettingsView(page, context, settings) {
 
     });
 
+    $page.on('appShow', function () {
+        var rate = context.getGpsRefreshRate();
+        $('.settings-current-gps-rate').text(rate === 0 ? 'Auto' : rate + " sec");
+    })
 }
 
 

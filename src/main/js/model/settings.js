@@ -9,7 +9,7 @@ var CONSTANTS  = {
 
 function Settings(version, units, syncOnlyOnWifi, restoreLayout, showTouchGestures
     , showCalibrationTips, default_session_filter, default_start_date, default_end_date
-    , showBlackAndWhite, portraitMode) {
+    , showBlackAndWhite, portraitMode, gpsRate) {
     this._version = version;
     this._units = units;
     this._restoreLayout = restoreLayout;
@@ -20,6 +20,8 @@ function Settings(version, units, syncOnlyOnWifi, restoreLayout, showTouchGestur
     this._defaultEndDate = default_end_date;
     this._showBlackAndWhite = showBlackAndWhite;
     this._portraitMode = portraitMode;
+    this._portraitMode = portraitMode;
+    this._gpsRefreshRate= gpsRate;
 }
 
 Settings.prototype.getVersion = function() {
@@ -106,6 +108,14 @@ Settings.prototype.setPortraitMode = function(isPortraitMode) {
     this._portraitMode = isPortraitMode;
 };
 
+Settings.prototype.getGpsRefreshRate = function() {
+    return this._gpsRefreshRate;
+};
+
+Settings.prototype.setGpsRefreshRate = function(rate) {
+    this._gpsRefreshRate = rate;
+};
+
 
 
 Settings.prototype.touchGesturesShown = function () {
@@ -139,7 +149,8 @@ function loadSettings() {
                 row.default_start_date,
                 row.default_end_date,
                 row.black_and_white,
-                row.portrait_mode === 1
+                row.portrait_mode === 1,
+                row.gps_rate
             ));
     }, function error(e) {
         console.log('error loding settings... defaulting');
@@ -155,7 +166,13 @@ function saveSettings(units, showBlackAndWhite, restoreLayout, portraitMode) {
         , [units, showBlackAndWhite ? 1 : 0, restoreLayout ? 1 : 0, portraitMode ? 1 : 0]);
 }
 
+function updateGpsRefreshRate(rate) {
+    var connection = db.getConnection();
+    connection.executeSql("update settings set gps_rate = ?", [rate]);
+}
+
 exports.loadSettings = loadSettings;
 exports.saveSettings = saveSettings;
 exports.Settings = Settings;
+exports.updateGpsRefreshRate = Settings;
 exports.CONSTANTS  = CONSTANTS;

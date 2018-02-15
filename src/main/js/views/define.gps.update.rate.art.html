@@ -1,0 +1,21 @@
+<link rel="stylesheet" href="css/portrait.css">
+<link rel="stylesheet" href="css/define.gps.update.rate.css">
+
+
+
+<div class="{{if isPortraitMode}} portrait-paddler-topbar {{/if}} app-topbar paddler-topbar">
+    <button class="{{if isPortraitMode}}portrait-back-button{{/if}}
+        app-button left paddler-back" alt="back" data-back></button>
+    <div class="paddler-title">
+        <div class="paddler-title-text">GPS Refresh Rate</div>
+    </div>
+</div>
+<div class="app-content define-gps-speed {{if isPortraitMode}} define-gps-speed-portrait {{/if}}" data-no-scroll="true">
+
+    <ul class="define-gps-speed-list">
+        <li data-option="0">Auto</li>
+        <li data-option="1">1</li>
+        <li data-option="3">3</li>
+        <li data-option="5">5</li>
+    </ul>
+</div>

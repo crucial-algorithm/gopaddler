@@ -202,7 +202,7 @@ SessionView.prototype.render = function (page, context, options) {
 
         location = {speed: 0, pace: 0, efficiency: 0, distance: 0
             , latitude: 0, longitude: 0
-            , timestamp: position.timestamp};
+            , timestamp: new Date().getTime()};
 
         location.distance = distance.calculate(position);
         location.speed = speed.calculate(position, location.distance);

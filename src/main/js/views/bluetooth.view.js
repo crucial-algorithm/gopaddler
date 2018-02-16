@@ -1,11 +1,14 @@
 'use strict';
 
 var Bluetooth = require('../device/bluetooth').Bluetooth
+    , template = require('./bluetooth.art.html')
     , ENABLE_BLUETOOTH_MODE = 'ENABLE_BLUETOOTH_MODE'
     , SCANNING_MODE = 'SCANNING_MODE'
     , NORMAL_MODE = 'NORMAL_MODE';
 
 function BluetoothView(page, context, request) {
+    context.render(page, template({isPortraitMode: context.isPortraitMode()}));
+
     this.$page = $(page);
     this.$startScanningButton = this.$page.find('[data-selector="bluetooth-scanning-button"]');
     this.$devices = this.$page.find('[data-selector="devices"]');

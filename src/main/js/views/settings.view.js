@@ -8,6 +8,7 @@ var Calibration = require('../model/calibration').Calibration;
 function SettingsView(page, context, settings) {
     context.render(page, template({isPortraitMode: context.isPortraitMode()}));
     var $calibration = $('#calibration', page)
+        , $bluetooth = $('#bluetooth', page)
         , $back = $('.back-button', page)
         , $logout = $('#logout', page)
         , $page = $(page)
@@ -44,6 +45,10 @@ function SettingsView(page, context, settings) {
 
     $calibrationHelp.on('tap', function () {
         App.load('calibration-help');
+    });
+
+    $bluetooth.on('tap', function () {
+        App.load('bluetooth');
     });
 
     $logout.on('tap', function () {

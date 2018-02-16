@@ -8,6 +8,7 @@ var Bluetooth = require('../device/bluetooth').Bluetooth
 
 function BluetoothView(page, context, request) {
     context.render(page, template({isPortraitMode: context.isPortraitMode()}));
+    var self = this;
 
     this.$page = $(page);
     this.$startScanningButton = this.$page.find('[data-selector="bluetooth-scanning-button"]');
@@ -16,6 +17,19 @@ function BluetoothView(page, context, request) {
 
     this.restartInterface();
     this.initialize();
+
+    this.$devices.on('click', 'li', function (ev) {
+        var $ev = $(ev.target);
+        var address = $ev.data('mac');
+
+        self.bluetooth.pair(address).then(function () {
+            $ev.addClass('success');
+            localStorage.setItem('ble-mac-address', address);
+        }).catch(function (error) {
+            console.log('failed pair', error)
+        });
+
+    });
 }
 
 BluetoothView.prototype.initialize = function () {
@@ -49,16 +63,17 @@ BluetoothView.prototype.startScan = function () {
 
     this.bluetooth
         .retrieveConnected()
-        .then(function (name, address) {
-            self.addDevice(name, address);
+        .then(function (device) {
+            self.addDevice(device.name, device.mac);
         })
-        .catch()
+        .catch(function(err) {
+            console.log(err);
+        })
     ;
 
     setTimeout(function() {
-        console.log('stopping bluetooth scanning!!');
         self.bluetooth.stopScan();
-    }, 60);
+    }, 60000);
 };
 
 BluetoothView.prototype.restartInterface = function () {
@@ -67,8 +82,9 @@ BluetoothView.prototype.restartInterface = function () {
 };
 
 BluetoothView.prototype.addDevice = function (name, address) {
-    $('<button/>')
+    $('<li/>')
         .text(name + ':' + address)
+        .attr('data-mac', address)
         .appendTo(this.$devices)
     ;
 };

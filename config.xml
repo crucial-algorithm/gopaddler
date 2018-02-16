@@ -127,4 +127,5 @@
     <plugin name="cordova-plugin-splashscreen" spec="^4.0.3" />
     <plugin name="cordova-plugin-nativeaudio" spec="^3.0.9" />
     <plugin name="cordova-plugin-background-mode-bluetooth-central" spec="^1.0.0" />
+    <plugin name="cordova-plugin-bluetoothle" spec="^4.4.3" />
 </widget>

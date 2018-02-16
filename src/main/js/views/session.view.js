@@ -300,6 +300,7 @@ SessionView.prototype.render = function (page, context, options) {
         timer.stop();
         gps.stop();
         strokeDetector.stop();
+        heartRateSensor.stop();
 
         // clean buffer
         if (self.isDebugEnabled)

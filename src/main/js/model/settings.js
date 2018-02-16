@@ -174,5 +174,5 @@ function updateGpsRefreshRate(rate) {
 exports.loadSettings = loadSettings;
 exports.saveSettings = saveSettings;
 exports.Settings = Settings;
-exports.updateGpsRefreshRate = Settings;
+exports.updateGpsRefreshRate = updateGpsRefreshRate;
 exports.CONSTANTS  = CONSTANTS;

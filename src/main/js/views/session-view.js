@@ -2,7 +2,7 @@
 
 var IO = require('../utils/io.js').IO;
 var GPS = require('../utils/gps').GPS;
-var HeartRate = require('../device/heartrate').HeartRate;
+var HeartRateSensor = require('../device/heartrate-sensor').HeartRateSensor;
 var Dialog = require('../utils/dialog');
 var utils = require('../utils/utils');
 var Calibration = require('../model/calibration').Calibration;
@@ -49,12 +49,9 @@ function SessionView(page, context, options) {
     var calibration = Calibration.load() || Calibration.blank();
     var session = self.createSession(calibration);
     var gps = new GPS();
-    var heartRate = new HeartRate();
+    var heartRateSensor = new HeartRateSensor();
 
-    heartRate.listen(function () {
-        // handle values from HR band
-    });
-
+    // Measures
     var distance = new Distance();
     var speed = new Speed();
     var pace = new Pace(context.preferences().isImperial());
@@ -207,8 +204,12 @@ function SessionView(page, context, options) {
         location.pace = pace.calculate(location.speed);
         location.latitude = position.coords.latitude;
         location.longitude = position.coords.longitude;
-
     });
+
+    var measures = {heartRate: 0};
+    heartRateSensor.listen(function (heartRate) {
+            measures.heartRate = heartRate;//self.heartRate.calculate(heartRate);
+    }.bind([self]));
 
     var resetGpsData = function () {
         var values = {speed: 0, pace: 0, efficiency: 0};
@@ -245,7 +246,8 @@ function SessionView(page, context, options) {
             speed: location.speed,
             efficiency: location.efficiency,
             pace: location.pace,
-            spm: spm.value
+            spm: spm.value,
+            heartRate: measures.heartRate
         };
 
         splits.setDistance(location.distance);

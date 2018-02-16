@@ -311,12 +311,23 @@
                 </div>
             </div>
 
+            <!-- Calibration -->
             <div class="settings-row">
                 <div class="settings-calibrate" id="calibration">
                     Calibrate
                 </div>
                 <div class="settings-calibrate-help">Learn how</div>
             </div>
+
+            <!-- Bluetooth -->
+            <div class="settings-row odd">
+                <div class="settings-bluetooth" id="bluetooth">
+                    Bluetooth
+                </div>
+                <div class="settings-bluetooth-help">Pair</div>
+            </div>
+
+            <!-- Logout -->
             <div class="settings-row" id="logout">
                 <!--div class="settings-facebook-icon"></div-->
                 <div class="settings-facebook">
@@ -399,6 +410,19 @@
 
             </div>
         </div>
+    </div>
+
+    <div class="app-page" data-page="bluetooth">
+        <div class="app-topbar paddler-topbar">
+            <button class="app-button left paddler-back" alt="back" data-back></button>
+            <div class="paddler-title">
+                <div class="paddler-title-text">Settings</div>
+            </div>
+        </div>
+        <div class="settings-row" data-selector="bluetooth-scanning-button">
+            <button type="button">Start Scan</button>
+        </div>
+        <div class="settings-row" data-selector="devices"></div>
     </div>
 
     <div class="app-page" data-page="session-basic-touch-tutorial">

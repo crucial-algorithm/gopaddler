@@ -11,6 +11,7 @@ function SettingsView(page, settings) {
         , $units = $('#pick-units', page)
         , $blackAndWhite = $('#black-and-white', page)
         , $calibrationHelp = $('.settings-calibrate-help', page)
+        , $bluetooth = $('.settings-bluetooth-help', page)
         , $layout = $('#layout', page);
 
     if (settings.getUnits() === Settings.CONSTANTS.MI) {
@@ -31,6 +32,10 @@ function SettingsView(page, settings) {
 
     $calibrationHelp.on('tap', function () {
         App.load('calibration-help');
+    });
+
+    $bluetooth.on('tap', function () {
+        App.load('bluetooth');
     });
 
     $logout.on('tap', function () {

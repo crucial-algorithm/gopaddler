@@ -2,9 +2,133 @@
 
 function Bluetooth () {
     var self = this;
+
     self.isEnabled = false;
     self.foundDevices = [];
     self.uuids = {};
+    self.value = 0;
+}
+
+/**
+ * @return {Promise} Resolve if the bluetooth sucessfully enabled, reject otherwise
+ */
+Bluetooth.prototype.initialize = function () {
+    var params = {
+        "request": true,
+        "statusReceiver": true,
+        "restoreKey" : "gopaddler-app"
+    }
+
+    return new Promise(function (resolve, reject) {
+        bluetoothle.initialize(function (result) {
+            if (result.status === "enabled") {
+                self.isEnabled = true;
+                resolve()
+            }
+            reject();
+        }, params);
+    });
+}
+
+Bluetooth.prototype.startScan = function () {
+    return new Promise(function (resolve, reject) {
+        bluetoothle.startScan(function (result) {
+            if (result.status === 'scanStarted'){
+                console.log('scanStarted');
+
+                return;
+            }
+
+            console.log('new device found' + result);
+            resolve(result.name, result.address);
+        }, function (error) {
+            reject();
+        }, {services: []});
+    });
+}
+
+Bluetooth.prototype.retrieveConnected = function () {
+    var self = this;
+
+    return new Promise(function (resolve, reject) {
+        bluetoothle.retrieveConnected(function (result) {
+            if (result.length === 0) {
+                self.startScan().then(resolve).catch(reject);
+
+                setTimeout(function () {
+                    self.stopScan();
+                }, 60);
+
+                return;
+            }
+
+            for (var i = 0; i < result.length; i++) {
+                resolve(result[i].name, result[i].address);
+            }
+        }, function (error) {
+            reject();
+        }, {services: []});
+    });
+}
+
+/**
+ * @param {array} The list of devices to search for
+ */
+Bluetooth.prototype.searchFor = function (devices, callback) {
+    var params = {
+        "services": devices
+    };
+
+    return new Promise(function (resolve, reject) {
+        bluetoothle.retrieveConnected(function (result) {
+            console.log(result);
+
+            var params = {"address" : result[0].address}
+
+            bluetoothle.connect(function (status) {
+                console.log(status);
+
+                var params = {address: status.address};
+
+                bluetoothle.discover(function (discovered) {
+                    console.log(discovered);
+                    discovered.services.forEach(
+                        function (service) {
+
+                            var serviceUuid = service.uuid;
+
+                            service.characteristics.forEach(
+                                function (charateristic) {
+                                    var charateristicUuid = charateristic.uuid;
+
+                                    if (charateristicUuid !== "2A37") {
+                                        return;
+                                    }
+
+                                    var params = {address: discovered.address, service: serviceUuid, characteristic: charateristicUuid};
+                                    bluetoothle.subscribe(function (result2) {
+                                        console.log(result2);
+
+                                        var x = bluetoothle.encodedStringToBytes(result2.value);
+
+                                        callback(x[1]);
+                                    }, function (error) {
+                                        console.log(error);
+                                    }, params)
+                                })
+                        }
+                    );
+                }, function (error) {
+                    console.log(error);
+                }, params);
+            }, function (error) {
+                console.log(error);
+            }, params);
+            resolve();
+        }, function (error) {
+            reject();
+        }, params);
+    });
 }
 
 function startScanSuccess(result) {
@@ -14,16 +138,10 @@ function startScanSuccess(result) {
     if (result.status === "scanStarted") {
         console.log("Scanning for devices (will continue to scan until you select a device)...", "status");
     } else if (result.status === "scanResult") {
-        if (!self.foundDevices.some(function (device) {
-                return device.address === result.address;
-
-            })) {
 
             console.log('FOUND DEVICE:');
             console.log(result);
-            self.foundDevices.push(result);
             connect(result.address);
-        }
     }
 }
 
@@ -34,7 +152,7 @@ function connect(address) {
 
     new Promise(function (resolve, reject) {
         bluetoothle.connect(resolve, reject, { address: address });
-    }).then(connectSuccess, handleError);
+    }).then(connectSuccess.bind(this), handleError.bind(this));
 }
 
 function stopScan() {
@@ -103,7 +221,7 @@ function servicesSuccess(result) {
                 new Promise(function (resolve, reject) {
 
                     bluetoothle.characteristics(resolve, reject,
-                        { address: result.address, service: service });
+                        { address: result.address, service: service, characteristics: [] });
 
                 }).then(characteristicsSuccess, handleError);
 
@@ -209,10 +327,14 @@ function addService(address, serviceUuid, characteristics) {
 }
 
 function readSuccess(result) {
+    var self = this;
 
     console.log("readSuccess():");
     console.log(result);
+    var bytes = bluetoothle.encodedStringToBytes(result.value);
+    var string = bluetoothle.bytesToString(bytes); //This should equal Write Hello World
 
+    console.log(string);
 }
 
 function stopScanSuccess() {
@@ -259,15 +381,15 @@ Bluetooth.prototype.start = function () {
     });
 };
 
-
 Bluetooth.prototype.listen = function (callback) {
     var self = this;
+
     self.start().then(function () {
         // bluetooth enabled
         console.log('bluetooth enabled, ready to scan for devices');
-        self.scan();
 
-        // TODO: connect...
+        self.scan();
+        callback(self.value);
 
     }).catch(function () {
         // bluetooth disabled
@@ -281,11 +403,11 @@ Bluetooth.prototype.scan = function () {
     bluetoothle.startScan(
         startScanSuccess.bind(self),
         handleError.bind(self),
-        { services: [] }
+        { services: ['180D'] }
     );
 };
 
-Bluetooth.prototype.stop = function () {
+Bluetooth.prototype.stopScan = function () {
     bluetoothle.stopScan();
 };
 
@@ -306,18 +428,19 @@ function initializeSuccess(result) {
         console.log(result, "status");
     }
 }
+
 function handleError(error) {
     var self = this, msg;
 
     if (error.error && error.message) {
         var errorItems = [];
         if (error.service) {
-            errorItems.push("service: " + (self.uuids[error.service] || error.service));
+            // errorItems.push("service: " + (self.uuids[error.service] || error.service));
         }
 
         if (error.characteristic) {
 
-            errorItems.push("characteristic: " + (self.uuids[error.characteristic] || error.characteristic));
+            // errorItems.push("characteristic: " + (self.uuids[error.characteristic] || error.characteristic));
         }
 
         msg = "Error on " + error.error + ": " + error.message + (errorItems.length && (" (" + errorItems.join(", ") + ")"));

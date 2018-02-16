@@ -59,7 +59,7 @@ SessionView.prototype.render = function (page, context, options) {
     var session = self.createSession(calibration);
     var gps = new GPS(context);
     var distance = new Distance();
-    var speed = new Speed();
+    var speed = new Speed(context);
     var pace = new Pace(context.preferences().isImperial());
     var splits;
     var strokeEfficiency = new StrokeEfficiency();
@@ -164,6 +164,13 @@ SessionView.prototype.render = function (page, context, options) {
         bottom.setValue("timer", value);
         large.setValue("timer", value);
 
+        if (context.getGpsRefreshRate() === 1) {
+            top.setValue("speed", location.speed);
+            middle.setValue("speed", location.speed);
+            bottom.setValue("speed", location.speed);
+            large.setValue("speed", location.speed);
+        }
+
         // store data
         new SessionDetail(session.getId(), timestamp, location.distance, location.speed, spm.value
             , location.efficiency, location.latitude, location.longitude, splits.getPosition()
@@ -205,7 +212,7 @@ SessionView.prototype.render = function (page, context, options) {
             , timestamp: new Date().getTime()};
 
         location.distance = distance.calculate(position);
-        location.speed = speed.calculate(position, location.distance);
+        location.speed = speed.calculate(position);
 
         location.efficiency = strokeEfficiency.calculate(location.speed, spm.interval);
         location.pace = pace.calculate(location.speed);
@@ -246,11 +253,14 @@ SessionView.prototype.render = function (page, context, options) {
 
         var values = {
             distance: location.distance,
-            speed: location.speed,
             efficiency: location.efficiency,
             pace: location.pace,
             spm: spm.value
         };
+
+        if (context.getGpsRefreshRate() !== 1) {
+            values.speed = location.speed;
+        }
 
         splits.setDistance(location.distance);
 

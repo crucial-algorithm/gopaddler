@@ -6,7 +6,7 @@ function DefineGPSSpeedView(page, context) {
     var current = context.getGpsRefreshRate();
 
     var $page = $(page);
-    var selected = null;
+    var selected = current;
     $page.on('click', 'li', function (e) {
         var $target = $(e.target);
         var option = $target.data('option');

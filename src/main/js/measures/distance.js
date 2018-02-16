@@ -15,17 +15,19 @@ function Distance() {
  */
 Distance.prototype.calculate = function (position) {
 
-    if (this.previous !== undefined) {
-        this.takenAt = new Date().getTime();
-        this.distance += GPS.calcDistance(this.previous, position);
+    if (this.previous === undefined) {
+        this.previous = position;
+        return this.distance;
     }
+
+    if (GPS.isLessThanMinMovement(this.previous, position)) {
+        return this.distance;
+    }
+
+    this.distance += GPS.calcDistance(this.previous, position);
 
     this.previous = position;
     return this.distance;
-};
-
-Distance.prototype.getTakenAt = function () {
-    return this.takenAt;
 };
 
 Distance.prototype.getValue = function () {

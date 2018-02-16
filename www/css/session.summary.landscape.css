@@ -1,0 +1,57 @@
+.summary-layout {
+    display: table;
+    height: 100%;
+    width: 100%;
+}
+
+.summary-layout > div {
+    display:table-row;
+    width:100%
+}
+
+.summary-session {
+    display: table-cell;
+    height: 100%;
+    width: 50%;
+    background-color: #EF6156;
+}
+
+
+.summary-stats {
+    display: table-cell;
+    height: 100%;
+    width: 50%;
+    background-color: #3b3d62;
+    padding: 2%;
+    vertical-align: top;
+    text-align: center;
+}
+
+.summary-congrats-title {
+    text-align: center;
+    color: rgba(255,255,255,0.9);
+    margin-top: 23px;
+    font-size: 6vw;
+}
+
+.summary-icon {
+    width: 45%;
+    text-align: center;
+    padding-left: 25%;
+}
+
+.summary-label-highlight {
+    color: rgba(255,255,255,0.9);
+    line-height: 20px;
+    font-size: 4vw;
+    text-align: center;
+    margin-top: -10px;
+    font-weight: bold;
+}
+
+.summary-current-session {
+    color: rgba(255,255,255,0.9);
+    text-align: center;
+    margin-top: 5%;
+    font-size: 3vw;
+}

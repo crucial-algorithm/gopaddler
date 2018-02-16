@@ -1,17 +1,18 @@
 'use strict';
 
-var SessionView = require('./views/session-view.js').SessionView;
-var SessionSummaryView = require('./views/session-summary.js').SessionSummaryView;
-var SettingsView = require('./views/settings-view.js').SettingsView;
-var HomeView = require('./views/home-view.js').HomeView;
-var LoginView = require('./views/login-view.js').LoginView;
-var SessionsView = require('./views/sessions-view.js').SessionsView;
-var CalibrationView = require('./views/calibration-view.js').CalibrationView;
-var CalibrationHelpView = require('./views/calibration-help-view.js').CalibrationHelpView;
+var SessionView = require('./views/session.view.js').SessionView;
+var SessionSummaryView = require('./views/session.summary.js').SessionSummaryView;
+var SettingsView = require('./views/settings.view.js').SettingsView;
+var HomeView = require('./views/home.view.js').HomeView;
+var LoginView = require('./views/login.view.js').LoginView;
+var SessionsView = require('./views/sessions.view.js').SessionsView;
+var CalibrationView = require('./views/calibration.view.js').CalibrationView;
+var CalibrationHelpView = require('./views/calibration.help.view.js').CalibrationHelpView;
 var BluetoothView = require('./views/bluetooth-view').BluetoothView;
-var SessionTipsView = require('./views/session-tips-view.js').SessionTipsView;
-var SelectSessionView = require('./views/select-session-view').SelectSessionView;
-var LoginWithPassword = require('./views/login-with-password-view').LoginWithPasswordView;
+var SessionTipsView = require('./views/session.tips.view.js').SessionTipsView;
+var SelectSessionView = require('./views/select.session.view').SelectSessionView;
+var LoginWithPassword = require('./views/login.with.password.view').LoginWithPasswordView;
+var ChooseBoatView = require('./views/choose.boat.view').ChooseBoatView;
 var Api = require('./server/api');
 var utils = require('./utils/utils.js');
 var global = require('./global.js');
@@ -25,30 +26,42 @@ var settings = undefined;
 var context = undefined;
 var environment = undefined;
 
+function enrichPageArg(page) {
+    var $page = $(page);
+    var deferred = $.Deferred();
+
+    $page.off('appShow').on('appShow', function() {
+        deferred.resolve();
+    });
+    page.onShown = deferred.promise();
+}
 
 /**
  * Splash screen / login page.
  */
 App.controller('login', function (page) {
     analytics.setView('login');
+    enrichPageArg(page);
     new LoginView(page);
 });
 
 App.controller('login-with-password', function (page) {
     analytics.setView('login-with-password');
-    new LoginWithPassword(page);
+    enrichPageArg(page);
+    new LoginWithPassword(page, context);
 });
 
 App.controller('home', function (page, request) {
     analytics.setView('home');
     analytics.setUser(Api.User.getId());
+    enrichPageArg(page);
     Settings.loadSettings().then(function (s) {
         settings = s;
         context = new Context(settings, environment);
 
         if (environment === 'prod')
             sync.start(context);
-        
+
         new HomeView(page, context, request);
     }).fail(function (error, defaultSettings) {
         settings = defaultSettings;
@@ -61,11 +74,13 @@ App.controller('home', function (page, request) {
  */
 App.controller('session', function (page, scheduledSession) {
     analytics.setView('session');
+    enrichPageArg(page);
     new SessionView(page, context, scheduledSession);
 });
 
 App.controller('session-summary', function (page, session) {
     analytics.setView('session-summary');
+    enrichPageArg(page);
     new SessionSummaryView(page, context, session);
 });
 
@@ -74,7 +89,8 @@ App.controller('session-summary', function (page, session) {
  */
 App.controller('settings', function (page) {
     analytics.setView('settings');
-    new SettingsView(page, settings);
+    enrichPageArg(page);
+    new SettingsView(page, context, settings);
 });
 
 /**
@@ -82,6 +98,7 @@ App.controller('settings', function (page) {
  */
 App.controller('sessions', function (page) {
     analytics.setView('sessions');
+    enrichPageArg(page);
     context = new Context(context.preferences(), environment);
     new SessionsView(page, context);
 });
@@ -91,6 +108,7 @@ App.controller('sessions', function (page) {
  */
 App.controller('calibration', function (page, request) {
     analytics.setView('calibration');
+    enrichPageArg(page);
     new CalibrationView(page, context, request);
 });
 
@@ -99,6 +117,7 @@ App.controller('calibration', function (page, request) {
  */
 App.controller('session-basic-touch-tutorial', function (page) {
     analytics.setView('session-touch-tips-tutorial');
+    enrichPageArg(page);
     new SessionTipsView(page, context);
 });
 
@@ -107,6 +126,7 @@ App.controller('session-basic-touch-tutorial', function (page) {
  */
 App.controller('calibration-help', function (page, request) {
     analytics.setView('calibration-help');
+    enrichPageArg(page);
     new CalibrationHelpView(page, context, request);
 });
 
@@ -120,7 +140,23 @@ App.controller('bluetooth', function (page, request) {
 
 App.controller('select-session', function (page, request) {
     analytics.setView('select-session');
+    enrichPageArg(page);
     new SelectSessionView(page, context, request);
+});
+
+App.controller('choose-boat', function (page, request) {
+    analytics.setView('choose-boat');
+    enrichPageArg(page);
+    Settings.loadSettings().then(function (s) {
+        settings = s;
+        context = new Context(settings, environment);
+        new ChooseBoatView(page, context)
+    }).fail(function (error, defaultSettings) {
+        settings = defaultSettings;
+        context = new Context(settings, environment);
+        new ChooseBoatView(page, context)
+    });
+
 });
 
 
@@ -145,9 +181,9 @@ if (navigator.userAgent === 'gp-dev-ck') {
 
 if (environment === 'prod') {
     document.addEventListener("deviceready", onDeviceReady, false);
-    
+
 } else {
-    
+
     // in browser (development mode!)
     global.emulateCordova();
     loadDb();
@@ -168,7 +204,10 @@ function loadUi() {
     Api.Server.connect();
 
     Api.Auth.login().done(function () {
-        App.load('home');
+        if (Api.User.hasChosenBoat())
+            App.load('home');
+        else
+            App.load('choose-boat');
     }).fail(function () {
         App.load('login');
     });

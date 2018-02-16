@@ -259,10 +259,14 @@ StrokeDetector.prototype.updateThresholds = function (acceleration, value) {
 StrokeDetector.prototype.filter = function(acceleration) {
     var self = this;
     var factor, adjustment, value;
-    if (self.calibration.getPredominant() == 0) {
+    if (self.calibration.getPredominant() === 0) {
         factor = self.calibration.getFactorX();
         adjustment = self.calibration.getNoiseX();
         value = acceleration.x;
+    } else if (self.calibration.getPredominant() === 1) {
+        factor = self.calibration.getFactorY();
+        adjustment = self.calibration.getNoiseY();
+        value = acceleration.y;
     } else {
         factor = self.calibration.getFactorZ();
         adjustment = self.calibration.getNoiseZ();

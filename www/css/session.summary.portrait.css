@@ -1,0 +1,45 @@
+.summary-layout {
+    height: 100%;
+    width: 100%;
+}
+
+.summary-layout > div {
+    width:100%;
+    height: 100%;
+}
+
+.summary-session {
+    height: 10vh;
+    width: 100%;
+    background-color: #EF6156;
+}
+
+.summary-stats {
+    height: 77.5vh;
+    width: 100%;
+    background-color: #3b3d62;
+    padding: 2%;
+    vertical-align: top;
+    text-align: center;
+}
+
+.summary-congrats-title {
+    display: none;
+}
+
+.summary-icon {
+    display: none;
+}
+
+.summary-label-highlight {
+    display: none;
+}
+
+.summary-current-session {
+    color: rgba(255,255,255,0.9);
+    text-align: center;
+    font-size: 3vh;
+    height: 10vh;
+    line-height: 10vh;
+    font-weight: : 600;
+}

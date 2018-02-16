@@ -1,0 +1,20 @@
+
+
+<div id="{{id}}" class="dialog-overlay">
+    {{if undecorated}}
+        {{@content}}
+    {{else}}
+        <div class="info-modal-body {{if isPortraitMode}}modal-portrait{{/if}}">
+            <div class="info-modal-title">{{title}}</div>
+            <div class="info-modal-content">
+                {{@content}}
+            </div>
+            <div class="info-modal-controls">
+                {{if hasSecondary}}
+                <div class="info-modal-secondary-action" data-selector="modal-secondary">{{secondary}}</div>
+                {{/if}}
+                <div class="info-modal-primary-action" data-selector="modal-primary">{{primary}}</div>
+            </div>
+        </div>
+    {{/if}}
+</div>

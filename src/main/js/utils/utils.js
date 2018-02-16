@@ -157,6 +157,26 @@ function NeverLockIterator() {
     }
 }
 
+/**
+ * Hack to force safari to reflow and make layout's ok again
+ * @param dom
+ */
+function forceSafariToReflow(dom) {
+    dom.style.display='none';
+    dom.offsetHeight; // no need to store this anywhere, the reference is enough
+    dom.style.display='';
+}
+
+function guid() {
+    function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000)
+            .toString(16)
+            .substring(1);
+    }
+    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+        s4() + '-' + s4() + s4() + s4();
+}
+
 
 exports.mapBrowserToNative = mapBrowserToNative;
 exports.lpad = lpad;
@@ -171,3 +191,5 @@ exports.kmToMiles = kmToMiles;
 exports.meterToFeet = meterToFeet;
 exports.notify = notify;
 exports.EndlessIterator = EndlessIterator;
+exports.forceSafariToReflow = forceSafariToReflow;
+exports.guid = guid;

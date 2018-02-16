@@ -1,11 +1,16 @@
 var webpack = require("webpack");
 
 var env = process.env.NODE_ENV;
+var viewMode = process.env.VIEW_MODE || 'landscape';
+var isPortraitMode = false;
 
+if (viewMode === 'portrait') {
+    isPortraitMode = 1;
+}
 
 var CONFIG = {
     common: {
-        version: "0.9.7"
+        version: "0.9.8"
     },
     dev : {
         server: "http://local.gopaddler.com:3000",
@@ -49,14 +54,29 @@ module.exports = {
         new webpack.DefinePlugin({
             __WS_ENDPOINT__: JSON.stringify(config.endpoint),
             __WEB_URL__: JSON.stringify(config.server),
-            __VERSION__: JSON.stringify(config.version)
+            __VERSION__: JSON.stringify(config.version),
+            __IS_PORTRAIT_MODE__: JSON.stringify(isPortraitMode)
         })
     ],
     module: {
-        rules: [
+        loaders: [
             {
-                test: /\.html$/,
-                use: [ "html-loader" ]
+                test: /\.svg$/,
+                loader: "file-loader"
+            },
+            {
+                test: /\.jpg$/,
+                loader: "file-loader"
+            }, {
+                test: /\.png$/,
+                loader: "url-loader?mimetype=image/png"
+            }, {
+                test: /\.art.html$/,
+                loader: "art-template-loader",
+                options: {
+                    // art-template options (if necessary)
+                    // @see https://github.com/aui/art-template
+                }
             }
         ]
     }

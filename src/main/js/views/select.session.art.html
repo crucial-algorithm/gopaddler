@@ -1,0 +1,37 @@
+<link rel="stylesheet" href="css/select.session.css">
+
+{{if isPortraitMode}}
+    <link rel="stylesheet" href="css/portrait.css">
+    <link rel="stylesheet" href="css/select.session.portrait.css">
+{{else}}
+    <link rel="stylesheet" href="css/select.session.landscape.css">
+{{/if}}
+
+<div class="{{if isPortraitMode}}portrait-paddler-topbar{{/if}} app-topbar paddler-topbar">
+    <button class="{{if isPortraitMode}}portrait-back-button{{/if}}
+        app-button left paddler-back" data-back data-manual-back></button>
+    <div class="paddler-title">
+        <div class="paddler-title-text">Choose your session</div>
+    </div>
+</div>
+
+<div class="app-content select-session {{if isPortraitMode}}portrait-app-content{{/if}}">
+
+    <div class="select-session-available-sessions-wrapper"></div>
+
+    <div class="select-session-play">
+        <div class="selected-session">Free Session</div>
+        <div class="select-session-start">&nbsp;</div>
+        <div class="select-session-free-session-toggle">
+            <div class="select-session-start-instantly">
+                Warm up before start
+            </div>
+            <div style="display:table-cell">
+                <div class="onoffswitch start-immediately-switch">
+                    <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="warmup-first" checked>
+                    <label class="onoffswitch-label toggle" for="warmup-first"></label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -2,15 +2,13 @@
 
 var Api = require('../server/api');
 
-
 var $login, $create, $forgot;
 
-function LoginWithPasswordView(page) {
-
+function LoginWithPasswordView(page, context) {
     screen.orientation.lock('portrait');
 
     var $page = $(page), running = false;
-    
+
     $login = $('.login-form', page);
     $create = $('.create-account-form', page);
     $forgot = $('.forgot-password-form', page);

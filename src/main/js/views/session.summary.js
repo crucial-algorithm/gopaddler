@@ -1,10 +1,14 @@
 'use strict';
 
 var utils = require('../utils/utils.js')
-    , Api = require('../server/api');
+    , Api = require('../server/api')
+    , sync = require('../server/sync')
+    , template = require('./session.summary.art.html');
 
 
 function SessionSummaryView(page, context, sessionSummaryArguments) {
+    context.render(page, template({isPortraitMode: context.isPortraitMode()}));
+
     var self           = this,
         session        = sessionSummaryArguments.session,
         isPastSession  = sessionSummaryArguments.isPastSession,
@@ -27,7 +31,14 @@ function SessionSummaryView(page, context, sessionSummaryArguments) {
         $finish.hide();
         $congrats.hide();
         $back.show();
-        $details.css('display', 'table-cell');
+        if (context.isPortraitMode()) {
+            $details.css('display', 'block');
+        } else {
+            $details.css('display', 'table-cell');
+        }
+
+    } else {
+        sync.uploadSessions();
     }
 
     $page.find('#summary-congrats-session').html(moment(session.getSessionStart()).format('MMMM Do YYYY, HH:mm') + 'h');

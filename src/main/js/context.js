@@ -2,6 +2,7 @@
 
 var utils = require('./utils/utils');
 var Api = require('./server/api');
+var Dialog = require('./utils/widgets/dialog');
 
 
 var units = {
@@ -81,6 +82,7 @@ function Context(settings, environment) {
     this._settings = settings;
     this._environment = environment;
     this._system = this._settings.isImperial() ? 'imperial' : 'metric';
+    this.ui = new UI(this);
 }
 
 Context.prototype.preferences = function () {
@@ -89,6 +91,10 @@ Context.prototype.preferences = function () {
 
 Context.prototype.isDev = function () {
     return this._environment === 'dev';
+};
+
+Context.prototype.isPortraitMode = function () {
+    return this._settings.isPortraitMode();
 };
 
 /**
@@ -156,6 +162,82 @@ Context.prototype.navigate = function (target, clear, args) {
 
 Context.prototype.userHasCoach = function () {
     return Api.User.hasCoach();
+};
+
+
+Context.prototype.render = function (page, template) {
+    var $page = $(page), $content;
+    $page.append(template);
+
+
+    if (($content = $page.find('[data-no-scroll="true"]')).length) {
+        $content.height($(window).height())
+    }
+
+    $page.find('.paddler-back').off('click').on('click', function () {
+        App.back();
+    });
+
+    $page.find('[data-back]').off('click').on('click', function () {
+        App.back();
+    })
+};
+
+
+var UI = function (ctx) {
+    return {
+        infiniteProgressBarForLi: function ($insertAfterElem, isInfinite) {
+            var $progress = $('<div class="progress-line"/>');
+            var $container = $('<li/>');
+            var $alignLi = $('<li style="height: 0"/>');
+
+            if (isInfinite === false) {
+                $progress
+                    .removeClass('progress-line')
+                    .addClass('progress-waiting-cancel');
+            }
+
+            if (ctx.isPortraitMode()) {
+                $container = $progress;
+            } else {
+                $progress.appendTo($container);
+            }
+
+            $container.insertAfter($insertAfterElem);
+            $alignLi.insertAfter($container);
+
+            return {
+                cleanup: function () {
+                    $container.remove();
+                    $alignLi.remove();
+                },
+
+                $progress: function() {
+                    return $progress
+                },
+
+                $container: function () {
+                    return $container;
+                }
+            }
+
+        },
+
+        modal: {
+            alert: function (title, message, primary) {
+                return Dialog.alert(ctx.isPortraitMode(), title, message, primary);
+            },
+
+            undecorated: function ($content) {
+                return Dialog.undecorated(ctx.isPortraitMode(), $content);
+            },
+
+            confirm: function(title, message, primary, secondary) {
+                return Dialog.confirm(ctx.isPortraitMode(), title, message, primary, secondary);
+            }
+        }
+
+    }
 };
 
 exports.Context = Context;

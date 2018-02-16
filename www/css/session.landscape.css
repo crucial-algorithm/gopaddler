@@ -1,0 +1,55 @@
+.session-large-measure {
+    float: left;
+    height: 100%;
+    width: 50%;
+}
+
+.session-small-measures {
+    float: right;
+    height: 100%;
+    width: 50%;
+}
+
+.session-small-measure {
+    height: 33.33%;
+    width: 100%;
+    color:#fff;
+    overflow: hidden;
+}
+
+.session-big-measure {
+    display: table-cell;
+    vertical-align: middle;
+    font-size: 40vw;
+}
+
+.small-measure-header {
+    height: 30%;
+}
+
+.small-measure-value {
+    width: 96%;
+    height: 70%;
+    font-size: 10vw;
+    text-align: right;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.small-measure-label {
+    float: left;
+    margin-top: 4%;
+    margin-left: 4%;
+}
+
+.small-measure-units {
+    float: right;
+    margin-top: 4%;
+    margin-right: 4%;
+}
+
+.black-and-white.session-large-measure {
+    background-color: #FFFFFF;
+    color: #000000;
+    border-right: 1px solid;
+}

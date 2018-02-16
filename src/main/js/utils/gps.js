@@ -1,15 +1,15 @@
 'use strict';
 
 var utils = require('./utils.js');
-var Dialog = require('./dialog.js');
 
 
-function GPS () {
+function GPS (context) {
     var self = this;
     self.listeners = [];
     self.watchId = undefined;
     self.currentPosition = undefined;
     self.counter = 0;
+    self.appContext = context;
 }
 
 GPS.prototype.listen = function(callback) {
@@ -60,7 +60,7 @@ GPS.prototype.start = function() {
             message = 'Please make sure GPS is enabled in <i>Settings > Location</i>';
         }
         setTimeout(function () {
-            Dialog.alert(title, message, 'OK', undefined);
+            self.appContext.ui.modal.alert(title, '<p>' + message + '</p>', 'OK');
         }, 2000);
     };
 

@@ -1,8 +1,9 @@
 'use strict';
-
+var template = require('./calibration.help.art.html');
 
 function CalibrationHelpView(page, context, request) {
     request = request || {};
+    context.render(page, template({isPortraitMode: context.isPortraitMode()}));
 
     var $page = $(page)
         , $content = $page.find('[data-selector="slick"]')

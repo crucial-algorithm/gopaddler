@@ -3,9 +3,11 @@
 var Calibration = require('../model/calibration.js').Calibration;
 var utils = require('../utils/utils');
 
-function Calibrate (callback) {
+function Calibrate (isPortraitMode, callback) {
     this.callback = callback;
     this.watchId = undefined;
+    this.isPortraitMode = isPortraitMode;
+
 
     this.GRAVITY_EARTH = 9.80665;
     this.MEASURES = 300;
@@ -55,6 +57,15 @@ Calibrate.prototype.start = function() {
 
 Calibrate.prototype.calculate = function (sumx, sumy, sumz) {
     var self = this;
+    if (self.isPortraitMode) {
+        self.calculatePortraitMode(sumx, sumy, sumz);
+    } else {
+        self.calculateLandscapeMode(sumx, sumy, sumz);
+    }
+};
+
+Calibrate.prototype.calculateLandscapeMode = function (sumx, sumy, sumz) {
+    var self = this;
     var avgX = sumx / self.MEASURES;
     var avgY = sumy / self.MEASURES;
     var avgZ = sumz / self.MEASURES;
@@ -79,7 +90,37 @@ Calibrate.prototype.calculate = function (sumx, sumy, sumz) {
     var factorZ = Math.cos(angleZ);
     factorZ = factorZ ? factorZ : 1;
 
-    self.store(predominantAxis, angleZ, avgX, avgY, avgZ, factorX, factorZ);
+    self.store(predominantAxis, angleZ, avgX, avgY, avgZ, factorX, null, factorZ);
+};
+
+Calibrate.prototype.calculatePortraitMode = function (sumx, sumy, sumz) {
+    var self = this;
+    var avgX = sumx / self.MEASURES;
+    var avgY = sumy / self.MEASURES;
+    var avgZ = sumz / self.MEASURES;
+    var angleZ;
+    var predominantAxis;
+
+    if (avgZ < 9.81) {
+        angleZ = Math.asin(avgZ / 9.81);
+    } else {
+        angleZ = Math.asin(1);
+    }
+
+    if (angleZ < utils.toRadians(45)) {
+        predominantAxis = 2;
+    } else {
+        predominantAxis = 1;
+    }
+
+    var factorY = utils.toRadians(90) - angleZ;
+    factorY = factorY ? factorY : 1;
+
+    var factorZ = Math.cos(angleZ);
+    factorZ = factorZ ? factorZ : 1;
+
+    self.store(predominantAxis, angleZ, avgX, avgY, avgZ, null, factorY, factorZ);
+
 };
 
 Calibrate.prototype.stop = function () {
@@ -87,20 +128,13 @@ Calibrate.prototype.stop = function () {
     navigator.accelerometer.clearWatch(self.watchId);
 };
 
-Calibrate.prototype.store = function (predominant, angleZ, noiseX, noiseY, noiseZ, factorX, factorZ) {
-    var round = function(value) {
+Calibrate.prototype.store = function (predominant, angleZ, noiseX, noiseY, noiseZ, factorX, factorY, factorZ) {
+    var round = function (value) {
         return Math.round(value * 10000000000000000) / 10000000000000000
     };
 
-    new Calibration(predominant, round(angleZ), round(noiseX), round(noiseY), round(noiseZ), round(factorX), round(factorZ)).save();
-};
-
-Calibrate.load = function () {
-    var obj = JSON.parse(window.localStorage.getItem("calibration"));
-    if (!obj) {
-        return undefined;
-    }
-    return new Calibration(obj.predominant, obj.angleZ, obj.noiseX, obj.noiseY, obj.noiseZ, obj.factorX, obj.factorZ);
+    new Calibration(predominant, round(angleZ), round(noiseX)
+        , round(noiseY), round(noiseZ), round(factorX), round(factorY), round(factorZ)).save(this.isPortraitMode);
 };
 
 

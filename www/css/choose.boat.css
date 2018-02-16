@@ -1,0 +1,97 @@
+.app-content.choose-boat {
+    text-transform: uppercase;
+    color: #fff;
+}
+
+.choose-boat-k {
+    background-color: #3b3d62;
+}
+
+.choose-boat-c {
+    background-color: #ef6156;
+}
+
+.choose-boat-k.selected {
+    color: #ef6156;
+}
+
+.choose-boat-c.selected {
+    color: #3b3d62
+}
+
+.app-content.choose-boat > .choose-boat-k {
+    float: left;
+    width: 50vw;
+    height: 68vh;
+    text-align: center;
+    line-height: 68vh;
+    font-size: 36vh;
+}
+
+.app-content.choose-boat > .choose-boat-c {
+    float: right;
+    width: 50vw;
+    height: 68vh;
+    text-align: center;
+    line-height: 68vh;
+    font-size: 36vh;
+}
+
+.app-content.choose-boat-portrait > .choose-boat-k {
+    float: unset;
+    width: 100vw;
+    height: 40vh;
+    text-align: center;
+    line-height: 40vh;
+    font-size: 20vh;
+    text-transform: uppercase;
+}
+
+.app-content.choose-boat-portrait > .choose-boat-c {
+    float: unset;
+    width: 100vw;
+    height: 40vh;
+    text-align: center;
+    line-height: 40vh;
+    font-size: 20vh;
+    text-transform: uppercase;
+}
+
+.app-content.choose-boat-portrait > .choose-boat-title {
+    height: 10vh;
+    line-height: 10vh;
+    font-size: 4vh;
+}
+
+.choose-boat-title {
+    height: 16vh;
+    line-height: 16vh;
+    color: #fff;
+    background-color: #7E8C8D;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 6vh;
+}
+
+.app-content.choose-boat-portrait > .choose-boat-actions {
+    position: static;
+    height: 10vh;
+    line-height: 10vh;
+    font-size: 4vh;
+}
+
+.choose-boat-actions {
+    position: fixed;
+    bottom: 0;
+    height: 16vh;
+    line-height: 16vh;
+    font-size: 6vh;
+    text-align: center;
+    background-color: #7E8C8D;
+    color: #fff;
+    width: 100%;
+}
+
+.choose-boat-actions.enabled {
+    background-color: #4B946A;
+}

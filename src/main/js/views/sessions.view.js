@@ -4,6 +4,8 @@ var Sync = require('../server/sync');
 var Session = require('../model/session').Session;
 var Utils = require('../utils/utils.js');
 var Api = require('../server/api');
+var template = require('./sessions.art.html');
+var List = require('../utils/widgets/list').List;
 
 var LAST_30_DAYS_PERIOD_FILTER = 'last-30-days',
     LAST_MONTH_PERIOD_FILTER = 'last-month',
@@ -14,13 +16,8 @@ var LAST_30_DAYS_PERIOD_FILTER = 'last-30-days',
 
     utils = require('../utils/utils.js'),
 
-    swipe,
-    iScroll,
-
     appContext,
     $page,
-    $sessionList,
-    $firstLiInList,
     $summaryDistance,
     $summarySpeed,
     $summaryTime,
@@ -29,7 +26,7 @@ var LAST_30_DAYS_PERIOD_FILTER = 'last-30-days',
     selectedFilter,
     filterStartDate,
     filterEndDate,
-    pullToRefreshInstance;
+    sessionsListWidget;
 
 /**
  * Add given session to the list of sessions
@@ -45,15 +42,13 @@ function addSessionsToSessionList(sessions) {
         minutes = 0,
         seconds = 0;
 
-    $sessionList.empty().css('height', 'auto');
 
     if (sessions.length === 0) {
-        var $noSessions = $('<li class="session-row-empty">You have no sessions for the selected period.</li>');
+        sessionsListWidget.clear();
+        sessionsListWidget
+            .appendRow($('<li class="session-row-empty">You have no sessions for the selected period.</li>'));
 
-        $noSessions.appendTo($sessionList);
-
-        // update scroll
-        iScroll = new IScroll($('#sessions-wrapper', $page)[0], {});
+        sessionsListWidget.refresh();
 
         $summaryDistance.text(utils.round2(totalDistance));
         $summarySpeed.text(utils.round2(totalSpeed));
@@ -64,6 +59,7 @@ function addSessionsToSessionList(sessions) {
 
     sessionsDict = {};
 
+    sessionsListWidget.clear();
     // add each session to the session list
     sessions.forEach(function (session) {
 
@@ -110,11 +106,11 @@ function addSessionsToSessionList(sessions) {
                 '	</div>',
                 '</div>'
             ].join('')
-            .replace('{hour}', sessionAt.format('HH:mm'))
-            .replace('{day}', sessionAt.format('MMM D'))
-            .replace('{duration}', dDisplay)
-            .replace('{distance}', utils.round2(distance || 0) + ' ' + appContext.getUnit('distance'))
-            .replace('{synced}', session.isSynced() ? 'yes' : 'no')
+                .replace('{hour}', sessionAt.format('HH:mm'))
+                .replace('{day}', sessionAt.format('MMM D'))
+                .replace('{duration}', dDisplay)
+                .replace('{distance}', utils.round2(distance || 0) + ' ' + appContext.getUnit('distance'))
+                .replace('{synced}', session.isSynced() ? 'yes' : 'no')
         ).appendTo($main);
 
         // on a session tap, open session-summary with its details
@@ -130,10 +126,10 @@ function addSessionsToSessionList(sessions) {
         totalDuration += duration;
         totalSpeed = Math.max(speed, totalSpeed);
 
-        $li.appendTo($sessionList);
+        sessionsListWidget.appendRow($li, false);
+        sessionsListWidget.appendRow($('<li style="display: none;"><div class="progress-line" style="width:1%;"></div></li>'), true);
+        sessionsListWidget.appendRow($('<li style="width:1%;height:0;"></li>'), true);
     });
-
-    $firstLiInList = $sessionList.find('li:first');
 
     // update summary
     time = Math.floor(totalDuration / 1000);
@@ -146,15 +142,10 @@ function addSessionsToSessionList(sessions) {
     $summarySpeed.text(utils.round2(totalSpeed));
     $summaryTime.text([utils.lpad(hours, 2), utils.lpad(minutes, 2), utils.lpad(seconds, 2)].join(':'));
 
-    // update scroll and swipe for new elements
-    iScroll = new IScroll($('#sessions-wrapper', $page)[0], {});
+    setTimeout(function () {
+        sessionsListWidget.refresh();
+    }, 0);
 
-    swipe = Swiped.init({
-        query: 'li',
-        list: true,
-        left: 0,
-        right: $('.session-row-actions', $page).width()
-    });
 }
 
 /**
@@ -360,12 +351,13 @@ function setupSessionFilter($page, context) {
  * @param context
  */
 function SessionsView(page, context) {
+    context.render(page, template({isPortraitMode: context.isPortraitMode()
+        , isLandscapeMode: !context.isPortraitMode()}));
+
     var self = this,
         $back = $('.back-button', page);
-
     appContext = context;
     $page = $(page);
-    $sessionList = $page.find('#local-sessions');
 
     // initialize calendar as undefined so date are retrieved from preferences and not it
     $calendar = undefined;
@@ -391,7 +383,7 @@ function SessionsView(page, context) {
     // handle delete
     self.lock = {};
     self.progress = {};
-    $sessionList.on('touchstart', '.session-row-delete-btn', function (e) {
+    $page.on('touchstart', '.session-row-delete-btn', function (e) {
         var $el = $(event.target);
         var sessionId = $el.attr('session-id');
 
@@ -405,7 +397,7 @@ function SessionsView(page, context) {
         e.stopImmediatePropagation();
     });
 
-    $sessionList.on('touchstart', '.session-row-upload-btn', function (e) {
+    $page.on('touchstart', '.session-row-upload-btn', function (e) {
         var $el = $(event.target);
         var sessionId = parseInt($el.attr('session-id'))
             , session = sessionsDict[sessionId];
@@ -427,49 +419,31 @@ function SessionsView(page, context) {
         filterEndDate = moment(context.preferences().getDefaultEndDate());
     }
 
-    filterSessionsByPeriod(context);
-
-    $page.on('appShow', function () {
-        var height = $(document.body).height() - $page.find('.paddler-topbar').height();
-
-        $("#sessions-wrapper-for-pull-to-refresh").height(height);
+    page.onShown.then(function () {
+        var $container = $('#sessions-wrapper-for-pull-to-refresh');
+        if (!context.isPortraitMode()) {
+            var height = $(document.body).height() - $page.find('.paddler-topbar').height();
+            $container.height(height);
+        }
 
         // initialize and bind events to session filter
         setupSessionFilter($page, context);
 
-        var width = $('.session-row-actions', page).width();
-
-        swipe = Swiped.init({
-            query: 'li',
-            list: true,
-            left: 0,
-            right: width
+        sessionsListWidget = new List(page, {
+            $elem: $container,
+            swipe: true,
+            swipeSelector: '.session-row-actions',
+            ptr: {
+                label: 'Pull down to sync',
+                release: 'Release to sync',
+                refreshing: 'Syncing sessions',
+                onRefresh: function () {
+                    self.uploadUnsyncedSessions($page);
+                }
+            }
         });
 
-        $firstLiInList = $sessionList.find('li:first');
-        pullToRefreshInstance = PullToRefresh.init({
-            mainElement: '#sessions-ptr',
-            getStyles: function () {
-                return ".__PREFIX__ptr {\n pointer-events: none;\n  font-size: 0.85em;\n  font-weight: bold;\n  top: 0;\n  height: 0;\n  transition: height 0.3s, min-height 0.3s;\n  text-align: center;\n  width: 100%;\n  overflow: hidden;\n  display: flex;\n  align-items: flex-end;\n  align-content: stretch;\n}\n.__PREFIX__box {\n  padding: 10px;\n  flex-basis: 100%;\n}\n.__PREFIX__pull {\n  transition: none;\n}\n.__PREFIX__text {\n  margin-top: .33em;\n  color: rgba(0, 0, 0, 0.3);\n}\n.__PREFIX__icon {\n  color: rgba(0, 0, 0, 0.3);\n  transition: transform .3s;\n}\n.__PREFIX__release .__PREFIX__icon {\n  transform: rotate(180deg);\n}";
-            },
-            instructionsPullToRefresh: 'Pull down to sync',
-            instructionsReleaseToRefresh: 'Release to sync',
-            instructionsRefreshing: 'Syncing sessions',
-            isBlock: function () {
-                return $firstLiInList.position().top < 0;
-            },
-            onRefresh: function () {
-                self.uploadUnsyncedSessions($page);
-            },
-            refreshTimeout: 300
-        });
-
-        iScroll = new IScroll($('#sessions-wrapper', page)[0], {});
-    });
-
-    $page.on('appBeforeBack', function () {
-        if (pullToRefreshInstance)
-            pullToRefreshInstance.destroy();
+        filterSessionsByPeriod(context);
     });
 }
 
@@ -483,7 +457,7 @@ SessionsView.prototype.confirmDelete = function ($button, sessionId) {
     $button.addClass('cancel');
     $button.text('cancel');
 
-    animateDeleteAction.apply(self, [$button, sessionId, function () {
+    animateDeleteAction.apply(self, [$button, sessionId, function ($row, $progress, $spacer) {
         Session.delete(parseInt(sessionId))
             .then(function () {
 
@@ -491,9 +465,10 @@ SessionsView.prototype.confirmDelete = function ($button, sessionId) {
                     return;
                 }
 
-                $button.closest('li').remove();
-                // update scroll
-                iScroll = new IScroll($('#sessions-wrapper', $page)[0], {});
+                $row.remove();
+                $progress.remove();
+                $spacer.remove();
+                sessionsListWidget.refresh();
 
                 filterSessionsByPeriod(appContext);
 
@@ -507,8 +482,8 @@ SessionsView.prototype.cancelDelete = function ($button, sessionId) {
     self.lock[sessionId] = false;
     $button.removeClass('cancel');
     $button.text('delete');
-    self.progress[sessionId].$dom.next().remove();
-    self.progress[sessionId].$dom.remove();
+    self.progress[sessionId].$li.hide();
+    self.progress[sessionId].$dom.stop();
 };
 
 SessionsView.prototype.uploadSession = function ($button, session) {
@@ -525,10 +500,7 @@ SessionsView.prototype.uploadSession = function ($button, session) {
     }
 
     var start = new Date().getTime();
-    var $row = $('<li/>').insertAfter($button.closest('li'));
-    $('<li/>').insertAfter($row);
-    var $progress = $('<div class="progress-line"/>').appendTo($row);
-
+    var progress = appContext.ui.infiniteProgressBarForLi($button.closest('li'));
 
     Sync.uploadSession(session)
         .then(function () {
@@ -545,18 +517,21 @@ SessionsView.prototype.uploadSession = function ($button, session) {
         var diff;
         if ((diff = (new Date().getTime()) - start) < 2000) {
             setTimeout(function () {
-                $progress.remove();
-                if (success === true)
+                progress.cleanup();
+                if (success === true) {
                     $button.closest('li').find('[data-selector="synced"]').html('yes');
+                }
                 defer.resolve();
             }, 2000 - diff);
         } else {
-            $progress.remove();
-            if (success === true)
+            progress.cleanup();
+            if (success === true) {
                 $button.closest('li').find('[data-selector="synced"]').html('yes');
+            }
             defer.resolve();
         }
     }
+
     return defer.promise();
 };
 
@@ -581,16 +556,20 @@ SessionsView.prototype.uploadUnsyncedSessions = function ($page) {
     })(sessionKeys);
 };
 
+
 function animateDeleteAction($button, sessionId, callback) {
     var self = this;
 
     // add progress in order to wait for delete
     var $parent = $button.closest('li');
-    var $row = $('<li/>').insertAfter($parent);
-    $('<li/>').insertAfter($row);
-    var $progress = $('<div class="progress-waiting-cancel"/>').appendTo($row);
+    var $li = $parent.next();
+    var $progress = $li.find('div');
+    var id = Utils.guid();
 
-    self.progress[sessionId] = {$dom: $row, start: new Date().getTime()};
+    self.progress[sessionId] = {$dom: $progress, $li: $li, start: new Date().getTime(), id: id};
+
+    $li.show();
+    $progress.css("width", "1%");
 
     $({
         property: 0
@@ -601,13 +580,11 @@ function animateDeleteAction($button, sessionId, callback) {
         step: function () {
             var _percent = Math.round(this.property);
             $progress.css("width", _percent + "%");
-            if (_percent == 105) {
-                $progress.addClass("done");
-            }
         },
         complete: function () {
-            $progress.remove();
-            callback.apply(self, [$parent]);
+            if (self.lock[sessionId] !== true || self.progress[sessionId].id !== id) return;
+            $li.hide();
+            callback.apply(self, [/* row = */ $parent, /* progress = */ $li, /*spacer = */ $li.next()]);
         }
     });
 }

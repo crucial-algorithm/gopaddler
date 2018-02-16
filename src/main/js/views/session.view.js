@@ -3,12 +3,11 @@
 var IO = require('../utils/io.js').IO;
 var GPS = require('../utils/gps').GPS;
 var HeartRateSensor = require('../device/heartrate-sensor').HeartRateSensor;
-var Dialog = require('../utils/dialog');
+var Dialog = require('../utils/widgets/dialog');
 var utils = require('../utils/utils');
 var Calibration = require('../model/calibration').Calibration;
 var Session = require('../model/session').Session;
 var SessionDetail = require('../model/session-detail').SessionDetail;
-var db = require('../db').Session;
 var Api = require('../server/api');
 var StrokeDetector = require('../core/stroke-detector').StrokeDetector;
 var Timer = require('../measures/timer').Timer;
@@ -20,6 +19,8 @@ var Splits = require('../measures/splits').Splits;
 var StrokeEfficiency = require('../measures/efficiency').StrokeEfficiency;
 
 var Field = require('../measures/field.js').Field;
+var template = require('./session.view.art.html');
+var Unlock = require('../utils/widgets/unlock').Unlock;
 
 var DEFAULT_POSITIONS = {
     top: 'timer',
@@ -43,15 +44,22 @@ var SMALL = 'small', LARGE = 'large';
  */
 function SessionView(page, context, options) {
     var self = this;
+    context.render(page, template({isPortraitMode: context.isPortraitMode()}));
+    self.appContext = context;
+    page.onShown.then(function () {
+        self.render.apply(self, [page, context, options])
+    });
+}
+
+SessionView.prototype.render = function (page, context, options) {
+    var self = this;
     self.isDebugEnabled = !!Api.User.getProfile().debug;
 
     var $page = $(page);
-    var calibration = Calibration.load() || Calibration.blank();
+    var calibration = Calibration.load(context.isPortraitMode()) || Calibration.blank();
     var session = self.createSession(calibration);
-    var gps = new GPS();
+    var gps = new GPS(context);
     var heartRateSensor = new HeartRateSensor();
-
-    // Measures
     var distance = new Distance();
     var speed = new Speed();
     var pace = new Pace(context.preferences().isImperial());
@@ -63,18 +71,19 @@ function SessionView(page, context, options) {
 
     if (context.preferences().isShowBlackAndWhite()) {
 
-        $page.find(".session-right").addClass('black-and-white');
-        $page.find(".session-left").addClass('black-and-white');
+        $page.find(".session-small-measures").addClass('black-and-white');
+        $page.find(".session-large-measure").addClass('black-and-white');
 
-
-        $page.on('appShow', function () {
+        if(!context.isPortraitMode()) {
             var width = $page.width();
-            $page.find(".session-left").css({width: Math.floor(width/2) - 1});
-            $page.find(".big-measure-label").addClass('black-and-white');
-            $page.find(".big-measure-units").addClass('black-and-white');
-            $page.find("#animation-pause-circle").attr('fill', '#000');
-            $page.find("#animation-pause-dash").attr('stroke', '#000');
-        });
+            $page.find(".session-large-measure").css({width: Math.floor(width/2) - 1});
+        }
+
+        $page.find(".big-measure-label").addClass('black-and-white');
+        $page.find(".big-measure-units").addClass('black-and-white');
+        $page.find("#animation-pause-circle").attr('fill', '#000');
+        $page.find("#animation-pause-dash").attr('stroke', '#000');
+
     } else {
         $page.find(".app-content").removeClass('black-and-white');
     }
@@ -126,7 +135,7 @@ function SessionView(page, context, options) {
     var top = new Field($('.session-small-measure.yellow', page), fields.top, SMALL, context, self.hasSplitsDefined);
     var middle = new Field($('.session-small-measure.blue', page), fields.middle, SMALL, context, self.hasSplitsDefined);
     var bottom = new Field($('.session-small-measure.red', page), fields.bottom, SMALL, context, self.hasSplitsDefined);
-    var large = new Field($('.session-left', page), fields.large, LARGE, context, self.hasSplitsDefined);
+    var large = new Field($('.session-large-measure', page), fields.large, LARGE, context, self.hasSplitsDefined);
 
 
     // prevent drag using touch during session
@@ -349,78 +358,14 @@ function SessionView(page, context, options) {
         return confirmBeforeExit() === true;
     });
 
-    var $pause, tapStarted = false, pauseCanceled = false, pauseTimeout, lastEvent, pauseAnimationStarted;
-    $page.on('tapstart', function (e) {
-        if (!e.originalEvent.touches) return;
-
-        lastEvent = e;
-        tapStarted = true;
-        pauseCanceled = false;
-        pauseAnimationStarted = false;
-        pauseTimeout = setTimeout(function (event) {
-            return function () {
-                if (pauseCanceled === true || event !== lastEvent) {
-                    pauseCanceled = false;
-                    tapStarted = false;
-                    pauseAnimationStarted = false;
-                    return;
-                }
-
-                var width = $page.width() * .4;
-
-                if (!$pause) $pause = $('#session-stop');
-
-                var svgPath = document.getElementById('animation-pause-dash');
-                var path = new ProgressBar.Path(svgPath, {
-                    duration: 1000,
-                    easing: 'easeIn'
-                });
-
-                $pause.css({top: e.originalEvent.touches[0].clientY - (width / 2), left: e.originalEvent.touches[0].clientX - (width / 2)});
-                $pause.show();
-
-                $('body').css({overflow: 'hidden'});
-                pauseAnimationStarted = true;
-                path.animate(1, function () {
-                    Dialog.hideModal();
-                    if (pauseCanceled === true || event !== lastEvent) {
-                        return;
-                    }
-
-                    setTimeout(function () {
-                        $pause.hide();
-                        confirmBeforeExit();
-                    }, 20);
-                });
-
-                // try to prevent touch move on android, by placing a fixed backdrop on top of the animation
-                Dialog.showModal($('<div/>'), {color: ' rgba(0,0,0,0.1)'});
-            }
-        }(lastEvent), 450);
+    var unlock = new Unlock();
+    unlock.onUnlocked(function () {
+        confirmBeforeExit();
     });
-
-    $page.on('tapend', function () {
-        if ($pause !== undefined)
-            $pause.hide();
-
-        if (tapStarted)
-            pauseCanceled = true;
-
-        clearTimeout(pauseTimeout);
+    $page.on('tap', function () {
+        unlock.show();
     });
-
-    $page.on('measureSwapStarted', function () {
-        // if already showing pause animation, let it do it
-        if (pauseAnimationStarted)
-            return;
-
-        // not showing pause, but tap started? Discard... user is changing measures
-        if (tapStarted)
-            pauseCanceled = true;
-
-        clearTimeout(pauseTimeout);
-    });
-}
+};
 
 SessionView.prototype.debug = function (session) {
     var self = this;
@@ -480,7 +425,7 @@ SessionView.prototype.confirm = function (onresume, onfinish) {
     var self = this;
     var $controls, $resume, $finish;
 
-    $controls = $([
+    var modal = self.appContext.ui.modal.undecorated([
         '<div class="session-controls">',
         '    <div class="session-resume">',
         '		<div class="session-controls-outer-text">',
@@ -496,10 +441,10 @@ SessionView.prototype.confirm = function (onresume, onfinish) {
         '</div>'
     ].join(''));
 
-    $resume = $controls.find('.session-resume');
-    $finish = $controls.find('.session-finish');
+    $controls = modal.$modal.find('.session-controls');
+    $resume = modal.$modal.find('.session-resume');
+    $finish = modal.$modal.find('.session-finish');
 
-    Dialog.showModal($controls, {});
 
     // make height equal to width and adjust margin accordingly
     var displayHeight = $controls.height();
@@ -531,9 +476,8 @@ SessionView.prototype.confirmFinishWarmUp = function (onStartOnMinuteTurn, onSta
     var self = this;
     var $controls, $startOnMinuteTurn, $startImmediately, $finish;
 
-    $controls = $([
+    var modal = self.appContext.ui.modal.undecorated([
         '    <div class="session-controls">',
-
         '        <div class="session-finish">',
         '            <div class="session-controls-outer-text">',
         '                <div class="session-controls-inner-text">finish</div>',
@@ -556,11 +500,11 @@ SessionView.prototype.confirmFinishWarmUp = function (onStartOnMinuteTurn, onSta
         '    </div>'
     ].join(''));
 
-    $startOnMinuteTurn = $controls.find('.session-start-on-minute-turn');
-    $startImmediately = $controls.find('.session-start-immediately');
-    $finish = $controls.find('.session-finish');
+    $controls = modal.$modal.find('.session-controls');
 
-    Dialog.showModal($controls, {});
+    $startOnMinuteTurn = modal.$modal.find('.session-start-on-minute-turn');
+    $startImmediately = modal.$modal.find('.session-start-immediately');
+    $finish = modal.$modal.find('.session-finish');
 
     // make height equal to width and adjust margin accordingly
     var displayHeight = $controls.height();

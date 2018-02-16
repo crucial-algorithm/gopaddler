@@ -1,6 +1,9 @@
 'use strict';
 
 var utils = require('../utils/utils');
+var Sound = require('../utils/sound').Sound;
+
+var sound;
 
 function Splits(splits, listener) {
     this.splits = [];
@@ -8,6 +11,8 @@ function Splits(splits, listener) {
     if (splits) {
         this.splits = splits.slice();
     }
+
+    if (!sound)  sound = new Sound();
 
     this.running = false;
     this.delayed = false;
@@ -18,7 +23,7 @@ function Splits(splits, listener) {
 Splits.prototype.start = function (duration, delay, onStart) {
 
     if (typeof delay === "number") {
-        this.splits.unshift({_duration: delay, _unit: 'seconds'});
+        this.splits.unshift({_duration: delay, _unit: 'seconds', _recovery: true});
         this.delayed = true;
         this.onStart = onStart;
         this.started = false;
@@ -50,6 +55,14 @@ Splits.prototype.setTime = function (timestamp, duration) {
 
     if (this.split.type() === UNITS_TYPE.DISTANCE_BASED)
         return;
+
+    var gap = this.splitStop - this.duration;
+
+    if (this.split.isRecovery() && gap === 5) {
+        sound.playStartCountDown();
+    } else if (!this.split.isRecovery() && gap === 2) {
+        sound.playFinishCountDown();
+    }
 
     if (this.splitStop - this.duration < 0) {
 
@@ -88,6 +101,7 @@ Splits.prototype.setDistance = function (distance) {
 
     if (this.splitStop - this.distance <= 0) {
 
+        sound.playFinish();
         this.nextSplit();
 
         if (!this.split)

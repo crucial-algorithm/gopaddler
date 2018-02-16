@@ -1,0 +1,46 @@
+
+
+.summary-thumbs-up-icon {
+    fill: #ffffff;
+}
+
+.summary-stats-row {
+    width: 100%;
+    clear: both;
+    height: 20vh;
+}
+
+.summary-stats-left {
+    width: 50%;
+    float: left;
+    height: 100%;
+}
+
+.summary-stats-right {
+    width: 50%;
+    float: right;
+}
+
+
+
+.summary-label {
+    color: rgba(255,255,255,0.9);
+    line-height: 20px;
+}
+
+.summary-value {
+    height: 10vh;
+    color: #ffffff;
+}
+
+.summary-value > b {
+    font-size: 6vh;
+}
+
+.summary-finish-btn {
+    vertical-align: middle;
+    display: table-cell;
+    text-transform: uppercase;
+    background-color: #9EACAD;
+    padding: 15px;
+}

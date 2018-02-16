@@ -1,0 +1,59 @@
+.wizard-image {
+    margin-top: 5vh;
+    width: 100vw;
+}
+
+.wizard-text {
+    margin-left: 5vw;
+}
+
+.got-it {
+    position: fixed;
+    bottom: 8vh;
+    right: 4vw;
+    background-color: #EF6156;
+    height: 10vh;
+    width: 30vw;
+    text-transform: uppercase;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 10vh;
+    font-weight: bold;
+}
+
+.wizard {
+    background-color: #3b3d62;
+    color: #ffffff;
+    width: 100%;
+}
+
+.wizard-text h1 {
+    font-size: 34px;
+    line-height: 38px;
+    text-align: center;
+}
+
+.wizard-text p {
+    font-size: 20px;
+    line-height: 30px;
+    padding: 2% 2%;
+    color: rgba(255,255,255,0.7);
+}
+
+.calibration-help-step-1 {
+    background: #3b3d62 url(../images/cal_step_1.png) no-repeat center center;
+    background-size: contain;
+    height: 40vh;
+}
+
+.calibration-help-step-2 {
+    background: #3b3d62 url(../images/cal_step_2.png) no-repeat center center;
+    background-size: contain;
+    height: 40vh;
+}
+
+.calibration-help-step-3 {
+    background: #3b3d62 url(../images/cal_step_2.png) no-repeat center center;
+    background-size: contain;
+    height: 40vh;
+}

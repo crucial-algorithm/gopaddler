@@ -3,7 +3,11 @@
 var utils = require('../utils/utils');
 
 function Splits(splits, listener) {
-    this.splits = splits || [];
+    this.splits = [];
+
+    if (splits) {
+        this.splits = splits.slice();
+    }
 
     this.running = false;
     this.delayed = false;

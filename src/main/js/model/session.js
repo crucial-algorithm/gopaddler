@@ -20,7 +20,7 @@ function Session(sessionStart, angleZ, noiseX, noiseZ, factorX, factorZ, axis, d
     this.factorX = factorX;
     this.factorZ = factorZ;
     this.axis = axis;
-    this.debugFile = this.sessionStart + ".csv";
+    this.debugFile = null;
     this.distance = distance;
     this.avgSpm = avgSpm;
     this.topSpm = topSpm;
@@ -53,6 +53,7 @@ Session.prototype.getRemoteId = function () {
 
 Session.prototype.setSessionStart = function (sessionStart) {
     this.sessionStart = sessionStart;
+    this.debugFile = this.sessionStart + ".csv";
 };
 Session.prototype.getSessionStart = function () {
     return this.sessionStart;

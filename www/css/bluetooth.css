@@ -1,0 +1,35 @@
+
+
+.bluetooth-devices {
+    height: 82vh;
+    width: 100vw;
+    background-color: #3b3d62;
+}
+
+.portrait-app-content > .bluetooth-devices {
+    height: 88vh;
+    width: 100vw;
+}
+
+.bluetooth-devices > li {
+    height: 20vh;
+    line-height: 20vh;
+    text-align: center;
+    padding-right: 5vw;
+    width: 100vw;
+    background-color: #313455;
+    color: #ffffff;
+    font-size: 8vh;
+    text-transform: UPPERCASE;
+}
+
+
+ .bluetooth-devices > li.odd {
+    background-color: #2C2D49;
+ }
+
+.bluetooth-devices > li.success {
+    background-color: #4B946A;
+}
+
+

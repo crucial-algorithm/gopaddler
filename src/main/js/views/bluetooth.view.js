@@ -10,12 +10,10 @@ function BluetoothView(page, context, request) {
     context.render(page, template({isPortraitMode: context.isPortraitMode()}));
     var self = this;
 
-    this.$page = $(page);
-    this.$startScanningButton = this.$page.find('[data-selector="bluetooth-scanning-button"]');
-    this.$devices = this.$page.find('[data-selector="devices"]');
+    var $page = $(page);
+    this.$devices = $page.find('.bluetooth-devices');
     this.bluetooth = new Bluetooth();
 
-    this.restartInterface();
     this.initialize();
 
     this.$devices.on('click', 'li', function (ev) {
@@ -28,8 +26,13 @@ function BluetoothView(page, context, request) {
         }).catch(function (error) {
             console.log('failed pair', error)
         });
-
     });
+
+
+    $page.on('appBeforeBack', function () {
+        self.bluetooth.disconnect();
+    })
+
 }
 
 BluetoothView.prototype.initialize = function () {
@@ -38,24 +41,10 @@ BluetoothView.prototype.initialize = function () {
     this.bluetooth
         .initialize()
         .then(function () {
-            self.setMode(SCANNING_MODE);
             self.startScan();
-        }).catch(function () {
-            self.restartInterface();
+        }).catch(function (err) {
+            console.log('error initializing bluetooth', err)
         });
-};
-
-BluetoothView.prototype.setMode = function (mode) {
-    if (mode === SCANNING_MODE) {
-        this.$startScanningButton.hide();
-        this.$devices.show();
-    } else if (mode === NORMAL_MODE) {
-        this.$startScanningButton.hide();
-        this.$devices.show();
-    } else if (mode === ENABLE_BLUETOOTH_MODE) {
-        this.$startScanningButton.show();
-        this.$devices.hide();
-    }
 };
 
 BluetoothView.prototype.startScan = function () {
@@ -76,14 +65,9 @@ BluetoothView.prototype.startScan = function () {
     }, 60000);
 };
 
-BluetoothView.prototype.restartInterface = function () {
-    this.$startScanningButton.show();
-    this.$devices.html('');
-};
-
 BluetoothView.prototype.addDevice = function (name, address) {
     $('<li/>')
-        .text(name + ':' + address)
+        .text(name)
         .attr('data-mac', address)
         .appendTo(this.$devices)
     ;

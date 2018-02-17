@@ -2,11 +2,11 @@
 
 function Bluetooth () {
     var self = this;
-
-    self.isEnabled = false;
     self.foundDevices = [];
     self.uuids = {};
-    self.value = 0;
+    self.address = null;
+    self.characteristic = "2A37";
+    self.service = "180D";
 }
 
 /**
@@ -22,13 +22,12 @@ Bluetooth.prototype.initialize = function () {
     return new Promise(function (resolve, reject) {
         bluetoothle.initialize(function (result) {
             if (result.status === "enabled") {
-                self.isEnabled = true;
                 resolve()
             }
             reject();
         }, params);
     });
-}
+};
 
 Bluetooth.prototype.retrieveConnected = function () {
     var self = this;
@@ -48,6 +47,7 @@ Bluetooth.prototype.retrieveConnected = function () {
 };
 
 Bluetooth.prototype.startScan = function () {
+    var addresss = {};
     return new Promise(function (resolve, reject) {
         bluetoothle.startScan(function (result) {
             if (result.status === 'scanStarted'){
@@ -57,21 +57,23 @@ Bluetooth.prototype.startScan = function () {
 
             if (!result.name) return;
 
+            if (addresss.hasOwnProperty(result.address)) return;
+
+            addresss[result.address] = true;
+
             console.log('new device found', result.name, result.address);
             resolve({name: result.name, mac: result.address});
         }, function (error) {
             reject(error);
         }, {services: []});
     });
-}
+};
 
 Bluetooth.prototype.pair = function (address) {
+    this.address = address;
     return new Promise(function (resolve, reject) {
-
-        bluetoothle.connect(function success(a, b, c, d) {
-            console.log(a, b, c, d);
+        bluetoothle.connect(function success() {
             bluetoothle.disconnect(function success(a, b, c, d) {
-                console.log(a, b, c, d);
             }, function error() {
             });
             resolve();
@@ -83,15 +85,18 @@ Bluetooth.prototype.pair = function (address) {
 };
 
 Bluetooth.prototype.listen = function (address, callback) {
-    var self = this;
+    var self = this
+        , connected = false;
     var error = function (err) {
         console.log(err)
     };
 
+    var listen = function () {
+        if (connected === true) return;
 
-    var params = {address: address};
-    bluetoothle.connect(function () {
-
+        var params = {address: address};
+        bluetoothle.connect(function () {
+            connected = true;
             bluetoothle.discover(function success(discovered) {
 
                 discovered.services.forEach(function (service) {
@@ -102,7 +107,7 @@ Bluetooth.prototype.listen = function (address, callback) {
                             function (characteristic) {
                                 var characteristicUuid = characteristic.uuid;
 
-                                if (characteristicUuid !== "2A37") {
+                                if (characteristicUuid !== self.characteristic) {
                                     return;
                                 }
 
@@ -122,20 +127,31 @@ Bluetooth.prototype.listen = function (address, callback) {
         function (error) {
             console.log('bluetoothle connection error', error);
             self.disconnect();
-            self.listen(address, callback);
+            connected = false;
         }, params);
+    };
+
+    setInterval(function () {
+        listen.apply(this, []);
+    }, 20000);
+    listen();
+
+    self.address = address;
 };
 
-Bluetooth.prototype.disconnect = function (address) {
+Bluetooth.prototype.disconnect = function () {
+    var self = this;
+    if (self.address === null) return;
+
     bluetoothle.unsubscribe(function(){}, function(){}, {
-        address: address,
-        service: "180D",
-        characteristic: "2A37"
+        address: self.address,
+        service: self.service,
+        characteristic: self.characteristic
     });
     bluetoothle.disconnect(function(){}, function(){}, {
-        address: address
+        address: self.address
     });
-    bluetoothle.close(function(){}, function(){}, {address: address});
+    bluetoothle.close(function(){}, function(){}, {address: self.address});
 };
 
 Bluetooth.prototype.stopScan = function () {

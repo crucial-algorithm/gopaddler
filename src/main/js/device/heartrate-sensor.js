@@ -41,14 +41,9 @@ HeartRateSensor.prototype.listen = function (callback) {
         });
 };
 
-HeartRateSensor.prototype.stop = function (callback) {
+HeartRateSensor.prototype.stop = function () {
     var self = this;
-
-    if (!self.deviceAddress) {
-        return;
-    }
-
-    self.bluetooth.disconnect();
+    self.bluetooth.disconnect(self.deviceAddress);
 };
 
 exports.HeartRateSensor = HeartRateSensor;

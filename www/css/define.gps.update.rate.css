@@ -1,0 +1,31 @@
+.define-gps-speed {
+    height: 82vh;
+    width: 100vw;
+    background-color: #E4594E;
+    color: #FFFFFF;
+}
+
+.define-gps-speed-portrait {
+    height: 88vh;
+}
+
+.define-gps-speed-list {
+    height: 100%;
+}
+
+.define-gps-speed-list > li {
+    height: 22vh;
+    line-height: 22vh;
+    font-size: 10vh;
+    text-align: center;
+    font-weight: bold;
+    text-transform: UPPERCASE;
+}
+
+.define-gps-speed-list > li:nth-child(even) {
+    background-color: #EF6156;
+}
+
+.define-gps-speed-list > li.selected {
+    background-color: #3b3d62;
+}

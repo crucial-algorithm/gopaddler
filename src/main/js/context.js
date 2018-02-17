@@ -164,6 +164,14 @@ Context.prototype.userHasCoach = function () {
     return Api.User.hasCoach();
 };
 
+Context.prototype.getGpsRefreshRate = function () {
+    return this._settings.getGpsRefreshRate();
+};
+
+Context.prototype.setGpsRefreshRate = function (rate) {
+    return this._settings.setGpsRefreshRate(rate);
+};
+
 
 Context.prototype.render = function (page, template) {
     var $page = $(page), $content;

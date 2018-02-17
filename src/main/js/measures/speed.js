@@ -1,45 +1,94 @@
 'use strict';
+var GPS = require('../utils/gps').GPS;
 
-function Speed() {
+function Speed(context) {
+    this.calculator = instantiateCalculator(context.getGpsRefreshRate());
     this.value = 0;
-    this.positions = [];
+    this.previous = null;
+    this.distance = 0;
 }
 
-Speed.prototype.calculate = function (position, dist) {
+Speed.prototype.calculate = function (position) {
 
-    // don't display speed until we reach 10 meters
-    if (dist <= 0.01) {
+    if (this.previous === null) {
+        this.previous = position;
         return 0;
     }
 
-    this.positions.push({timestamp: position.timestamp, distance: dist});
+    this.distance += GPS.calcDistance(this.previous, position);
 
-    if (this.positions.length < 5) {
-        this.value = position.coords.speed * 3.6;
-        return this.value;
+    // don't display speed until we reach 10 meters
+    if (this.distance < 0.01) {
+        return 0;
     }
 
-    if (this.positions.length > 5) {
-        this.positions.shift();
-    }
+    this.value = this.calculator.calculate(position, this.distance);
 
-    var distance, delta;
-
-    distance = this.positions[4].distance - this.positions[0].distance;
-    delta = this.positions[4].timestamp - this.positions[0].timestamp;
-
-    this.value = distance * (1 / (delta/1000/60/60));
-
+    this.previous = position;
     return this.value;
 };
 
 Speed.prototype.reset = function () {
     this.value = 0;
-    this.positions = [];
+    this.distance = 0;
+    this.calculator.reset();
 };
 
 Speed.prototype.getValue = function () {
     return this.value;
 };
+
+function instantiateCalculator(rate) {
+    rate = rate === 0 ? 5 : rate;
+
+    if (rate === 3 || rate === 5) {
+        return new DistanceBasedSpeedCalculator(rate)
+    } else {
+        return new RawBasedSpeedCalculator();
+    }
+}
+
+function DistanceBasedSpeedCalculator(rate) {
+    this.readings = rate;
+    this.positions = [];
+}
+
+DistanceBasedSpeedCalculator.prototype.calculate = function (position, distance) {
+
+    this.positions.push({timestamp: position.timestamp, distance: distance});
+
+    if (this.positions.length < this.readings) {
+        return position.coords.speed * 3.6;
+    }
+
+    if (this.positions.length > this.readings) {
+        this.positions.shift();
+    }
+
+    var movement, duration;
+    movement = this.positions[this.readings - 1].distance - this.positions[0].distance;
+    duration = this.positions[this.readings - 1].timestamp - this.positions[0].timestamp;
+
+    return movement * (1 / (duration / 1000 / 60 / 60));
+};
+
+
+DistanceBasedSpeedCalculator.prototype.reset = function () {
+    this.positions = [];
+};
+
+
+function RawBasedSpeedCalculator() {
+    // intentionally left blank
+}
+
+RawBasedSpeedCalculator.prototype.calculate = function (position, distance) {
+    return position.coords.speed * 3.6;
+};
+
+RawBasedSpeedCalculator.prototype.reset = function () {
+    // nothing to do
+};
+
 
 exports.Speed = Speed;

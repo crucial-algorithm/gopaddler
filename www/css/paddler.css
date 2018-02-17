@@ -287,6 +287,14 @@ body {
     padding-right: 2%;
 }
 
+.settings-current-gps-rate {
+    display: table-cell;
+    vertical-align: middle;
+    width: 30%;
+    text-align: right;
+    padding-right: 8%;
+}
+
 .settings-option {
     display: table-cell;
     height: 100%;

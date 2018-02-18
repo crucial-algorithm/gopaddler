@@ -24,7 +24,7 @@ Bluetooth.prototype.initialize = function () {
             if (result.status === "enabled") {
                 resolve()
             }
-            reject();
+            reject({reason: result.status});
         }, params);
     });
 };

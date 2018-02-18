@@ -113,8 +113,6 @@ SessionView.prototype.render = function (page, context, options) {
 
     session.setScheduledSessionId(options.remoteScheduledSessionId);
 
-
-
     if (self.hasSplitsDefined) {
         splits = new Splits(self.splitsDefinition, splitsHandler);
         timer.setSplits(splits);
@@ -158,6 +156,12 @@ SessionView.prototype.render = function (page, context, options) {
     var frequency = Api.User.getProfile().liveUpdateEvery;
     var iterator = new utils.EndlessIterator(1, frequency);
 
+    // heart rate monitor
+    var heartRate = 0;
+    heartRateSensor.listen(function (hr) {
+        heartRate = hr;
+    });
+
     // -- initiate timer
     var startAt = timer.start(function (value, timestamp) {
         if (paused) return;
@@ -175,7 +179,7 @@ SessionView.prototype.render = function (page, context, options) {
 
         // store data
         new SessionDetail(session.getId(), timestamp, location.distance, location.speed, spm.value
-            , location.efficiency, location.latitude, location.longitude, splits.getPosition()
+            , location.efficiency, location.latitude, location.longitude, heartRate, splits.getPosition()
         ).save();
 
         iterator.next();
@@ -222,10 +226,6 @@ SessionView.prototype.render = function (page, context, options) {
         location.longitude = position.coords.longitude;
     });
 
-    var measures = {heartRate: 0};
-    heartRateSensor.listen(function (heartRate) {
-            measures.heartRate = heartRate;//self.heartRate.calculate(heartRate);
-    }.bind([self]));
 
     var resetGpsData = function () {
         var values = {speed: 0, pace: 0, efficiency: 0};
@@ -262,7 +262,7 @@ SessionView.prototype.render = function (page, context, options) {
             efficiency: location.efficiency,
             pace: location.pace,
             spm: spm.value,
-            heartRate: measures.heartRate
+            heartRate: heartRate
         };
 
         if (context.getGpsRefreshRate() !== 1) {

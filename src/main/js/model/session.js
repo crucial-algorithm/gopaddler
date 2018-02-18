@@ -233,6 +233,7 @@ Session.prototype.createAPISession = function () {
                 spmEfficiency: utils.round2(row.getEfficiency()),
                 latitude: row.getLatitude(),
                 longitude: row.getLongitude(),
+                heartRate: row.getHeartRate(),
                 split: row.getSplit()
             });
         }

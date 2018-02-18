@@ -3,7 +3,7 @@ var db = require('../db');
 var Utils = require('../utils/utils');
 var Api = require('../server/api');
 
-function SessionDetail(session, timestamp, distance, speed, spm, efficiency, latitude, longitude, split) {
+function SessionDetail(session, timestamp, distance, speed, spm, efficiency, latitude, longitude, heartRate, split) {
     this.connection = db.getConnection();
     this.session = session;
     this.timestamp = timestamp;
@@ -13,6 +13,7 @@ function SessionDetail(session, timestamp, distance, speed, spm, efficiency, lat
     this.efficiency = efficiency || 0;
     this.latitude = latitude;
     this.longitude = longitude;
+    this.heartRate = heartRate;
     this.split = split;
 }
 
@@ -64,6 +65,13 @@ SessionDetail.prototype.setEfficiency = function (efficiency) {
     this.efficiency = efficiency;
 };
 
+SessionDetail.prototype.setHeartRate = function (heartRate) {
+    this.heartRate = heartRate;
+};
+SessionDetail.prototype.getHeartRate = function () {
+    return this.heartRate;
+};
+
 SessionDetail.prototype.getLatitude = function () {
     return this.latitude;
 };
@@ -85,8 +93,8 @@ SessionDetail.prototype.getSplit = function () {
 };
 
 SessionDetail.prototype.save = function () {
-    this.connection.executeSql("INSERT INTO session_data (session, timestamp, distance, speed, spm, efficiency, latitude, longitude, split) VALUES (?,?,?,?,?,?,?,?,?)",
-        [this.session, this.timestamp, this.distance, this.speed, this.spm, this.efficiency, this.latitude, this.longitude, this.split], function (res) {
+    this.connection.executeSql("INSERT INTO session_data (session, timestamp, distance, speed, spm, efficiency, latitude, longitude, heart_rate, split) VALUES (?,?,?,?,?,?,?,?,?,?)",
+        [this.session, this.timestamp, this.distance, this.speed, this.spm, this.efficiency, this.latitude, this.longitude, this.heartRate, this.split], function (res) {
             // intentinaly left blank
         }, function (error) {
             console.log('Error creating session: ' + error.message);
@@ -95,7 +103,7 @@ SessionDetail.prototype.save = function () {
 
 SessionDetail.get = function(sessionId, callback) {
     var connection = db.getConnection();
-    connection.executeSql("SELECT timestamp, distance, speed, spm, efficiency, latitude, longitude, split FROM session_data WHERE session = ? ORDER BY id ASC",[sessionId], function (res) {
+    connection.executeSql("SELECT timestamp, distance, speed, spm, efficiency, latitude, longitude, heart_rate, split FROM session_data WHERE session = ? ORDER BY id ASC",[sessionId], function (res) {
         var rows = [], data;
         try {
             for (var i = 0; i < res.rows.length; i++) {
@@ -106,6 +114,7 @@ SessionDetail.get = function(sessionId, callback) {
                     // the following lines will fail if in equador!
                     , data.latitude ? parseFloat(data.latitude) : undefined
                     , data.longitude ? parseFloat(data.longitude) : undefined
+                    , data.heart_rate ? data.heart_rate : 0
                     , data.split
                 ));
             }

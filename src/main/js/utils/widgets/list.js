@@ -28,6 +28,7 @@ function List(page, options) {
         instructionsReleaseToRefresh: options.ptr.release,
         instructionsRefreshing: options.ptr.refreshing,
         isBlock: function () {
+            if (options.ptr.disabled === true) return true;
             var $li = self.$ul.children().first();
             if (!$li) {
                 return true;

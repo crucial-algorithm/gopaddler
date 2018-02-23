@@ -136,6 +136,7 @@ App.controller('calibration-help', function (page, request) {
  */
 App.controller('bluetooth', function (page, request) {
     analytics.setView('bluetooth');
+    enrichPageArg(page);
     new BluetoothView(page, context, request);
 });
 

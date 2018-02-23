@@ -34,12 +34,11 @@ Bluetooth.prototype.retrieveConnected = function () {
 
     return new Promise(function (resolve, reject) {
         bluetoothle.retrieveConnected(function (result) {
+            var devices = [];
             for (var i = 0; i < result.length; i++) {
-                resolve({name: result[i].name, mac: result[i].address});
+                devices.push({name: result[i].name, mac: result[i].address});
             }
-
-            self.startScan().then(resolve).catch(reject);
-
+            resolve(devices);
         }, function (error) {
             reject(error);
         }, {services: []});
@@ -156,6 +155,10 @@ Bluetooth.prototype.disconnect = function () {
 
 Bluetooth.prototype.stopScan = function () {
     bluetoothle.stopScan();
+};
+
+Bluetooth.prototype.close = function (address) {
+    bluetoothle.close(function(){}, function(){}, {address: address});
 };
 
 exports.Bluetooth = Bluetooth;

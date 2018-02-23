@@ -1,13 +1,16 @@
-
+.bluetooth {
+    color: #ffffff;
+    background-color: #3b3d62;
+}
 
 .bluetooth-devices {
     height: 82vh;
     width: 100vw;
-    background-color: #3b3d62;
+    display: none;
 }
 
 .portrait-app-content > .bluetooth-devices {
-    height: 88vh;
+    height: 76vh;
     width: 100vw;
 }
 
@@ -28,8 +31,83 @@
     background-color: #2C2D49;
  }
 
-.bluetooth-devices > li.success {
+li.bluetooth-devices-device.success {
     background-color: #4B946A;
 }
 
+.bluetooth > h3 {
+    margin-top: 30vh;
+    text-align: center;
+    font-weight: 600;
+}
 
+.bluetooth > p {
+    text-align: center;
+    margin: 2vw;
+}
+
+.bluetooth > div.bluetooth-scan-button {
+    background-color: #F4563D;
+    position: fixed;
+    bottom: 0;
+    width: 100vw;
+    height: 11vh;
+    line-height: 12vh;
+    font-size: 6vh;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+[data-selector="no-devices-found"] {
+    display: none;
+}
+
+.bluetooth-try-again {
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+
+/* Devices list */
+li.bluetooth-devices-device {
+    white-space: nowrap;
+    height: 64px;
+    line-height: 64px;
+    font-size: 20px;
+    color: #3b3d62;
+}
+.bluetooth-devices-device-name {
+    display: inline-block;
+    width: 100%;
+    padding-left: 20px;
+}
+
+.bluetooth-devices-device-actions {
+    display: inline-block;
+    width: 40%;
+    margin-left: -25px;
+    background-color: #F4563D;
+    color: #ffffff;
+    text-transform: UPPERCASE;
+    text-align: center;
+}
+
+.bluetooth-devices-search.progress-line {
+    background-color: #3B5999;
+    height: 1vh;
+    display: none;
+    position: fixed;
+    bottom: 0;
+}
+
+.bluetooth-devices-search.progress-line:before {
+    height: 1vh;
+}
+
+.bluetooth > div.bluetooth-scan-button.bluetooth-scan-active {
+    background-color: #4B946A;
+}
+
+.bluetooth-devices-search.bluetooth-scan-active {
+    display:flex;
+}

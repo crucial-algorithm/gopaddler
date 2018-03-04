@@ -177,6 +177,36 @@ function guid() {
         s4() + '-' + s4() + s4() + s4();
 }
 
+function loopAsync(list, callback) {
+    var originalList = list.slice(0);
+    list = list.slice(0);
+    var value = list.pop();
+
+    var iterator = {
+        next: function () {
+            value = list.pop();
+            callback.apply({}, [iterator]);
+        },
+
+        current: function () {
+            return value;
+        },
+
+        isFinished: function () {
+            return list.length === 0;
+        },
+
+        finish: function () {
+            list = [];
+        },
+
+        restart: function () {
+            list = originalList.slice(0);
+        }
+    };
+
+    callback.apply({}, [iterator])
+}
 
 exports.mapBrowserToNative = mapBrowserToNative;
 exports.lpad = lpad;
@@ -193,3 +223,5 @@ exports.notify = notify;
 exports.EndlessIterator = EndlessIterator;
 exports.forceSafariToReflow = forceSafariToReflow;
 exports.guid = guid;
+exports.getRandomInt = getRandomInt;
+exports.loopAsync = loopAsync;

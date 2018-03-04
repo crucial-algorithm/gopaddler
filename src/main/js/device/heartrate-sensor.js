@@ -1,6 +1,8 @@
 'use strict';
 
 var Bluetooth = require('./bluetooth').Bluetooth;
+var Device = require('../model/device').Device;
+var utils = require('../utils/utils');
 
 /**
  *
@@ -9,11 +11,11 @@ var Bluetooth = require('./bluetooth').Bluetooth;
 function HeartRateSensor() {
     var self = this;
 
-    self.devices = ["180D"];
-    self.deviceAddress = localStorage.getItem('ble-mac-address');
+    self.devices = Device.latest();
     self.bluetooth = new Bluetooth();
 
     self.heartRate = 0;
+    self.lastEventAt = null;
     self.retryTimer = null;
     self.unresponsiveTimer = null;
 }
@@ -23,7 +25,7 @@ HeartRateSensor.prototype.listen = function (callback) {
     clearInterval(self.retryTimer);
     clearInterval(self.unresponsiveTimer);
 
-    if (!self.deviceAddress) {
+    if (self.devices.length === 0) {
         return;
     }
 
@@ -39,11 +41,33 @@ HeartRateSensor.prototype.listen = function (callback) {
         .initialize()
         .then(function () {
 
-            self.bluetooth.listen(self.deviceAddress, function (hr) {
-                self.lastEventAt = new Date().getTime();
-                // process heart rate
-                callback(hr);
-            })
+
+            utils.loopAsync(self.devices, function (iterator) {
+                var device = iterator.current();
+                var updated = false;
+
+                self.bluetooth.listen(device.getAddress(), function (hr) {
+                    iterator.finish();
+
+                    if (updated === false) {
+                        Device.updateLastSeen(device.address);
+                        updated = true;
+                    }
+
+                    self.lastEventAt = new Date().getTime();
+                    callback(hr);
+                }, function onError() {
+
+                    if (iterator.isFinished()) {
+                        iterator.restart();
+                    }
+
+                    iterator.next();
+                });
+
+
+            });
+
         })
         .catch(function (err) {
             if (err.reason !== 'disabled') {

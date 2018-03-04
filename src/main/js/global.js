@@ -1,5 +1,7 @@
 'use strict';
 
+var utils = require('./utils/utils');
+
 // override functions when in testing (deviceready not triggered)
 // --------------------------------------------------------------
 
@@ -151,6 +153,88 @@ function emulateCordova () {
     navigator.accelerometer.clearWatch = function (id) {
         clearInterval(id);
     };
+
+
+    window.bluetoothle = {
+        initialize: function (callback) {
+            setTimeout(function () {
+                callback.apply({}, [{status: 'enabled'}])
+            }, 0);
+        },
+        connect: function (success) {
+            setTimeout(function () {
+                success.apply({}) // intentionally left blank
+            }, 5000);
+        },
+        disconnect: function (callback) {
+            setTimeout(function () {
+                callback.apply({}) // intentionally left blank
+            }, 0);
+        },
+        subscribe: function (callback) {
+            setTimeout(function () {
+                callback.apply({}, [{value: utils.getRandomInt(100, 200)}])
+            }, 0);
+        },
+        unsubscribe: function (callback) {
+            setTimeout(function () {
+                callback.apply({}) // intentionally left blank
+            }, 0);
+        },
+        close: function (callback) {
+            setTimeout(function () {
+                callback.apply({}) // intentionally left blank
+            }, 0);
+        },
+        discover: function (success) {
+            setTimeout(function () {
+                success.apply({}, [{
+                    services: {
+                        forEach: function (servicesCallback) {
+                            setTimeout(function () {
+                                servicesCallback.apply({}, [{
+                                    characteristics: {
+                                        forEach: function (characteristicsCallback) {
+                                            setTimeout(function () {
+                                                characteristicsCallback.apply({}, [{
+                                                    uuid: '2A37'
+                                                }])
+                                            }, 0)
+                                        }
+                                    } // characteristics
+                                }])
+                            }, 0)
+                        }
+                    } // services
+                }])
+            }, 0);
+        },
+        retrieveConnected: function (callback) {
+            setTimeout(function () {
+                callback.apply({}, [[{name: "Polar H7 AB3F9CX34P", address: "PO:12:PO:93:PO"}, {
+                    name: "Garmin Go BLE",
+                    address: "GA:12:PO:93:GA"
+                }]])
+            }, 0);
+        },
+        startScan: function (callback) {
+            setTimeout(function () {
+                callback.apply({}, [{status: "scanStarted"}])
+            }, 0);
+
+            setTimeout(function () {
+                callback.apply({}, [{name: "Polar H7 PONEWDEVICE", address: "PO:NW:DE:93:PO"}])
+            }, 0);
+        },
+        stopScan: function (callback) {
+            setTimeout(function () {
+                callback = callback || function(){};
+                callback.apply({}) // intentionally left blank
+            }, 0);
+        }
+
+    }
+
 
 }
 

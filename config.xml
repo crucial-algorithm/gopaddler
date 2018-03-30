@@ -101,25 +101,17 @@
     <preference name="AndroidPersistentFileLocation" value="Compatibility" />
     <preference name="Fullscreen" value="true" />
     <preference name="StatusBarOverlaysWebView" value="true" />
-    <engine name="android" spec="^6.3.0" />
-    <engine name="ios" spec="^4.5.3" />
     <plugin name="cordova-plugin-statusbar" spec="^2.2.3" />
     <plugin name="cordova-plugin-network-information" spec="^1.3.3" />
     <plugin name="cordova-plugin-device" spec="^1.1.6" />
     <plugin name="cordova-plugin-inappbrowser" spec="^1.7.1" />
     <plugin name="cordova-plugin-device-motion" spec="^1.2.5" />
     <plugin name="cordova-plugin-dialogs" spec="^1.3.3" />
-    <plugin name="cordova-plugin-google-analytics" spec="^1.8.2" />
     <plugin name="cordova-plugin-ios-longpress-fix" spec="^1.1.0" />
     <plugin name="cordova-plugin-powermanagement" spec="^1.0.5" />
     <plugin name="cordova-plugin-screen-orientation" spec="^2.0.1" />
     <plugin name="cordova-plugin-whitelist" spec="^1.3.2" />
     <plugin name="cordova-sqlite-storage" spec="^2.0.4" />
-    <plugin name="cordova-plugin-facebook4" spec="^1.7.4">
-        <variable name="APP_ID" value="529853143847598" />
-        <variable name="APP_NAME" value="GoPaddler" />
-    </plugin>
-    <plugin name="cordova-plugin-compat" spec="^1.2.0" />
     <plugin name="cordova-plugin-file" spec="^4.3.3" />
     <plugin name="cordova-plugin-geolocation" spec="^2.4.3">
         <variable name="GEOLOCATION_USAGE_DESCRIPTION" value=" " />
@@ -128,4 +120,12 @@
     <plugin name="cordova-plugin-nativeaudio" spec="^3.0.9" />
     <plugin name="cordova-plugin-background-mode-bluetooth-central" spec="^1.0.0" />
     <plugin name="cordova-plugin-bluetoothle" spec="^4.4.3" />
+    <plugin name="cordova-plugin-google-analytics" spec="^1.8.3" />
+    <plugin name="cordova-plugin-compat" spec="^1.2.0" />
+    <plugin name="cordova-plugin-facebook4" spec="^1.9.1">
+        <variable name="APP_ID" value="529853143847598" />
+        <variable name="APP_NAME" value="gopaddler" />
+    </plugin>
+    <engine name="android" spec="^6.4.0" />
+    <engine name="ios" spec="~4.5.4" />
 </widget>

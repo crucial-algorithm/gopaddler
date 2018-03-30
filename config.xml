@@ -86,6 +86,8 @@
         <splash height="480" src="res/ios/screen/Default~iphone.png" width="320" />
         <splash height="1242" src="res/ios/screen/Default-736h.png" width="2208" />
         <splash height="2208" src="res/ios/screen/Default-Landscape-736h.png" width="1242" />
+        <splash height="2436" src="res/ios/screen/Iphone-X-Portrait.png" width="1125" />
+        <splash height="1125" src="res/ios/screen/Iphone-X-Landscape.png" width="2436" />
         <hook src="src/cordova/ios/plist.js" type="before_build" />
     </platform>
     <preference name="FadeSplashScreen" value="true" />
@@ -127,5 +129,5 @@
         <variable name="APP_NAME" value="gopaddler" />
     </plugin>
     <engine name="android" spec="^6.4.0" />
-    <engine name="ios" spec="~4.5.4" />
+    <engine name="ios" spec="^4.5.4" />
 </widget>

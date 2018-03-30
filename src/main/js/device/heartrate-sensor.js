@@ -58,14 +58,20 @@ HeartRateSensor.prototype.listen = function (callback) {
                     callback(hr);
                 }, function onError() {
 
+                    self.bluetooth.disconnect(device.getAddress());
+
                     if (iterator.isFinished()) {
-                        iterator.restart();
+
+                        setTimeout(function(){
+                            iterator.restart();
+                            iterator.next();
+                        }, 60000);
+
+                        return;
                     }
 
                     iterator.next();
-                });
-
-
+                }, /* don't retry = */ true);
             });
 
         })

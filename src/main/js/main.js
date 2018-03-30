@@ -29,12 +29,26 @@ var environment = undefined;
 
 function enrichPageArg(page) {
     var $page = $(page);
-    var deferred = $.Deferred();
+    var callbacks = [];
+    var appShown = false;
 
     $page.off('appShow').on('appShow', function() {
-        deferred.resolve();
+        appShown = true;
+        for (var i = 0; i < callbacks.length; i++) {
+            callbacks[i].apply({}, [])
+        }
     });
-    page.onShown = deferred.promise();
+
+    page.onShown = {
+        then: function (callback) {
+            callbacks.push(callback);
+            if (appShown) {
+                setTimeout(function () {
+                    callback.apply({}, []);
+                }, 0);
+            }
+        }
+    };
 }
 
 /**

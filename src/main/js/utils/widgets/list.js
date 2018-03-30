@@ -44,9 +44,15 @@ function List(page, options) {
         this.swipeActionsSelector = options.swipeSelector;
     }
 
-    $(page).on('appBeforeBack', function () {
-        if (self.pullToRefreshInstance)
-            self.pullToRefreshInstance.destroy();
+    $(page).off().on('appBeforeBack', function () {
+        if (self.pullToRefreshInstance) {
+            try {
+                self.pullToRefreshInstance.destroy();
+            } catch (err) {
+                self.pullToRefreshInstance = null;
+                console.log('err caught');
+            }
+        }
     });
 }
 

@@ -6,6 +6,7 @@ var Api = require('../server/api');
 var landscape = require('./home.art.html');
 var portrait = require('./home.portrait.art.html');
 var Chart = require('chart.js');
+var Utils = require('../utils/utils');
 require('chartjs-plugin-datalabels');
 
 function HomeView(page, context, request) {
@@ -58,6 +59,7 @@ function HomeView(page, context, request) {
 
     page.onShown.then(function () {
         self.updateLastSessionDate();
+        Utils.forceSafariToReflow($('body')[0]);
         if (context.isPortraitMode()) {
             setTimeout(function() {
                 self.loadChart();

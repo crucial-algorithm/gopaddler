@@ -13,6 +13,7 @@ function overridePlist(context) {
     obj.UIViewControllerBasedStatusBarAppearance = false;
     obj.CFBundleDisplayName = "GoPaddler";
     obj.NSLocationWhenInUseUsageDescription = "Track distance and speed";
+    obj.NSBluetoothPeripheralUsageDescription = "gopaddler requires Bluetooth to connect to heart rate monitors";
 
 
     obj.UISupportedInterfaceOrientations = [

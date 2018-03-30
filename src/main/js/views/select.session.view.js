@@ -35,7 +35,6 @@ function SelectSessionView(page, context) {
 SelectSessionView.prototype.render = function (page, context) {
     var self = this
         , $page = $(page)
-        , $back = $('.paddler-back', page)
         , $selectedSession = $page.find('.selected-session')
         , $start = $page.find('.select-session-start')
         , $warmUpFirst = $page.find('#warmup-first')
@@ -86,12 +85,8 @@ SelectSessionView.prototype.render = function (page, context) {
         console.log('sync session', session)
     });
 
-    $back.off('click').on('click', function () {
-        App.back('home', function () {
-        });
-    });
-
-    $page.on('appBeforeBack', function (e) {
+    $page.on('appBeforeBack', function () {
+        console.log('appBeforeBack');
         clearInterval(self.deviceActiveIntervalId);
         Api.TrainingSessions.live.deviceDisconnected();
         Api.TrainingSessions.live.clearCommandListeners();

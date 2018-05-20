@@ -7,17 +7,12 @@ function Timer() {
     this.hour = 0;
     this.duration = 0;
     this.listener = function(){};
-    this.splits = undefined;
     this.timestamp = undefined;
 }
 
 Timer.prototype.start = function(listener) {
     this.listener = listener;
     return this.timer();
-};
-
-Timer.prototype.setSplits = function (splits) {
-    this.splits = splits;
 };
 
 Timer.prototype.pause = function () {
@@ -55,10 +50,8 @@ Timer.prototype.timer = function(offset) {
         time = self.timestamp + offset - start;
         self.duration = time;
 
-        // notify listener and update splits
+        // notify listener
         self.listener(self.format(time), self.timestamp, time);
-        if (self.splits)
-            self.splits.setTime.apply(self.splits, [self.timestamp, time]);
 
     }, 1000);
 

@@ -13,6 +13,7 @@ function round(value, decimalPlaces) {
 }
 
 function round2(value) {
+    if (!value) return 0;
     return Math.round(value * 100) / 100;
 }
 

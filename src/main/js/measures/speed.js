@@ -69,7 +69,11 @@ DistanceBasedSpeedCalculator.prototype.calculate = function (position, distance)
     movement = this.positions[this.readings - 1].distance - this.positions[0].distance;
     duration = this.positions[this.readings - 1].timestamp - this.positions[0].timestamp;
 
-    return movement * (1 / (duration / 1000 / 60 / 60));
+    var speed = movement * (1 / (duration / 1000 / 60 / 60));
+    if (isNaN(speed)) {
+        return 0;
+    }
+    return speed;
 };
 
 

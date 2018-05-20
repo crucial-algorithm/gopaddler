@@ -79,7 +79,7 @@ SelectSessionView.prototype.render = function (page, context) {
         start(expression, expressions[expression], null, commandId);
     });
 
-    Api.TrainingSessions.live.on('sync', function (commandId, session) {
+    Api.TrainingSessions.live.on('pushExpression', function (commandId, session) {
         expressions[session.expression] = session.splits;
         Api.TrainingSessions.live.commandSynced(commandId);
         console.log('sync session', session)

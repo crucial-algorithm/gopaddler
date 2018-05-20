@@ -115,8 +115,6 @@ SessionView.prototype.render = function (page, context, options) {
 
     if (self.hasSplitsDefined) {
         splits = new Splits(self.splitsDefinition, splitsHandler);
-        timer.setSplits(splits);
-
     } else {
         splits = new Splits();
     }
@@ -163,8 +161,11 @@ SessionView.prototype.render = function (page, context, options) {
     });
 
     // -- initiate timer
-    var startAt = timer.start(function (value, timestamp) {
+    var startAt = timer.start(function (value, /* current timestamp = */ timestamp, duration) {
         if (paused) return;
+
+        splits.setTime(timestamp, duration);
+
         top.setValue("timer", value);
         middle.setValue("timer", value);
         bottom.setValue("timer", value);
@@ -191,7 +192,9 @@ SessionView.prototype.render = function (page, context, options) {
                 distance: location.distance,
                 speed: utils.round2(location.speed),
                 efficiency: location.efficiency,
-                duration: timer.getDuration()
+                duration: timer.getDuration(),
+                hr: heartRate,
+                split: splits.getPosition()
             }, 'running');
         }
     });

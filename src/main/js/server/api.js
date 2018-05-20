@@ -369,7 +369,7 @@ var liveListeners = {
     start: [],
     pause: [],
     finish: [],
-    sync: []
+    pushExpression: []
 }, commandListenerID, lastPingAt = null;
 
 /**
@@ -426,8 +426,16 @@ exports.TrainingSessions = {
                 return;
             }
 
-            _call('liveUpdt', [data.timestamp, data.duration, data.speed
-                , Utils.round2(data.distance), data.spm, Utils.round2(data.efficiency), data.start], status);
+            _call('liveUpdate', [/* 0 = */ data.timestamp
+                , /* 1 = */ null /* duration, was deprecated */
+                , /* 2 = */ data.speed
+                , /* 3 = */ Utils.round2(data.distance)
+                , /* 4 = */ data.spm
+                , /* 5 = */ Utils.round2(data.efficiency)
+                , /* 6 = */ null /* start, deprecated */
+                , /* 7 = */ data.hr
+                , /* 8 = */ data.split
+            ], status);
         },
 
         commandSynced: function (id) {
@@ -446,16 +454,23 @@ exports.TrainingSessions = {
             var sub = asteroid.subscribe('coachRemoteCommands');
             commandListenerID = sub.id;
 
-            asteroid.ddp.on("added", function (collection, id, fields) {
-                console.log('Element added to collection collection', collection);
-                console.log(id);
-                console.log(fields);
+            asteroid.ddp.on("added", function (msg) {
+                if (msg.collection !== 'liveCommands')
+                    return;
+                var record = msg.fields;
+                var listeners = liveListeners[record.command] || [];
+
+                for (var lst = 0, lstLen = listeners.length; lst < lstLen; lst++) {
+                    listeners[lst].apply({}, [msg.id, record.payload]);
+                }
             });
 
             asteroid.ddp.on("changed", function (msg) {
 
-                if (msg.collection !== "liveDevices")
+                if (msg.collection !== "liveDevices") {
+                    console.log(msg.collection);
                     return;
+                }
 
                 if (!msg.fields.commands)
                     return;

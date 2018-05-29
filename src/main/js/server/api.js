@@ -365,12 +365,29 @@ exports.User = {
     isLiveUpdate: isLiveUpdate
 };
 
-var liveListeners = {
-    start: [],
-    pause: [],
-    finish: [],
-    pushExpression: []
-}, commandListenerID, lastPingAt = null;
+var liveListeners, commandListenerID, lastPingAt = null;
+
+var resetListeners = function () {
+    liveListeners = {
+        start: [],
+        pause: [],
+        finish: [],
+        startSplit: [],
+        stopSplit: [],
+        pushExpression: []
+    };
+};
+
+exports.LiveEvents = {
+    START: "start",
+    PAUSE: "pause",
+    FINISH: "finish",
+    START_SPLIT: "startSplit",
+    STOP_SPLIT: "stopSplit",
+    PUSH_EXPRESSION: "pushExpression"
+};
+
+resetListeners();
 
 /**
  * Training Session methods.
@@ -402,11 +419,11 @@ exports.TrainingSessions = {
             _call('deviceDisconnected');
         },
 
-        started: function (startedAt) {
+        started: function (startedAt, groupKey, expression) {
             if (!isLiveUpdate())
                 return;
 
-            _call('deviceStarted', startedAt)
+            _call('deviceStarted', startedAt, groupKey, expression)
         },
 
         finished: function () {
@@ -438,11 +455,11 @@ exports.TrainingSessions = {
             ], status);
         },
 
-        commandSynced: function (id) {
+        commandSynced: function (id, type, payload) {
             if (!isLiveUpdate())
                 return;
 
-            _call('commandSyncedInDevice', id)
+            _call('commandSyncedInDevice', id, type, payload)
         },
 
         startListening: function () {
@@ -518,12 +535,7 @@ exports.TrainingSessions = {
         },
 
         clearCommandListeners: function () {
-            liveListeners = {
-                start: [],
-                pause: [],
-                finish: [],
-                sync: []
-            }
+            resetListeners()
         }
     }
 };

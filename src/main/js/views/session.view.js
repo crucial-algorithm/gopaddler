@@ -201,8 +201,25 @@ SessionView.prototype.render = function (page, context, options) {
 
     session.setSessionStart(startAt);
     session.persist();
-    Api.TrainingSessions.live.started(startAt, self.groupKey);
+    Api.TrainingSessions.live.started(startAt, self.groupKey, self.expression);
 
+    Api.TrainingSessions.live.on(Api.LiveEvents.START_SPLIT, function (commandId, payload) {
+        console.log('start split', commandId);
+        splits.increment();
+        Api.TrainingSessions.live.commandSynced(commandId, Api.LiveEvents.START_SPLIT, {
+            distance: location.distance,
+            split: payload.split
+        });
+    });
+
+    Api.TrainingSessions.live.on(Api.LiveEvents.STOP_SPLIT, function (commandId, payload) {
+        console.log('stop split', commandId);
+        splits.increment();
+        Api.TrainingSessions.live.commandSynced(commandId, Api.LiveEvents.STOP_SPLIT, {
+            distance: location.distance,
+            split: payload.split
+        });
+    });
 
     // -- start splits immediately
     if (self.hasSplitsDefined && !self.isWarmUpFirst) {
@@ -244,13 +261,19 @@ SessionView.prototype.render = function (page, context, options) {
     strokeDetector = new StrokeDetector(calibration, null, self.debug(session));
     strokeDetector.onStrokeRateChanged(function (value, interval) {
         if (paused) return;
+
+        if (context.isDev()) {
+            value = utils.getRandomInt(60, 120);
+            interval = 60 / value * 1000;
+        }
+
         spm = {value: value, interval: interval};
     });
     strokeDetector.start();
 
     // -- listen to server side commands
     var isRemoteCommand = false;
-    Api.TrainingSessions.live.on('finish', function (commandId) {
+    Api.TrainingSessions.live.on(Api.LiveEvents.FINISH, function (commandId) {
         Api.TrainingSessions.live.commandSynced(commandId);
         isRemoteCommand = true;
         clear();

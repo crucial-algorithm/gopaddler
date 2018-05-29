@@ -142,6 +142,13 @@ Splits.prototype.nextSplit = function () {
 
 };
 
+/**
+ * Used when in free session coach wants to store a split
+ */
+Splits.prototype.increment = function () {
+    this.position++;
+};
+
 
 Splits.prototype.zeroPad = function (value) {
     if (value < 10) {

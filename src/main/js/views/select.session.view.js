@@ -65,21 +65,15 @@ SelectSessionView.prototype.render = function (page, context) {
     var expressions = {};
     Api.TrainingSessions.live.startListening();
 
-    Api.TrainingSessions.live.on('start', function (commandId, expression) {
+    Api.TrainingSessions.live.on(Api.LiveEvents.START, function (commandId, expression) {
         console.log('start session', expression, "[", commandId, "]");
-
-        if (expression && !expressions[expression]) {
-            console.log("expression", expression, "not found");
-            Api.TrainingSessions.live.commandSynced(commandId);
-            return;
-        }
 
         $warmUpFirst.prop('checked', false);
         Api.TrainingSessions.live.commandSynced(commandId);
-        start(expression, expressions[expression], null, commandId);
+        start(expression.expression, expression.splits , null, null);
     });
 
-    Api.TrainingSessions.live.on('pushExpression', function (commandId, session) {
+    Api.TrainingSessions.live.on(Api.LiveEvents.PUSH_EXPRESSION, function (commandId, session) {
         expressions[session.expression] = session.splits;
         Api.TrainingSessions.live.commandSynced(commandId);
         console.log('sync session', session)

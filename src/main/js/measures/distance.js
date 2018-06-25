@@ -20,9 +20,9 @@ Distance.prototype.calculate = function (position) {
         return this.distance;
     }
 
-    if (GPS.isLessThanMinMovement(this.previous, position)) {
-        return this.distance;
-    }
+    // if (GPS.isLessThanMinMovement(this.previous, position)) {
+    //     return this.distance;
+    // }
 
     this.distance += GPS.calcDistance(this.previous, position);
 

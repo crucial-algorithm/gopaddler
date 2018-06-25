@@ -98,6 +98,12 @@ var ddl = [
         ["ALTER TABLE settings add column gps_rate integer default 0"],
         ["ALTER TABLE session_data add column heart_rate INTEGER default 0"],
         ["UPDATE settings SET version = 7"]
+    ],
+
+    // v.1.0
+    [
+        ["ALTER TABLE settings add column heart_rate integer default 200"],
+        ["UPDATE settings SET version = 8"]
     ]
 
 ];

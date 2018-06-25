@@ -29,7 +29,7 @@ function emulateCordova () {
             success({insertId: 1234});
         } else if (sql === "SELECT * FROM settings") {
             var data = [
-                {version: 1, units: 'K', black_and_white: false, restore_layout: true, portrait_mode: __IS_PORTRAIT_MODE__, gps_rate: 0}
+                {version: 1, units: 'K', black_and_white: false, restore_layout: true, portrait_mode: __IS_PORTRAIT_MODE__, gps_rate: 0, max_heart_rate: 200}
             ];
             success({
                 rows: {

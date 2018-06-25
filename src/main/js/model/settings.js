@@ -9,7 +9,7 @@ var CONSTANTS  = {
 
 function Settings(version, units, syncOnlyOnWifi, restoreLayout, showTouchGestures
     , showCalibrationTips, default_session_filter, default_start_date, default_end_date
-    , showBlackAndWhite, portraitMode, gpsRate) {
+    , showBlackAndWhite, portraitMode, gpsRate, maxHeartRate) {
     this._version = version;
     this._units = units;
     this._restoreLayout = restoreLayout;
@@ -21,7 +21,8 @@ function Settings(version, units, syncOnlyOnWifi, restoreLayout, showTouchGestur
     this._showBlackAndWhite = showBlackAndWhite;
     this._portraitMode = portraitMode;
     this._portraitMode = portraitMode;
-    this._gpsRefreshRate= gpsRate;
+    this._gpsRefreshRate = gpsRate;
+    this._maxHeartRate = maxHeartRate;
 }
 
 Settings.prototype.getVersion = function() {
@@ -116,6 +117,13 @@ Settings.prototype.setGpsRefreshRate = function(rate) {
     this._gpsRefreshRate = rate;
 };
 
+Settings.prototype.getMaxHeartRate = function() {
+    return this._maxHeartRate;
+};
+
+Settings.prototype.setMaxHeartRate = function(rate) {
+    this._maxHeartRate = rate;
+};
 
 
 Settings.prototype.touchGesturesShown = function () {
@@ -150,7 +158,8 @@ function loadSettings() {
                 row.default_end_date,
                 row.black_and_white,
                 row.portrait_mode === 1,
-                row.gps_rate
+                row.gps_rate,
+                row.max_heart_rate
             ));
     }, function error(e) {
         console.log('error loding settings... defaulting');

@@ -14,6 +14,7 @@ var SelectSessionView = require('./views/select.session.view').SelectSessionView
 var LoginWithPassword = require('./views/login.with.password.view').LoginWithPasswordView;
 var ChooseBoatView = require('./views/choose.boat.view').ChooseBoatView;
 var DefineGPSSpeedView = require('./views/define.gps.update.rate.view').DefineGPSSpeedView;
+var DefineMaxHeartRateView = require('./views/define.max.heart.rate.view').DefineMaxHeartRateView;
 var Api = require('./server/api');
 var utils = require('./utils/utils.js');
 var global = require('./global.js');
@@ -179,6 +180,12 @@ App.controller('define-gps-update-rate', function (page, request) {
     analytics.setView('define-gps-update-rate');
     enrichPageArg(page);
     new DefineGPSSpeedView(page, context);
+});
+
+App.controller('define-max-heart-rate', function (page, request) {
+    analytics.setView('define-max-heart-rate');
+    enrichPageArg(page);
+    new DefineMaxHeartRateView(page, context);
 });
 
 function onDeviceReady() {

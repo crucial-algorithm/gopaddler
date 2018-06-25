@@ -287,7 +287,7 @@ body {
     padding-right: 2%;
 }
 
-.settings-current-gps-rate {
+.settings-current-gps-rate, .settings-current-max-heart-rate {
     display: table-cell;
     vertical-align: middle;
     width: 30%;

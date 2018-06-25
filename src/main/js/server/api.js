@@ -358,6 +358,11 @@ exports.User = {
         return _call('saveUserBoat', choice);
     },
 
+    saveMaxHeartRate: function (choice) {
+        asteroid.user.profile.maxHeartRate = choice;
+        return _call('saveMaxHeartRate', choice);
+    },
+
     hasCoach: function () {
         return asteroid.user.hasCoach === true;
     },
@@ -373,7 +378,6 @@ var resetListeners = function () {
         pause: [],
         finish: [],
         startSplit: [],
-        stopSplit: [],
         pushExpression: []
     };
 };
@@ -419,11 +423,11 @@ exports.TrainingSessions = {
             _call('deviceDisconnected');
         },
 
-        started: function (startedAt, groupKey, expression) {
+        started: function (startedAt, expression) {
             if (!isLiveUpdate())
                 return;
 
-            _call('deviceStarted', startedAt, groupKey, expression)
+            _call('deviceStarted', startedAt, expression)
         },
 
         finished: function () {

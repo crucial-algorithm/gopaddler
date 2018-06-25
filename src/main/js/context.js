@@ -172,6 +172,15 @@ Context.prototype.setGpsRefreshRate = function (rate) {
     return this._settings.setGpsRefreshRate(rate);
 };
 
+Context.prototype.getMaxHearthRate = function () {
+    return this._settings.getMaxHeartRate();
+};
+
+Context.prototype.setMaxHeartRate = function (rate) {
+    return this._settings.setMaxHeartRate(rate);
+};
+
+
 
 Context.prototype.render = function (page, template) {
     var $page = $(page), $content;
@@ -186,7 +195,8 @@ Context.prototype.render = function (page, template) {
         App.back();
     });
 
-    $page.find('[data-back]').off('click').on('click', function () {
+    $page.find('[data-back]:not([data-manual-back])').off('click').on('click', function () {
+        console.log('back');
         App.back();
     })
 };

@@ -17,6 +17,7 @@ function SettingsView(page, context, settings) {
         , $blackAndWhite = $('#black-and-white', page)
         , $calibrationHelp = $('.settings-calibrate-help', page)
         , $gpsUpdateRate = $('#gps-update-rate', page)
+        , $maxHeartRate = $('#max-heart-rate', page)
         , $layout = $('#layout', page)
         , $portraitMode = $('#portrait-mode', page);
 
@@ -54,6 +55,10 @@ function SettingsView(page, context, settings) {
 
     $gpsUpdateRate.on('tap', function () {
         App.load('define-gps-update-rate');
+    });
+
+    $maxHeartRate.on('tap', function () {
+        App.load('define-max-heart-rate');
     });
 
     $logout.on('tap', function () {
@@ -162,6 +167,7 @@ function SettingsView(page, context, settings) {
     $page.on('appShow', function () {
         var rate = context.getGpsRefreshRate();
         $('.settings-current-gps-rate').text(rate === 0 ? 'Auto' : rate + " sec");
+        $('.settings-current-max-heart-rate').text(context.getMaxHearthRate());
     })
 }
 

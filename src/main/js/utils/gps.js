@@ -31,7 +31,7 @@ GPS.prototype.start = function() {
             self.counter++;
             return;
         }
-        
+
         if (position.coords.accuracy > 10) return;
 
         // make sure that the reading has the necessary precision
@@ -137,12 +137,12 @@ GPS.calcDistance = function (starting, ending) {
 /**
  * Check if position shifted at least 5 or 10 meters (depending or accuracy)
  *
- * @param starting      previous position
+ * @param distance      actual distance, based on GPS.calcDistance
  * @param ending        current position
  * @returns {boolean}
  */
-GPS.isLessThanMinMovement = function (starting, ending) {
-    return GPS.calcDistance(starting, ending) < (ending.coords.accuracy < 10 ? 0.005 : 0.01);
+GPS.isLessThanMinMovement = function (distance, ending) {
+    return distance < (ending.coords.accuracy < 10 ? 0.005 : 0.01);
 };
 
 exports.GPS = GPS;

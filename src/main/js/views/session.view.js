@@ -38,8 +38,7 @@ var SMALL = 'small', LARGE = 'large';
  * @param options Object {expression: String
  *             , splits: Array
  *             , isWarmUpFirst: boolean
- *             , remoteScheduledSessionId: String
- *             , groupKey: String}
+ *             , remoteScheduledSessionId: String}
  * @constructor
  */
 function SessionView(page, context, options) {
@@ -109,7 +108,6 @@ SessionView.prototype.render = function (page, context, options) {
     self.inWarmUp = self.hasSplitsDefined && self.isWarmUpFirst;
     self.splitsDefinition = options.splits;
     self.expression = options.expression;
-    self.groupKey = options.groupKey;
 
     session.setScheduledSessionId(options.remoteScheduledSessionId);
 
@@ -178,6 +176,7 @@ SessionView.prototype.render = function (page, context, options) {
             large.setValue("speed", location.speed);
         }
 
+
         // store data
         new SessionDetail(session.getId(), timestamp, location.distance, location.speed, spm.value
             , location.efficiency, location.latitude, location.longitude, heartRate, splits.getPosition()
@@ -185,8 +184,12 @@ SessionView.prototype.render = function (page, context, options) {
 
         iterator.next();
         if (iterator.locked()) {
+            if (context.isDev()) {
+                spm.value = utils.getRandomInt(60, 120);
+                location.efficiency = 60 / value * 1000;
+                heartRate = utils.getRandomInt(140, 200);
+            }
             Api.TrainingSessions.live.update({
-                group: self.groupKey,
                 spm: spm.value,
                 timestamp: timestamp,
                 distance: location.distance,
@@ -201,21 +204,12 @@ SessionView.prototype.render = function (page, context, options) {
 
     session.setSessionStart(startAt);
     session.persist();
-    Api.TrainingSessions.live.started(startAt, self.groupKey, self.expression);
+    Api.TrainingSessions.live.started(startAt, self.expression);
 
     Api.TrainingSessions.live.on(Api.LiveEvents.START_SPLIT, function (commandId, payload) {
         console.log('start split', commandId);
         splits.increment();
         Api.TrainingSessions.live.commandSynced(commandId, Api.LiveEvents.START_SPLIT, {
-            distance: location.distance,
-            split: payload.split
-        });
-    });
-
-    Api.TrainingSessions.live.on(Api.LiveEvents.STOP_SPLIT, function (commandId, payload) {
-        console.log('stop split', commandId);
-        splits.increment();
-        Api.TrainingSessions.live.commandSynced(commandId, Api.LiveEvents.STOP_SPLIT, {
             distance: location.distance,
             split: payload.split
         });
@@ -446,7 +440,7 @@ SessionView.prototype.flushDebugBuffer = function () {
 };
 
 SessionView.prototype.createSession = function (calibration) {
-    var session = new Session(/* session start = */ null
+    return new Session(/* session start = */ null
         , calibration.getAngleZ()
         , calibration.getNoiseX()
         , calibration.getNoiseZ()
@@ -454,8 +448,6 @@ SessionView.prototype.createSession = function (calibration) {
         , calibration.getFactorZ()
         , calibration.getPredominant()
     );
-
-    return session;
 };
 
 SessionView.prototype.confirm = function (onresume, onfinish) {

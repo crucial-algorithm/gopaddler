@@ -70,7 +70,7 @@ SelectSessionView.prototype.render = function (page, context) {
 
         $warmUpFirst.prop('checked', false);
         Api.TrainingSessions.live.commandSynced(commandId);
-        start(expression.expression, expression.splits , null, null);
+        start(expression.expression, expression.splits , null);
     });
 
     Api.TrainingSessions.live.on(Api.LiveEvents.PUSH_EXPRESSION, function (commandId, session) {
@@ -80,10 +80,15 @@ SelectSessionView.prototype.render = function (page, context) {
     });
 
     $page.on('appBeforeBack', function () {
-        console.log('appBeforeBack');
         clearInterval(self.deviceActiveIntervalId);
         Api.TrainingSessions.live.deviceDisconnected();
         Api.TrainingSessions.live.clearCommandListeners();
+        setTimeout(function () {
+            App.load('home', undefined, undefined, function () {
+                App.removeFromStack();
+            });
+        }, 1);
+        return false;
     });
 
     $list.on('tap', 'li', function selectSessionHandler(e) {
@@ -106,9 +111,9 @@ SelectSessionView.prototype.render = function (page, context) {
 
     $start.on('tap', function () {
         if (session)
-            start(session.getExpression(), session.getSplits(), session.getId(), null);
+            start(session.getExpression(), session.getSplits(), session.getId());
         else
-            start(null, null, null, null);
+            start(null, null, null);
     });
 
     $('.select-session-play input').on('change', function () {
@@ -135,17 +140,15 @@ SelectSessionView.prototype.render = function (page, context) {
      * @param expression
      * @param splits
      * @param remoteScheduledSessionId
-     * @param groupKey                  Id that identifies this device was started under a specific command
      */
-    function start(expression, splits, remoteScheduledSessionId, groupKey) {
+    function start(expression, splits, remoteScheduledSessionId) {
         clearInterval(self.deviceActiveIntervalId);
         Api.TrainingSessions.live.clearCommandListeners();
         context.navigate('session', false, {
             expression: expression,
             splits: splits,
             isWarmUpFirst: $warmUpFirst.is(':checked'),
-            remoteScheduledSessionId: remoteScheduledSessionId,
-            groupKey: groupKey
+            remoteScheduledSessionId: remoteScheduledSessionId
         });
     }
 

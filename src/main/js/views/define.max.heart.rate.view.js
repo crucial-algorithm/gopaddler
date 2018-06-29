@@ -1,4 +1,4 @@
-var settings = require('../model/settings');
+var Settings = require('../model/settings');
 var template = require('./define.max.heart.rate.art.html');
 var Api = require('../server/api');
 
@@ -25,9 +25,10 @@ function DefineMaxHeartRateView(page, context) {
 
         Api.User.saveMaxHeartRate(parseInt(selected));
         context.setMaxHeartRate(selected);
+        Settings.updateMaxHeartRate(selected);
     });
 
-    page.onShown.then(function(){
+    page.onShown.then(function () {
         $('li[data-option="' + current + '"]').addClass('selected');
         location.href="#";
         location.href="#initial-selected-value";

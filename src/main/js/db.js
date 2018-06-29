@@ -102,7 +102,7 @@ var ddl = [
 
     // v.1.0
     [
-        ["ALTER TABLE settings add column heart_rate integer default 200"],
+        ["ALTER TABLE settings add column max_heart_rate integer default 200"],
         ["UPDATE settings SET version = 8"]
     ]
 

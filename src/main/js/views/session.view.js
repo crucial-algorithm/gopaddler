@@ -230,7 +230,11 @@ SessionView.prototype.render = function (page, context, options) {
 
 
     // -- Handle GPS sensor data
-    var location = {timestamp: 0}, spm = {value: 0, interval: 0};
+    var location = {
+        speed: 0, pace: 0, efficiency: 0, distance: 0
+        , latitude: 0, longitude: 0
+        , timestamp: new Date().getTime()
+    }, spm = {value: 0, interval: 0};
     gps.listen(function (position) {
         if (paused) return;
 

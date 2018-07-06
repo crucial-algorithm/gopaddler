@@ -53,6 +53,11 @@ function SessionView(page, context, options) {
 SessionView.prototype.render = function (page, context, options) {
     var self = this;
     self.isDebugEnabled = !!Api.User.getProfile().debug;
+    if (context.isDev()) {
+        self.development = {
+            distance: 0
+        }
+    }
 
     var $page = $(page);
     var calibration = Calibration.load(context.isPortraitMode()) || Calibration.blank();
@@ -162,6 +167,10 @@ SessionView.prototype.render = function (page, context, options) {
     var startAt = timer.start(function (value, /* current timestamp = */ timestamp, duration) {
         if (paused) return;
 
+        if (context.isDev()) {
+            heartRate = utils.getRandomInt(140, 200);
+        }
+
         splits.setTime(timestamp, duration);
 
         top.setValue("timer", value);
@@ -184,11 +193,6 @@ SessionView.prototype.render = function (page, context, options) {
 
         iterator.next();
         if (iterator.locked()) {
-            if (context.isDev()) {
-                spm.value = utils.getRandomInt(60, 120);
-                location.efficiency = 60 / value * 1000;
-                heartRate = utils.getRandomInt(140, 200);
-            }
             Api.TrainingSessions.live.update({
                 spm: spm.value,
                 timestamp: timestamp,
@@ -211,9 +215,12 @@ SessionView.prototype.render = function (page, context, options) {
         splits.increment();
         Api.TrainingSessions.live.commandSynced(commandId, Api.LiveEvents.START_SPLIT, {
             distance: location.distance,
-            split: payload.split
+            split: payload.split,
+            gap: Date.now() - location.timestamp, // difference between communication and actual reading from GPS
+            speed: location.speed,
+            device: Api.User.getId()
         });
-    });
+    }, false);
 
     // -- start splits immediately
     if (self.hasSplitsDefined && !self.isWarmUpFirst) {
@@ -233,6 +240,12 @@ SessionView.prototype.render = function (page, context, options) {
 
         location.distance = distance.calculate(position);
         location.speed = speed.calculate(position);
+
+        if (context.isDev()) {
+            location.speed = 12;
+            location.distance += (self.development.distance + location.speed * (1/3600));
+            console.log(location.distance);
+        }
 
         location.efficiency = strokeEfficiency.calculate(location.speed, spm.interval);
         location.pace = pace.calculate(location.speed);
@@ -271,7 +284,7 @@ SessionView.prototype.render = function (page, context, options) {
         Api.TrainingSessions.live.commandSynced(commandId);
         isRemoteCommand = true;
         clear();
-    });
+    }, false);
 
     // -- refresh screen
     self.uiIntervalId = setInterval(function refreshUI() {
@@ -327,6 +340,7 @@ SessionView.prototype.render = function (page, context, options) {
         document.PREVENT_SYNC = false;
 
         clearInterval(self.uiIntervalId);
+        clearInterval(self.syncClockInterval);
         timer.stop();
         gps.stop();
         strokeDetector.stop();
@@ -396,6 +410,12 @@ SessionView.prototype.render = function (page, context, options) {
     $page.on('tap', function () {
         unlock.show();
     });
+
+
+    self.syncClockInterval = setInterval(function () {
+        Api.TrainingSessions.live.syncClock(Api.User.getId());
+    }, 300000);
+
 };
 
 SessionView.prototype.debug = function (session) {

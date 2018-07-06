@@ -64,6 +64,7 @@ SelectSessionView.prototype.render = function (page, context) {
 
     var expressions = {};
     Api.TrainingSessions.live.startListening();
+    Api.TrainingSessions.live.syncClock(Api.User.getId());
 
     Api.TrainingSessions.live.on(Api.LiveEvents.START, function (commandId, expression) {
         console.log('start session', expression, "[", commandId, "]");
@@ -71,13 +72,13 @@ SelectSessionView.prototype.render = function (page, context) {
         $warmUpFirst.prop('checked', false);
         Api.TrainingSessions.live.commandSynced(commandId);
         start(expression.expression, expression.splits , null);
-    });
+    }, false);
 
     Api.TrainingSessions.live.on(Api.LiveEvents.PUSH_EXPRESSION, function (commandId, session) {
         expressions[session.expression] = session.splits;
         Api.TrainingSessions.live.commandSynced(commandId);
         console.log('sync session', session)
-    });
+    }, false);
 
     $page.on('appBeforeBack', function () {
         clearInterval(self.deviceActiveIntervalId);

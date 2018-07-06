@@ -373,13 +373,19 @@ exports.User = {
 var liveListeners, commandListenerID, lastPingAt = null;
 
 var resetListeners = function () {
+    var syncClockListeners = (liveListeners || {}).syncClock ;
     liveListeners = {
         start: [],
         pause: [],
         finish: [],
         startSplit: [],
-        pushExpression: []
+        pushExpression: [],
+        syncClock: []
     };
+
+    if (syncClockListeners && syncClockListeners.length > 0) {
+        liveListeners.syncClock = syncClockListeners;
+    }
 };
 
 exports.LiveEvents = {
@@ -388,7 +394,8 @@ exports.LiveEvents = {
     FINISH: "finish",
     START_SPLIT: "startSplit",
     STOP_SPLIT: "stopSplit",
-    PUSH_EXPRESSION: "pushExpression"
+    PUSH_EXPRESSION: "pushExpression",
+    SYNC_CLOCK: "syncClock"
 };
 
 resetListeners();
@@ -437,6 +444,12 @@ exports.TrainingSessions = {
             _call('deviceFinished')
         },
 
+        syncClock: function (id) {
+            if (!isLiveUpdate())
+                return;
+            _call('syncDeviceClock', id)
+        },
+
         update: function (data, status) {
 
             if (!isLiveUpdate())
@@ -450,7 +463,7 @@ exports.TrainingSessions = {
             _call('liveUpdate', [/* 0 = */ data.timestamp
                 , /* 1 = */ null /* duration, was deprecated */
                 , /* 2 = */ data.speed
-                , /* 3 = */ Utils.round2(data.distance)
+                , /* 3 = */ Utils.round(data.distance, 4)
                 , /* 4 = */ data.spm
                 , /* 5 = */ Utils.round2(data.efficiency)
                 , /* 6 = */ null /* start, deprecated */
@@ -530,10 +543,14 @@ exports.TrainingSessions = {
          * Register callbacks for coach commands
          * @param event
          * @param callback
+         * @param {Boolean} clear
          */
-        on: function (event, callback) {
+        on: function (event, callback, clear) {
             if (!isLiveUpdate())
                 return;
+
+            if (clear === true)
+                liveListeners[event] = [];
 
             liveListeners[event].push(callback);
         },

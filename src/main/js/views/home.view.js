@@ -82,9 +82,13 @@ function HomeView(page, context, request) {
 
 
     // check if we are comming from calibration and show dialog if that's the case
-   if (request.from === 'calibration') {
-       showFirstCalibrationCompletedModal(context);
-   }
+    if (request.from === 'calibration') {
+        showFirstCalibrationCompletedModal(context);
+    }
+
+    Api.TrainingSessions.live.on(Api.LiveEvents.SYNC_CLOCK, function (id, payload) {
+        Api.TrainingSessions.live.commandSynced(id, Api.LiveEvents.SYNC_CLOCK, {begin: payload.begin, device: Api.User.getId()})
+    }, true);
 }
 
 HomeView.prototype.updateLastSessionDate = function () {

@@ -10,7 +10,7 @@ if (viewMode === 'portrait') {
 
 var CONFIG = {
     common: {
-        version: "1.0.0d"
+        version: "1.0.0"
     },
     dev : {
         server: "http://local.gopaddler.com:3000",

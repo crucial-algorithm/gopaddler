@@ -177,7 +177,7 @@ function saveSettings(units, showBlackAndWhite, restoreLayout, portraitMode) {
 
 function updateMaxHeartRate(value) {
     var connection = db.getConnection();
-    connection.executeSql("update settings set max_hear_rate = ?", [value]);
+    connection.executeSql("update settings set max_heart_rate = ?", [value]);
 }
 
 function updateGpsRefreshRate(rate) {

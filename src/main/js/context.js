@@ -196,7 +196,6 @@ Context.prototype.render = function (page, template) {
     });
 
     $page.find('[data-back]:not([data-manual-back])').off('click').on('click', function () {
-        console.log('back');
         App.back();
     })
 };

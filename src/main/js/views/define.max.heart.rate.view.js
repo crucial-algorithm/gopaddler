@@ -29,9 +29,10 @@ function DefineMaxHeartRateView(page, context) {
     });
 
     page.onShown.then(function () {
-        $('li[data-option="' + current + '"]').addClass('selected');
-        location.href="#";
-        location.href="#initial-selected-value";
+        var $li = $('li[data-option="' + current + '"]').addClass('selected');
+
+        $li[0].scrollIntoView();
+
     })
 }
 

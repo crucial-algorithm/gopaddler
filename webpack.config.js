@@ -16,6 +16,10 @@ var CONFIG = {
         server: "http://local.gopaddler.com:3000",
         endpoint: "ws://local.gopaddler.com:3000/websocket"
     },
+    "remote-dev": {
+        server: "https://dev.gopaddler.com",
+        endpoint: "wss://dev.gopaddler.com/websocket"
+    },
     prod: {
         server: "https://app.gopaddler.com",
         endpoint: "wss://app.gopaddler.com/websocket"
@@ -35,7 +39,7 @@ function extend() {
 }
 
 
-if (env !== 'dev' && env !== 'prod')
+if (env !== 'dev' && env !== 'prod' & env !== 'remote-dev')
     throw 'Unknown env. Allowed are: "dev" or "prod" ';
 
 var config = extend({}, CONFIG.common, CONFIG[env]);

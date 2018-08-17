@@ -7,6 +7,7 @@ var landscape = require('./home.art.html');
 var portrait = require('./home.portrait.art.html');
 var Chart = require('chart.js');
 var Utils = require('../utils/utils');
+var Settings = require('../model/settings');
 require('chartjs-plugin-datalabels');
 
 function HomeView(page, context, request) {
@@ -86,9 +87,18 @@ function HomeView(page, context, request) {
         showFirstCalibrationCompletedModal(context);
     }
 
+    // reply with current time in order to allow server to calculate the difference between device and server clock
     Api.TrainingSessions.live.on(Api.LiveEvents.SYNC_CLOCK, function (id, payload) {
-        Api.TrainingSessions.live.commandSynced(id, Api.LiveEvents.SYNC_CLOCK, {begin: payload.begin, device: Api.User.getId()})
+
+        Api.TrainingSessions.live.commandSynced(id, Api.LiveEvents.SYNC_CLOCK, {begin: payload.begin, device: Api.User.getId(), clock: Date.now()})
     }, true);
+
+    Api.TrainingSessions.live.on(Api.LiveEvents.CLOCK_SYNCED, function (id, payload) {
+        Settings.updateServerClockGap(payload.serverClock);
+        context.setServerClockGap(payload.serverClock);
+        Api.TrainingSessions.live.commandSynced(id)
+    }, true);
+
 }
 
 HomeView.prototype.updateLastSessionDate = function () {

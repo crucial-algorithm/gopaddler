@@ -29,6 +29,7 @@ function Session(sessionStart, angleZ, noiseX, noiseZ, factorX, factorZ, axis, d
     this.topEfficiency = topEfficiency;
     this.avgEfficiency = avgEfficiency;
     this.synced = false;
+    this.serverClockGap = 0;
 
     this.expression = null;
 
@@ -208,6 +209,14 @@ Session.prototype.setSyncedAt = function (syncedAt) {
     this.syncedAt = syncedAt;
 };
 
+Session.prototype.getServerClockGap = function () {
+    return this.serverClockGap;
+};
+
+Session.prototype.setServerClockGap = function (gap) {
+    return this.serverClockGap = gap;
+};
+
 
 
 
@@ -240,6 +249,7 @@ Session.prototype.createAPISession = function () {
 
         defer.resolve({
             timestamp: new Date(self.getSessionStart()).getTime(),
+            serverClockGap: self.getServerClockGap(),
             data: dataPoints,
             angleZ: self.getAngleZ(),
             noiseX: self.getNoiseX(),
@@ -259,8 +269,8 @@ Session.prototype.createAPISession = function () {
 
 Session.prototype.persist = function () {
     var self = this;
-    self.connection.executeSql("INSERT INTO session (id, session_start, anglez, noisex, noisez, factorx, factorz, axis, dbg_file) VALUES (?,?,?,?,?,?,?,?,?)",
-        [this.id, this.sessionStart, this.angleZ, this.noiseX, this.noiseZ, this.factorX, this.factorZ, this.axis, this.debugFile], function (res) {
+    self.connection.executeSql("INSERT INTO session (id, session_start, anglez, noisex, noisez, factorx, factorz, axis, dbg_file, server_clock_gap) VALUES (?,?,?,?,?,?,?,?,?,?)",
+        [this.id, this.sessionStart, this.angleZ, this.noiseX, this.noiseZ, this.factorX, this.factorZ, this.axis, this.debugFile, this.serverClockGap], function (res) {
             self.id = res.insertId;
         }, function (error) {
             console.log(error.message);
@@ -580,6 +590,7 @@ function sessionFromDbRow(data) {
     session.setSyncedAt(data.synced_at);
     session.setSynced(data.synced === 1);
     session.setExpression(data.expression);
+    session.setServerClockGap(data.server_clock_gap);
 
     return session;
 }

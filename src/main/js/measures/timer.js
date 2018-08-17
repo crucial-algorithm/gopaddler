@@ -1,6 +1,6 @@
 'use strict';
 
-function Timer() {
+function Timer(remotelyStartedAt) {
 
     this.second = 0;
     this.minute = 0;
@@ -8,6 +8,7 @@ function Timer() {
     this.duration = 0;
     this.listener = function(){};
     this.timestamp = undefined;
+    this.remotelyStartedAt = remotelyStartedAt > 0 ? remotelyStartedAt : null;
 }
 
 Timer.prototype.start = function(listener) {
@@ -43,7 +44,7 @@ Timer.prototype.timer = function(offset) {
 
     offset = offset || 0;
 
-    start = new Date().getTime();
+    start = this.remotelyStartedAt !== null ? this.remotelyStartedAt : new Date().getTime();
     self.timestamp = undefined;
     this.intervalId = setInterval(function () {
         self.timestamp = new Date().getTime();

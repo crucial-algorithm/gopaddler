@@ -15,9 +15,7 @@ var Distance = require('../measures/distance').Distance;
 var Speed = require('../measures/speed').Speed;
 var Pace = require('../measures/pace').Pace;
 var Splits = require('../measures/splits').Splits;
-
 var StrokeEfficiency = require('../measures/efficiency').StrokeEfficiency;
-
 var Field = require('../measures/field.js').Field;
 var template = require('./session.view.art.html');
 var Unlock = require('../utils/widgets/unlock').Unlock;
@@ -38,6 +36,7 @@ var SMALL = 'small', LARGE = 'large';
  * @param options Object {expression: String
  *             , splits: Array
  *             , isWarmUpFirst: boolean
+ *             , startedAt: Integer
  *             , remoteScheduledSessionId: String}
  * @constructor
  */
@@ -70,7 +69,7 @@ SessionView.prototype.render = function (page, context, options) {
     var splits;
     var strokeEfficiency = new StrokeEfficiency();
     var strokeDetector;
-    var timer = new Timer();
+    var timer = new Timer(options.startedAt);
     var paused = false;
 
     if (context.preferences().isShowBlackAndWhite()) {
@@ -164,11 +163,12 @@ SessionView.prototype.render = function (page, context, options) {
     });
 
     // -- initiate timer
+    var lastCommunicatedGPSPosition = null, lastKnownGPSPosition = null;
     var startAt = timer.start(function (value, /* current timestamp = */ timestamp, duration) {
         if (paused) return;
 
         if (context.isDev()) {
-            heartRate = utils.getRandomInt(140, 200);
+            heartRate = utils.getRandomInt(178, 182);
         }
 
         splits.setTime(timestamp, duration);
@@ -201,8 +201,12 @@ SessionView.prototype.render = function (page, context, options) {
                 efficiency: location.efficiency,
                 duration: timer.getDuration(),
                 hr: heartRate,
-                split: splits.getPosition()
+                split: splits.getPosition(),
+                locationTs: location.timestamp || 0,
+                locationChanged: locationUpdated(lastCommunicatedGPSPosition, lastKnownGPSPosition),
+                locationAccuracy: location.accuracy
             }, 'running');
+            lastCommunicatedGPSPosition = lastKnownGPSPosition;
         }
     });
 
@@ -216,7 +220,7 @@ SessionView.prototype.render = function (page, context, options) {
         Api.TrainingSessions.live.commandSynced(commandId, Api.LiveEvents.START_SPLIT, {
             distance: location.distance,
             split: payload.split,
-            gap: Date.now() - location.timestamp, // difference between communication and actual reading from GPS
+            gap: Date.now() - (location.timestamp || 0), // difference between communication and actual reading from GPS
             speed: location.speed,
             device: Api.User.getId()
         });
@@ -233,28 +237,31 @@ SessionView.prototype.render = function (page, context, options) {
     var location = {
         speed: 0, pace: 0, efficiency: 0, distance: 0
         , latitude: 0, longitude: 0
-        , timestamp: new Date().getTime()
+        , timestamp: null, accuracy: null
     }, spm = {value: 0, interval: 0};
+
     gps.listen(function (position) {
         if (paused) return;
 
         location = {speed: 0, pace: 0, efficiency: 0, distance: 0
             , latitude: 0, longitude: 0
-            , timestamp: new Date().getTime()};
+            , accuracy: position.coords.accuracy
+            , timestamp: position.timestamp};
 
         location.distance = distance.calculate(position);
         location.speed = speed.calculate(position);
 
         if (context.isDev()) {
-            location.speed = 12;
-            location.distance += (self.development.distance + location.speed * (1/3600));
-            console.log(location.distance);
+            location.speed = 36;
+            self.development.distance += (location.speed * (1/3600));
+            location.distance = self.development.distance;
         }
 
         location.efficiency = strokeEfficiency.calculate(location.speed, spm.interval);
         location.pace = pace.calculate(location.speed);
         location.latitude = position.coords.latitude;
         location.longitude = position.coords.longitude;
+        lastKnownGPSPosition = position;
     });
 
 
@@ -274,7 +281,7 @@ SessionView.prototype.render = function (page, context, options) {
         if (paused) return;
 
         if (context.isDev()) {
-            value = utils.getRandomInt(60, 120);
+            value = utils.getRandomInt(80, 84);
             interval = 60 / value * 1000;
         }
 
@@ -315,7 +322,7 @@ SessionView.prototype.render = function (page, context, options) {
 
 
         // this should not be here, but its the easiest way considering that stroke rate is updated every 1.5 sec
-        if ((new Date().getTime()) - location.timestamp > 5000) {
+        if (location.timestamp !== null && (new Date().getTime()) - location.timestamp > 5000) {
             resetGpsData();
         }
 
@@ -464,7 +471,7 @@ SessionView.prototype.flushDebugBuffer = function () {
 };
 
 SessionView.prototype.createSession = function (calibration) {
-    return new Session(/* session start = */ null
+    var session = new Session(/* session start = */ null
         , calibration.getAngleZ()
         , calibration.getNoiseX()
         , calibration.getNoiseZ()
@@ -472,6 +479,8 @@ SessionView.prototype.createSession = function (calibration) {
         , calibration.getFactorZ()
         , calibration.getPredominant()
     );
+    session.setServerClockGap(this.appContext.getServerClockGap());
+    return session;
 };
 
 SessionView.prototype.confirm = function (onresume, onfinish) {
@@ -615,6 +624,19 @@ function loadLayout() {
 
 function resetLayout() {
     window.localStorage.removeItem("layout");
+}
+
+function locationUpdated(lastCommunicatedGPSPosition, lastKnownGPSPosition) {
+    if (lastKnownGPSPosition === null) {
+        return false;
+    }
+
+    if (lastCommunicatedGPSPosition === null) {
+        return true;
+    }
+
+    return lastCommunicatedGPSPosition.coords.latitude !== lastKnownGPSPosition.coords.latitude
+        || lastCommunicatedGPSPosition.coords.longitude !== lastKnownGPSPosition.coords.longitude;
 }
 
 exports.SessionView = SessionView;

@@ -395,7 +395,8 @@ exports.LiveEvents = {
     START_SPLIT: "startSplit",
     STOP_SPLIT: "stopSplit",
     PUSH_EXPRESSION: "pushExpression",
-    SYNC_CLOCK: "syncClock"
+    SYNC_CLOCK: "syncClock",
+    CLOCK_SYNCED: 'clockSynced'
 };
 
 resetListeners();
@@ -437,11 +438,11 @@ exports.TrainingSessions = {
             _call('deviceStarted', startedAt, expression)
         },
 
-        finished: function () {
+        finished: function (finishedAt) {
             if (!isLiveUpdate())
                 return;
 
-            _call('deviceFinished')
+            _call('deviceFinished', finishedAt)
         },
 
         syncClock: function (id) {
@@ -461,14 +462,17 @@ exports.TrainingSessions = {
             }
 
             _call('liveUpdate', [/* 0 = */ data.timestamp
-                , /* 1 = */ null /* duration, was deprecated */
-                , /* 2 = */ data.speed
-                , /* 3 = */ Utils.round(data.distance, 4)
-                , /* 4 = */ data.spm
-                , /* 5 = */ Utils.round2(data.efficiency)
-                , /* 6 = */ null /* start, deprecated */
-                , /* 7 = */ data.hr
-                , /* 8 = */ data.split
+                , /*  1 = */ null /* duration, was deprecated */
+                , /*  2 = */ data.speed
+                , /*  3 = */ Utils.round(data.distance, 6)
+                , /*  4 = */ data.spm
+                , /*  5 = */ Utils.round2(data.efficiency)
+                , /*  6 = */ null /* start, deprecated */
+                , /*  7 = */ data.hr
+                , /*  8 = */ data.split
+                , /*  9 = */ data.locationTs === 0 ? 0 : Math.round(data.timestamp - data.locationTs) // send difference to save network bandwidth
+                , /* 10 = */ data.locationChanged === true
+                , /* 11 = */ data.locationAccuracy
             ], status);
         },
 

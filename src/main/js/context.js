@@ -180,7 +180,13 @@ Context.prototype.setMaxHeartRate = function (rate) {
     return this._settings.setMaxHeartRate(rate);
 };
 
+Context.prototype.getServerClockGap = function () {
+    return this._settings.getServerClockGap();
+};
 
+Context.prototype.setServerClockGap = function (gap) {
+    return this._settings.setServerClockGap(gap);
+};
 
 Context.prototype.render = function (page, template) {
     var $page = $(page), $content;

@@ -104,7 +104,15 @@ var ddl = [
     [
         ["ALTER TABLE settings add column max_heart_rate integer default 200"],
         ["UPDATE settings SET version = 8"]
+    ],
+
+    // v.1.1
+    [
+        ["ALTER TABLE settings add column server_clock_gap REAL default 0"],
+        ["ALTER TABLE session add column server_clock_gap REAL default 0"],
+        ["UPDATE settings SET version = 9"]
     ]
+
 
 ];
 
@@ -152,4 +160,4 @@ function determineDbVersion() {
 exports.init = init;
 exports.getConnection = function () {
     return connection;
-}
+};

@@ -56,11 +56,12 @@ function SessionSummaryView(page, context, sessionSummaryArguments) {
     var avgEfficiency = context.displayMetric('efficiency', session.getAvgEfficiency());
     var maxEfficiency = context.displayMetric('efficiency', session.getTopEfficiency());
 
-    Api.TrainingSessions.live.finished();
+    var now = Date.now();
+    Api.TrainingSessions.live.finished(now);
 
     Api.TrainingSessions.live.update({
         spm: avgSPM,
-        timestamp: new Date().getTime(),
+        timestamp: now,
         distance: distance,
         speed: avgSpeed,
         efficiency: avgEfficiency,

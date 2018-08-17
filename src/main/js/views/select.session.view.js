@@ -66,12 +66,12 @@ SelectSessionView.prototype.render = function (page, context) {
     Api.TrainingSessions.live.startListening();
     Api.TrainingSessions.live.syncClock(Api.User.getId());
 
-    Api.TrainingSessions.live.on(Api.LiveEvents.START, function (commandId, expression) {
-        console.log('start session', expression, "[", commandId, "]");
+    Api.TrainingSessions.live.on(Api.LiveEvents.START, function (commandId, payload) {
+        console.log('start session', payload, "[", commandId, "]");
 
         $warmUpFirst.prop('checked', false);
         Api.TrainingSessions.live.commandSynced(commandId);
-        start(expression.expression, expression.splits , null);
+        start(payload.expression, payload.splits, null, payload.startedAt - context.getServerClockGap());
     }, false);
 
     Api.TrainingSessions.live.on(Api.LiveEvents.PUSH_EXPRESSION, function (commandId, session) {
@@ -141,15 +141,17 @@ SelectSessionView.prototype.render = function (page, context) {
      * @param expression
      * @param splits
      * @param remoteScheduledSessionId
+     * @param startedAt
      */
-    function start(expression, splits, remoteScheduledSessionId) {
+    function start(expression, splits, remoteScheduledSessionId, startedAt) {
         clearInterval(self.deviceActiveIntervalId);
         Api.TrainingSessions.live.clearCommandListeners();
         context.navigate('session', false, {
             expression: expression,
             splits: splits,
             isWarmUpFirst: $warmUpFirst.is(':checked'),
-            remoteScheduledSessionId: remoteScheduledSessionId
+            remoteScheduledSessionId: remoteScheduledSessionId,
+            startedAt: startedAt
         });
     }
 

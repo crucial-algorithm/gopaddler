@@ -9,7 +9,7 @@ var CONSTANTS  = {
 
 function Settings(version, units, syncOnlyOnWifi, restoreLayout, showTouchGestures
     , showCalibrationTips, default_session_filter, default_start_date, default_end_date
-    , showBlackAndWhite, portraitMode, gpsRate, maxHeartRate) {
+    , showBlackAndWhite, portraitMode, gpsRate, maxHeartRate, serverClockGap) {
     this._version = version;
     this._units = units;
     this._restoreLayout = restoreLayout;
@@ -23,6 +23,7 @@ function Settings(version, units, syncOnlyOnWifi, restoreLayout, showTouchGestur
     this._portraitMode = portraitMode;
     this._gpsRefreshRate = gpsRate;
     this._maxHeartRate = maxHeartRate;
+    this._serverClockGap = serverClockGap;
 }
 
 Settings.prototype.getVersion = function() {
@@ -125,6 +126,18 @@ Settings.prototype.setMaxHeartRate = function(rate) {
     this._maxHeartRate = rate;
 };
 
+Settings.prototype.getServerClockGap = function() {
+    return this._serverClockGap ;
+};
+
+Settings.prototype.setServerClockGap = function(gap) {
+    if (gap === undefined ) {
+        console.log('invalid gap');
+        return;
+    }
+    this._serverClockGap = gap;
+};
+
 
 Settings.prototype.touchGesturesShown = function () {
     var connection = db.getConnection();
@@ -159,7 +172,8 @@ function loadSettings() {
                 row.black_and_white,
                 row.portrait_mode === 1,
                 row.gps_rate,
-                row.max_heart_rate
+                row.max_heart_rate,
+                row.server_clock_gap
             ));
     }, function error(e) {
         console.log('error loding settings... defaulting');
@@ -185,9 +199,15 @@ function updateGpsRefreshRate(rate) {
     connection.executeSql("update settings set gps_rate = ?", [rate]);
 }
 
+function updateServerClockGap(gap) {
+    var connection = db.getConnection();
+    connection.executeSql("update settings set server_clock_gap = ?", [gap]);
+}
+
 exports.loadSettings = loadSettings;
 exports.saveSettings = saveSettings;
 exports.updateMaxHeartRate = updateMaxHeartRate;
 exports.Settings = Settings;
 exports.updateGpsRefreshRate = updateGpsRefreshRate;
-exports.CONSTANTS  = CONSTANTS;
+exports.updateServerClockGap = updateServerClockGap;
+exports.CONSTANTS = CONSTANTS;

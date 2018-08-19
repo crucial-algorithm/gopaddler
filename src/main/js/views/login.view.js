@@ -38,7 +38,7 @@ function LoginView(page, context) {
         });
     });
 
-    $account.off('touchstart').on('touchstart', function () {
+    $account.off('touchstart click').on('touchstart click', function () {
         App.load('login-with-password')
     });
 

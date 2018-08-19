@@ -38,7 +38,7 @@ function HomeView(page, context, request) {
         App.load('sessions');
     });
 
-    $session.on('tap', function () {
+    $session.off('tap click').on('tap click', function () {
         var calibration = Calibration.load(context.isPortraitMode());
         if (calibration === undefined) {
             showNoCalibrationModal(context);

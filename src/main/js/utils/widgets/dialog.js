@@ -29,7 +29,7 @@ function render(isPortraitMode, undecorated, title, message, primary, secondary,
     var $primary = $modal.find('[data-selector="modal-primary"]');
     var $secondary = $modal.find('[data-selector="modal-secondary"]');
 
-    $primary.on('tap', function () {
+    $primary.off('tap click').on('tap click', function () {
         if (!primary)
             return;
 
@@ -37,7 +37,7 @@ function render(isPortraitMode, undecorated, title, message, primary, secondary,
         primary.callback.apply({},[]);
     });
 
-    $secondary.on('tap', function () {
+    $secondary.off('tap click').on('tap click', function () {
         if (!secondary)
             return;
 

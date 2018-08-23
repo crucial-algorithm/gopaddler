@@ -226,6 +226,11 @@ SessionView.prototype.render = function (page, context, options) {
         });
     }, false);
 
+    Api.TrainingSessions.live.on(Api.LiveEvents.FINISH_WARMUP, function (commandId, payload) {
+        finishWarmUp(payload.finishedAt);
+        Api.TrainingSessions.live.commandSynced(commandId);
+    }, false);
+
     // -- start splits immediately
     if (self.hasSplitsDefined && !self.isWarmUpFirst) {
         session.setScheduledSessionStart(session.getSessionStart());
@@ -385,11 +390,7 @@ SessionView.prototype.render = function (page, context, options) {
                 });
                 self.inWarmUp = false;
             }, function onStartImmediately() {
-
-                Dialog.hideModal();
-                splits.start(timer.getDuration(), undefined, undefined);
-                session.setScheduledSessionStart(timer.getTimestamp());
-                self.inWarmUp = false;
+                finishWarmUp.apply(self, [timer.getDuration()])
             }, function finish() {
                 clear();
             });
@@ -422,6 +423,13 @@ SessionView.prototype.render = function (page, context, options) {
         unlock.show();
     });
 
+
+    function finishWarmUp(timestamp) {
+        Dialog.hideModal();
+        splits.start(timestamp, undefined, undefined);
+        session.setScheduledSessionStart(timer.getTimestamp());
+        self.inWarmUp = false;
+    }
 
     self.syncClockInterval = setInterval(function () {
         Api.TrainingSessions.live.syncClock(Api.User.getId());

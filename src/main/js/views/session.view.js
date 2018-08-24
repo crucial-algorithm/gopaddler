@@ -345,7 +345,7 @@ SessionView.prototype.render = function (page, context, options) {
         }
     };
 
-    var tx = false;
+    var tx = false, isConfirmDialogOpen = false;
     var clear = function (callback) {
         tx = true;
         document.PREVENT_SYNC = false;
@@ -373,12 +373,18 @@ SessionView.prototype.render = function (page, context, options) {
             return true;
         }
 
+        if (isConfirmDialogOpen === true) {
+            return false
+        }
+
         if (self.inWarmUp) {
             // we started a scheduled session and we are still
             // doing our warm up, but about to begin session
 
+            isConfirmDialogOpen = true;
             self.confirmFinishWarmUp(function onStartOnMinuteTurn() {
                 Dialog.hideModal();
+                isConfirmDialogOpen = false;
                 splits.start(timer.getDuration(), Math.round(60 - timer.getDuration() / 1000 % 60), function onStart(timestamp) {
                     // save offset in session
                     session.setScheduledSessionStart(timestamp);
@@ -387,6 +393,7 @@ SessionView.prototype.render = function (page, context, options) {
             }, function onStartImmediately() {
 
                 Dialog.hideModal();
+                isConfirmDialogOpen = ƒalse;
                 splits.start(timer.getDuration(), undefined, undefined);
                 session.setScheduledSessionStart(timer.getTimestamp());
                 self.inWarmUp = false;
@@ -399,11 +406,14 @@ SessionView.prototype.render = function (page, context, options) {
             timer.pause();
             paused = true;
 
+            isConfirmDialogOpen = true;
             self.confirm(function resume() {
                 paused = false;
                 timer.resume();
                 Dialog.hideModal();
+                isConfirmDialogOpen = false;
             }, function finish() {
+                isConfirmDialogOpen = false;
                 clear();
             });
         }

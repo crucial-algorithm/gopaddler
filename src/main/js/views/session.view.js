@@ -14,11 +14,14 @@ var Timer = require('../measures/timer').Timer;
 var Distance = require('../measures/distance').Distance;
 var Speed = require('../measures/speed').Speed;
 var Pace = require('../measures/pace').Pace;
-var Splits = require('../measures/splits').Splits;
+var Splits = require('splits-handler').Splits;
 var StrokeEfficiency = require('../measures/efficiency').StrokeEfficiency;
 var Field = require('../measures/field.js').Field;
 var template = require('./session.view.art.html');
 var Unlock = require('../utils/widgets/unlock').Unlock;
+var Sound = require('../utils/sound').Sound;
+
+
 
 var DEFAULT_POSITIONS = {
     top: 'timer',
@@ -28,6 +31,8 @@ var DEFAULT_POSITIONS = {
 };
 
 var SMALL = 'small', LARGE = 'large';
+
+var sound = null;
 
 /**
  *
@@ -44,6 +49,8 @@ function SessionView(page, context, options) {
     var self = this;
     context.render(page, template({isPortraitMode: context.isPortraitMode()}));
     self.appContext = context;
+    if (sound === null)  sound = new Sound();
+
     page.onShown.then(function () {
         self.render.apply(self, [page, context, options])
     });
@@ -117,6 +124,9 @@ SessionView.prototype.render = function (page, context, options) {
 
     if (self.hasSplitsDefined) {
         splits = new Splits(self.splitsDefinition, splitsHandler);
+        splits.onStartCountDownUserNotification(function () { sound.playStartCountDown() });
+        splits.onFinishCountDownUserNotification(function () { sound.playFinishCountDown() });
+        splits.onFinishUserNotification(function () { sound.playFinish() });
     } else {
         splits = new Splits();
     }
@@ -350,7 +360,7 @@ SessionView.prototype.render = function (page, context, options) {
         }
     };
 
-    var tx = false;
+    var tx = false, isConfirmDialogOpen = false;
     var clear = function (callback) {
         tx = true;
         document.PREVENT_SYNC = false;
@@ -378,12 +388,18 @@ SessionView.prototype.render = function (page, context, options) {
             return true;
         }
 
+        if (isConfirmDialogOpen === true) {
+            return false
+        }
+
         if (self.inWarmUp) {
             // we started a scheduled session and we are still
             // doing our warm up, but about to begin session
 
+            isConfirmDialogOpen = true;
             self.confirmFinishWarmUp(function onStartOnMinuteTurn() {
                 Dialog.hideModal();
+                isConfirmDialogOpen = false;
                 splits.start(timer.getDuration(), Math.round(60 - timer.getDuration() / 1000 % 60), function onStart(timestamp) {
                     // save offset in session
                     session.setScheduledSessionStart(timestamp);
@@ -400,11 +416,14 @@ SessionView.prototype.render = function (page, context, options) {
             timer.pause();
             paused = true;
 
+            isConfirmDialogOpen = true;
             self.confirm(function resume() {
                 paused = false;
                 timer.resume();
                 Dialog.hideModal();
+                isConfirmDialogOpen = false;
             }, function finish() {
+                isConfirmDialogOpen = false;
                 clear();
             });
         }

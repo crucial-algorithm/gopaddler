@@ -383,30 +383,6 @@ function SessionsView(page, context) {
     // handle delete
     self.lock = {};
     self.progress = {};
-    $page.on('touchstart', '.session-row-delete-btn', function (e) {
-        var $el = $(event.target);
-        var sessionId = $el.attr('session-id');
-
-        if (self.lock[sessionId] === true) {
-            self.cancelDelete($el, sessionId);
-            return;
-        }
-
-        self.confirmDelete($el, sessionId);
-        e.preventDefault();
-        e.stopImmediatePropagation();
-    });
-
-    $page.on('touchstart', '.session-row-upload-btn', function (e) {
-        var $el = $(event.target);
-        var sessionId = parseInt($el.attr('session-id'))
-            , session = sessionsDict[sessionId];
-
-        self.uploadSession($el, session);
-
-        e.preventDefault();
-        e.stopImmediatePropagation();
-    });
 
     // load sessions according to user preferences
     setSessionPeriod(context.preferences().getDefaultSessionFilter());
@@ -444,6 +420,31 @@ function SessionsView(page, context) {
         });
 
         filterSessionsByPeriod(context);
+
+        $page.on('touchstart', '.session-row-delete-btn', function (e) {
+            var $el = $(event.target);
+            var sessionId = $el.attr('session-id');
+
+            if (self.lock[sessionId] === true) {
+                self.cancelDelete($el, sessionId);
+                return;
+            }
+
+            self.confirmDelete($el, sessionId);
+            e.preventDefault();
+            e.stopImmediatePropagation();
+        });
+
+        $page.on('touchstart', '.session-row-upload-btn', function (e) {
+            var $el = $(event.target);
+            var sessionId = parseInt($el.attr('session-id'))
+                , session = sessionsDict[sessionId];
+
+            self.uploadSession($el, session);
+
+            e.preventDefault();
+            e.stopImmediatePropagation();
+        });
     });
 }
 

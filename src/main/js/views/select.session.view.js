@@ -72,7 +72,7 @@ SelectSessionView.prototype.render = function (page, context) {
         $warmUpFirst.prop('checked', false);
         Api.TrainingSessions.live.commandSynced(commandId);
         start(payload.expression, payload.splits, /* RemoteSessionId = */ null
-            , payload.startedAt - context.getServerClockGap()
+            , payload.startedAt
             , /* isWarmupFirst = */ true
         );
     }, false);

@@ -459,6 +459,48 @@ exports.TrainingSessions = {
             _call('syncDeviceClock', id)
         },
 
+        /**
+         *
+         * @param changedAt             Milis, from the beginning, the split change happened
+         * @param distance
+         * @param locationAge
+         * @param speed
+         * @param wasLocationUpdated
+         * @param newSplitNbr
+         * @param currentSplit
+         * @param previous
+         */
+        splitChanged: function (changedAt, distance, locationAge, speed, wasLocationUpdated, newSplitNbr, currentSplit, previous) {
+            if (!isLiveUpdate())
+                return;
+
+            var isRecovery = true, isDistanceBased = false, isDuration = null;
+            if (currentSplit) {
+                isRecovery = currentSplit.isRecovery();
+                isDistanceBased = currentSplit.isDistanceBased();
+                isDuration = currentSplit.isDistanceBased() ? currentSplit.getDistanceInKm() * 1000 : currentSplit.getDurationInSeconds();
+            }
+
+            var wasRecovery = true, wasDistanceBased = false, wasDuration = null;
+            if (previous.split) {
+                wasRecovery = previous.split.isRecovery();
+                wasDistanceBased = previous.split.isDistanceBased();
+                wasDuration = previous.split.isDistanceBased() ? previous.split.getDistanceInKm() * 1000 : previous.split.getDurationInSeconds();
+            }
+
+            _call('splitChangedInLiveDevice', /* is finished = */ currentSplit === null, changedAt
+                , distance + (wasLocationUpdated ? locationAge * (speed / 3600000) : 0)
+                , newSplitNbr
+                , isRecovery
+                , isDistanceBased
+                , isDuration
+                , previous.position
+                , wasRecovery
+                , wasDistanceBased
+                , wasDuration
+            )
+        },
+
         update: function (data, status) {
 
             if (!isLiveUpdate())
@@ -469,8 +511,8 @@ exports.TrainingSessions = {
                 return;
             }
 
-            _call('liveUpdate', [/* 0 = */ data.timestamp
-                , /*  1 = */ null /* duration, was deprecated */
+            _call('liveUpdate', [/* 0 = */ null
+                , /*  1 = */ data.duration
                 , /*  2 = */ data.speed
                 , /*  3 = */ Utils.round(data.distance, 6)
                 , /*  4 = */ data.spm

@@ -40,21 +40,37 @@ Timer.prototype.getTimestamp = function () {
 
 Timer.prototype.timer = function(offset) {
     var self = this
-        , start, time;
+        , start, time, waitFor = 0;
 
     offset = offset || 0;
 
-    start = this.remotelyStartedAt !== null ? this.remotelyStartedAt : new Date().getTime();
+    start = this.remotelyStartedAt !== null ? this.remotelyStartedAt : Date.now();
     self.timestamp = undefined;
-    this.intervalId = setInterval(function () {
-        self.timestamp = new Date().getTime();
-        time = self.timestamp + offset - start;
-        self.duration = time;
 
-        // notify listener
-        self.listener(self.format(time), self.timestamp, time);
+    if (this.remotelyStartedAt > 0) {
+        start = this.remotelyStartedAt;
+        var milisNow = Date.now() % 1000, milisStart = start % 1000, diff = milisStart - milisNow;
+        waitFor = diff < 0 ? diff + 1000 : diff;
+    }
+    var interval = function () {
+        self.intervalId = setInterval(function () {
+            self.timestamp = Date.now();
+            time = self.timestamp + offset - start;
+            self.duration = time;
 
-    }, 1000);
+            // notify listener
+            self.listener(self.format(time), self.timestamp, time);
+
+        }, 1000);
+    };
+
+    if (waitFor > 0) {
+        setTimeout(function () {
+            interval();
+        }, waitFor);
+    } else {
+        interval();
+    }
 
     return start;
 };

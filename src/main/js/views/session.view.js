@@ -157,7 +157,6 @@ SessionView.prototype.render = function (page, context, options) {
         event.preventDefault();
     });
 
-
     $(window).on('touchmove', function (e) {
         e.preventDefault();
     });
@@ -172,6 +171,14 @@ SessionView.prototype.render = function (page, context, options) {
         heartRate = hr;
     });
 
+    // -- listen for changes in splits and notify server
+    splits.onSplitChange(function onSplitChangeListener(changedAt, newSplitNumber, previous, current) {
+        console.log('Split changed @ ', changedAt);
+        Api.TrainingSessions.live.splitChanged(changedAt * 1000
+            , location.distance, Date.now() - location.timestamp, location.speed, locationUpdated(lastCommunicatedGPSPosition, lastKnownGPSPosition)
+            , newSplitNumber, current, previous);
+    });
+
     // -- initiate timer
     var lastCommunicatedGPSPosition = null, lastKnownGPSPosition = null;
     var startAt = timer.start(function (value, /* current timestamp = */ timestamp, duration) {
@@ -182,6 +189,7 @@ SessionView.prototype.render = function (page, context, options) {
         }
 
         splits.setTime(timestamp, duration);
+        console.log('... duration => ', duration);
 
         top.setValue("timer", value);
         middle.setValue("timer", value);
@@ -237,7 +245,9 @@ SessionView.prototype.render = function (page, context, options) {
     }, false);
 
     Api.TrainingSessions.live.on(Api.LiveEvents.FINISH_WARMUP, function (commandId, payload) {
-        finishWarmUp(payload.finishedAt);
+        splits.reset(0, Math.round(payload.durationFinishedAt / 1000), payload.finishedDistance);
+        finishWarmUp(startAt + payload.durationFinishedAt);
+        console.log('Finished warm-up @ ', timer.getDuration());
         Api.TrainingSessions.live.commandSynced(commandId);
     }, false);
 
@@ -278,7 +288,6 @@ SessionView.prototype.render = function (page, context, options) {
         location.longitude = position.coords.longitude;
         lastKnownGPSPosition = position;
     });
-
 
     var resetGpsData = function () {
         var values = {speed: 0, pace: 0, efficiency: 0};
@@ -406,7 +415,8 @@ SessionView.prototype.render = function (page, context, options) {
                 });
                 self.inWarmUp = false;
             }, function onStartImmediately() {
-                finishWarmUp.apply(self, [timer.getDuration()])
+                isConfirmDialogOpen = false;
+                finishWarmUp.apply(self, [timer.getTimestamp()])
             }, function finish() {
                 clear();
             });
@@ -445,8 +455,8 @@ SessionView.prototype.render = function (page, context, options) {
 
     function finishWarmUp(timestamp) {
         Dialog.hideModal();
-        splits.start(timestamp, undefined, undefined);
-        session.setScheduledSessionStart(timer.getTimestamp());
+        splits.start(null, null, null);
+        session.setScheduledSessionStart(timestamp);
         self.inWarmUp = false;
     }
 

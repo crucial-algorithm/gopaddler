@@ -16,6 +16,13 @@ function HomeView(page, context, request) {
     var name = Api.User.getProfile().name ? Api.User.getProfile().name
         : Api.User.getProfile().email;
 
+    Api.TrainingSessions.live.checkApiVersion().then(function (version) {
+        var appVersion = __API_VERSION__;
+        if (!appVersion || version > appVersion) {
+            showUpdateAvailableModal(context);
+        }
+    });
+
     if (context.isPortraitMode()) {
         context.render(page, portrait({name: name}));
     } else {
@@ -204,6 +211,13 @@ function showNoCalibrationModal(context) {
                     context.navigate('session', false, undefined);
             }
         }
+    );
+}
+
+function showUpdateAvailableModal(context) {
+    context.ui.modal.alert('New GoPaddler Version'
+        , '<p>You need to update your application so your coach can see your data properly</p>'
+        , {text: "OK"}
     );
 }
 

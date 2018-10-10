@@ -134,7 +134,8 @@ Bluetooth.prototype.listen = function (address, callback, onError, singleTry) {
 
     var errorHandler = function (context) {
         return function (err) {
-            console.log(context, err);
+            if (navigator.userAgent !== 'gp-dev-ck')
+                console.log(context, err);
             onError.apply({}, [err]);
         }
     };
@@ -188,8 +189,8 @@ Bluetooth.prototype.listen = function (address, callback, onError, singleTry) {
                     if (!serviceFound) {
                         onDiscoverError({type: Bluetooth.ERROR.UNKNOWN_DEVICE_TYPE})
                     }
-
-                    console.log("discover finished");
+                    if (navigator.userAgent !== 'gp-dev-ck')
+                        console.log("discover finished");
                 }, onDiscoverError, params);
 
 

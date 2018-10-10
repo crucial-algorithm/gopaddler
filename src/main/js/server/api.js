@@ -419,6 +419,12 @@ exports.TrainingSessions = {
 
     live: {
 
+        checkApiVersion: function () {
+            if (!isLiveUpdate())
+                return;
+            return _call('checkApiVersion')
+        },
+
         deviceReady: function () {
             if (!isLiveUpdate())
                 return;

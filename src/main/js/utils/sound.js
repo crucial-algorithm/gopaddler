@@ -28,7 +28,8 @@ function loadAudioFile(filename) {
 
     return {
         play: function () {
-            NativeAudio.play(filename)
+            if (NativeAudio.play)
+                NativeAudio.play(filename)
         }
     }
 }

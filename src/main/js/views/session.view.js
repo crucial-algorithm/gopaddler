@@ -189,7 +189,7 @@ SessionView.prototype.render = function (page, context, options) {
         }
 
         splits.setTime(timestamp, duration);
-        console.log('... duration => ', duration);
+        console.debug('... duration => ', duration);
 
         top.setValue("timer", value);
         middle.setValue("timer", value);

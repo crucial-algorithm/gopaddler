@@ -74,6 +74,7 @@ SelectSessionView.prototype.render = function (page, context) {
         start(payload.expression, payload.splits, /* RemoteSessionId = */ null
             , payload.startedAt
             , /* isWarmupFirst = */ true
+            , /* wasStartedRemotely = */ true
         );
     }, false);
 
@@ -115,9 +116,9 @@ SelectSessionView.prototype.render = function (page, context) {
 
     $start.on('tap', function () {
         if (session)
-            start(session.getExpression(), session.getSplits(), session.getId(), null, $warmUpFirst.is(':checked'));
+            start(session.getExpression(), session.getSplits(), session.getId(), null, $warmUpFirst.is(':checked'), false);
         else
-            start(null, null, null, null, null);
+            start(null, null, null, null, false, false);
     });
 
     $('.select-session-play input').on('change', function () {
@@ -145,9 +146,10 @@ SelectSessionView.prototype.render = function (page, context) {
      * @param splits
      * @param remoteScheduledSessionId
      * @param startedAt
-     * @param isWarmUpFirst
+     * @param {boolean} isWarmUpFirst
+     * @param {boolean} wasStartedRemotely
      */
-    function start(expression, splits, remoteScheduledSessionId, startedAt, isWarmUpFirst) {
+    function start(expression, splits, remoteScheduledSessionId, startedAt, isWarmUpFirst, wasStartedRemotely) {
         clearInterval(self.deviceActiveIntervalId);
         Api.TrainingSessions.live.clearCommandListeners();
         context.navigate('session', false, {
@@ -155,8 +157,10 @@ SelectSessionView.prototype.render = function (page, context) {
             splits: splits,
             isWarmUpFirst: isWarmUpFirst === true,
             remoteScheduledSessionId: remoteScheduledSessionId,
-            startedAt: startedAt
+            startedAt: startedAt,
+            wasStartedRemotely: wasStartedRemotely
         });
+
     }
 
     function renderSessions(_sessions) {

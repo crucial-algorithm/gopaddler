@@ -123,7 +123,7 @@ SessionView.prototype.render = function (page, context, options) {
     session.setScheduledSessionId(options.remoteScheduledSessionId);
 
     if (self.hasSplitsDefined) {
-        splits = new Splits(self.splitsDefinition, splitsHandler);
+        splits = new Splits(self.splitsDefinition, splitsHandler, options.wasStartedRemotely === true);
         splits.onStartCountDownUserNotification(function () { sound.playStartCountDown() });
         splits.onFinishCountDownUserNotification(function () { sound.playFinishCountDown() });
         splits.onFinishUserNotification(function () { sound.playFinish() });
@@ -172,10 +172,21 @@ SessionView.prototype.render = function (page, context, options) {
     });
 
     // -- listen for changes in splits and notify server
-    splits.onSplitChange(function onSplitChangeListener(changedAt, newSplitNumber, previous, current) {
+    splits.onSplitChange(function onSplitChangeListener(changedAt, stoppedAt, newSplitNumber, previous, current) {
+        /* stoppedAt = Same as duration if time based interval; otherwise, a distance in km */
+
+        var wasBasedInDistance = previous.split ? previous.split.isDistanceBased() : false, distance = location.distance;
+        if (wasBasedInDistance) {
+            distance = stoppedAt;
+        } else {
+            if (changedAt >= stoppedAt) {
+                changedAt = stoppedAt;
+            }
+        }
+
         console.log('Split changed @ ', changedAt);
-        Api.TrainingSessions.live.splitChanged(changedAt * 1000
-            , location.distance, Date.now() - location.timestamp, location.speed, locationUpdated(lastCommunicatedGPSPosition, lastKnownGPSPosition)
+        Api.TrainingSessions.live.splitChanged(changedAt * 1000, distance
+            , Date.now() - location.timestamp, location.speed, locationUpdated(lastCommunicatedGPSPosition, lastKnownGPSPosition)
             , newSplitNumber, current, previous);
     });
 
@@ -244,10 +255,16 @@ SessionView.prototype.render = function (page, context, options) {
         });
     }, false);
 
+    Api.TrainingSessions.live.on(Api.LiveEvents.RESUME_SPLITS, function (commandId, payload) {
+        console.log('resume splits', commandId);
+        splits.increment();
+        Api.TrainingSessions.live.commandSynced(commandId);
+    }, false);
+
     Api.TrainingSessions.live.on(Api.LiveEvents.FINISH_WARMUP, function (commandId, payload) {
-        splits.reset(0, Math.round(payload.durationFinishedAt / 1000), payload.finishedDistance);
+        splits.reset(0, Math.round(payload.durationFinishedAt / 1000), payload.distanceFinishedAt / 1000);
         finishWarmUp(startAt + payload.durationFinishedAt);
-        console.log('Finished warm-up @ ', timer.getDuration());
+        console.log('Finished warm-up @', timer.getDuration());
         Api.TrainingSessions.live.commandSynced(commandId);
     }, false);
 

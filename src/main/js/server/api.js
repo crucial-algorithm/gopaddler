@@ -379,6 +379,7 @@ var resetListeners = function () {
         pause: [],
         finish: [],
         startSplit: [],
+        resumeSplits: [],
         pushExpression: [],
         syncClock: [],
         finishWarmup: []
@@ -395,6 +396,7 @@ exports.LiveEvents = {
     FINISH: "finish",
     START_SPLIT: "startSplit",
     STOP_SPLIT: "stopSplit",
+    RESUME_SPLITS: "resumeSplits",
     PUSH_EXPRESSION: "pushExpression",
     SYNC_CLOCK: "syncClock",
     CLOCK_SYNCED: 'clockSynced',
@@ -467,7 +469,7 @@ exports.TrainingSessions = {
          * @param speed
          * @param wasLocationUpdated
          * @param newSplitNbr
-         * @param currentSplit
+         * @param {Interval} currentSplit
          * @param previous
          */
         splitChanged: function (changedAt, distance, locationAge, speed, wasLocationUpdated, newSplitNbr, currentSplit, previous) {
@@ -489,7 +491,7 @@ exports.TrainingSessions = {
             }
 
             _call('splitChangedInLiveDevice', /* is finished = */ currentSplit === null, changedAt
-                , distance + (wasLocationUpdated ? locationAge * (speed / 3600000) : 0)
+                , distance /* + (wasLocationUpdated ? locationAge * (speed / 3600000) : 0) */
                 , newSplitNbr
                 , isRecovery
                 , isDistanceBased

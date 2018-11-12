@@ -98,9 +98,13 @@ SessionView.prototype.render = function (page, context, options) {
         $page.find(".app-content").removeClass('black-and-white');
     }
 
-    function splitsHandler(value, isRecovery) {
+    function splitsHandler(value, isRecovery, isFinished) {
         if (paused) return;
-        var unit = isRecovery ? 'Recovery' : '';
+        var unit = isRecovery === true ? 'Recovery' : '';
+
+        if (isFinished === true) {
+            value = '-';
+        }
 
         top.setValue("splits", value);
         middle.setValue("splits", value);
@@ -199,9 +203,6 @@ SessionView.prototype.render = function (page, context, options) {
             heartRate = utils.getRandomInt(178, 182);
         }
 
-        splits.setTime(timestamp, duration);
-        console.debug('... duration => ', duration);
-
         top.setValue("timer", value);
         middle.setValue("timer", value);
         bottom.setValue("timer", value);
@@ -237,6 +238,9 @@ SessionView.prototype.render = function (page, context, options) {
             }, 'running');
             lastCommunicatedGPSPosition = lastKnownGPSPosition;
         }
+
+        splits.setTime(timestamp, duration);
+        console.debug('... duration => ', duration);
     });
 
     session.setSessionStart(startAt);

@@ -178,4 +178,34 @@ GPS.isLessThanMinMovement = function (distance, ending) {
     return distance < (ending.coords.accuracy < 10 ? 0.005 : 0.01);
 };
 
+GPS.evaluateMovement = function(previous, current, now) {
+    if (!previous || !current) {
+        return null;
+    }
+
+    var movement = GPS.calcDistance(previous, current);
+    var period = current.timestamp - previous.timestamp;
+    // speed in km/h
+    var speed = movement * (1 / (period / 1000 / 3600));
+
+    var gap = now - current.timestamp;
+    if (gap > 0) {
+        movement += GPS.calculateMovement(gap, speed);
+    }
+
+    return {
+        distance: movement,
+        speed: speed
+    };
+};
+
+/**
+ *
+ * @param milis
+ * @param speed     Km/h
+ */
+GPS.calculateMovement = function (milis, speed) {
+    return speed / 3600000 * milis;
+};
+
 exports.GPS = GPS;

@@ -491,7 +491,7 @@ exports.TrainingSessions = {
             }
 
             _call('splitChangedInLiveDevice', /* is finished = */ currentSplit === null, changedAt
-                , distance /* + (wasLocationUpdated ? locationAge * (speed / 3600000) : 0) */
+                , Math.round((distance + (wasLocationUpdated ? locationAge * (speed / 3600000) : 0)) * 1000)
                 , newSplitNbr
                 , isRecovery
                 , isDistanceBased

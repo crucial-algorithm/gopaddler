@@ -6,20 +6,26 @@ function Speed(context) {
     this.value = 0;
     this.previous = null;
     this.distance = 0;
+    this.context = context;
 }
 
-Speed.prototype.calculate = function (position) {
+Speed.prototype.calculate = function (position, now) {
 
     if (this.previous === null) {
         this.previous = position;
         return 0;
     }
 
-    this.distance += GPS.calcDistance(this.previous, position);
+    var movement = GPS.evaluateMovement(this.previous, position, now);
+    this.distance += movement.distance;
 
     // don't display speed until we reach 10 meters
     if (this.distance < 0.01) {
         return 0;
+    }
+
+    if (this.context.isDev()) {
+        return 36;
     }
 
     this.value = this.calculator.calculate(position, this.distance);

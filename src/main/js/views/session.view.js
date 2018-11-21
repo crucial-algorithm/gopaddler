@@ -70,7 +70,7 @@ SessionView.prototype.render = function (page, context, options) {
     var session = self.createSession(calibration);
     var gps = new GPS(context);
     var heartRateSensor = new HeartRateSensor();
-    var distance = new Distance();
+    var distance = new Distance(context);
     var speed = new Speed(context);
     var pace = new Pace(context.preferences().isImperial());
     var splits;
@@ -182,15 +182,12 @@ SessionView.prototype.render = function (page, context, options) {
         var wasBasedInDistance = previous.split ? previous.split.isDistanceBased() : false, distance = location.distance;
         if (wasBasedInDistance) {
             distance = stoppedAt;
-        } else {
-            if (changedAt >= stoppedAt) {
-                changedAt = stoppedAt;
-            }
         }
 
         console.log('Split changed @ ', changedAt);
+        var locationAge = Date.now() - location.timestamp;
         Api.TrainingSessions.live.splitChanged(changedAt * 1000, distance
-            , Date.now() - location.timestamp, location.speed, locationUpdated(lastCommunicatedGPSPosition, lastKnownGPSPosition)
+            , locationAge, location.speed, locationAge < 1900
             , newSplitNumber, current, previous);
     });
 
@@ -199,9 +196,20 @@ SessionView.prototype.render = function (page, context, options) {
     var startAt = timer.start(function (value, /* current timestamp = */ timestamp, duration) {
         if (paused) return;
 
+        // GPS based metrics
+        var now = Date.now();
+        location.distance = distance.calculateAndMoveTo(lastKnownGPSPosition, now, timer.getDuration());
+        if (lastKnownGPSPosition !== null && (new Date().getTime()) - lastKnownGPSPosition.timestamp <= 5000) {
+            location.speed = speed.calculate(lastKnownGPSPosition, now);
+            location.pace = pace.calculate(location.speed);
+            location.efficiency = strokeEfficiency.calculate(location.speed, spm.interval);
+        }
+
         if (context.isDev()) {
             heartRate = utils.getRandomInt(178, 182);
         }
+
+        splits.setDistance(location.distance);
 
         top.setValue("timer", value);
         middle.setValue("timer", value);
@@ -249,6 +257,7 @@ SessionView.prototype.render = function (page, context, options) {
 
     Api.TrainingSessions.live.on(Api.LiveEvents.START_SPLIT, function (commandId, payload) {
         console.log('start split', commandId);
+        splits.setDistance(distance.calculateDistanceAt(payload.duration));
         splits.increment();
         Api.TrainingSessions.live.commandSynced(commandId, Api.LiveEvents.START_SPLIT, {
             distance: location.distance,
@@ -266,9 +275,9 @@ SessionView.prototype.render = function (page, context, options) {
     }, false);
 
     Api.TrainingSessions.live.on(Api.LiveEvents.FINISH_WARMUP, function (commandId, payload) {
-        splits.reset(0, Math.round(payload.durationFinishedAt / 1000), payload.distanceFinishedAt / 1000);
+        splits.reset(0, Math.round(payload.durationFinishedAt / 1000), distance.calculateDistanceAt(payload.durationFinishedAt));
         finishWarmUp(startAt + payload.durationFinishedAt);
-        console.log('Finished warm-up @', timer.getDuration());
+        console.log('Finished warm-up @', timer.getDuration(), payload.durationFinishedAt);
         Api.TrainingSessions.live.commandSynced(commandId);
     }, false);
 
@@ -288,23 +297,6 @@ SessionView.prototype.render = function (page, context, options) {
 
     gps.listen(function (position) {
         if (paused) return;
-
-        location = {speed: 0, pace: 0, efficiency: 0, distance: 0
-            , latitude: 0, longitude: 0
-            , accuracy: position.coords.accuracy
-            , timestamp: position.timestamp};
-
-        location.distance = distance.calculate(position);
-        location.speed = speed.calculate(position);
-
-        if (context.isDev()) {
-            location.speed = 36;
-            self.development.distance += (location.speed * (1/3600));
-            location.distance = self.development.distance;
-        }
-
-        location.efficiency = strokeEfficiency.calculate(location.speed, spm.interval);
-        location.pace = pace.calculate(location.speed);
         location.latitude = position.coords.latitude;
         location.longitude = position.coords.longitude;
         lastKnownGPSPosition = position;
@@ -347,7 +339,7 @@ SessionView.prototype.render = function (page, context, options) {
         if (paused) return;
 
         var values = {
-            distance: location.distance,
+            distance: Math.round(location.distance * 1000),
             efficiency: location.efficiency,
             pace: location.pace,
             spm: spm.value,
@@ -357,8 +349,6 @@ SessionView.prototype.render = function (page, context, options) {
         if (context.getGpsRefreshRate() !== 1) {
             values.speed = location.speed;
         }
-
-        splits.setDistance(location.distance);
 
         top.setValues(values);
         middle.setValues(values);

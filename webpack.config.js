@@ -49,7 +49,7 @@ var config = extend({}, CONFIG.common, CONFIG[env]);
 module.exports = {
     context: __dirname + "/src/main/js",
     entry: "./main.js",
-    devtool: env === 'dev' ? 'source-map' : undefined,
+    devtool: env === 'dev' || env === 'remote-dev' ? 'source-map' : undefined,
 
     output: {
         filename: "app.js",

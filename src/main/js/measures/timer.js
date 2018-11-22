@@ -33,6 +33,10 @@ Timer.prototype.getDuration = function () {
     return this.duration;
 };
 
+Timer.prototype.getCurrentDuration = function () {
+    return this.duration + (Date.now() - this.timestamp);
+};
+
 Timer.prototype.getTimestamp = function () {
     return this.timestamp;
 };

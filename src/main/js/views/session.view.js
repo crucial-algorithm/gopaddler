@@ -70,6 +70,7 @@ SessionView.prototype.render = function (page, context, options) {
     var session = self.createSession(calibration);
     var gps = new GPS(context);
     var heartRateSensor = new HeartRateSensor();
+    /**@type Distance */
     var distance = new Distance(context);
     var speed = new Speed(context);
     var pace = new Pace(context.preferences().isImperial());
@@ -179,14 +180,21 @@ SessionView.prototype.render = function (page, context, options) {
     splits.onSplitChange(function onSplitChangeListener(changedAt, stoppedAt, newSplitNumber, previous, current) {
         /* stoppedAt = Same as duration if time based interval; otherwise, a distance in km */
 
-        var wasBasedInDistance = previous.split ? previous.split.isDistanceBased() : false, distance = location.distance;
-        if (wasBasedInDistance) {
-            distance = stoppedAt;
-        }
+        changedAt = timer.getCurrentDuration();
 
-        console.log('Split changed @ ', changedAt);
         var locationAge = Date.now() - location.timestamp;
-        Api.TrainingSessions.live.splitChanged(changedAt * 1000, distance
+        var distanceChangedAt = distance.calculateDistanceAt(changedAt);
+
+        // is finished split based in distance?
+        if (previous.split && previous.split.isDistanceBased()) {
+            var happenedAt = distance.calculateDurationAt(stoppedAt);
+            distanceChangedAt = stoppedAt;
+            if (happenedAt !== null) {
+                changedAt = happenedAt;
+            }
+        }
+        console.log('Split changed @ ', changedAt);
+        Api.TrainingSessions.live.splitChanged(changedAt, distanceChangedAt
             , locationAge, location.speed, locationAge < 1900
             , newSplitNumber, current, previous);
     });
@@ -270,14 +278,16 @@ SessionView.prototype.render = function (page, context, options) {
 
     Api.TrainingSessions.live.on(Api.LiveEvents.RESUME_SPLITS, function (commandId, payload) {
         console.log('resume splits', commandId);
-        splits.increment();
+        splits.increment(Math.round(timer.getCurrentDuration() / 1000), distance.calculateDistanceAt(timer.getCurrentDuration()));
         Api.TrainingSessions.live.commandSynced(commandId);
     }, false);
 
     Api.TrainingSessions.live.on(Api.LiveEvents.FINISH_WARMUP, function (commandId, payload) {
-        splits.reset(0, Math.round(payload.durationFinishedAt / 1000), distance.calculateDistanceAt(payload.durationFinishedAt));
-        finishWarmUp(startAt + payload.durationFinishedAt);
-        console.log('Finished warm-up @', timer.getDuration(), payload.durationFinishedAt);
+        console.log('Finished warm-up @', timer.getCurrentDuration(), payload.durationFinishedAt);
+        var currentDuration = timer.getCurrentDuration();
+        finishWarmUp(currentDuration);
+        splits.reset(0, Math.round(currentDuration/1000)
+            , distance.calculateDistanceAt(timer.getCurrentDuration()));
         Api.TrainingSessions.live.commandSynced(commandId);
     }, false);
 

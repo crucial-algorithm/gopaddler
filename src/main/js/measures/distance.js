@@ -74,12 +74,12 @@ Distance.prototype.calculateDistanceAt = function (duration) {
     var before = null, after = null, position;
     for (var i = this.positions.length - 1; i >= 0; i--) {
         position = this.positions[i];
-        if (after === null || position.duration > duration) {
+        if (position.duration > duration) {
             after = position;
             continue;
         }
 
-        if (before === null || before.duration <= duration) {
+        if (position.duration <= duration) {
             before = position;
             break;
         }
@@ -92,9 +92,42 @@ Distance.prototype.calculateDistanceAt = function (duration) {
         reference = after;
     }
 
-    console.log(reference, reference.distance + GPS.calculateMovement(duration - reference.duration, reference.speed));
-
     return reference.distance + GPS.calculateMovement(duration - reference.duration, reference.speed);
+};
+
+
+Distance.prototype.calculateDurationAt = function (distance) {
+    if (this.previous === undefined) {
+        return null;
+    }
+
+    var before = null, after = null, position;
+    for (var i = this.positions.length - 1; i >= 0; i--) {
+        position = this.positions[i];
+        if (position.distance > distance) {
+            after = position;
+            continue;
+        }
+
+        if (position.distance <= distance) {
+            before = position;
+            break;
+        }
+    }
+
+    var reference = null, direction;
+    if (after === null || Math.abs(before.distance - distance) < Math.abs(after.distance - distance)) {
+        reference = before;
+        direction = 1;
+    } else {
+        reference = after;
+        direction = -1;
+    }
+
+    var gap = Math.abs(reference.distance - distance);
+    var distInOneMili = reference.speed / 3600000;
+
+    return Math.round(reference.duration + (gap / distInOneMili * direction))
 };
 
 Distance.prototype.getValue = function () {

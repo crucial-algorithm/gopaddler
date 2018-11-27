@@ -123,11 +123,10 @@
     <plugin name="cordova-plugin-background-mode-bluetooth-central" spec="^1.0.0" />
     <plugin name="cordova-plugin-bluetoothle" spec="^4.4.3" />
     <plugin name="cordova-plugin-google-analytics" spec="^1.8.3" />
-    <plugin name="cordova-plugin-compat" spec="^1.2.0" />
     <plugin name="cordova-plugin-facebook4" spec="^1.9.1">
         <variable name="APP_ID" value="529853143847598" />
         <variable name="APP_NAME" value="gopaddler" />
     </plugin>
     <engine name="android" spec="^6.4.0" />
-    <engine name="ios" spec="^4.5.4" />
+    <engine name="ios" spec="^4.5.5" />
 </widget>

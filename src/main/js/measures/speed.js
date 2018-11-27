@@ -17,7 +17,9 @@ Speed.prototype.calculate = function (position, now) {
     }
 
     var movement = GPS.evaluateMovement(this.previous, position, now);
-    this.distance += movement.distance;
+    if (movement !== null) {
+        this.distance += movement.distance;
+    }
 
     // don't display speed until we reach 10 meters
     if (this.distance < 0.01) {

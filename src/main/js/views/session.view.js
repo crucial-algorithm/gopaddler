@@ -99,12 +99,16 @@ SessionView.prototype.render = function (page, context, options) {
         $page.find(".app-content").removeClass('black-and-white');
     }
 
-    function splitsHandler(value, isRecovery, isFinished) {
+    function splitsHandler(value, isRecovery, isFinished, isBasedInDistance) {
         if (paused) return;
         var unit = isRecovery === true ? 'Recovery' : '';
 
         if (isFinished === true) {
             value = '-';
+        } else if (isBasedInDistance === false) {
+            value = timer.format(value);
+        } else {
+            value = Math.round(value);
         }
 
         top.setValue("splits", value);
@@ -128,7 +132,9 @@ SessionView.prototype.render = function (page, context, options) {
     session.setScheduledSessionId(options.remoteScheduledSessionId);
 
     if (self.hasSplitsDefined) {
-        splits = new Splits(self.splitsDefinition, splitsHandler, options.wasStartedRemotely === true);
+        splits = new Splits(self.splitsDefinition, splitsHandler, options.wasStartedRemotely === true
+            , distance.distanceToTime.bind(distance), distance.timeToDistance.bind(distance)
+            , timer.getCurrentDuration.bind(timer));
         splits.onStartCountDownUserNotification(function () { sound.playStartCountDown() });
         splits.onFinishCountDownUserNotification(function () { sound.playFinishCountDown() });
         splits.onFinishUserNotification(function () { sound.playFinish() });
@@ -177,26 +183,11 @@ SessionView.prototype.render = function (page, context, options) {
     });
 
     // -- listen for changes in splits and notify server
-    splits.onSplitChange(function onSplitChangeListener(changedAt, stoppedAt, newSplitNumber, previous, current) {
-        /* stoppedAt = Same as duration if time based interval; otherwise, a distance in km */
-
-        changedAt = timer.getCurrentDuration();
+    splits.onSplitChange(function onSplitChangeListener(from, to, isFinished) {
 
         var locationAge = Date.now() - location.timestamp;
-        var distanceChangedAt = distance.calculateDistanceAt(changedAt);
 
-        // is finished split based in distance?
-        if (previous.split && previous.split.isDistanceBased()) {
-            var happenedAt = distance.calculateDurationAt(stoppedAt);
-            distanceChangedAt = stoppedAt;
-            if (happenedAt !== null) {
-                changedAt = happenedAt;
-            }
-        }
-        console.log('Split changed @ ', changedAt);
-        Api.TrainingSessions.live.splitChanged(changedAt, distanceChangedAt
-            , locationAge, location.speed, locationAge < 1900
-            , newSplitNumber, current, previous);
+        Api.TrainingSessions.live.splitChanged(from, to, isFinished);
     });
 
     // -- initiate timer
@@ -265,7 +256,7 @@ SessionView.prototype.render = function (page, context, options) {
 
     Api.TrainingSessions.live.on(Api.LiveEvents.START_SPLIT, function (commandId, payload) {
         console.log('start split', commandId);
-        splits.setDistance(distance.calculateDistanceAt(payload.duration));
+        splits.setDistance(distance.timeToDistance(payload.duration));
         splits.increment();
         Api.TrainingSessions.live.commandSynced(commandId, Api.LiveEvents.START_SPLIT, {
             distance: location.distance,
@@ -278,7 +269,7 @@ SessionView.prototype.render = function (page, context, options) {
 
     Api.TrainingSessions.live.on(Api.LiveEvents.RESUME_SPLITS, function (commandId, payload) {
         console.log('resume splits', commandId);
-        splits.increment(Math.round(timer.getCurrentDuration() / 1000), distance.calculateDistanceAt(timer.getCurrentDuration()));
+        splits.increment(timer.getCurrentDuration(), distance.timeToDistance(timer.getCurrentDuration()) * 1000);
         Api.TrainingSessions.live.commandSynced(commandId);
     }, false);
 
@@ -286,8 +277,8 @@ SessionView.prototype.render = function (page, context, options) {
         console.log('Finished warm-up @', timer.getCurrentDuration(), payload.durationFinishedAt);
         var currentDuration = timer.getCurrentDuration();
         finishWarmUp(currentDuration);
-        splits.reset(0, Math.round(currentDuration/1000)
-            , distance.calculateDistanceAt(timer.getCurrentDuration()));
+        splits.reset(0, currentDuration
+            , distance.timeToDistance(timer.getCurrentDuration()) * 1000);
         Api.TrainingSessions.live.commandSynced(commandId);
     }, false);
 

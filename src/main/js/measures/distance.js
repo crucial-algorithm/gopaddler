@@ -66,8 +66,17 @@ Distance.prototype.calculateAndMoveTo = function(position, now, duration) {
     return this.distance;
 };
 
-Distance.prototype.calculateDistanceAt = function (duration) {
+/**
+ *
+ * @param {number}      duration    In miliseconds
+ * @returns {number}    Distance in km
+ */
+Distance.prototype.timeToDistance = function (duration) {
     if (this.previous === undefined) {
+        return this.distance;
+    }
+
+    if (this.positions.length === 0) {
         return this.distance;
     }
 
@@ -86,6 +95,9 @@ Distance.prototype.calculateDistanceAt = function (duration) {
     }
 
     var reference = null;
+    if (before === null) {
+        debugger;
+    }
     if (after === null || Math.abs(before.duration - duration) < Math.abs(after.duration - duration)) {
         reference = before;
     } else {
@@ -95,8 +107,12 @@ Distance.prototype.calculateDistanceAt = function (duration) {
     return reference.distance + GPS.calculateMovement(duration - reference.duration, reference.speed);
 };
 
-
-Distance.prototype.calculateDurationAt = function (distance) {
+/**
+ *
+ * @param {number}      distance    in km
+ * @returns {number}    Duration, in miliseconds
+ */
+Distance.prototype.distanceToTime = function (distance) {
     if (this.previous === undefined) {
         return null;
     }

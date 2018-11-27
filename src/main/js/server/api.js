@@ -463,44 +463,12 @@ exports.TrainingSessions = {
 
         /**
          *
-         * @param changedAt             Milis, from the beginning, the split change happened
-         * @param distance
-         * @param locationAge
-         * @param speed
-         * @param wasLocationUpdated
-         * @param newSplitNbr
-         * @param {Interval} currentSplit
-         * @param previous
          */
-        splitChanged: function (changedAt, distance, locationAge, speed, wasLocationUpdated, newSplitNbr, currentSplit, previous) {
+        splitChanged: function (from, to) {
             if (!isLiveUpdate())
                 return;
 
-            var isRecovery = true, isDistanceBased = false, isDuration = null;
-            if (currentSplit) {
-                isRecovery = currentSplit.isRecovery();
-                isDistanceBased = currentSplit.isDistanceBased();
-                isDuration = currentSplit.isDistanceBased() ? currentSplit.getDistanceInKm() * 1000 : currentSplit.getDurationInSeconds();
-            }
-
-            var wasRecovery = true, wasDistanceBased = false, wasDuration = null;
-            if (previous.split) {
-                wasRecovery = previous.split.isRecovery();
-                wasDistanceBased = previous.split.isDistanceBased();
-                wasDuration = previous.split.isDistanceBased() ? previous.split.getDistanceInKm() * 1000 : previous.split.getDurationInSeconds();
-            }
-
-            _call('splitChangedInLiveDevice', /* is finished = */ currentSplit === null, changedAt
-                , Math.round((distance + (wasLocationUpdated ? locationAge * (speed / 3600000) : 0)) * 1000)
-                , newSplitNbr
-                , isRecovery
-                , isDistanceBased
-                , isDuration
-                , previous.position
-                , wasRecovery
-                , wasDistanceBased
-                , wasDuration
-            )
+            _call('splitChangedInLiveDevice', from, to)
         },
 
         update: function (data, status) {

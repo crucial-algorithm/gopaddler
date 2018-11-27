@@ -185,6 +185,9 @@ GPS.evaluateMovement = function(previous, current, now) {
 
     var movement = GPS.calcDistance(previous, current);
     var period = current.timestamp - previous.timestamp;
+    if (period > 1000) {
+
+    }
     // speed in km/h
     var speed = movement * (1 / (period / 1000 / 3600));
 

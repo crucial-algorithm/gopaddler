@@ -185,14 +185,17 @@ GPS.evaluateMovement = function(previous, current, now) {
 
     var movement = GPS.calcDistance(previous, current);
     var period = current.timestamp - previous.timestamp;
-    if (period > 1000) {
-
+    if (period === 0) {
+        return {
+            speed: 0,
+            distance: 0
+        }
     }
     // speed in km/h
     var speed = movement * (1 / (period / 1000 / 3600));
 
     var gap = now - current.timestamp;
-    if (gap > 0) {
+    if (gap > 0 && gap < 1200) {
         movement += GPS.calculateMovement(gap, speed);
     }
 

@@ -46,8 +46,13 @@ Distance.prototype.calculateAndMoveTo = function(position, now, duration) {
         return this.distance;
     }
 
+    if (this.previous.timestamp === position.timestamp) {
+        return this.distance;
+    }
+
     var movement = GPS.evaluateMovement(this.previous, position, now);
     if (movement === null) {
+        this.previous = position;
         return this.distance;
     }
 
@@ -63,6 +68,7 @@ Distance.prototype.calculateAndMoveTo = function(position, now, duration) {
         this.positions.shift();
     }
 
+    this.previous = position;
     return this.distance;
 };
 

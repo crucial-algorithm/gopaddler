@@ -191,24 +191,27 @@ SessionView.prototype.render = function (page, context, options) {
     });
 
     // -- initiate timer
-    var lastCommunicatedGPSPosition = null, lastKnownGPSPosition = null;
+    var lastCommunicatedGPSPosition = null, lastKnownGPSPosition = null, previousGPSPosition;
     var startAt = timer.start(function (value, /* current timestamp = */ timestamp, duration) {
         if (paused) return;
 
         // GPS based metrics
         var now = Date.now();
-        location.distance = distance.calculateAndMoveTo(lastKnownGPSPosition, now, timer.getDuration());
-        if (lastKnownGPSPosition !== null && (new Date().getTime()) - lastKnownGPSPosition.timestamp <= 5000) {
+        if (lastKnownGPSPosition !== null && lastKnownGPSPosition !== previousGPSPosition
+            && Date.now() - lastKnownGPSPosition.timestamp <= 5000) {
+            location.distance = distance.calculateAndMoveTo(lastKnownGPSPosition, now, timer.getDuration());
             location.speed = speed.calculate(lastKnownGPSPosition, now);
             location.pace = pace.calculate(location.speed);
             location.efficiency = strokeEfficiency.calculate(location.speed, spm.interval);
+            previousGPSPosition = lastKnownGPSPosition;
         }
+
+        splits.setDistance(location.distance);
+        splits.setTime(timestamp, duration);
 
         if (context.isDev()) {
             heartRate = utils.getRandomInt(178, 182);
         }
-
-        splits.setDistance(location.distance);
 
         top.setValue("timer", value);
         middle.setValue("timer", value);
@@ -246,8 +249,6 @@ SessionView.prototype.render = function (page, context, options) {
             lastCommunicatedGPSPosition = lastKnownGPSPosition;
         }
 
-        splits.setTime(timestamp, duration);
-        console.debug('... duration => ', duration);
     });
 
     session.setSessionStart(startAt);

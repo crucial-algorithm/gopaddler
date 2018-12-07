@@ -236,7 +236,7 @@ Session.prototype.createAPISession = function () {
 
             dataPoints.push({
                 timestamp: row.getTimestamp(),
-                distance: utils.round2(row.getDistance()),
+                distance: utils.round(row.getDistance(), 4),
                 speed: utils.round2(row.getSpeed()),
                 spm: row.getSpm(),
                 spmEfficiency: utils.round2(row.getEfficiency()),

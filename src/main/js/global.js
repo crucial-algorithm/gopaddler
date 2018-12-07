@@ -112,15 +112,10 @@ function emulateCordova () {
     window.device = {};
 
     navigator.geolocation.watchPosition = function (callback) {
-        var latitude, longitude;
+        // 10 meters per sec (36km/h)       increment = 0.0000904100000
+        var latitude = 0.00009041, longitude = 10, increment = 0.0000904100000;
         return setInterval(function () {
-            if (latitude === undefined) {
-                latitude = Math.random() + 1;
-                longitude = Math.random() + 1;
-            }
-            latitude = latitude + Math.random() / 2 / 10000;
-            longitude = longitude + Math.random() / 2 / 10000;
-
+            latitude += increment;
 
             callback({
                 timestamp: new Date().getTime(),

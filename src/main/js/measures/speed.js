@@ -26,10 +26,6 @@ Speed.prototype.calculate = function (position, now) {
         return 0;
     }
 
-    if (this.context.isDev()) {
-        return 36;
-    }
-
     this.value = this.calculator.calculate(position, this.distance);
 
     this.previous = position;

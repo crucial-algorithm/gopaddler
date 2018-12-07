@@ -55,13 +55,7 @@ Distance.prototype.calculateAndMoveTo = function(position, now, duration) {
         this.previous = position;
         return this.distance;
     }
-
-    if (this.context.isDev()) {
-        movement.speed = 36;
-        this.distance = (duration / 1000 * 10) / 1000;
-    } else {
-        this.distance += movement.distance;
-    }
+    this.distance += movement.distance;
 
     this.positions.push({duration: duration, distance: this.distance, speed: movement.speed});
     if (this.positions.length > 30) {

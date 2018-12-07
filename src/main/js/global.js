@@ -113,20 +113,22 @@ function emulateCordova () {
 
     navigator.geolocation.watchPosition = function (callback) {
         // 10 meters per sec (36km/h)       increment = 0.0000904100000
-        var latitude = 0.00009041, longitude = 10, increment = 0.0000904100000;
+        var latitude = 0.00009041, longitude = 10, increment = 0.0000904100000, multiple = 3;
         return setInterval(function () {
-            latitude += increment;
+            latitude += increment / multiple;
 
             callback({
-                timestamp: new Date().getTime(),
+                timestamp: Date.now(),
                 coords: {
                     accuracy: 1,
                     latitude: latitude,
                     longitude: longitude,
-                    speed: parseInt(Math.random() * 3 + 12)
+                    speed: 36 / multiple * 1000 / 3600
                 }
             })
         }, 1000);
+        // ios: 14km/h -> 1909 update rate
+        // ios: 06km/h -> 3537 update rate
     };
 
     navigator.geolocation.clearWatch = function (id) {

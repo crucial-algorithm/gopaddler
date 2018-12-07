@@ -101,9 +101,6 @@ Distance.prototype.timeToDistance = function (duration) {
     }
 
     var reference = null;
-    if (before === null) {
-        debugger;
-    }
     if (after === null || Math.abs(before.duration - duration) < Math.abs(after.duration - duration)) {
         reference = before;
     } else {

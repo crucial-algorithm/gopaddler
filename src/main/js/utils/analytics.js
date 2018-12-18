@@ -1,14 +1,14 @@
 var init = function () {
-    window.analytics.startTrackerWithId('UA-73212702-1');
+//    window.analytics.startTrackerWithId('UA-73212702-1');
 };
 
 
 var view = function (name) {
-    window.analytics.trackView(name);
+//    window.analytics.trackView(name);
 };
 
 var user = function (id) {
-    window.analytics.setUserId(id);
+//    window.analytics.setUserId(id);
 };
 
 

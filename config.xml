@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="1010" id="com.gopaddler.app" version="1.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="1020" id="com.gopaddler.app" version="1.0.2" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>GoPaddler</name>
     <description>
         Track speed, distance and stroke rate using GoPaddler
@@ -42,6 +42,10 @@
         <splash density="port-xxhdpi" src="res/android/splash-port-xxxhdpi.png" />
         <preference name="android-minSdkVersion" value="19" />
         <preference name="android-targetSdkVersion" value="21" />
+        <config-file parent="/resources" target="./res/values/strings.xml">
+            <string name="fb_app_id">529853143847598</string>
+            <string name="fb_app_name">gopaddler</string>
+        </config-file>
     </platform>
     <platform name="ios">
         <icon height="20" src="res/ios/icon-20.png" width="20" />
@@ -122,11 +126,10 @@
     <plugin name="cordova-plugin-nativeaudio" spec="^3.0.9" />
     <plugin name="cordova-plugin-background-mode-bluetooth-central" spec="^1.0.0" />
     <plugin name="cordova-plugin-bluetoothle" spec="^4.4.3" />
-    <plugin name="cordova-plugin-google-analytics" spec="^1.8.3" />
     <plugin name="cordova-plugin-facebook4" spec="^1.9.1">
         <variable name="APP_ID" value="529853143847598" />
         <variable name="APP_NAME" value="gopaddler" />
     </plugin>
-    <engine name="android" spec="^6.4.0" />
     <engine name="ios" spec="^4.5.5" />
+    <engine name="android" spec="^7.1.4" />
 </widget>

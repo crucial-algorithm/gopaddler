@@ -10,7 +10,7 @@ if (viewMode === 'portrait') {
 
 var CONFIG = {
     common: {
-        version: "1.0.1",
+        version: "1.0.2",
         apiVersion: 1
     },
     dev : {
@@ -40,7 +40,7 @@ function extend() {
 }
 
 
-if (env !== 'dev' && env !== 'prod' & env !== 'remote-dev')
+if (env !== 'dev' && env !== 'prod' && env !== 'remote-dev')
     throw 'Unknown env. Allowed are: "dev" or "prod" ';
 
 var config = extend({}, CONFIG.common, CONFIG[env]);
@@ -65,7 +65,7 @@ module.exports = {
         })
     ],
     module: {
-        loaders: [
+        rules: [
             {
                 test: /\.svg$/,
                 loader: "file-loader"

@@ -7,7 +7,7 @@ function Speed(context) {
     this.previous = null;
     this.distance = 0;
     this.context = context;
-    this.kalmanFilter = new KalmanFilter({R: 0.1, Q: 1.40});
+    this.kalmanFilter = new KalmanFilter({R: 2, Q: 0.8});
     this.speeds = [];
 }
 

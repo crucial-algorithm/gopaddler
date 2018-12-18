@@ -109,7 +109,7 @@ function addSessionsToSessionList(sessions) {
                 .replace('{hour}', sessionAt.format('HH:mm'))
                 .replace('{day}', sessionAt.format('MMM D'))
                 .replace('{duration}', dDisplay)
-                .replace('{distance}', utils.round2(distance || 0) + ' ' + appContext.getUnit('distance'))
+                .replace('{distance}', utils.round2(distance || 0) + ' ' + appContext.getUnit('distance_in_session_list'))
                 .replace('{synced}', session.isSynced() ? 'yes' : 'no')
         ).appendTo($main);
 

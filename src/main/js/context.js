@@ -21,7 +21,7 @@ var units = {
             decimalPlaces: 1
         },
         distance: {
-            label: {regular: "Km", large: "Km"},
+            label: {regular: "meters", large: "meters"},
             decimalPlaces: 2
         },
         spm: {
@@ -39,6 +39,10 @@ var units = {
         heartRate: {
             label: {regular: "BPM", large: "BPM"},
             round: false
+        },
+        distance_in_session_list: {
+            label: {regular: "Km", large: "Km"},
+            decimalPlaces: 2
         }
     },
     imperial: {
@@ -73,6 +77,10 @@ var units = {
         heartRate: {
             label: {regular: "BPM", large: "BPM"},
             round: false
+        },
+        distance_in_session_list: {
+            label: {regular: "Mi", large: "Mi"},
+            decimalPlaces: 2
         }
     }
 };

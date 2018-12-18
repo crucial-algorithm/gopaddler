@@ -59,11 +59,6 @@ function SessionView(page, context, options) {
 SessionView.prototype.render = function (page, context, options) {
     var self = this;
     self.isDebugEnabled = !!Api.User.getProfile().debug;
-    if (context.isDev()) {
-        self.development = {
-            distance: 0
-        }
-    }
 
     var $page = $(page);
     var calibration = Calibration.load(context.isPortraitMode()) || Calibration.blank();
@@ -99,7 +94,7 @@ SessionView.prototype.render = function (page, context, options) {
         $page.find(".app-content").removeClass('black-and-white');
     }
 
-    function splitsHandler(value, isRecovery, isFinished, isBasedInDistance) {
+    function splitsHandler(value, isRecovery, isFinished, isBasedInDistance, splitStop) {
         if (paused) return;
         var unit = isRecovery === true ? 'Recovery' : '';
 
@@ -182,16 +177,36 @@ SessionView.prototype.render = function (page, context, options) {
         heartRate = hr;
     });
 
+    var splitsIndex = [], lastSplitStartDistance = 0, areSplitsFinished = false;
     // -- listen for changes in splits and notify server
     splits.onSplitChange(function onSplitChangeListener(from, to, isFinished) {
+        if (from) {
+            new SessionDetail(session.getId(), startAt + from.finish.time, from.finish.distance / 1000, location.speed, spm.value
+                , location.efficiency, location.latitude, location.longitude, heartRate, from.position
+            ).save();
+            lastSplitStartDistance = from.finish.distance;
+            console.log('from', lastSplitStartDistance);
+        }
 
-        var locationAge = Date.now() - location.timestamp;
+        if (to) {
+            splitsIndex[to.position] = to.start.time;
+            new SessionDetail(session.getId(), startAt + to.start.time, to.start.distance / 1000, location.speed, spm.value
+                , location.efficiency, location.latitude, location.longitude, heartRate, to.position
+            ).save();
 
+            lastSplitStartDistance = to.start.distance;
+            console.log('to', lastSplitStartDistance, to.isRecovery);
+            if (to.isRecovery) lastSplitStartDistance = 0;
+        } else {
+            lastSplitStartDistance = 0;
+        }
+
+        areSplitsFinished = isFinished;
         Api.TrainingSessions.live.splitChanged(from, to, isFinished);
     });
 
     // -- initiate timer
-    var lastCommunicatedGPSPosition = null, lastKnownGPSPosition = null, previousGPSPosition;
+    var lastCommunicatedGPSPosition = null, lastKnownGPSPosition = null, previousGPSPosition = null;
     var startAt = timer.start(function (value, /* current timestamp = */ timestamp, duration) {
         if (paused) return;
 
@@ -199,15 +214,15 @@ SessionView.prototype.render = function (page, context, options) {
         var now = Date.now();
         if (lastKnownGPSPosition !== null && lastKnownGPSPosition !== previousGPSPosition
             && Date.now() - lastKnownGPSPosition.timestamp <= 5000) {
-            location.distance = distance.calculateAndMoveTo(lastKnownGPSPosition, now, timer.getDuration());
+            location.distance = distance.calculate(lastKnownGPSPosition, timer.getDuration());
             location.speed = speed.calculate(lastKnownGPSPosition, now);
             location.pace = pace.calculate(location.speed);
             location.efficiency = strokeEfficiency.calculate(location.speed, spm.interval);
             previousGPSPosition = lastKnownGPSPosition;
         }
 
-        splits.setDistance(location.distance);
-        splits.setTime(timestamp, duration);
+        splits.update(timestamp, duration, location.distance);
+        splits.reCalculate();
 
         if (context.isDev()) {
             heartRate = utils.getRandomInt(178, 182);
@@ -225,11 +240,15 @@ SessionView.prototype.render = function (page, context, options) {
             large.setValue("speed", location.speed);
         }
 
-
-        // store data
-        new SessionDetail(session.getId(), timestamp, location.distance, location.speed, spm.value
-            , location.efficiency, location.latitude, location.longitude, heartRate, splits.getPosition()
-        ).save();
+        // on split change, we add the exact moment when it happens to the metrics! Due to rounds, timestamp may be previous
+        // to split start, so just ignore it if it is
+        if (self.hasSplitsDefined === false
+            || (self.hasSplitsDefined === true && areSplitsFinished === false && splitsIndex.length > 0 && timestamp > splitsIndex[splits.getPosition()])) {
+            // store data
+            new SessionDetail(session.getId(), timestamp, location.distance, location.speed, spm.value
+                , location.efficiency, location.latitude, location.longitude, heartRate, splits.getPosition()
+            ).save();
+        }
 
         iterator.next();
         if (iterator.locked()) {
@@ -279,7 +298,7 @@ SessionView.prototype.render = function (page, context, options) {
         var currentDuration = timer.getCurrentDuration();
         finishWarmUp(currentDuration);
         splits.reset(0, currentDuration
-            , distance.timeToDistance(timer.getCurrentDuration()) * 1000);
+            , distance.timeToDistance(currentDuration) * 1000);
         Api.TrainingSessions.live.commandSynced(commandId);
     }, false);
 
@@ -302,6 +321,7 @@ SessionView.prototype.render = function (page, context, options) {
         location.latitude = position.coords.latitude;
         location.longitude = position.coords.longitude;
         lastKnownGPSPosition = position;
+        lastKnownGPSPosition.sessionDuration = timer.getDuration();
     });
 
     var resetGpsData = function () {
@@ -340,8 +360,9 @@ SessionView.prototype.render = function (page, context, options) {
     self.uiIntervalId = setInterval(function refreshUI() {
         if (paused) return;
 
+        var distance = Math.round((location.distance * 1000 - lastSplitStartDistance));
         var values = {
-            distance: Math.round(location.distance * 1000),
+            distance: distance - distance % 10,
             efficiency: location.efficiency,
             pace: location.pace,
             spm: spm.value,
@@ -428,8 +449,14 @@ SessionView.prototype.render = function (page, context, options) {
                 });
                 self.inWarmUp = false;
             }, function onStartImmediately() {
+                Dialog.hideModal();
                 isConfirmDialogOpen = false;
-                finishWarmUp.apply(self, [timer.getTimestamp()])
+                splits.start(timer.getDuration(), null, function onStart(timestamp) {
+                    // save offset in session
+                    session.setScheduledSessionStart(timestamp);
+                    console.log('on start immediatly', timestamp, timer.getCurrentDuration());
+                });
+                self.inWarmUp = false;
             }, function finish() {
                 clear();
             });

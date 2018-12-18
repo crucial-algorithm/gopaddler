@@ -11,6 +11,8 @@ function GPS (context) {
     self.currentPosition = undefined;
     self.counter = 0;
     self.appContext = context;
+    self.totalGaps = 0;
+    self.sumGaps = 0;
 }
 
 GPS.prototype.listen = function(callback) {
@@ -24,6 +26,7 @@ GPS.prototype.start = function() {
     var self = this;
 
     this.startTs = new Date().getTime();
+    var before = null;
 
     var onSuccess = function (position) {
         
@@ -32,6 +35,17 @@ GPS.prototype.start = function() {
             self.counter++;
             return;
         }
+
+        if (before === null) {
+            before = Date.now();
+        } else {
+            var now = Date.now();
+            self.sumGaps += now - before;
+            self.totalGaps++;
+            before = now;
+        }
+        self.counter++;
+
 
         // make sure that the reading has the necessary precision
         if (!self.isAcceptablePosition(position, self.currentPosition)) {
@@ -122,39 +136,24 @@ GPS.prototype.isAcceptablePosition = function (position, previousPosition) {
 };
 
 /**
+ * GPS on iphone refreshes at higher rates than 1Hz, depending on speed;
+ * Not in use, but could be used to implement distinct behaviour on low frequency GPS vs 1 Hz GPSs
+ * @returns {number}
+ */
+GPS.prototype.calculateHardwareRefreshRate = function () {
+    return Math.round(this.sumGaps / this.totalGaps / 1000);
+};
+
+/**
  *
  * @param starting
  * @param ending
  * @returns {number}
  */
 GPS.calcDistance = function (starting, ending) {
-//    return haversineDistanceCalculation(starting, ending);
+    // replaced haversine implementation
     return vincentyDistanceCalculation (starting, ending);
 };
-
-
-function haversineDistanceCalculation(starting, ending) {
-    var KM_RATIO = 6371;
-    try {
-        var dLat = utils.toRadians(ending.coords.latitude - starting.coords.latitude);
-        var dLon = utils.toRadians(ending.coords.longitude - starting.coords.longitude);
-        var lat1Rad = utils.toRadians(starting.coords.latitude);
-        var lat2Rad = utils.toRadians(ending.coords.latitude);
-
-        var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1Rad) * Math.cos(lat2Rad);
-        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        var d = KM_RATIO * c;
-
-        if (isNaN(d)) {
-            return 0;
-        } else {
-            return KM_RATIO * c;
-        }
-    } catch (e) {
-        return 0;
-    }
-}
 
 function vincentyDistanceCalculation(starting, ending) {
     var pointA = new LatLon(starting.coords.latitude, starting.coords.longitude);
@@ -166,52 +165,5 @@ function vincentyDistanceCalculation(starting, ending) {
     }
     return distance / 1000;
 }
-
-/**
- * Check if position shifted at least 5 or 10 meters (depending or accuracy)
- *
- * @param distance      actual distance, based on GPS.calcDistance
- * @param ending        current position
- * @returns {boolean}
- */
-GPS.isLessThanMinMovement = function (distance, ending) {
-    return distance < (ending.coords.accuracy < 10 ? 0.005 : 0.01);
-};
-
-GPS.evaluateMovement = function(previous, current, now) {
-    if (!previous || !current) {
-        return null;
-    }
-
-    var movement = GPS.calcDistance(previous, current);
-    var period = current.timestamp - previous.timestamp;
-    if (period === 0) {
-        return {
-            speed: 0,
-            distance: 0
-        }
-    }
-    // speed in km/h
-    var speed = movement * (1 / (period / 1000 / 3600));
-
-    var gap = now - current.timestamp;
-    if (gap > 0 && gap < 1200) {
-        movement += GPS.calculateMovement(gap, speed);
-    }
-
-    return {
-        distance: movement,
-        speed: speed
-    };
-};
-
-/**
- *
- * @param milis
- * @param speed     Km/h
- */
-GPS.calculateMovement = function (milis, speed) {
-    return speed / 3600000 * milis;
-};
 
 exports.GPS = GPS;

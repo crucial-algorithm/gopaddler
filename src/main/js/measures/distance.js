@@ -8,59 +8,27 @@ function Distance(context) {
     this.previous = undefined;
     this.positions = [];
     this.context = context;
-
 }
+
 /**
  * returns distance in km's
  * @param position
+ * @param duration
  * @returns {number}  in Km's
  */
-Distance.prototype.calculate = function (position) {
+Distance.prototype.calculate = function (position, duration) {
 
     if (!this.previous) {
         this.previous = position;
         return this.distance;
     }
 
-    // if (GPS.isLessThanMinMovement(this.previous, position)) {
-    //     return this.distance;
-    // }
+    if (this.previous.sessionDuration === position.sessionDuration) {
+        return this.distance;
+    }
 
     this.distance += GPS.calcDistance(this.previous, position);
-
-    this.previous = position;
-    return this.distance;
-};
-
-/**
- *
- * @param position
- * @param now
- * @param duration
- * @returns {number}  distance in km
- */
-Distance.prototype.calculateAndMoveTo = function(position, now, duration) {
-
-    if (!this.previous) {
-        this.previous = position;
-        return this.distance;
-    }
-
-    if (this.previous.timestamp === position.timestamp) {
-        return this.distance;
-    }
-
-    var movement = GPS.evaluateMovement(this.previous, position, now);
-    if (movement === null) {
-        this.previous = position;
-        return this.distance;
-    }
-    this.distance += movement.distance;
-
-    this.positions.push({duration: duration, distance: this.distance, speed: movement.speed});
-    if (this.positions.length > 30) {
-        this.positions.shift();
-    }
+    this.positions.push({duration: duration, distance: this.distance, speed: position.coords.speed});
 
     this.previous = position;
     return this.distance;
@@ -101,7 +69,7 @@ Distance.prototype.timeToDistance = function (duration) {
         reference = after;
     }
 
-    return reference.distance + GPS.calculateMovement(duration - reference.duration, reference.speed);
+    return reference.distance + ((duration - reference.duration) * (reference.speed / 1000)) / 1000;
 };
 
 /**
@@ -138,7 +106,7 @@ Distance.prototype.distanceToTime = function (distance) {
     }
 
     var gap = Math.abs(reference.distance - distance);
-    var distInOneMili = reference.speed / 3600000;
+    var distInOneMili = reference.speed / 1000; // speed is in meters per second
 
     return Math.round(reference.duration + (gap / distInOneMili * direction))
 };

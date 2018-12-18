@@ -217,9 +217,6 @@ Session.prototype.setServerClockGap = function (gap) {
     return this.serverClockGap = gap;
 };
 
-
-
-
 Session.prototype.createAPISession = function () {
 
     var self = this,
@@ -295,6 +292,7 @@ Session.prototype.finish = function (splits, expression) {
         var length = rows.length, count = 0, split, hasSplits = !!(splits && splits.length > 0);
         for (var i = 0; i < length; i++) {
 
+            distance = rows[i].getDistance();
             if (hasSplits) {
 
                 split = splits[rows[i].getSplit()];
@@ -305,7 +303,6 @@ Session.prototype.finish = function (splits, expression) {
             }
 
             count++;
-            distance = rows[i].getDistance();
             totalSpeed += rows[i].getSpeed();
             totalSpm += rows[i].getSpm();
             totalEfficiency += rows[i].getEfficiency();
@@ -369,7 +366,7 @@ Session.prototype.detail = function () {
 
             row = rows[j];
 
-            row.setDistance(utils.round2(row.getDistance()));
+            row.setDistance(utils.round(row.getDistance(), 4));
             row.setSpeed(utils.round2(row.getSpeed()));
             row.setEfficiency(utils.round2(row.getEfficiency()));
 

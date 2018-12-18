@@ -123,7 +123,7 @@ function emulateCordova () {
                     accuracy: 1,
                     latitude: latitude,
                     longitude: longitude,
-                    speed: 36 / multiple * 1000 / 3600
+                    speed: 10 / multiple
                 }
             })
         }, 1000);

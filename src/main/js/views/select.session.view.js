@@ -89,7 +89,7 @@ SelectSessionView.prototype.render = function (page, context) {
         Api.TrainingSessions.live.deviceDisconnected();
         Api.TrainingSessions.live.clearCommandListeners();
         setTimeout(function () {
-            App.load('home', undefined, undefined, function () {
+            App.load('home', 'slide-right', undefined, function () {
                 App.removeFromStack();
             });
         }, 1);

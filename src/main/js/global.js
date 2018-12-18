@@ -230,8 +230,12 @@ function emulateCordova () {
             }, 0);
         }
 
-    }
+    };
 
+    window.Appsee = {
+        start: function(){},
+        startScreen: function(){}
+    }
 
 }
 

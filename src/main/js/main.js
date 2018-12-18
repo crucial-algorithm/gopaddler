@@ -28,13 +28,14 @@ var settings = undefined;
 var context = undefined;
 var environment = undefined;
 
-function enrichPageArg(page) {
+function enrichPageArg(page, pageName) {
     var $page = $(page);
     var callbacks = [];
     var appShown = false;
 
     $page.off('appShow').on('appShow', function() {
         appShown = true;
+        analytics.setView(pageName);
         for (var i = 0; i < callbacks.length; i++) {
             callbacks[i].apply({}, [])
         }
@@ -56,21 +57,18 @@ function enrichPageArg(page) {
  * Splash screen / login page.
  */
 App.controller('login', function (page) {
-    analytics.setView('login');
-    enrichPageArg(page);
+    enrichPageArg(page, 'login');
     new LoginView(page);
 });
 
 App.controller('login-with-password', function (page) {
-    analytics.setView('login-with-password');
-    enrichPageArg(page);
+    enrichPageArg(page, 'login-with-password');
     new LoginWithPassword(page, context);
 });
 
 App.controller('home', function (page, request) {
-    analytics.setView('home');
     analytics.setUser(Api.User.getId());
-    enrichPageArg(page);
+    enrichPageArg(page, 'home');
     Settings.loadSettings().then(function (s) {
         settings = s;
         context = new Context(settings, environment);
@@ -89,14 +87,12 @@ App.controller('home', function (page, request) {
  * New session page.
  */
 App.controller('session', function (page, scheduledSession) {
-    analytics.setView('session');
-    enrichPageArg(page);
+    enrichPageArg(page, 'session');
     new SessionView(page, context, scheduledSession);
 });
 
 App.controller('session-summary', function (page, session) {
-    analytics.setView('session-summary');
-    enrichPageArg(page);
+    enrichPageArg(page, 'session-summary');
     new SessionSummaryView(page, context, session);
 });
 
@@ -104,8 +100,7 @@ App.controller('session-summary', function (page, session) {
  * Settings page.
  */
 App.controller('settings', function (page) {
-    analytics.setView('settings');
-    enrichPageArg(page);
+    enrichPageArg(page, 'settings');
     new SettingsView(page, context, settings);
 });
 
@@ -113,8 +108,7 @@ App.controller('settings', function (page) {
  * Session list page.
  */
 App.controller('sessions', function (page) {
-    analytics.setView('sessions');
-    enrichPageArg(page);
+    enrichPageArg(page, 'sessions');
     context = new Context(context.preferences(), environment);
     new SessionsView(page, context);
 });
@@ -123,8 +117,7 @@ App.controller('sessions', function (page) {
  * Calibration page.
  */
 App.controller('calibration', function (page, request) {
-    analytics.setView('calibration');
-    enrichPageArg(page);
+    enrichPageArg(page, 'calibration');
     new CalibrationView(page, context, request);
 });
 
@@ -132,8 +125,7 @@ App.controller('calibration', function (page, request) {
  * Pause and swipe session tutorial page.
  */
 App.controller('session-basic-touch-tutorial', function (page) {
-    analytics.setView('session-touch-tips-tutorial');
-    enrichPageArg(page);
+    enrichPageArg(page, 'session-touch-tips-tutorial');
     new SessionTipsView(page, context);
 });
 
@@ -141,8 +133,7 @@ App.controller('session-basic-touch-tutorial', function (page) {
  * Calibration tutorial
  */
 App.controller('calibration-help', function (page, request) {
-    analytics.setView('calibration-help');
-    enrichPageArg(page);
+    enrichPageArg(page, 'calibration-help');
     new CalibrationHelpView(page, context, request);
 });
 
@@ -150,20 +141,17 @@ App.controller('calibration-help', function (page, request) {
  * Bluetooth devices paring
  */
 App.controller('bluetooth', function (page, request) {
-    analytics.setView('bluetooth');
-    enrichPageArg(page);
+    enrichPageArg(page, 'bluetooth');
     new BluetoothView(page, context, request);
 });
 
 App.controller('select-session', function (page, request) {
-    analytics.setView('select-session');
-    enrichPageArg(page);
+    enrichPageArg(page, 'select-session');
     new SelectSessionView(page, context, request);
 });
 
 App.controller('choose-boat', function (page, request) {
-    analytics.setView('choose-boat');
-    enrichPageArg(page);
+    enrichPageArg(page, 'choose-boat');
     Settings.loadSettings().then(function (s) {
         settings = s;
         context = new Context(settings, environment);
@@ -177,14 +165,12 @@ App.controller('choose-boat', function (page, request) {
 });
 
 App.controller('define-gps-update-rate', function (page, request) {
-    analytics.setView('define-gps-update-rate');
-    enrichPageArg(page);
+    enrichPageArg(page, 'define-gps-update-rate');
     new DefineGPSSpeedView(page, context);
 });
 
 App.controller('define-max-heart-rate', function (page, request) {
-    analytics.setView('define-max-heart-rate');
-    enrichPageArg(page);
+    enrichPageArg(page, 'define-max-heart-rate');
     new DefineMaxHeartRateView(page, context);
 });
 

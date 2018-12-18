@@ -1,14 +1,16 @@
 var init = function () {
-//    window.analytics.startTrackerWithId('UA-73212702-1');
+    window.analytics.startTrackerWithId('UA-73212702-1');
+    Appsee.start("c998921766404df5862fee35b9272896");
 };
 
 
 var view = function (name) {
-//    window.analytics.trackView(name);
+    window.analytics.trackView(name);
+    Appsee.startScreen(name);
 };
 
 var user = function (id) {
-//    window.analytics.setUserId(id);
+    window.analytics.setUserId(id);
 };
 
 

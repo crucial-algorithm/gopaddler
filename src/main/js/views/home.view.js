@@ -145,6 +145,8 @@ HomeView.prototype.loadChart = function() {
             borderColor.push('rgba(239, 97, 86, 1)');
         });
 
+        Chart.defaults.global.defaultFontFamily = 'Roboto';
+        Chart.defaults.global.defaultFontSize = 14;
 
         new Chart($ctx, {
             type: 'bar',

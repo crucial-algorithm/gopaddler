@@ -422,8 +422,9 @@ exports.TrainingSessions = {
     live: {
 
         checkApiVersion: function () {
-            if (!isLiveUpdate())
-                return;
+            if (!isLiveUpdate()) {
+                return reject();
+            }
             return _call('checkApiVersion')
         },
 
@@ -633,3 +634,9 @@ exports.Server = {
         });
     }
 };
+
+function reject() {
+    var defer = $.Deferred();
+    defer.reject();
+    return defer.promise();
+}

@@ -59,7 +59,7 @@ SelectSessionView.prototype.render = function (page, context) {
     Api.TrainingSessions.live.deviceReady();
     self.deviceActiveIntervalId = setInterval(function () {
         Api.TrainingSessions.live.deviceReady();
-    }, 60000);
+    }, 10000);
 
 
     var expressions = {};

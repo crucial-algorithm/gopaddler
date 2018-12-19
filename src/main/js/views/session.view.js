@@ -242,7 +242,7 @@ SessionView.prototype.render = function (page, context, options) {
 
         // on split change, we add the exact moment when it happens to the metrics! Due to rounds, timestamp may be previous
         // to split start, so just ignore it if it is
-        if (self.hasSplitsDefined === false
+        if (self.hasSplitsDefined === false || (self.hasSplitsDefined === true && areSplitsFinished === true)
             || (self.hasSplitsDefined === true && areSplitsFinished === false && splitsIndex.length > 0 && timestamp > splitsIndex[splits.getPosition()])) {
             // store data
             new SessionDetail(session.getId(), timestamp, location.distance, location.speed, spm.value

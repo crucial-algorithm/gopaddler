@@ -367,7 +367,7 @@ function SessionsView(page, context) {
     $summaryTime = $page.find('#total-duration');
 
     // set unit labes according to user preference
-    $page.find('#sessions-summary-distance-unit').html(context.getUnit('distance'));
+    $page.find('#sessions-summary-distance-unit').html(context.getUnit('distance_in_session_list'));
     $page.find('#sessions-summary-speed-unit').html(context.getUnit('speed'));
 
     // bind event to back button

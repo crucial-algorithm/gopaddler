@@ -1,5 +1,5 @@
 .app-content.portrait-home {
-    background-color: #F59146;
+    background-color: #535465;
 }
 
 .portrait-home-user-info {
@@ -13,7 +13,7 @@
     height: 20vh;
     line-height: 20vh;
     text-align: center;
-    font-size: 4vh;
+    font-size: 3vh;
 }
 
 .home-last-record-date {
@@ -23,7 +23,8 @@
 }
 
 .portrait-home-user-info-chart {
-    height: 35vh;
+    width: 92%;
+    margin: auto;
 }
 
 .portrait-home-user-info canvas {
@@ -52,6 +53,8 @@
     display: table;
     height: 15vh;
     width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
 }
 
 .portrait-home-row-title {

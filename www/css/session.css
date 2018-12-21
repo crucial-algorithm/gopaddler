@@ -43,46 +43,70 @@
 .session-controls {
     width: 100%;
     height: 100%;
+    color: white;
+}
+
+.session-controls.session-controls-free-session {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.session-controls-round-button-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    font-weight: 700;
+    text-align: center;
+    align-items: flex-end;
+    padding-bottom: 18px;
+    display: flex;
+    justify-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.session-controls-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    height: 50vh;
+}
+
+.session-controls-row:nth-child(2) {
+    align-items: flex-start;
 }
 
 .session-resume {
-    border-radius: 50%;
-    width: 40%;
-    margin: 0 5% 0 5%;
-    color: #fff;
-    float: left;
     background: #5650EF url(../images/play.svg) no-repeat center center;
-    background-size: 90%;
+    background-size: 70%;
 }
 
 .session-finish {
+    background: #EE6156 url(../images/flag.svg) no-repeat 50% 50%;
+    background-size: 60%;
+}
+
+.session-controls-round-button {
     border-radius: 50%;
-    width: 40%;
-    margin: 0 5% 0 5%;
-    background: #EF6156 url(../images/flag.svg) no-repeat 50% 50%;
-    background-size: 70%;
-    color: #fff;
-    float: right;
+    width: 36vw;
+    height: 36vw;
+    display: flex;
+    margin: 2vh;
 }
 
 .session-start-immediately {
-    border-radius: 50%;
-    width: 20%;
-    margin: -15px 5% 0 25%;
-    color: #fff;
-    float: left;
-    background: #F59146 url(../images/play.svg) no-repeat center center;
+    background: #5650EF url(../images/play.svg) no-repeat center center;
     background-size: 90%;
 }
 
 .session-start-on-minute-turn {
-    border-radius: 50%;
-    width: 40%;
-    margin: 0 5% 0 5%;
-    color: #fff;
-    float: left;
-    background: #5650EF url(../images/play.svg) no-repeat center center;
+    background: #F59146 url(../images/play.svg) no-repeat center center;
     background-size: 90%;
+}
+
+.session-cancel {
+    background: #999999 url(../images/cancel.svg) no-repeat center center;
+    background-size: 30%;
 }
 
 .session-slide-to-unlock {

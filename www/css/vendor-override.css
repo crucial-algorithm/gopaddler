@@ -69,7 +69,7 @@
 
 .date-picker-wrapper .month-wrapper table .day.checked.first-date-selected,
 .date-picker-wrapper .month-wrapper table .day.checked.last-date-selected {
-    background-color: #EF6156 !important;
+    background-color: #EE6156 !important;
     color: #FFFFFF !important;
 }
 

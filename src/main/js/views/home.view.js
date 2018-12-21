@@ -8,6 +8,7 @@ var portrait = require('./home.portrait.art.html');
 var Chart = require('chart.js');
 var Utils = require('../utils/utils');
 var Settings = require('../model/settings');
+var GpChart = require('../utils/widgets/chart').GpChart;
 require('chartjs-plugin-datalabels');
 
 function HomeView(page, context, request) {
@@ -125,12 +126,10 @@ HomeView.prototype.loadChart = function() {
     Session.getFromDate(moment().add(-15, 'days').toDate().getTime(), function(sessions) {
         var data = [],
             labels = [],
-            backgroundColor = [],
-            borderColor = [],
             day, total = 0;
 
         var indexed = indexSessionsByDay(sessions);
-        eachDayInLastXDays(15, function(cal) {
+        eachDayInLastXDays(8, function(cal) {
             var distance;
             if (indexed[cal.day]) {
                 distance = sumSessions(indexed[cal.day]);
@@ -141,49 +140,22 @@ HomeView.prototype.loadChart = function() {
             total += distance;
             data.push(distance);
             labels.push(day);
-            backgroundColor.push('rgba(239, 97, 86, .2)');
-            borderColor.push('rgba(239, 97, 86, 1)');
         });
 
-        Chart.defaults.global.defaultFontFamily = 'Roboto';
-        Chart.defaults.global.defaultFontSize = 14;
-
-        new Chart($ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    data: data,
-                    backgroundColor: backgroundColor,
-                    borderColor: borderColor,
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                legend: {
-                    display: false
-                },
-                tooltips: {
-                    enabled: false
-                },
-                scales: {
-                    yAxes: [{
-                        display: false
-                    }],
-                    xAxes: [{
-                        display: false
-                    }]
-                },
-                plugins: {
-                   datalabels: {
-                      display: true,
-                      align: 'end',
-                      anchor: 'end',
-                      formatter: Math.round
-                   }
-                }
+        var formatter = function (value, context) {
+            if (value === 0) {
+                return '';
             }
-        });
+            return Math.round(value);
+        };
+
+        new GpChart($ctx, 'bar', labels, {
+            data: data,
+            backgroundColor: 'rgba(238, 97, 86, 1)',
+            borderColor: 'rgba(238, 97, 86, 1)',
+            borderWidth: 1
+        }, formatter, {weight: 700, offset: -10});
+
 
         if (total ===0) {
             $('.portrait-home-user-info-chart')

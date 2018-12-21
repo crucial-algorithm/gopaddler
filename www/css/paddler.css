@@ -12,11 +12,12 @@
 }
 
 body {
-    font-family: 'Roboto', sans-serif;!important
+    font-family: 'Roboto', sans-serif !important;
+    background-color: #3B3D62;
 }
 
 .paddler-topbar {
-    background-color: #7E8C8D;
+    background-color: #535465;
     height: 18vh;
 }
 
@@ -44,11 +45,12 @@ body {
 .app-topbar .app-button[data-back].left.paddler-back {
     background-image: url(../images/back.svg);
     height: 100%;
-    background-size: 70%;
+    background-size: 30px;
+    background-repeat: no-repeat;
     background-position: center center;
     padding: 0;
     width: 9%;
-    background-color: #9EACAD;
+    background-color: #535465;
     border: 0;
 }
 
@@ -65,12 +67,12 @@ body {
 
 .home-start-session-btn {
     height: 33.33%;
-    background-color: #EF6156;
+    background-color: #EE6156;
 }
 
 .home-settings-btn {
     height: 33.33%;
-    background-color: #F59146;
+    background-color: #535465;
 }
 
 .home-last-record, .home-username {
@@ -108,21 +110,20 @@ body {
 .home-icon {
     display: table-cell;
     height: 100%;
-    width: 20%;
+    width: 15%;
     vertical-align: middle;
     background-repeat: no-repeat;
 }
 
 .home-row-title {
-    display:table-cell;
-    color:#FFFFFF;
+    display: table-cell;
+    color: #FFFFFF;
     vertical-align: middle;
-    margin: 3%;
     text-transform: uppercase;
-    width: 80%;
-    text-align: right;
-    padding-right: 1%;
+    width: 83%;
     font-size: 9vw;
+    padding-left: 2%;
+    letter-spacing: 0.2vw;
 }
 
 .sessions-icon {
@@ -211,7 +212,11 @@ body {
 }
 
 .red {
-    background-color: #EF6156;
+    background-color: #EE6156;
+}
+
+.grey {
+    background-color: #999999;
 }
 
 .session-controls-outer-text {
@@ -229,7 +234,7 @@ body {
     font-weight: bold;
     text-align: center;
     text-transform: uppercase;
-    font-size: 3vw;
+    font-size: 14px;
 }
 
 .template {
@@ -248,21 +253,24 @@ body {
 
 .settings-website-text {
     color:#D05043;
-    text-decoration: none
+    text-decoration: none;
+    padding-left: 4px;
 }
 
 .settings-row {
-    display: table;
+    display: flex;
     width: 100%;
     height: 18vh;
     color: #FFFFFF;
     text-transform: uppercase;
-    background-color: #313455;
+    background-color: #3B3D62;
     font-weight: bold;
+    box-sizing: border-box;
+    align-items: center;
 }
 
 .settings-row.odd {
-    background-color: #2C2D49;
+    background-color: #35375b;
 }
 
 .settings-calibrate {
@@ -270,52 +278,73 @@ body {
     height: 100%;
     vertical-align: middle;
     text-align: left;
-    padding-left: 3%;
 
-    background-color: #F4563D;
+    background-color: #EE6156;
     text-transform: uppercase;
     color: #fff;
     font-weight: bold;
 }
 
 .settings-calibrate-help {
-    display: table-cell;
-    vertical-align: middle;
-    width: 30%;
+    width: 35%;
     text-align: right;
-    background-color: #F4563D;
-    padding-right: 2%;
+    background-color: #EE6156;
+    padding-right: 5%;
+    height: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
 }
 
 .settings-current-gps-rate, .settings-current-max-heart-rate {
-    display: table-cell;
     vertical-align: middle;
-    width: 30%;
+    width: 35%;
     text-align: right;
-    padding-right: 8%;
+    padding-right: 5%;
 }
 
 .settings-option {
-    display: table-cell;
     height: 100%;
     width: 80%;
     vertical-align: middle;
     text-align: left;
-    padding-left: 3%;
+}
+
+.settings-option-label {
+    width: 65%;
+    padding-left: 5%;
+    display: flex;
+    align-items: center;
+}
+
+.settings-option-action {
+    width: 35%;
+    text-align: right;
+    padding-right: 6%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.settings-option-switch {
+    padding: 0 10px;
+}
+
+.settings-option-switch-label {
+
 }
 
 .settings-facebook {
-    display: table-cell;
     width: 100%;
     height: 100%;
-    vertical-align: middle;
     text-align: left;
-    padding-left: 3%;
     font-weight: bold;
-
     background-color: #3B5999;
     text-transform: uppercase;
     color: #fff;
+    padding-left: 5%;
+    display: flex;
+    align-items: center;
 }
 
 .settings-facebook-icon {
@@ -326,6 +355,17 @@ body {
     background-position: left;
     background-repeat: no-repeat;
     background-size: 100% 100%;
+}
+
+.settings-footer {
+    font-size: 12px;
+    font-weight: 600;
+    color: white;
+    background-color: #535465;
+    text-align: center;
+    width: 100%;
+    height: 10vh;
+    line-height: 10vh;
 }
 
 .disabled {
@@ -635,4 +675,7 @@ ul.list-widget > li:nth-child(even) {
     background-color: #E8E8E8
 }
 
+.app-page, .app-content {
+    background-color: #3b3d62;
+}
 

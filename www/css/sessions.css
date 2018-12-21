@@ -96,7 +96,7 @@
 }
 
 .session-row-data div:first-child {
-    background-color: #EF6156;
+    background-color: #EE6156;
     color: #FFFFFF;
     width: 25%;
 }
@@ -107,6 +107,7 @@
     display: block;
     font-size: 10px;
     color: #7e8c8d;
+    font-weight: 700;
 }
 
 .session-row-expression {
@@ -115,7 +116,7 @@
 }
 
 .session-row-data div:first-child .session-row-label {
-    color: #84332C;
+    color: rgba(0, 0, 0, 0.5);
 }
 
 .session-row-actions {
@@ -133,7 +134,7 @@
     height: 100%;
     text-align: center;
     color: #ffffff;
-    background-color: #F4563D;
+    background-color: #EE6156;
 }
 
 .session-row-upload-btn {
@@ -153,8 +154,8 @@
 
 .session-row-empty {
     padding: 20px 20px;
-    background-color: #EFEFF4;
-    color: #7E8C8D;
+    background-color: #EE6156 !important;
+    color: #fff;
     font-size: 12px;
     text-align: center;
     font-weight: bold;
@@ -167,3 +168,85 @@ li:nth-child(odd) .session-row-data div:first-child {
 .sessions-delete-session {
     background-color: #2F2F3B;
 }
+
+
+.sessions-summary {
+    width: 90%;
+    height: 28vh;
+    background-color: #3b3d62;
+    color: #fff;
+    margin: auto;
+}
+
+.sessions-table-header {
+    height: 5vh;
+    display: flex;
+    align-items: center;
+    justify-items: center;
+    text-align: center;
+    color: #fff;
+    font-weight: 600;
+    font-size: 10px;
+    background-color: #2B2C45;
+}
+
+.sessions-table-header > div:first-child {
+    width: 25%;
+}
+
+.sessions-table-header > div:last-child {
+    width: 15%;
+}
+
+.sessions-table-header > div {
+    width: 30%;
+}
+
+.sessions-summary-highlight {
+    display: flex;
+    justify-content: center;
+    color: white;
+    font-size: 40px;
+    font-weight: 900;
+    height: 16vh;
+    align-items: center;
+}
+
+
+#sessions-summary-distance-unit {
+    font-size: 14px;
+    margin: 18px 0 0 6px;
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.sessions-summary-secondary {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    height: 12vh;
+    text-align: center;
+}
+
+.sessions-summary-secondary > div {
+    background-color: #303252;
+    width: 100%;
+    margin: 4px;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.sessions-summary-secondary-value {
+    display: block;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.sessions-summary-secondary-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+
+
+

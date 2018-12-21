@@ -9,7 +9,7 @@
     float: left;
     width: 50%;
     height: 100%;
-    background-color: #EF6156;
+    background-color: #EE6156;
 }
 
 .select-session-play > .label,  .select-session-play > .selected-session {
@@ -35,16 +35,14 @@
     line-height: 10vh;
 }
 
-.select-session-start {
-    width: 100%;
-    height: 62vh;
-    min-height: 62vh;
-    color: #fff;
-    background: url(../images/play-with-circle.svg) center center;
-    background-size: 60%;
-    background-repeat: no-repeat;
-}
-
 .select-session-available-sessions-wrapper, .select-session-play {
     height: 82vh;
+}
+
+
+.select-session-start {
+    width: 30vh;
+    height: 30vh;
+    border-radius: 50%;
+    margin: 16vh auto 0 auto;
 }

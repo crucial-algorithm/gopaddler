@@ -69,3 +69,11 @@ If truly desperate, edit ./platforms/ios/CordovaLib/Classes/Public/CDVViewContro
     return FALSE;
 }
 ```
+
+
+### Generating splash screen
+#### Install
+Follow instruction @ https://github.com/AlexDisler/cordova-splash
+Note: requires brew install ImageMagic
+
+cordova-splash --splash=./res/splash.png

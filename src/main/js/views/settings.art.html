@@ -13,37 +13,41 @@
 <div class="app-content settings {{if isPortraitMode}} portrait-settings-content {{/if}}">
 
     <div class="settings-row odd" id="boat">
-        <div class="settings-option" style="width:65%">
+        <div class="settings-option settings-option-label">
             Type of boat
         </div>
-        <div class="settings-option" style="width:15%;padding:0;text-align:right">K1</div>
-        <div class="settings-option" style="width:10%">
-            <div class="onoffswitch">
-                <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="pick-boat">
-                <label class="onoffswitch-label" for="pick-boat"></label>
+        <div class="settings-option settings-option-action">
+            <div class="settings-option-switch-label">K1</div>
+            <div class="settings-option-switch">
+                <div class="onoffswitch">
+                    <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="pick-boat">
+                    <label class="onoffswitch-label" for="pick-boat"></label>
+                </div>
             </div>
+            <div class="settings-option-switch-label">C1</div>
         </div>
-        <div class="settings-option" style="width:15%">C1</div>
     </div>
 
     <div class="settings-row" id="units">
-        <div class="settings-option" style="width:65%">
+        <div class="settings-option settings-option-label">
             Units
         </div>
-        <div class="settings-option" style="width:15%;padding:0;text-align:right">KM</div>
-        <div class="settings-option" style="width:10%">
-            <div class="onoffswitch">
-                <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="pick-units">
-                <label class="onoffswitch-label" for="pick-units"></label>
+        <div class="settings-option settings-option-action">
+            <div class="settings-option-switch-label">KM</div>
+            <div class="settings-option-switch">
+                <div class="onoffswitch">
+                    <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="pick-units">
+                    <label class="onoffswitch-label" for="pick-units"></label>
+                </div>
             </div>
+            <div class="settings-option-switch-label">Mi</div>
         </div>
-        <div class="settings-option" style="width:15%">Mi</div>
     </div>
     <div class="settings-row odd">
-        <div class="settings-option">
+        <div class="settings-option settings-option-label">
             black and white
         </div>
-        <div class="settings-option" style="width:30%">
+        <div class="settings-option settings-option-action">
             <div class="onoffswitch">
                 <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="black-and-white">
                 <label class="onoffswitch-label toggle" for="black-and-white"></label>
@@ -51,10 +55,10 @@
         </div>
     </div>
     <div class="settings-row">
-        <div class="settings-option">
+        <div class="settings-option settings-option-label">
             Save session layout
         </div>
-        <div class="settings-option" style="width:30%">
+        <div class="settings-option settings-option-action">
             <div class="onoffswitch">
                 <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="layout">
                 <label class="onoffswitch-label toggle" for="layout"></label>
@@ -62,10 +66,10 @@
         </div>
     </div>
     <div class="settings-row odd">
-        <div class="settings-option">
+        <div class="settings-option settings-option-label">
             portrait mode
         </div>
-        <div class="settings-option" style="width:30%">
+        <div class="settings-option settings-option-action">
             <div class="onoffswitch">
                 <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="portrait-mode">
                 <label class="onoffswitch-label toggle" for="portrait-mode"></label>
@@ -73,27 +77,27 @@
         </div>
     </div>
     <div class="settings-row">
-        <div class="settings-option gps-rate" id="gps-update-rate">
+        <div class="settings-option gps-rate settings-option-label" id="gps-update-rate">
             GPS refresh rate
         </div>
         <div class="settings-current-gps-rate">&nbsp;</div>
     </div>
 
     <div class="settings-row odd">
-        <div class="settings-option" id="bluetooth">
+        <div class="settings-option settings-option-label" id="bluetooth">
             Heart Rate Sensor
         </div>
     </div>
 
     <div class="settings-row">
-        <div class="settings-option heart-rate" id="max-heart-rate">
+        <div class="settings-option heart-rate settings-option-label" id="max-heart-rate">
             Max Heart Rate
         </div>
         <div class="settings-current-max-heart-rate">&nbsp;</div>
     </div>
 
     <div class="settings-row">
-        <div class="settings-calibrate" id="calibration">
+        <div class="settings-calibrate settings-option-label" id="calibration">
             Calibrate
         </div>
         <div class="settings-calibrate-help">Learn how</div>
@@ -106,10 +110,8 @@
         </div>
     </div>
 
-    <div class="settings-row">
-        <div class="settings-option">
-            Version <span data-selector="version">&nbsp;</span>. For more, visit <a class="settings-website-text" href="javascript:;">app.gopaddler.com</a>
-        </div>
+    <div class="settings-footer">
+        Version<span data-selector="version">&nbsp;</span>
     </div>
 
 </div>

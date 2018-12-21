@@ -1,17 +1,17 @@
 .portrait-paddler-topbar {
-    height: 12vh
+    height: 10vh;
 }
 
 .portrait-paddler-topbar.app-topbar.paddler-topbar {
-    height: 12vh;
+    height: 10vh;
 }
 
 .portrait-paddler-topbar .paddler-title-text {
-    font-size: 6vw;
+    font-size: 18px;
 }
 
 .app-topbar .app-button[data-back].left.paddler-back.portrait-back-button {
-    width: 16vw;
+    width: 10vh;
 }
 
 .portrait-app-content .app-content {

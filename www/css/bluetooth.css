@@ -47,7 +47,7 @@ li.bluetooth-devices-device.success {
 }
 
 .bluetooth > div.bluetooth-scan-button {
-    background-color: #F4563D;
+    background-color: #EE6156;
     position: fixed;
     bottom: 0;
     width: 100vw;
@@ -84,7 +84,7 @@ li.bluetooth-devices-device {
 .bluetooth-devices-device-actions {
     display: inline-block;
     width: 40%;
-    background-color: #F4563D;
+    background-color: #EE6156;
     color: #ffffff;
     text-transform: UPPERCASE;
     text-align: center;
@@ -128,7 +128,7 @@ li.bluetooth-devices-device {
 
 
 .bluetooth-devices-search.progress-line {
-    background-color: #F4563D;
+    background-color: #EE6156;
     height: 1vh;
     display: none;
     position: fixed;

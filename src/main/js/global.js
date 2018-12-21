@@ -24,11 +24,12 @@ function emulateCordova () {
     };
 
     var executeSql = function (sql, args, success, error) {
+        var data =[];
         success = success || function(){};
         if (sql.toLowerCase().substr(0, 3) === 'ins') {
             success({insertId: 1234});
         } else if (sql === "SELECT * FROM settings") {
-            var data = [
+            data = [
                 {version: 1, units: 'K', black_and_white: false, restore_layout: true, portrait_mode: __IS_PORTRAIT_MODE__, gps_rate: 0, max_heart_rate: 186}
             ];
             success({
@@ -39,41 +40,70 @@ function emulateCordova () {
                 }
             })
         } else if (sql.indexOf("FROM session_data") >= 0) {
-            var session = [
-                {id: 1, session:1, timestamp: 1, distance: 1, speed:  1, spm: 50, efficiency: 2.2, latitude: 1, longitude: 1, split: -1},
-                {id: 1, session:1, timestamp: 1, distance: 1, speed:  1, spm: 50, efficiency: 2.2, latitude: 1, longitude: 1, split: -1},
-                {id: 1, session:1, timestamp: 1, distance: 1, speed: 10, spm: 80, efficiency: 4.0, latitude: 1, longitude: 1, split: 0},
-                {id: 1, session:1, timestamp: 1, distance: 1, speed: 15, spm: 90, efficiency: 4.5, latitude: 1, longitude: 1, split: 0},
-                {id: 1, session:1, timestamp: 1, distance: 1, speed:  1, spm: 50, efficiency: 2.2, latitude: 1, longitude: 1, split: 1},
-                {id: 1, session:1, timestamp: 1, distance: 1, speed:  1, spm: 50, efficiency: 2.2, latitude: 1, longitude: 1, split: 1},
-                {id: 1, session:1, timestamp: 1, distance: 1, speed: 10, spm: 80, efficiency: 4.0, latitude: 1, longitude: 1, split: 2},
-                {id: 1, session:1, timestamp: 1, distance: 1, speed: 15, spm: 90, efficiency: 4.5, latitude: 1, longitude: 1, split: 2},
-                {id: 1, session:1, timestamp: 1, distance: 1, speed:  1, spm: 50, efficiency: 2.2, latitude: 1, longitude: 1, split: 3},
-                {id: 1, session:1, timestamp: 1, distance: 1, speed:  1, spm: 50, efficiency: 2.2, latitude: 1, longitude: 1, split: 3}
-            ];
+            var dataSetSize = 3600;
+
+            var session = [], timestamp = new Date().getTime() - 86400000, distance = 0;
+            for (var i = 0; i < dataSetSize; i++) {
+                session.push({
+                    id: 1,
+                    session: 1,
+                    timestamp: timestamp,
+                    distance: distance / 1000,
+                    speed: 13 + Math.random() * (Math.random() >= 0.5 ? -1 : 1),
+                    spm: 65 + Math.round(Math.random() * 3) * (Math.random() >= 0.5 ? -1 : 1),
+                    efficiency: 3 + Math.random() * (Math.random() >= 0.5 ? -1 : 1),
+                    heart_rate: 160 + Math.round(Math.random() * 20),
+                    latitude: 1,
+                    longitude: 1,
+                    split: -1
+                });
+
+                timestamp += 1000;
+                distance += 13 / 36 * 10;
+            }
 
             success({rows: {length: session.length, item: function (index) {
                 return session[index];
             }}})
 
         } else {
-            var data = [
-                {id: 1, synced: true, session_start: new Date(), distance: 1, top_speed: 1, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 2, synced: false, session_start: new Date(new Date().getTime() - 86400000), distance: 2, top_speed: 2, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 3, synced: false, session_start: new Date(new Date().getTime() - (2 * 86400000)), distance: 12.34, top_speed: 3, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 4, synced: true, session_start: new Date(new Date().getTime() - (3 * 86400000)), distance: 4, top_speed: 4, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 5, synced: true, session_start: new Date(new Date().getTime() - (4 * 86400000)), distance: 5, top_speed: 5, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 6, synced: true, session_start: new Date(new Date().getTime() - (4 * 86400000)), distance: 6, top_speed: 6, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 7, synced: true, session_start: new Date(new Date().getTime() - (4 * 86400000)), distance: 7, top_speed: 7, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 8, synced: true, session_start: new Date(new Date().getTime() - (5 * 86400000)), distance: 8, top_speed: 8, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 9, synced: false, session_start: new Date(new Date().getTime() - (6 * 86400000)), distance: 9, top_speed: 9, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 10, synced: false, session_start: new Date(new Date().getTime() - (6 * 86400000)), distance: 10, top_speed: 10, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 11, synced: false, session_start: new Date(new Date().getTime() - (7 * 86400000)), distance: 11, top_speed: 11, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 12, synced: false, session_start: new Date(new Date().getTime() - (8 * 86400000)), distance: 12, top_speed: 12, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 13, synced: false, session_start: new Date(new Date().getTime() - (8 * 86400000)), distance: 13, top_speed: 13, session_end: new Date(new Date().getTime() + 3600000)},
-                {id: 14, synced: false, session_start: new Date(new Date().getTime() - (9 * 86400000)), distance: 14, top_speed: 14, session_end: new Date(new Date().getTime() + 3600000)}
-            ];
-            success({rows: {length: 14, item: function (index) {
+            data = [];
+
+            var numberOfSessions = 30, sessionDuration = 3600000, sessionStart = Date.now(),
+                sessionEnd = sessionStart + sessionDuration;
+            i = 0;
+            while (i < numberOfSessions) {
+                var dt = 13 + Math.random() * (Math.random() >= 0.5 ? -1 : 1);
+                var ef = 3 + Math.random();
+
+                var dow = moment(sessionStart).day();
+                if ( dow === 0) {
+                    sessionStart -= 86400000;
+                    sessionEnd = sessionStart + sessionDuration;
+                    continue;
+                }
+
+                data.push({
+                    id: i,
+                    synced: Math.random() <= .8,
+                    session_start: new Date(sessionStart),
+                    session_end: new Date(sessionEnd),
+                    anglez: 1,  noisex: 1, noisez: 1, factorx: 1, factorz: 1, axis: 1,
+                    distance: dt,
+                    avg_spm: 65,
+                    top_spm: 65 + Math.round(Math.random() * 3),
+                    avg_speed: dt,
+                    top_speed: 13 + Math.random(),
+                    avg_efficiency: ef,
+                    top_efficiency: ef + Math.random(),
+                    avg_heart_rate: 160 + Math.round(Math.random() * 20)
+                });
+
+                sessionStart -= 86400000;
+                sessionEnd = sessionStart + sessionDuration;
+                i++;
+            }
+            success({rows: {length: numberOfSessions, item: function (index) {
                 return data[index];
             }}})
         }

@@ -1,39 +1,51 @@
 .select-session-available-sessions-wrapper {
-    height: 44vh;
+    height: 50vh;
     width: 100%;
 }
 
 .select-session-play {
-    height: 44vh;
+    height: 40vh;
     width: 100%;
-    background-color: #EF6156;
+    background-color: #EE6156;
 }
 
 
 .select-session-play > .label,  .select-session-play > .selected-session {
-    height: 5vh;
+    height: 20%;
     text-align: center;
-    font-size: 3vh;
+    font-size: 20px;
     text-transform: uppercase;
     color: white;
-    font-weight: bold;
+    font-weight: 700;
+    padding-top: 0;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 80vw;
+    margin: auto;
+    line-height: 60px;
 }
+
+.select-session-start {
+    width: 120px;
+    height: 120px;
+    border-radius: 60px;
+    background-color: #fff;
+    margin: 20px auto;
+    display: flex;
+    align-items: center;
+    -webkit-box-shadow: 4px 4px 20px 8px rgba(0,0,0,0.2);
+    -moz-box-shadow: 4px 4px 20px 8px rgba(0,0,0,0.2);
+    box-shadow: 4px 4px 16px 6px rgba(0,0,0,0.2);
+}
+
 
 .select-session-play > .select-session-free-session-toggle {
     display: table;
-    font-size: 3vh;
+    font-size: 16px;
     width: 100%;
     position: absolute;
     bottom: 20px;
     right: 4px;
-    height: 5vh;
 }
 
-.select-session-start {
-    width: 100%;
-    height: 34vh;
-    color: #fff;
-    background: url(../images/play-with-circle.svg) center center;
-    background-size: 34vh;
-    background-repeat: no-repeat;
-}

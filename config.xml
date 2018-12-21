@@ -29,17 +29,12 @@
     <access launch-external="yes" origin="geo:*" />
     <platform name="android">
         <preference name="AndroidLaunchMode" value="singleTop" />
-        <icon density="mdpi" src="res/android/ic_launcher-mhdpi.png" />
+        <icon density="mdpi" src="res/android/ic_launcher-mdpi.png" />
+        <icon density="ldpi" src="res/android/ic_launcher-ldpi.png" />
         <icon density="hdpi" src="res/android/ic_launcher-hdpi.png" />
         <icon density="xhdpi" src="res/android/ic_launcher-xhdpi.png" />
         <icon density="xxhdpi" src="res/android/ic_launcher-xxhdpi.png" />
         <icon density="xxxhdpi" src="res/android/ic_launcher-xxxhdpi.png" />
-        <splash density="port-hdpi" src="res/android/splash-port-hdpi.png" />
-        <splash density="port-ldpi" src="res/android/splash-port-ldpi.png" />
-        <splash density="port-mdpi" src="res/android/splash-port-mdpi.png" />
-        <splash density="port-xhdpi" src="res/android/splash-port-xhdpi.png" />
-        <splash density="port-xxhdpi" src="res/android/splash-port-xxhdpi.png" />
-        <splash density="port-xxhdpi" src="res/android/splash-port-xxxhdpi.png" />
         <preference name="android-minSdkVersion" value="19" />
         <preference name="android-targetSdkVersion" value="21" />
         <config-file parent="/resources" target="./res/values/strings.xml">
@@ -48,50 +43,36 @@
         </config-file>
     </platform>
     <platform name="ios">
+        <icon height="100" src="res/ios/icon-100.png" width="100" />
+        <icon height="1024" src="res/ios/icon-1024.png" width="1024" />
+        <icon height="114" src="res/ios/icon-114.png" width="114" />
+        <icon height="120" src="res/ios/icon-120.png" width="120" />
+        <icon height="128" src="res/ios/icon-128.png" width="128" />
+        <icon height="144" src="res/ios/icon-144.png" width="144" />
+        <icon height="152" src="res/ios/icon-152.png" width="152" />
+        <icon height="16" src="res/ios/icon-16.png" width="16" />
+        <icon height="167" src="res/ios/icon-167.png" width="167" />
+        <icon height="172" src="res/ios/icon-172.png" width="172" />
+        <icon height="180" src="res/ios/icon-180.png" width="180" />
+        <icon height="196" src="res/ios/icon-196.png" width="196" />
         <icon height="20" src="res/ios/icon-20.png" width="20" />
-        <icon height="29" src="res/ios/icon-small.png" width="29" />
+        <icon height="256" src="res/ios/icon-256.png" width="256" />
+        <icon height="29" src="res/ios/icon-29.png" width="29" />
+        <icon height="32" src="res/ios/icon-32.png" width="32" />
         <icon height="40" src="res/ios/icon-40.png" width="40" />
         <icon height="48" src="res/ios/icon-48.png" width="48" />
         <icon height="50" src="res/ios/icon-50.png" width="50" />
+        <icon height="512" src="res/ios/icon-512.png" width="512" />
         <icon height="55" src="res/ios/icon-55.png" width="55" />
         <icon height="57" src="res/ios/icon-57.png" width="57" />
-        <icon height="58" src="res/ios/icon-small@2x.png" width="58" />
+        <icon height="58" src="res/ios/icon-58.png" width="58" />
         <icon height="60" src="res/ios/icon-60.png" width="60" />
+        <icon height="64" src="res/ios/icon-64.png" width="64" />
         <icon height="72" src="res/ios/icon-72.png" width="72" />
         <icon height="76" src="res/ios/icon-76.png" width="76" />
-        <icon height="80" src="res/ios/icon-40@2x.png" width="80" />
-        <icon height="87" src="res/ios/icon-29@3x.png" width="87" />
+        <icon height="80" src="res/ios/icon-80.png" width="80" />
+        <icon height="87" src="res/ios/icon-87.png" width="87" />
         <icon height="88" src="res/ios/icon-88.png" width="88" />
-        <icon height="100" src="res/ios/icon-50@2x.png" width="100" />
-        <icon height="114" src="res/ios/icon-57@2x.png" width="114" />
-        <icon height="120" src="res/ios/icon-60@2x.png" width="120" />
-        <icon height="144" src="res/ios/icon-72@2x.png" width="144" />
-        <icon height="152" src="res/ios/icon-76@2x.png" width="152" />
-        <icon height="167" src="res/ios/icon-83.5@2x.png" width="167" />
-        <icon height="172" src="res/ios/icon-172.png" width="172" />
-        <icon height="180" src="res/ios/icon-60@3x.png" width="180" />
-        <icon height="196" src="res/ios/icon-196.png" width="196" />
-        <icon height="1024" src="res/ios/icon-1024.png" width="1024" />
-        <splash height="1242" src="res/ios/screen/Default-1242@3x~iphone6s-landscape_2248x1242.png" width="2248" />
-        <splash height="2248" src="res/ios/screen/Default-1242@3x~iphone6s-portrait_1242x2248.png" width="1242" />
-        <splash height="1136" src="res/ios/screen/Default-568h@2x~iphone_640x1136.png" width="640" />
-        <splash height="750" src="res/ios/screen/Default-750@2x~iphone6-landscape_1334x750.png" width="1334" />
-        <splash height="1334" src="res/ios/screen/Default-750@2x~iphone6-portrait_750x1334.png" width="750" />
-        <splash height="1496" src="res/ios/screen/Default-Landscape@2x~ipad_2048x1496.png" width="2048" />
-        <splash height="1536" src="res/ios/screen/Default-Landscape@2x~ipad_2048x1536.png" width="2048" />
-        <splash height="748" src="res/ios/screen/Default-Landscape~ipad_1024x748.png" width="1024" />
-        <splash height="768" src="res/ios/screen/Default-Landscape~ipad_1024x768.png" width="1024" />
-        <splash height="2008" src="res/ios/screen/Default-Portrait@2x~ipad_1536x2008.png" width="1536" />
-        <splash height="2048" src="res/ios/screen/Default-Portrait@2x~ipad_1536x2048.png" width="1536" />
-        <splash height="1024" src="res/ios/screen/Default-Portrait~ipad_768x1024.png" width="768" />
-        <splash height="1004" src="res/ios/screen/Default_768x1004.png" width="768" />
-        <splash height="960" src="res/ios/screen/Default@2x~iphone_640x960.png" width="640" />
-        <splash height="2008" src="res/ios/screen/Default~ipad.png" width="1536" />
-        <splash height="480" src="res/ios/screen/Default~iphone.png" width="320" />
-        <splash height="1242" src="res/ios/screen/Default-736h.png" width="2208" />
-        <splash height="2208" src="res/ios/screen/Default-Landscape-736h.png" width="1242" />
-        <splash height="2436" src="res/ios/screen/Iphone-X-Portrait.png" width="1125" />
-        <splash height="1125" src="res/ios/screen/Iphone-X-Landscape.png" width="2436" />
         <hook src="src/cordova/ios/plist.js" type="before_build" />
     </platform>
     <preference name="FadeSplashScreen" value="true" />

@@ -1,3 +1,7 @@
 .portrait-settings-content > .settings-row {
-    height: 12.5vh
+    height: 10vh
+}
+
+.portrait-settings-content {
+    font-size: 14px;
 }

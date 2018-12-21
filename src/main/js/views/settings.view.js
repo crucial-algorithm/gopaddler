@@ -72,13 +72,7 @@ function SettingsView(page, context, settings) {
         $back.off('touchstart');
     });
 
-    var user = Api.User.getProfile().name ? Api.User.getProfile().name : Api.User.getProfile().email;
-
-    user += " / " + Api.User.getId();
-
-    $logout.find('.settings-facebook').html("Logout (" + user + ")");
-
-    $('[data-selector="version"]', page).html(__VERSION__);
+    $('[data-selector="version"]', page).html('&nbsp;' + __VERSION__);
 
     $('.settings-website-text', page).on('click', function () {
         window.open(__WEB_URL__, '_system');

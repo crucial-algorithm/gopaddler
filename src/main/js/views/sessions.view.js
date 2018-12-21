@@ -23,6 +23,7 @@ var LAST_30_DAYS_PERIOD_FILTER = 'last-30-days',
     $summaryTime,
 
     $calendar,
+    $chart,
     selectedFilter,
     filterStartDate,
     filterEndDate,
@@ -67,7 +68,7 @@ function addSessionsToSessionList(sessions) {
             $main = $('<div class="session-row-data-wrapper"></div>'),
             sessionAt = moment(new Date(session.getSessionStart())),
             duration = moment.duration(session.getSessionEnd() - session.getSessionStart()),
-            dDisplay = utils.lpad(duration.hours(), 2) + ':' + utils.lpad(duration.minutes(), 2) + ' H',
+            dDisplay = utils.lpad(duration.hours(), 2) + ':' + utils.lpad(duration.minutes(), 2),
             distance = session.getDistance(),
             speed = session.getTopSpeed();
 
@@ -96,13 +97,13 @@ function addSessionsToSessionList(sessions) {
                 '		<label class="session-row-label">{hour}</label> {day}',
                 '	</div>',
                 '	<div>',
-                '		<label class="session-row-label">duration</label>{duration}',
+                '		{duration}',
                 '	</div>',
                 '	<div>',
-                '		<label class="session-row-label">distance</label><b>{distance}</b>',
+                '		<b>{distance}</b>',
                 '	</div>',
                 '	<div>',
-                '		<label class="session-row-label">Synced</label><span data-selector="synced">{synced}</span>',
+                '		<span data-selector="synced">{synced}</span>',
                 '	</div>',
                 '</div>'
             ].join('')
@@ -361,6 +362,8 @@ function SessionsView(page, context) {
 
     // initialize calendar as undefined so date are retrieved from preferences and not it
     $calendar = undefined;
+
+    $chart = $('.sessions-summary-chart');
 
     $summaryDistance = $page.find('#total-distance');
     $summarySpeed = $page.find('#top-speed');

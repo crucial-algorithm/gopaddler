@@ -459,6 +459,10 @@ SessionView.prototype.render = function (page, context, options) {
                 self.inWarmUp = false;
             }, function finish() {
                 clear();
+            }, function cancel() {
+                console.log('canceled');
+                isConfirmDialogOpen = false;
+                Dialog.hideModal();
             });
 
         } else {
@@ -565,36 +569,19 @@ SessionView.prototype.confirm = function (onresume, onfinish) {
     var $controls, $resume, $finish;
 
     var modal = self.appContext.ui.modal.undecorated([
-        '<div class="session-controls">',
-        '    <div class="session-resume">',
-        '		<div class="session-controls-outer-text">',
-        '			<div class="session-controls-inner-text">resume</div>',
-        '        </div>',
-        '    </div>',
-        '',
-        '    <div class="session-finish">',
-        '    	<div class="session-controls-outer-text">',
-        '    		<div class="session-controls-inner-text">finish</div>',
-        '    	</div>',
-        '    </div>',
-        '</div>'
+        '   <div class="session-controls session-controls-free-session">',
+        '   	<div class="session-controls-round-button session-resume">',
+        '   		<div class="session-controls-round-button-label">Resume</div>',
+        '       </div>',
+        '       <div class="session-controls-round-button  session-finish">',
+        '   		<div class="session-controls-round-button-label">Finish</div>',
+        '       </div>',
+        '   </div'
     ].join(''));
 
     $controls = modal.$modal.find('.session-controls');
     $resume = modal.$modal.find('.session-resume');
     $finish = modal.$modal.find('.session-finish');
-
-
-    // make height equal to width and adjust margin accordingly
-    var displayHeight = $controls.height();
-    setTimeout(function () {
-        var height = $resume.width();
-        var margin = (displayHeight - height) / 2;
-        $resume.height(height);
-        $finish.height(height);
-        $resume.css({"margin-top": margin, "margin-bottom": margin});
-        $finish.css({"margin-top": margin, "margin-bottom": margin});
-    }, 0);
 
     // add behavior
     $resume.on('touchend', function (e) {
@@ -611,55 +598,40 @@ SessionView.prototype.confirm = function (onresume, onfinish) {
 
 };
 
-SessionView.prototype.confirmFinishWarmUp = function (onStartOnMinuteTurn, onStartImmediately, onfinish) {
+SessionView.prototype.confirmFinishWarmUp = function (onStartOnMinuteTurn, onStartImmediately, onfinish, onCancel) {
     var self = this;
-    var $controls, $startOnMinuteTurn, $startImmediately, $finish;
+    var $controls, $startOnMinuteTurn, $startImmediately, $finish, $cancel;
 
     var modal = self.appContext.ui.modal.undecorated([
         '    <div class="session-controls">',
-        '        <div class="session-finish">',
-        '            <div class="session-controls-outer-text">',
-        '                <div class="session-controls-inner-text">finish</div>',
-        '            </div>',
+        '    <div class="session-controls-row">',
+        '    	<div class="session-controls-round-button session-start-on-minute-turn blue">',
+        '    		<div class="session-controls-round-button-label">Start at 0\'\'</div>',
         '        </div>',
 
-        '        <div class="session-start-on-minute-turn">',
-        '            <div class="session-controls-outer-text">',
-        '                <div class="session-controls-inner-text" style="font-size: 9px;">Start On <br>minute turn</div>',
-        '            </div>',
+        '		<div class="session-controls-round-button session-cancel grey">',
+        '    		<div class="session-controls-round-button-label">Cancel</div>',
+        '        </div>',
+        '     </div>',
+        '    <div class="session-controls-row">',
+        '        <div class="session-controls-round-button  session-start-immediately yellow">',
+        '    		<div class="session-controls-round-button-label">Start now</div>',
         '        </div>',
 
-        '        <div class="session-start-immediately">',
-        '            <div class="session-controls-outer-text">',
-        '                <div class="session-controls-inner-text" style="font-size: 9px;">Start Now',
-        '                </div>',
-        '            </div>',
+        '        <div class="session-controls-round-button  session-finish red">',
+        '    		<div class="session-controls-round-button-label">finish</div>',
         '        </div>',
-
-        '    </div>'
+        '     </div>',
+        '    </div'
     ].join(''));
 
     $controls = modal.$modal.find('.session-controls');
 
-    $startOnMinuteTurn = modal.$modal.find('.session-start-on-minute-turn');
-    $startImmediately = modal.$modal.find('.session-start-immediately');
-    $finish = modal.$modal.find('.session-finish');
+    $startOnMinuteTurn = $controls.find('.session-start-on-minute-turn');
+    $startImmediately = $controls.find('.session-start-immediately');
+    $finish = $controls.find('.session-finish');
+    $cancel = $controls.find('.session-cancel');
 
-    // make height equal to width and adjust margin accordingly
-    var displayHeight = $controls.height();
-    setTimeout(function () {
-        var height = $finish.width();
-        var margin = (displayHeight - height) / 2;
-        $startImmediately.height($startImmediately.width());
-        $startOnMinuteTurn.height(height * .7);
-        $startOnMinuteTurn.width($startOnMinuteTurn.height());
-
-        $finish.height(height);
-
-        $startOnMinuteTurn.css({"margin-top": margin});
-        $finish.css({"margin-top": margin, "margin-bottom": margin});
-
-    }, 0);
 
     // add behavior
     $startOnMinuteTurn.on('touchend', function (e) {
@@ -679,6 +651,12 @@ SessionView.prototype.confirmFinishWarmUp = function (onStartOnMinuteTurn, onSta
         e.preventDefault();
         e.stopImmediatePropagation();
     });
+
+    $cancel.on('touchend', function (e) {
+        onCancel.apply(self, []);
+        e.preventDefault();
+        e.stopImmediatePropagation();
+    })
 
 };
 

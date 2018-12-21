@@ -142,7 +142,9 @@ Context.prototype.displayMetric = function (type, value) {
 
     if (isNaN(value)) return 0;
 
-    return utils.round(value, this.getUnitDecimalPlaces(type));
+    if (this.round(type))
+        return utils.round(value, this.getUnitDecimalPlaces(type));
+    return value;
 };
 
 /**

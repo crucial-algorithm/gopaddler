@@ -28,6 +28,7 @@ function Session(sessionStart, angleZ, noiseX, noiseZ, factorX, factorZ, axis, d
     this.topSpeed = topSpeed;
     this.topEfficiency = topEfficiency;
     this.avgEfficiency = avgEfficiency;
+    this.avgHeartRate = 0;
     this.synced = false;
     this.serverClockGap = 0;
 
@@ -164,6 +165,14 @@ Session.prototype.getAvgEfficiency = function () {
     return this.avgEfficiency;
 };
 
+Session.prototype.setAvgHeartRate = function (value) {
+    this.avgHeartRate = value;
+};
+
+Session.prototype.getAvgHeartRate = function () {
+    return this.avgHeartRate;
+};
+
 Session.prototype.setDistance = function (distance) {
     this.distance = distance;
 };
@@ -285,9 +294,9 @@ Session.prototype.finish = function (splits, expression) {
         var measureEnhancement = new MeasureEnhancement();
         var maxSpm = 0;
 
-        var distance = 0, avgSpeed, avgSpm, avgSpmEfficiency
+        var distance = 0, avgSpeed, avgSpm, avgSpmEfficiency, avgHeartRate
             , totalSpeed = 0, totalSpm = 0, totalEfficiency = 0
-            , maxSpeed = 0, maxSpmEfficiency = 0;
+            , maxSpeed = 0, maxSpmEfficiency = 0, totalHeartRate = 0;
 
         var length = rows.length, count = 0, split, hasSplits = !!(splits && splits.length > 0);
         for (var i = 0; i < length; i++) {
@@ -306,6 +315,7 @@ Session.prototype.finish = function (splits, expression) {
             totalSpeed += rows[i].getSpeed();
             totalSpm += rows[i].getSpm();
             totalEfficiency += rows[i].getEfficiency();
+            totalHeartRate += rows[i].getHeartRate();
 
 
             if (rows[i].getSpeed() > maxSpeed) maxSpeed = rows[i].getSpeed();
@@ -316,6 +326,7 @@ Session.prototype.finish = function (splits, expression) {
         avgSpeed = totalSpeed / count;
         avgSpm = totalSpm / count;
         avgSpmEfficiency = totalEfficiency / count;
+        avgHeartRate = totalHeartRate / count;
 
         try {
             maxSpm = measureEnhancement.getMaxSPM(rows);
@@ -588,6 +599,7 @@ function sessionFromDbRow(data) {
     session.setSynced(data.synced === 1);
     session.setExpression(data.expression);
     session.setServerClockGap(data.server_clock_gap);
+    session.setAvgHeartRate(data.avg_heart_rate);
 
     return session;
 }

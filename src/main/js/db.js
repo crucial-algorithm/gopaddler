@@ -111,8 +111,13 @@ var ddl = [
         ["ALTER TABLE settings add column server_clock_gap REAL default 0"],
         ["ALTER TABLE session add column server_clock_gap REAL default 0"],
         ["UPDATE settings SET version = 9"]
-    ]
+    ],
 
+    // v.1.2
+    [
+        ["ALTER TABLE session add column avg_heart_rate REAL default 0"],
+        ["UPDATE settings SET version = 10"]
+    ]
 
 ];
 

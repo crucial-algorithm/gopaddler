@@ -1,4 +1,7 @@
-
+.summary-layout {
+    height: 100%;
+    width: 100%;
+}
 
 .summary-thumbs-up-icon {
     fill: #ffffff;
@@ -7,18 +10,22 @@
 .summary-stats-row {
     width: 100%;
     clear: both;
-    height: 20vh;
+    height: 100px;
 }
 
 .summary-stats-left {
-    width: 50%;
+    width: 30%;
     float: left;
     height: 100%;
+    box-sizing: border-box;
+    padding: 0 20px;
 }
 
 .summary-stats-right {
-    width: 50%;
+    width: 70%;
     float: right;
+    box-sizing: border-box;
+    padding: 0 20px;
 }
 
 
@@ -29,8 +36,11 @@
 }
 
 .summary-value {
-    height: 10vh;
     color: #ffffff;
+}
+
+canvas.summary-value {
+    height: 70px;
 }
 
 .summary-value > b {
@@ -41,6 +51,54 @@
     vertical-align: middle;
     display: table-cell;
     text-transform: uppercase;
-    background-color: #9EACAD;
-    padding: 15px;
+    background-color: #343540;
+    padding: 15px 30px;
+}
+
+#summary-congrats {
+    display: none;
+}
+
+.summary-session-details {
+    background-color: #EE6156;
+}
+
+.summary-duration {
+    color: #fff;
+    text-align: right;
+    font-size: 50px;
+    font-weight: 700;
+    float: left;
+    width: 70%;
+    padding-right: 10px;
+    box-sizing: border-box;
+}
+
+.summary-distance {
+    float: right;
+    width: 28%;
+    background-color: #fff;
+    text-align: center;
+    box-sizing: border-box;
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    margin-right: 2%;
+    color: #ed6156;
+}
+
+.summary-highlight {
+    width: 80%;
+    margin: auto;
+    display: flex;
+    align-items: center;
+}
+
+.summary-stats > h2 {
+    color: #fff;
+    font-size: 14px;
+    text-transform: uppercase;
+    font-weight: 400;
+    line-height: 20px;
 }

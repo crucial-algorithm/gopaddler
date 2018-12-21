@@ -23,7 +23,7 @@
 }
 
 .define-max-heart-rate-list > li:nth-child(even) {
-    background-color: #EF6156;
+    background-color: #EE6156;
 }
 
 .define-max-heart-rate-list > li.selected {

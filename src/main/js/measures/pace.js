@@ -7,22 +7,13 @@ function Pace(convertToImperial) {
 }
 
 Pace.prototype.calculate = function (speed) {
-    var value;
-    if (this.convertToImperial === true) {
-        value = 60 / utils.kmToMiles(speed);
-    } else {
-        value = 60 / speed;
+    var value = utils.speedToPace(speed);
+    if (value === null) {
+        return 0;
     }
 
-    if (isNaN(value) || !isFinite(value)) return 0;
-
-    var decimal = (value % 1);
-    var minutes = value - decimal;
-    var seconds = Math.round(decimal * 60);
-
-    this.value = minutes + ":" + utils.lpad(seconds, 2);
-
-    return this.value;
+    this.value = value;
+    return value;
 };
 
 

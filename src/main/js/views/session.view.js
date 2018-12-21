@@ -177,15 +177,21 @@ SessionView.prototype.render = function (page, context, options) {
         heartRate = hr;
     });
 
-    var splitsIndex = [], lastSplitStartDistance = 0, areSplitsFinished = false;
+    var splitsIndex = [], lastSplitStartDistance = 0, areSplitsFinished = false, freeze = 0, metrics = [];
     // -- listen for changes in splits and notify server
     splits.onSplitChange(function onSplitChangeListener(from, to, isFinished) {
+        var inRecovery = false;
         if (from) {
             new SessionDetail(session.getId(), startAt + from.finish.time, from.finish.distance / 1000, location.speed, spm.value
                 , location.efficiency, location.latitude, location.longitude, heartRate, from.position
             ).save();
             lastSplitStartDistance = from.finish.distance;
-            console.log('from', lastSplitStartDistance);
+            inRecovery = from.isRecovery === true;
+
+            if (metrics[from.position]) {
+                metrics[from.position].distance = from.finish.distance - from.start.distance;
+                metrics[from.position].duration = from.finish.time - from.start.time;
+            }
         }
 
         if (to) {
@@ -195,13 +201,26 @@ SessionView.prototype.render = function (page, context, options) {
             ).save();
 
             lastSplitStartDistance = to.start.distance;
-            console.log('to', lastSplitStartDistance, to.isRecovery);
             if (to.isRecovery) lastSplitStartDistance = 0;
+            inRecovery = to.isRecovery;
+
+            metrics[to.position] = {
+                counter: 0,
+                spm: 0,
+                efficiency: 0,
+                hr: 0,
+                distance: 0,
+                duration: 0
+            };
         } else {
             lastSplitStartDistance = 0;
         }
 
         areSplitsFinished = isFinished;
+        if (inRecovery === true || isFinished === true) {
+            freeze = 5;
+        }
+
         Api.TrainingSessions.live.splitChanged(from, to, isFinished);
     });
 
@@ -244,10 +263,19 @@ SessionView.prototype.render = function (page, context, options) {
         // to split start, so just ignore it if it is
         if (self.hasSplitsDefined === false || (self.hasSplitsDefined === true && areSplitsFinished === true)
             || (self.hasSplitsDefined === true && areSplitsFinished === false && splitsIndex.length > 0 && timestamp > splitsIndex[splits.getPosition()])) {
+            var position = splits.getPosition();
             // store data
             new SessionDetail(session.getId(), timestamp, location.distance, location.speed, spm.value
                 , location.efficiency, location.latitude, location.longitude, heartRate, splits.getPosition()
             ).save();
+
+            var metric = metrics[position];
+            if (metric) {
+                metric.counter++;
+                metric.spm += spm.value;
+                metric.efficiency += location.efficiency;
+                metric.hr += heartRate;
+            }
         }
 
         iterator.next();
@@ -275,7 +303,7 @@ SessionView.prototype.render = function (page, context, options) {
     Api.TrainingSessions.live.started(startAt, self.expression);
 
     Api.TrainingSessions.live.on(Api.LiveEvents.START_SPLIT, function (commandId, payload) {
-        console.log('start split', commandId);
+
         splits.setDistance(distance.timeToDistance(payload.duration));
         splits.increment();
         Api.TrainingSessions.live.commandSynced(commandId, Api.LiveEvents.START_SPLIT, {
@@ -371,6 +399,18 @@ SessionView.prototype.render = function (page, context, options) {
 
         if (context.getGpsRefreshRate() !== 1) {
             values.speed = location.speed;
+        }
+
+        if (freeze > 0) {
+            freeze--;
+            var position = splits.getPosition();
+            var latest = metrics[areSplitsFinished ? metrics.length - 1 : position - 1], pace;
+            values.distance = Math.round(latest.distance * 100) / 100;
+            values.spm = latest.spm / latest.counter;
+            values.efficiency = latest.efficiency / latest.counter;
+            values.heartRate = latest.heartRate / latest.counter;
+            values.speed = (latest.distance / latest.duration) * 3600;
+            values.pace = (pace = utils.speedToPace(values.speed)) === null ? 0 : pace;
         }
 
         top.setValues(values);

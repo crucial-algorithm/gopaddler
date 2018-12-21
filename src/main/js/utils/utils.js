@@ -209,6 +209,25 @@ function loopAsync(list, callback) {
     callback.apply({}, [iterator])
 }
 
+function speedToPace(speed) {
+    var value;
+    if (this.convertToImperial === true) {
+        value = 60 / utils.kmToMiles(speed);
+    } else {
+        value = 60 / speed;
+    }
+
+    if (isNaN(value) || !isFinite(value)) {
+        return 0;
+    }
+
+    var decimal = (value % 1);
+    var minutes = value - decimal;
+    var seconds = Math.round(decimal * 60);
+
+    return minutes + ":" + lpad(seconds, 2);
+}
+
 exports.mapBrowserToNative = mapBrowserToNative;
 exports.lpad = lpad;
 exports.round2 = round2;
@@ -226,3 +245,4 @@ exports.forceSafariToReflow = forceSafariToReflow;
 exports.guid = guid;
 exports.getRandomInt = getRandomInt;
 exports.loopAsync = loopAsync;
+exports.speedToPace = speedToPace;

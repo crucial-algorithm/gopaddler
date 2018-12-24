@@ -291,12 +291,9 @@ Session.prototype.finish = function (splits, expression) {
 
     self.detail().then(function (rows) {
 
-        var measureEnhancement = new MeasureEnhancement();
-        var maxSpm = 0;
-
         var distance = 0, avgSpeed, avgSpm, avgSpmEfficiency, avgHeartRate
             , totalSpeed = 0, totalSpm = 0, totalEfficiency = 0
-            , maxSpeed = 0, maxSpmEfficiency = 0, totalHeartRate = 0;
+            , maxSpeed = 0, maxSpmEfficiency = 0, maxSpm = 0, totalHeartRate = 0;
 
         var length = rows.length, count = 0, split, hasSplits = !!(splits && splits.length > 0);
         for (var i = 0; i < length; i++) {
@@ -328,13 +325,6 @@ Session.prototype.finish = function (splits, expression) {
         avgSpmEfficiency = totalEfficiency / count;
         avgHeartRate = totalHeartRate / count;
 
-        try {
-            maxSpm = measureEnhancement.getMaxSPM(rows);
-        } catch (err) {
-            console.log('failed to calculate max SPM', err);
-        }
-
-
         self.setSessionEnd(sessionEndAt);
         self.setDistance(distance);
         self.setAvgSpeed(avgSpeed);
@@ -344,11 +334,12 @@ Session.prototype.finish = function (splits, expression) {
         self.setAvgEfficiency(avgSpmEfficiency);
         self.setTopEfficiency(maxSpmEfficiency);
         self.setExpression(expression);
+        self.setAvgHeartRate(avgHeartRate);
 
         self.connection.executeSql("update session set distance = ?, avg_spm = ?, top_spm = ?, avg_speed = ?" +
-            ", top_speed = ?, avg_efficiency = ?, top_efficiency = ?, session_end = ?" +
+            ", top_speed = ?, avg_efficiency = ?, top_efficiency = ?, avg_heart_rate = ?, session_end = ?" +
             ", scheduled_session_id = ?,  scheduled_session_start = ?, expression = ? where id = ?"
-            , [distance, avgSpm, maxSpm, avgSpeed, maxSpeed, avgSpmEfficiency, maxSpmEfficiency, sessionEndAt
+            , [distance, avgSpm, maxSpm, avgSpeed, maxSpeed, avgSpmEfficiency, maxSpmEfficiency, avgHeartRate, sessionEndAt
                 , self.getScheduledSessionId(), self.getScheduledSessionStart(), self.getExpression(), self.id]
             , function (a) {
                 defer.resolve(this);

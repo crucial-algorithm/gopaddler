@@ -198,6 +198,30 @@ function _call() {
     return defer.promise();
 }
 
+function _callWithoutTimeout() {
+
+    var defer = $.Deferred();
+
+    if (!Utils.isNetworkConnected()) {
+        setTimeout(function () {
+            defer.reject({error: 504, reason: "no internet connection"});
+        }, 0);
+        return defer.promise();
+    }
+
+    asteroid.call.apply(asteroid, arguments).then(function (response) {
+
+        defer.resolve(response);
+
+    }).catch(function (err) {
+
+        defer.reject(err);
+    });
+
+    return defer.promise();
+}
+
+
 /**
  * Authentication methods.
  */
@@ -412,7 +436,7 @@ exports.TrainingSessions = {
 
     save: function (trainingSession) {
 
-        return _call('saveTrainingSession', trainingSession);
+        return _callWithoutTimeout('saveTrainingSession', trainingSession);
     },
 
     scheduled: function () {

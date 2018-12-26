@@ -74,6 +74,12 @@ function HomeView(page, context, request) {
                 self.loadChart();
             }, 0);
         }
+
+        Api.User.listenForCoachRequests(function (request) {
+            setTimeout(function () {
+                showCoachRequestConfirmationModal(context, request); // create a memory leak, but that's ok for now
+            }, 1000);
+        });
     });
 
     // store device information
@@ -199,6 +205,28 @@ function showFirstCalibrationCompletedModal(context) {
     context.ui.modal.alert('Calibration completed'
         , '<p>Thanks... now you can go ahead and start a new session</p>'
         , {text: "OK"}
+    );
+}
+
+function showCoachRequestConfirmationModal(context, request) {
+    if (!request) return;
+
+    var message = [
+        '<p>Wants to be your coach.<p>',
+        '<p class="small">By accepting, your are allowing ', request.coach ,' to have access to your paddling data!<p>'
+    ].join('');
+
+    context.ui.modal.confirm(request.coach, message
+        , {
+            text: "Allow", callback: function calibrate() {
+                Api.User.acceptRequest(request.requestID)
+            }
+        }
+        , {
+            text: "Reject", callback: function skip() {
+                Api.User.rejectRequest(request.requestID)
+            }
+        }
     );
 }
 

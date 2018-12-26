@@ -23,6 +23,13 @@
     font-size: 3vh;
 }
 
+.modal-portrait .info-modal-content > p.small {
+    font-size: 14px;
+    line-height: 18px;
+    text-align: center;
+    padding: 10px;
+}
+
 .modal-portrait .info-modal-title {
     line-height: 10vh;
     font-size: 3vh;

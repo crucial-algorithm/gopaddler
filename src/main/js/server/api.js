@@ -4,6 +4,7 @@ var facebook = require('../asteroid/facebook');
 var Asteroid = createClass([facebook]);
 var connected = false, loggedIn = false, retries = 0;
 var lastUserAddedMsg = null;
+var onCoachRequest = function(){};
 
 var asteroid = {};
 
@@ -79,6 +80,11 @@ function _remoteLogin() {
     var defer = $.Deferred();
 
     if (!Utils.isNetworkConnected()) {
+        defer.reject();
+        return defer.promise();
+    }
+
+    if (_isFirstTime()) {
         defer.reject();
         return defer.promise();
     }
@@ -163,6 +169,29 @@ function _finishLogin(defer, user, method) {
 function _storeUser(user) {
     asteroid.user = user;
     localStorage.setItem('user', JSON.stringify(user));
+}
+
+function _clearCoachRequests() {
+    var serializedUser = localStorage.getItem('user');
+    if (!serializedUser) {
+        return;
+    }
+
+    var user = JSON.parse(serializedUser);
+    user.pendingCoachRequests = [];
+    _storeUser(user);
+}
+
+function _acceptCoachRequest() {
+    var serializedUser = localStorage.getItem('user');
+    if (!serializedUser) {
+        return;
+    }
+
+    var user = JSON.parse(serializedUser);
+    user.pendingCoachRequests = [];
+    user.hasCoach = true;
+    _storeUser(user);
 }
 
 /**
@@ -336,6 +365,10 @@ function _getLoginMethod() {
     return JSON.parse(localStorage.getItem("login_method")) === 'password' ? 'password' : 'facebook';
 }
 
+function _isFirstTime() {
+    return localStorage.getItem("login_method") === null
+}
+
 function _setLoginMethod(method) {
     localStorage.setItem('login_method', JSON.stringify(method));
 }
@@ -391,7 +424,24 @@ exports.User = {
         return asteroid.user.hasCoach === true;
     },
 
-    isLiveUpdate: isLiveUpdate
+    acceptRequest: function (coachUserId) {
+        _acceptCoachRequest();
+        return _call('respondToCoachRequest', coachUserId, true);
+    },
+
+    rejectRequest: function (requestId) {
+        _clearCoachRequests();
+        return _call('respondToCoachRequest', requestId, false);
+    },
+
+    isLiveUpdate: isLiveUpdate,
+
+    listenForCoachRequests: function (callback) {
+        asteroid.subscribe('users.requests');
+        if (typeof callback === 'function') {
+            onCoachRequest = callback;
+        }
+    }
 };
 
 var liveListeners, commandListenerID, lastPingAt = null;
@@ -537,48 +587,6 @@ exports.TrainingSessions = {
             var sub = asteroid.subscribe('coachRemoteCommands');
             commandListenerID = sub.id;
 
-            asteroid.ddp.on("added", function (msg) {
-                if (msg.collection !== 'liveCommands')
-                    return;
-                var record = msg.fields;
-                var listeners = liveListeners[record.command] || [];
-
-                for (var lst = 0, lstLen = listeners.length; lst < lstLen; lst++) {
-                    listeners[lst].apply({}, [msg.id, record.payload]);
-                }
-            });
-
-            asteroid.ddp.on("changed", function (msg) {
-
-                if (msg.collection !== "liveDevices") {
-                    console.log(msg.collection);
-                    return;
-                }
-
-                if (!msg.fields.commands)
-                    return;
-
-                var commands = msg.fields.commands, listeners;
-
-                for (var i = 0, l = commands.length; i < l; i++) {
-
-                    if (commands[i].synced === true) {
-                        continue;
-                    }
-
-                    if (commands[i].command === 'ping') {
-                        console.log('ping received');
-                        lastPingAt = new Date().getTime();
-                    }
-
-                    listeners = liveListeners[commands[i].command];
-                    if (listeners && listeners.length > 0) {
-                        for (var lst = 0, lstLen = listeners.length; lst < lstLen; lst++) {
-                            listeners[lst].apply({}, [commands[i].id, commands[i].payload]);
-                        }
-                    }
-                }
-            });
         },
 
         stopListening: function () {
@@ -633,14 +641,6 @@ exports.Server = {
             endpoint: __WS_ENDPOINT__
         });
 
-        asteroid.ddp.on("added", function (payload) {
-            if (payload.collection !== 'users') {
-                return;
-            }
-
-            lastUserAddedMsg = payload;
-        });
-
         asteroid.on('connected', function () {
             connected = true;
         });
@@ -656,6 +656,43 @@ exports.Server = {
         asteroid.on('loggedOut', function () {
             loggedIn = false;
         });
+
+
+        // listen for users
+        asteroid.ddp.on("added", function (payload) {
+            if (payload.collection !== 'users') {
+                return;
+            }
+
+            lastUserAddedMsg = payload;
+        });
+
+        // listener for commands
+        asteroid.ddp.on("added", function (msg) {
+            if (msg.collection !== 'liveCommands')
+                return;
+            var record = msg.fields;
+            var listeners = liveListeners[record.command] || [];
+
+            for (var lst = 0, lstLen = listeners.length; lst < lstLen; lst++) {
+                listeners[lst].apply({}, [msg.id, record.payload]);
+            }
+        });
+
+        // listener for friends requests
+        asteroid.ddp.on("added", function (msg) {
+            if (msg.collection !== 'requests') {
+                return;
+            }
+
+            var requesterId = msg.fields.requesterId;
+            var requestId = msg.id;
+
+            _call('getUserName', requesterId).then(function (name) {
+                onCoachRequest({requestID: requestId, coach: name});
+            });
+        });
+
     }
 };
 

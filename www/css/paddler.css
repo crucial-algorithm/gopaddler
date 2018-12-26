@@ -163,6 +163,13 @@ body {
     text-align: center;
 }
 
+.info-modal-content > p.small {
+    font-size: 14px;
+    line-height: 18px;
+    text-align: center;
+    padding: 10px;
+}
+
 .info-modal-controls {
     display: table;
     width: 100%;

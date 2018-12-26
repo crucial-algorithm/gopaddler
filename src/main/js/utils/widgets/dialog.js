@@ -29,7 +29,9 @@ function render(isPortraitMode, undecorated, title, message, primary, secondary,
     var $primary = $modal.find('[data-selector="modal-primary"]');
     var $secondary = $modal.find('[data-selector="modal-secondary"]');
 
-    $primary.off('tap click').on('tap click', function () {
+    $primary.off('tap click').on('tap click', function (e) {
+        e.stopPropagation();
+        e.preventDefault();
         if (!primary)
             return;
 
@@ -37,7 +39,10 @@ function render(isPortraitMode, undecorated, title, message, primary, secondary,
         primary.callback.apply({},[]);
     });
 
-    $secondary.off('tap click').on('tap click', function () {
+    $secondary.off('tap click').on('tap click', function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+
         if (!secondary)
             return;
 

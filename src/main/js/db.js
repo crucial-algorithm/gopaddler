@@ -116,7 +116,7 @@ var ddl = [
     // v.1.2
     [
         ["ALTER TABLE session add column avg_heart_rate REAL default 0"],
-        ["UPDATE settings SET version = 10"]
+        ["UPDATE settings SET version = 10, portrait_mode = 1"]
     ]
 
 ];

@@ -20,7 +20,6 @@ function Settings(version, units, syncOnlyOnWifi, restoreLayout, showTouchGestur
     this._defaultEndDate = default_end_date;
     this._showBlackAndWhite = showBlackAndWhite;
     this._portraitMode = portraitMode;
-    this._portraitMode = portraitMode;
     this._gpsRefreshRate = gpsRate;
     this._maxHeartRate = maxHeartRate;
     this._serverClockGap = serverClockGap;

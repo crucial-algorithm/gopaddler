@@ -38,7 +38,7 @@ var units = {
         },
         heartRate: {
             label: {regular: "BPM", large: "BPM"},
-            round: false
+            decimalPlaces: 0
         },
         distance_in_session_list: {
             label: {regular: "Km", large: "Km"},
@@ -72,7 +72,7 @@ var units = {
         },
         pace: {
             label: {regular: "Min/Mi", large: "Min/Mi"},
-            round: false
+            decimalPlaces: 0
         },
         heartRate: {
             label: {regular: "BPM", large: "BPM"},

@@ -4,13 +4,39 @@
 var labelColor = 'rgba(255, 255, 255, 0.5)';
 var initialized = false;
 
-function GpChart(canvas, type, labels, dataset, formatter, labelOptions) {
+function GpChart(canvas, type, labels, dataset, formatter, labelOptions, displayAverage) {
 
     if (initialized === false) {
         extend();
         initialized = true;
     }
     var datasets = [dataset];
+
+    if (displayAverage === true) {
+        var averageSet = {
+            type: 'line',
+            name: 'gen-avg',
+            backgroundbackColor: dataset.backgroundbackColor,
+            borderColor: dataset.borderColor,
+            borderWidth: 1,
+            pointRadius: dataset.pointRadius,
+            borderDash: [5, 15]
+        };
+
+        var total = 0, average = [];
+        for (var i = 0, l = dataset.data.length; i < l; i++) {
+            total += dataset.data[i];
+            average.push(0);
+        }
+        var avg = total / l;
+        average = average.map(function (value) {
+            return avg
+        });
+
+        averageSet.data = average;
+        datasets.push(averageSet);
+    }
+
 
     new Chart(canvas, {
         type: type,
@@ -39,6 +65,7 @@ function GpChart(canvas, type, labels, dataset, formatter, labelOptions) {
                     display: true,
                     align: labelOptions.align || 'end',
                     anchor: labelOptions.anchor || 'end',
+                    clamp: labelOptions.clamp === true,
                     offset: typeof labelOptions.offset === 'number' ? labelOptions.offset : undefined,
                     formatter: formatter || Math.round,
                     color: labelOptions.color || labelColor,

@@ -123,7 +123,7 @@ Context.prototype.getUnit = function (type, large) {
  * @returns {boolean}
  */
 Context.prototype.round = function (type) {
-    return units[this._system][type].round !== false && units[this._system][type].decimalPlaces > 0;
+    return units[this._system][type].round !== false && units[this._system][type].decimalPlaces >= 0;
 };
 
 /**

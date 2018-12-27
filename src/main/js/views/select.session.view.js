@@ -66,6 +66,12 @@ SelectSessionView.prototype.render = function (page, context) {
     Api.TrainingSessions.live.startListening();
     Api.TrainingSessions.live.syncClock(Api.User.getId());
 
+    Api.TrainingSessions.live.on(Api.LiveEvents.PING, function (commandId) {
+        console.log('ping');
+        Api.TrainingSessions.live.deviceReady();
+        Api.TrainingSessions.live.commandSynced(commandId);
+    }, true);
+
     Api.TrainingSessions.live.on(Api.LiveEvents.START, function (commandId, payload) {
         console.log('start session', payload, "[", commandId, "]");
 

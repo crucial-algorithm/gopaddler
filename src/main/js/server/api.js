@@ -449,6 +449,7 @@ var liveListeners, commandListenerID, lastPingAt = null;
 var resetListeners = function () {
     var syncClockListeners = (liveListeners || {}).syncClock ;
     liveListeners = {
+        ping: [],
         start: [],
         pause: [],
         finish: [],
@@ -465,6 +466,7 @@ var resetListeners = function () {
 };
 
 exports.LiveEvents = {
+    PING: "ping",
     START: "start",
     PAUSE: "pause",
     FINISH: "finish",

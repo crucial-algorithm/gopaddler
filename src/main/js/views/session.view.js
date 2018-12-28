@@ -103,6 +103,8 @@ SessionView.prototype.render = function (page, context, options) {
         } else if (isBasedInDistance === false) {
             value = timer.format(value);
         } else {
+            console.log(value, Math.ceil(value / 10) * 10);
+            value = Math.ceil(value / 10) * 10;
             value = Math.round(value);
         }
 

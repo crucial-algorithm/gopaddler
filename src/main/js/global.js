@@ -39,7 +39,7 @@ function emulateCordova () {
                     }
                 }
             })
-        } else if (sql.indexOf("FROM session_data") >= 0) {
+        } else if (sql.indexOf("session_data") >= 0) {
             var dataSetSize = 3600;
 
             var session = [], timestamp = new Date().getTime() - 86400000, distance = 0;

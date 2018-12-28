@@ -287,59 +287,25 @@ Session.prototype.persist = function () {
 Session.prototype.finish = function (splits, expression) {
     var self = this, defer = $.Deferred();
     
-    var sessionEndAt = new Date().getTime();
+    var sessionEndAt = Date.now();
+    self.setSessionEnd(sessionEndAt);
 
-    self.detail().then(function (rows) {
-
-        var distance = 0, avgSpeed, avgSpm, avgSpmEfficiency, avgHeartRate
-            , totalSpeed = 0, totalSpm = 0, totalEfficiency = 0
-            , maxSpeed = 0, maxSpmEfficiency = 0, maxSpm = 0, totalHeartRate = 0;
-
-        var length = rows.length, count = 0, split, hasSplits = !!(splits && splits.length > 0);
-        for (var i = 0; i < length; i++) {
-
-            distance = rows[i].getDistance();
-            if (hasSplits) {
-
-                split = splits[rows[i].getSplit()];
-
-                if (!split || split._recovery === true) {
-                    continue;
-                }
-            }
-
-            count++;
-            totalSpeed += rows[i].getSpeed();
-            totalSpm += rows[i].getSpm();
-            totalEfficiency += rows[i].getEfficiency();
-            totalHeartRate += rows[i].getHeartRate();
-
-
-            if (rows[i].getSpeed() > maxSpeed) maxSpeed = rows[i].getSpeed();
-            if (rows[i].getEfficiency() > maxSpmEfficiency) maxSpmEfficiency = rows[i].getEfficiency();
-            if (rows[i].getSpm() > maxSpm) maxSpm = rows[i].getSpm();
-        }
-
-        avgSpeed = totalSpeed / count;
-        avgSpm = totalSpm / count;
-        avgSpmEfficiency = totalEfficiency / count;
-        avgHeartRate = totalHeartRate / count;
-
-        self.setSessionEnd(sessionEndAt);
-        self.setDistance(distance);
-        self.setAvgSpeed(avgSpeed);
-        self.setTopSpeed(maxSpeed);
-        self.setAvgSpm(avgSpm);
-        self.setTopSpm(maxSpm);
-        self.setAvgEfficiency(avgSpmEfficiency);
-        self.setTopEfficiency(maxSpmEfficiency);
+    self.calculateMetrics(splits).then(function (/**@type SessionDetailMetrics */ metrics) {
+        self.setDistance(metrics.getDistance());
+        self.setAvgSpeed(metrics.getAvgSpeed());
+        self.setTopSpeed(metrics.getMaxSpeed());
+        self.setAvgSpm(metrics.getAvgSpm());
+        self.setTopSpm(metrics.getMaxSpm());
+        self.setAvgEfficiency(metrics.getAvgEfficiency());
+        self.setTopEfficiency(metrics.getMaxEfficiency());
+        self.setAvgHeartRate(metrics.getAvgHeartRate());
         self.setExpression(expression);
-        self.setAvgHeartRate(avgHeartRate);
 
         self.connection.executeSql("update session set distance = ?, avg_spm = ?, top_spm = ?, avg_speed = ?" +
             ", top_speed = ?, avg_efficiency = ?, top_efficiency = ?, avg_heart_rate = ?, session_end = ?" +
             ", scheduled_session_id = ?,  scheduled_session_start = ?, expression = ? where id = ?"
-            , [distance, avgSpm, maxSpm, avgSpeed, maxSpeed, avgSpmEfficiency, maxSpmEfficiency, avgHeartRate, sessionEndAt
+            , [metrics.getDistance(), metrics.getAvgSpm(), metrics.getMaxSpm(), metrics.getAvgSpeed(), metrics.getMaxSpeed()
+                , metrics.getAvgEfficiency(), metrics.getMaxEfficiency(), metrics.getAvgHeartRate(), sessionEndAt
                 , self.getScheduledSessionId(), self.getScheduledSessionStart(), self.getExpression(), self.id]
             , function (a) {
                 defer.resolve(this);
@@ -348,6 +314,7 @@ Session.prototype.finish = function (splits, expression) {
                 defer.reject(this);
             });
     });
+
     return defer;
 };
 
@@ -360,22 +327,32 @@ Session.prototype.detail = function () {
         defer = $.Deferred();
 
     SessionDetail.get(self.getId(), function (rows) {
+        SessionDetail.getGroupedBySplit(self.getId(), function (splits) {
+            defer.resolve(rows, splits);
+        });
+    });
 
-        var dataPoints = [],
-            row;
+    return defer.promise();
+};
 
-        for (var j = 0; j < rows.length; j++) {
+/**
+ *
+ * @param {Array} splits
+ */
+Session.prototype.calculateMetrics = function (splits) {
+    var self = this,
+        defer = $.Deferred();
 
-            row = rows[j];
-
-            row.setDistance(utils.round(row.getDistance(), 4));
-            row.setSpeed(utils.round2(row.getSpeed()));
-            row.setEfficiency(utils.round2(row.getEfficiency()));
-
-            dataPoints.push(row);
+    var relevantSplits = [];
+    if (splits && splits.length > 0) {
+        for (var i = 0; i < splits.length; i++) {
+            if (splits[i]._recovery === true) continue;
+            relevantSplits.push(i);
         }
+    }
 
-        defer.resolve(dataPoints);
+    SessionDetail.getDetailedMetrics(self.getId(), relevantSplits, function (/**@type SessionDetailMetrics */metrics) {
+        defer.resolve(metrics);
     });
 
     return defer.promise();

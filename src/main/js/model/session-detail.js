@@ -95,7 +95,7 @@ SessionDetail.prototype.getSplit = function () {
 SessionDetail.prototype.save = function () {
     this.connection.executeSql("INSERT INTO session_data (session, timestamp, distance, speed, spm, efficiency, latitude, longitude, heart_rate, split) VALUES (?,?,?,?,?,?,?,?,?,?)",
         [this.session, this.timestamp, this.distance, this.speed, this.spm, this.efficiency, this.latitude, this.longitude, this.heartRate, this.split], function (res) {
-            // intentinaly left blank
+            // intentionally left blank
         }, function (error) {
             console.log('Error creating session: ' + error.message);
         });
@@ -203,6 +203,17 @@ SessionDetail.getDetailedMetrics = function(sessionId, splits, callback) {
  * @constructor
  */
 function SessionDetailMetrics(rows, splits) {
+    if (rows.length === 0) {
+        this._distance = 0;
+        this._avgSpeed = 0;
+        this._maxSpeed = 0;
+        this._maxSPM = 0;
+        this._avgSPM = 0;
+        this._maxEfficiency = 0;
+        this._avgEfficiency = 0;
+        this._avgHeartRate = 0;
+        return;
+    }
 
     var data = rows[0];
     if (rows.length > 1) {

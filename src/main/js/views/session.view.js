@@ -121,7 +121,7 @@ SessionView.prototype.render = function (page, context, options) {
     options = options || {};
 
     self.isWarmUpFirst = options.isWarmUpFirst === true;
-    self.hasSplitsDefined = !!options.splits;
+    self.hasSplitsDefined = Array.isArray(options.splits) && options.splits.length > 0;
     self.inWarmUp = self.hasSplitsDefined && self.isWarmUpFirst;
     self.splitsDefinition = options.splits;
     self.expression = options.expression;

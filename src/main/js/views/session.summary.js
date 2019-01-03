@@ -132,8 +132,8 @@ SessionSummaryView.prototype.loadCharts = function(collapsedMetrics) {
 
 SessionSummaryView.prototype.collapseMetrics = function(details) {
 
-    var step = 1000, speed = 0, spm = 0, efficiency = 0, hr = 0, count = 0, result = [], i, l
-        , distance = details[details.length - 1].getDistance() * 1000;
+    var step, speed = 0, spm = 0, efficiency = 0, hr = 0, count = 0, result = [], i, l
+        , distance = details[details.length - 1].getDistance() * 1000, position;
 
     if (details.length === 0 || distance < 100) {
         for (i = 0, l = 10; i < l; i++) {
@@ -161,9 +161,10 @@ SessionSummaryView.prototype.collapseMetrics = function(details) {
     }
 
     step = Math.floor(distance / 10);
+    position = step;
     for (i = 0, l = details.length; i < l; i++) {
         var detail = details[i];
-        if (detail.getDistance() * 1000 > step) {
+        if (detail.getDistance() * 1000 > position) {
             result.push({
                 speed: speed / count,
                 spm: spm / count,
@@ -176,7 +177,7 @@ SessionSummaryView.prototype.collapseMetrics = function(details) {
             efficiency = 0;
             hr = 0;
             count = 0;
-            step += 1000;
+            position += step;
         }
 
         speed += detail.getSpeed();

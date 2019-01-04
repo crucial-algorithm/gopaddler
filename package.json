@@ -40,7 +40,7 @@
     "html-loader": "^0.4.5",
     "kalmanjs": "^1.0.0-beta",
     "plist": "^2.1.0",
-    "splits-handler": "https://kimile@bitbucket.org/kimile/splits-handler.git#1.1",
+    "splits-handler": "git+https://kimile@bitbucket.org/kimile/splits-handler.git#1.2",
     "zerver": "0.15.19"
   },
   "scripts": {
@@ -48,6 +48,7 @@
     "build:dev": "NODE_ENV=dev node_modules/webpack/bin/webpack.js --mode=development --progress --colors --watch",
     "build:dev-portrait": "NODE_ENV=dev;VIEW_MODE=portrait node_modules/webpack/bin/webpack.js --mode=development --progress --colors --watch",
     "build:dev-remote-portrait": "NODE_ENV=remote-dev;VIEW_MODE=portrait node_modules/webpack/bin/webpack.js --mode=development --progress --colors --watch",
+    "build:device": "NODE_ENV=prod node_modules/webpack/bin/webpack.js --mode=development -p",
     "build:prod": "NODE_ENV=prod node_modules/webpack/bin/webpack.js --mode=production -p"
   },
   "description": "GoPaddler mobile app",

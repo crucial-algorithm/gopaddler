@@ -20,6 +20,8 @@ var LAST_30_DAYS_PERIOD_FILTER = 'last-30-days',
     $page,
     $summaryDistance,
     $summarySpeed,
+    $summarySPM,
+    $summaryLength,
     $summaryTime,
 
     $calendar,
@@ -37,11 +39,8 @@ var LAST_30_DAYS_PERIOD_FILTER = 'last-30-days',
 function addSessionsToSessionList(sessions) {
     var totalDistance = 0.0,
         totalDuration = 0,
-        totalSpeed = 0.0,
-        time,
-        hours = 0,
-        minutes = 0,
-        seconds = 0;
+        totalSPM = 0.0,
+        totalLength = 0.0;
 
 
     if (sessions.length === 0) {
@@ -51,9 +50,10 @@ function addSessionsToSessionList(sessions) {
 
         sessionsListWidget.refresh();
 
-        $summaryDistance.text(utils.round2(totalDistance));
-        $summarySpeed.text(utils.round2(totalSpeed));
-        $summaryTime.text([utils.lpad(hours, 2), utils.lpad(minutes, 2), utils.lpad(seconds, 2)].join(':'));
+        $summaryDistance.text("0");
+        $summarySpeed.text("0");
+        $summarySPM.text("0");
+        $summaryLength.text("0");
 
         return;
     }
@@ -69,8 +69,7 @@ function addSessionsToSessionList(sessions) {
             sessionAt = moment(new Date(session.getSessionStart())),
             duration = moment.duration(session.getSessionEnd() - session.getSessionStart()),
             dDisplay = utils.lpad(duration.hours(), 2) + ':' + utils.lpad(duration.minutes(), 2),
-            distance = session.getDistance(),
-            speed = session.getTopSpeed();
+            distance = session.getDistance();
 
         if (appContext.preferences().isImperial()) {
             distance = utils.kmToMiles(distance);
@@ -123,9 +122,13 @@ function addSessionsToSessionList(sessions) {
         });
 
         // add to totals
+        var x = session.getSessionEnd() - session.getSessionStart();
+        console.log(x / 3600000, distance, distance / (x / 3600000));
         totalDistance += distance;
-        totalDuration += duration;
-        totalSpeed = Math.max(speed, totalSpeed);
+        totalDuration += x;
+        totalSPM += (x * session.getAvgSpm());
+        totalLength += (x * session.getAvgEfficiency());
+
 
         sessionsListWidget.appendRow($li, false);
         sessionsListWidget.appendRow($('<li style="display: none;"><div class="progress-line" style="width:1%;"></div></li>'), true);
@@ -133,15 +136,11 @@ function addSessionsToSessionList(sessions) {
     });
 
     // update summary
-    time = Math.floor(totalDuration / 1000);
-    hours = Math.floor(time / 3600);
-    time = time - hours * 3600;
-    minutes = Math.floor(time / 60);
-    seconds = time - minutes * 60;
 
     $summaryDistance.text(utils.round2(totalDistance));
-    $summarySpeed.text(utils.round2(totalSpeed));
-    $summaryTime.text([utils.lpad(hours, 2), utils.lpad(minutes, 2), utils.lpad(seconds, 2)].join(':'));
+    $summarySpeed.text(utils.round2(totalDistance / (totalDuration / 3600000)));
+    $summarySPM.text(Math.round(totalSPM / totalDuration));
+    $summaryLength.text(utils.round2(totalLength / totalDuration));
 
     setTimeout(function () {
         sessionsListWidget.refresh();
@@ -366,7 +365,9 @@ function SessionsView(page, context) {
     $chart = $('.sessions-summary-chart');
 
     $summaryDistance = $page.find('#total-distance');
-    $summarySpeed = $page.find('#top-speed');
+    $summarySpeed = $page.find('#summary-speed');
+    $summarySPM = $page.find('#summary-spm');
+    $summaryLength = $page.find('#summary-length');
     $summaryTime = $page.find('#total-duration');
 
     // set unit labes according to user preference

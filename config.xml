@@ -36,7 +36,7 @@
         <icon density="xxhdpi" src="res/android/ic_launcher-xxhdpi.png" />
         <icon density="xxxhdpi" src="res/android/ic_launcher-xxxhdpi.png" />
         <preference name="android-minSdkVersion" value="19" />
-        <preference name="android-targetSdkVersion" value="21" />
+        <preference name="android-targetSdkVersion" value="26" />
         <config-file parent="/resources" target="./res/values/strings.xml">
             <string name="fb_app_id">529853143847598</string>
             <string name="fb_app_name">gopaddler</string>

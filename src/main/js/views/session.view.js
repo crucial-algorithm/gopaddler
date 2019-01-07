@@ -103,7 +103,6 @@ SessionView.prototype.render = function (page, context, options) {
         } else if (isBasedInDistance === false) {
             value = timer.format(value);
         } else {
-            console.log(value, Math.ceil(value / 10) * 10);
             value = Math.ceil(value / 10) * 10;
             value = Math.round(value);
         }
@@ -234,7 +233,7 @@ SessionView.prototype.render = function (page, context, options) {
         // GPS based metrics
         var now = Date.now();
         if (lastKnownGPSPosition !== null && lastKnownGPSPosition !== previousGPSPosition
-            && Date.now() - lastKnownGPSPosition.timestamp <= 5000) {
+            && duration - lastKnownGPSPosition.sessionDuration <= 5000) {
             location.distance = distance.calculate(lastKnownGPSPosition, timer.getDuration());
             location.speed = speed.calculate(lastKnownGPSPosition, now);
             location.pace = pace.calculate(location.speed);

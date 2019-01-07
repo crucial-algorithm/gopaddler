@@ -276,7 +276,7 @@ SessionView.prototype.render = function (page, context, options) {
                 metric.counter++;
                 metric.spm += spm.value;
                 metric.efficiency += location.efficiency;
-                metric.hr += heartRate;
+                metric.heartRate += heartRate;
             }
         }
 

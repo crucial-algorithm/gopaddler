@@ -209,7 +209,7 @@ SessionView.prototype.render = function (page, context, options) {
                 counter: 0,
                 spm: 0,
                 efficiency: 0,
-                hr: 0,
+                heartRate: 0,
                 distance: 0,
                 duration: 0
             };

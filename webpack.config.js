@@ -10,7 +10,7 @@ if (viewMode === 'portrait') {
 
 var CONFIG = {
     common: {
-        version: "1.1",
+        version: "1.1.1-dev",
         apiVersion: 1
     },
     dev : {

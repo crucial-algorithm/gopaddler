@@ -178,7 +178,7 @@ SessionView.prototype.render = function (page, context, options) {
         heartRate = hr;
     });
 
-    var splitsIndex = [], lastSplitStartDistance = 0, areSplitsFinished = false, freeze = 0, metrics = [];
+    var splitsIndex = [], lastSplitStartDistance = 0, areSplitsFinished = false, freeze = 0, metrics = [], skip = 0;
     // -- listen for changes in splits and notify server
     splits.onSplitChange(function onSplitChangeListener(from, to, isFinished) {
         var inRecovery = false;
@@ -213,13 +213,19 @@ SessionView.prototype.render = function (page, context, options) {
                 distance: 0,
                 duration: 0
             };
+            skip = 1;
         } else {
             lastSplitStartDistance = 0;
         }
 
         areSplitsFinished = isFinished;
-        if (inRecovery === true || isFinished === true) {
+        if (inRecovery === true /** prevent freeze when on start on minute turn = */ && to.position >= 0) {
             freeze = 5;
+        }
+
+        if (isFinished === true) {
+            freeze = 5;
+            skip = 1;
         }
 
         Api.TrainingSessions.live.splitChanged(from, to, isFinished);
@@ -260,11 +266,7 @@ SessionView.prototype.render = function (page, context, options) {
             large.setValue("speed", location.speed);
         }
 
-        // on split change, we add the exact moment when it happens to the metrics! Due to rounds, timestamp may be previous
-        // to split start, so just ignore it if it is
-        if (self.hasSplitsDefined === false || (self.hasSplitsDefined === true && areSplitsFinished === true)
-            || (self.hasSplitsDefined === true && self.inWarmUp === true)
-            || (self.hasSplitsDefined === true && areSplitsFinished === false && splitsIndex.length > 0 && timestamp > splitsIndex[splits.getPosition()])) {
+        if (skip-- <= 0) {
             var position = splits.getPosition();
             // store data
             new SessionDetail(session.getId(), timestamp, location.distance, location.speed, spm.value

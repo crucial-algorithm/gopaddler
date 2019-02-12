@@ -13,7 +13,6 @@
     "chartjs-plugin-datalabels": "^0.5.0",
     "cordova-android": "^7.1.4",
     "cordova-ios": "^4.5.5",
-    "cordova-plugin-appsee": "^2.4.15",
     "cordova-plugin-background-mode-bluetooth-central": "^1.0.0",
     "cordova-plugin-bluetoothle": "^4.4.3",
     "cordova-plugin-compat": "^1.2.0",
@@ -23,7 +22,6 @@
     "cordova-plugin-facebook4": "^1.9.1",
     "cordova-plugin-file": "^4.3.3",
     "cordova-plugin-geolocation": "^2.4.3",
-    "cordova-plugin-google-analytics": "^1.8.6",
     "cordova-plugin-inappbrowser": "^1.7.2",
     "cordova-plugin-ios-longpress-fix": "^1.1.0",
     "cordova-plugin-nativeaudio": "^3.0.9",
@@ -93,10 +91,6 @@
       "cordova-plugin-facebook4": {
         "APP_ID": "529853143847598",
         "APP_NAME": "gopaddler"
-      },
-      "cordova-plugin-appsee": {},
-      "cordova-plugin-google-analytics": {
-        "GMS_VERSION": "11.0.1"
       }
     }
   }

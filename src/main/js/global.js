@@ -128,11 +128,6 @@ function emulateCordova () {
 
     window.Connection = {"WIFI": 1, "ETHERNET": 2};
 
-    window.analytics = {startTrackerWithId: function () {
-        }, trackView: function () {
-        }, setUserId: function () {
-    }};
-
     window.screen = {
         orientation: {
             lock: function () {
@@ -261,12 +256,6 @@ function emulateCordova () {
         }
 
     };
-
-    window.Appsee = {
-        start: function(){},
-        startScreen: function(){}
-    }
-
 }
 
 jQuery.fn.center = function () {

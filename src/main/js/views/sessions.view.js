@@ -123,7 +123,6 @@ function addSessionsToSessionList(sessions) {
 
         // add to totals
         var x = session.getSessionEnd() - session.getSessionStart();
-        console.log(x / 3600000, distance, distance / (x / 3600000));
         totalDistance += distance;
         totalDuration += x;
         totalSPM += (x * session.getAvgSpm());

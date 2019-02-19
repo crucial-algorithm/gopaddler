@@ -525,6 +525,14 @@ exports.TrainingSessions = {
             _call('deviceStarted', startedAt, expression)
         },
 
+        finishedWarmUp: function (duration, distance, isBasedInDistance) {
+            if (!isLiveUpdate())
+                return;
+
+            _call('deviceFinishedWarmUp', duration, distance, isBasedInDistance)
+        },
+
+
         finished: function (finishedAt) {
             if (!isLiveUpdate())
                 return;

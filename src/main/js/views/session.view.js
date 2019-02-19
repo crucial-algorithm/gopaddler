@@ -487,18 +487,22 @@ SessionView.prototype.render = function (page, context, options) {
             self.confirmFinishWarmUp(function onStartOnMinuteTurn() {
                 Dialog.hideModal();
                 isConfirmDialogOpen = false;
-                splits.start(timer.getDuration(), Math.round(60 - timer.getDuration() / 1000 % 60), function onStart(timestamp) {
+                splits.start(timer.getDuration(), Math.round(60 - timer.getDuration() / 1000 % 60), function onStart(timestamp, isDistanceBased) {
                     // save offset in session
                     session.setScheduledSessionStart(timestamp);
+                    var duration = timer.getCurrentDuration();
+                    Api.TrainingSessions.live.finishedWarmUp(duration, distance.timeToDistance(duration) * 1000, isDistanceBased)
                 });
                 self.inWarmUp = false;
             }, function onStartImmediately() {
                 Dialog.hideModal();
                 isConfirmDialogOpen = false;
-                splits.start(timer.getDuration(), null, function onStart(timestamp) {
+                splits.start(timer.getDuration(), null, function onStart(timestamp, isDistanceBased) {
                     // save offset in session
                     session.setScheduledSessionStart(timestamp);
-                    console.log('on start immediatly', timestamp, timer.getCurrentDuration());
+                    console.log('on start immediately', timestamp, timer.getCurrentDuration());
+                    var duration = timer.getCurrentDuration();
+                    Api.TrainingSessions.live.finishedWarmUp(duration, distance.timeToDistance(duration) * 1000, isDistanceBased)
                 });
                 self.inWarmUp = false;
             }, function finish() {

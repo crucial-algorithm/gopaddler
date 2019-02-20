@@ -1,0 +1,44 @@
+<div class="app-content create-account" data-no-scroll="true">
+
+    <div class="login-form">
+        <div class="form">
+            <form>
+                <input type="email" placeholder="e-mail" name="username"/>
+                <input type="password" placeholder="password" name="password"/>
+                <p class="message auth-error">{{"login_with_pass_failed" | translate}} <a id="login-invalid">{{"login_with_pass_forgot_password" | translate}}?</a></p>
+                <button class="button" id="login-with-password">{{"login_with_pass_button" | translate}}</button>
+                <div class="progress-btn hidden"></div>
+                <p class="message">{{"login_with_pass_not_registered" | translate}}? <a data-action="join">{{"login_with_pass_create_account" | translate}}</a></p>
+                <p class="message">{{"login_with_pass_user_facebook" | translate}}? <a data-action="back">{{"login_with_pass_go_back" | translate}}</a></p>
+            </form>
+        </div>
+    </div>
+
+    <div class="create-account-form">
+        <div class="form">
+            <form>
+                <input type="email" placeholder="{{'create_user_field_email' | translate}}" name="username"/>
+                <input type="name" placeholder="{{'create_user_field_name' | translate}}" name="name"/>
+                <input type="password" placeholder="{{'create_user_field_password' | translate}}" name="password"/>
+                <p class="message auth-error">&nbsp;</p>
+                <button class="button" id="create-account">{{'create_user_create_account_button' | translate}}</button>
+                <div class="progress-btn hidden"></div>
+                <p class="message">{{'create_user_already_registered' | translate}}? <a data-action="login">{{'create_user_already_registered_login' | translate}}</a></p>
+            </form>
+        </div>
+    </div>
+
+    <div class="forgot-password-form">
+        <div class="form">
+            <form>
+                <input type="email" placeholder="{{'forgot_password_field_email' | translate}}" name="email" required/>
+                <p class="message check-email">{{'forgot_password_error' | translate}}; <a data-action="login">{{'forgot_password_back' | translate}}</a></p>
+                <p class="message auth-error">{{'forgot_password_error' | translate}}; <a data-action="login">{{'forgot_password_back' | translate}}</a></p>
+                <button class="button" id="forgot-password">{{'forgot_password_submit_button' | translate}}</button>
+                <div class="progress-btn hidden"></div>
+                <p class="message">{{'forgot_password_not_registered' | translate}}? <a data-action="join">{{'forgot_password_create_account' | translate}}</a></p>
+            </form>
+        </div>
+    </div>
+
+</div>

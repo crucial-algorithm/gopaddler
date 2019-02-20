@@ -536,7 +536,7 @@ SessionView.prototype.render = function (page, context, options) {
         return confirmBeforeExit() === true;
     });
 
-    var unlock = new Unlock();
+    var unlock = new Unlock(context);
     unlock.onUnlocked(function () {
         confirmBeforeExit();
     });
@@ -619,10 +619,10 @@ SessionView.prototype.confirm = function (onresume, onfinish) {
     var modal = self.appContext.ui.modal.undecorated([
         '   <div class="session-controls session-controls-free-session">',
         '   	<div class="session-controls-round-button session-resume">',
-        '   		<div class="session-controls-round-button-label">Resume</div>',
+        '   		<div class="session-controls-round-button-label">' + self.appContext.translate('session_resume') + '</div>',
         '       </div>',
         '       <div class="session-controls-round-button  session-finish">',
-        '   		<div class="session-controls-round-button-label">Finish</div>',
+        '   		<div class="session-controls-round-button-label">' + self.appContext.translate('session_finish') + '</div>',
         '       </div>',
         '   </div'
     ].join(''));
@@ -654,20 +654,20 @@ SessionView.prototype.confirmFinishWarmUp = function (onStartOnMinuteTurn, onSta
         '    <div class="session-controls">',
         '    <div class="session-controls-row">',
         '    	<div class="session-controls-round-button session-start-on-minute-turn blue">',
-        '    		<div class="session-controls-round-button-label">Start at 0\'\'</div>',
+        '    		<div class="session-controls-round-button-label">' + self.appContext.translate('session_start_at_minute_turn') + '</div>',
         '        </div>',
 
         '		<div class="session-controls-round-button session-cancel grey">',
-        '    		<div class="session-controls-round-button-label">Cancel</div>',
+        '    		<div class="session-controls-round-button-label">' + self.appContext.translate('session_cancel') + '</div>',
         '        </div>',
         '     </div>',
         '    <div class="session-controls-row">',
         '        <div class="session-controls-round-button  session-start-immediately yellow">',
-        '    		<div class="session-controls-round-button-label">Start now</div>',
+        '    		<div class="session-controls-round-button-label">' + self.appContext.translate('session_start_now') + '</div>',
         '        </div>',
 
         '        <div class="session-controls-round-button  session-finish red">',
-        '    		<div class="session-controls-round-button-label">finish</div>',
+        '    		<div class="session-controls-round-button-label">' + self.appContext.translate('session_finish') + '</div>',
         '        </div>',
         '     </div>',
         '    </div'

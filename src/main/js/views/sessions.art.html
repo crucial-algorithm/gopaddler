@@ -12,7 +12,7 @@
     <button class="{{if isPortraitMode}}portrait-back-button{{/if}}
         app-button left paddler-back" alt="back" data-back></button>
     <div class="paddler-title">
-        <div id="session-period-filter-button" class="paddler-title-text app-modal-open">Last 30 days</div>
+        <div id="session-period-filter-button" class="paddler-title-text app-modal-open">{{"sessions_filter_last_30_days" | translate}}</div>
     </div>
 </div>
 <div id="session-period-filter" class="app-modal-wrapper">
@@ -21,13 +21,13 @@
             <div id="session-period-datepicker" class="calendar"></div>
         {{/if}}
         <div class="date-options">
-            <div class="app-modal-button selected" data-period="last-30-days">Last 30 days</div>
-            <div class="app-modal-button" data-period="last-month">Last Month</div>
-            <div class="app-modal-button" data-period="start-from">Starting From</div>
-            <div class="app-modal-button" data-period="custom">Custom Range</div>
+            <div class="app-modal-button selected" data-period="last-30-days">{{"sessions_filter_last_30_days" | translate}}</div>
+            <div class="app-modal-button" data-period="last-month">{{"sessions_filter_last_month" | translate}}</div>
+            <div class="app-modal-button" data-period="start-from">{{"sessions_filter_starting_from" | translate}}</div>
+            <div class="app-modal-button" data-period="custom">{{"sessions_filter_custom_range" | translate}}</div>
 
-            <div id="cancel-session-filter" class="app-modal-cancel-button">Cancel</div>
-            <div id="apply-session-filter" class="app-modal-ok-button">Apply</div>
+            <div id="cancel-session-filter" class="app-modal-cancel-button">{{"sessions_filter_cancel" | translate}}</div>
+            <div id="apply-session-filter" class="app-modal-ok-button">{{"sessions_filter_apply" | translate}}</div>
         </div>
         {{if isLandscapeMode}}
             <div id="session-period-datepicker" class="calendar"></div>
@@ -42,16 +42,16 @@
             <span id="sessions-summary-distance-unit">KM</span>
         </div>
         <div class="sessions-summary-secondary">
-            <div><span class="sessions-summary-secondary-value" id="summary-speed">0.0</span><label class="sessions-summary-secondary-label">Speed</label></div>
-            <div><span class="sessions-summary-secondary-value" id="summary-spm">0</span><label class="sessions-summary-secondary-label">SPM</label></div>
-            <div><span class="sessions-summary-secondary-value" id="summary-length">0</span><label class="sessions-summary-secondary-label">S. Length</label></div>
+            <div><span class="sessions-summary-secondary-value" id="summary-speed">0.0</span><label class="sessions-summary-secondary-label">{{"sessions_summary_speed_label" | translate}}</label></div>
+            <div><span class="sessions-summary-secondary-value" id="summary-spm">0</span><label class="sessions-summary-secondary-label">{{"sessions_summary_spm_label" | translate}}</label></div>
+            <div><span class="sessions-summary-secondary-value" id="summary-length">0</span><label class="sessions-summary-secondary-label">{{"sessions_summary_spm_length_label" | translate}}</label></div>
         </div>
     </div>
     <div class="sessions-table-header">
-        <div>Date</div>
-        <div>Duration</div>
-        <div>Distance</div>
-        <div>Synced</div>
+        <div>{{"sessions_header_date" | translate}}</div>
+        <div>{{"sessions_header_duration" | translate}}</div>
+        <div>{{"sessions_header_distance" | translate}}</div>
+        <div>{{"sessions_header_synced" | translate}}</div>
     </div>
     <div id="sessions-wrapper-for-pull-to-refresh" class="sessions-list"></div>
 </div>

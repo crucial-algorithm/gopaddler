@@ -36,7 +36,7 @@ var LAST_30_DAYS_PERIOD_FILTER = 'last-30-days',
  *
  * @param {array} sessions
  */
-function addSessionsToSessionList(sessions) {
+function addSessionsToSessionList(sessions, context) {
     var totalDistance = 0.0,
         totalDuration = 0,
         totalSPM = 0.0,
@@ -46,7 +46,7 @@ function addSessionsToSessionList(sessions) {
     if (sessions.length === 0) {
         sessionsListWidget.clear();
         sessionsListWidget
-            .appendRow($('<li class="session-row-empty">You have no sessions for the selected period.</li>'));
+            .appendRow($('<li class="session-row-empty">' + context.translate('sessions_no_session_found') + '</li>'));
 
         sessionsListWidget.refresh();
 
@@ -82,11 +82,14 @@ function addSessionsToSessionList(sessions) {
             .append($([
                     '<div class="session-row-actions">',
                     '	<div style="display:table;width:100%;height:100%">',
-                    '		<div class="session-row-upload-btn" session-id="{session-id}">sync</div>',
-                    '		<div class="session-row-delete-btn" session-id="{session-id}">delete</div>',
+                    '		<div class="session-row-upload-btn" session-id="{session-id}">{sync}</div>',
+                    '		<div class="session-row-delete-btn" session-id="{session-id}">{delete}</div>',
                     '	</div>',
                     '</div>'
-                ].join('').replace(new RegExp('{session-id}', 'g'), session.getId())
+                ].join('')
+                .replace(new RegExp('{session-id}', 'g'), session.getId())
+                .replace('{sync}', context.translate('sessions_force_sync'))
+                .replace('{delete}', context.translate('sessions_delete'))
             )).appendTo($li);
 
         // add row data
@@ -110,7 +113,7 @@ function addSessionsToSessionList(sessions) {
                 .replace('{day}', sessionAt.format('MMM D'))
                 .replace('{duration}', dDisplay)
                 .replace('{distance}', utils.round2(distance || 0) + ' ' + appContext.getUnit('distance_in_session_list'))
-                .replace('{synced}', session.isSynced() ? 'yes' : 'no')
+                .replace('{synced}', session.isSynced() ? context.translate('sessions_synced') : context.translate('sessions_not_synced'))
         ).appendTo($main);
 
         // on a session tap, open session-summary with its details
@@ -170,26 +173,26 @@ function filterSessionsByPeriod(context) {
 
     switch (selectedFilter) {
         case LAST_MONTH_PERIOD_FILTER:
-            $sessionPeriodFilterButton.html('Last Month');
+            $sessionPeriodFilterButton.html(context.translate('sessions_filter_last_month'));
             context.preferences().setDefaultSessionFilter(LAST_MONTH_PERIOD_FILTER);
             context.preferences().setDefaultStartDate(null);
             context.preferences().setDefaultEndDate(null);
             break;
         case START_FROM_PERIOD_FILTER:
-            $sessionPeriodFilterButton.html('Since ' + filterStartDate.format('YYYY-MM-DD'));
+            $sessionPeriodFilterButton.html(context.translate('sessions_filter_from') + ' ' + filterStartDate.format('YYYY-MM-DD'));
             context.preferences().setDefaultSessionFilter(START_FROM_PERIOD_FILTER);
             context.preferences().setDefaultStartDate(filterStartDate.valueOf());
             context.preferences().setDefaultEndDate(filterEndDate.valueOf());
             break;
         case CUSTOM_PERIOD_FILTER:
-            $sessionPeriodFilterButton.html(filterStartDate.format('YYYY-MM-DD') + ' to ' + filterEndDate.format('YYYY-MM-DD'));
+            $sessionPeriodFilterButton.html(filterStartDate.format('YYYY-MM-DD') + ' '+ context.translate('sessions_filter_to') +' ' + filterEndDate.format('YYYY-MM-DD'));
             context.preferences().setDefaultSessionFilter(CUSTOM_PERIOD_FILTER);
             context.preferences().setDefaultStartDate(filterStartDate.valueOf());
             context.preferences().setDefaultEndDate(filterEndDate.valueOf());
             break;
         case LAST_30_DAYS_PERIOD_FILTER:
         default:
-            $sessionPeriodFilterButton.html('Last 30 Days');
+            $sessionPeriodFilterButton.html(context.translate('sessions_filter_last_30_days'));
             context.preferences().setDefaultSessionFilter(LAST_30_DAYS_PERIOD_FILTER);
             context.preferences().setDefaultStartDate(null);
             context.preferences().setDefaultEndDate(null);
@@ -198,11 +201,11 @@ function filterSessionsByPeriod(context) {
     // adjust sessions according to chosen period
     if (selectedFilter === START_FROM_PERIOD_FILTER) {
         Session.getFromDate(filterStartDate.valueOf(), function (sessions) {
-            addSessionsToSessionList(sessions);
+            addSessionsToSessionList(sessions, context);
         });
     } else {
         Session.getForDates(filterStartDate.valueOf(), filterEndDate.valueOf(), function (sessions) {
-            addSessionsToSessionList(sessions);
+            addSessionsToSessionList(sessions, context);
         });
     }
 }
@@ -294,7 +297,7 @@ function setupSessionFilter($page, context) {
         showShortcuts: false,
         showTopbar: false,
         hoveringTooltip: false,
-        language: 'en'
+        language: context.getLanguage()
     });
 
     $calendar.data('dateRangePicker')

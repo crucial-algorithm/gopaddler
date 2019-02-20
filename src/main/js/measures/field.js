@@ -67,36 +67,36 @@ Field.DEFAULTS = {
 
 var FIELD_SETTINGS = {
     timer: {
-        label: "Duration",
+        label: "session_duration",
         init: '00:00:00'
     },
     splits: {
-        label: "Splits",
-        init: 'Hold pause to begin session',
+        label: "session_splits",
+        init: 'session_splits_before_start',
         hint: true
     },
     speed: {
-        label: "Speed",
+        label: "session_speed",
         init: 0
     },
     distance: {
-        label: "Distance",
+        label: "session_distance",
         init: 0
     },
     spm: {
-        label: "Stroke Rate",
+        label: "session_spm",
         init: 0
     },
     efficiency: {
-        label: "Distance per Stroke",
+        label: "session_efficiency",
         init: 0
     },
     pace: {
-        label: "Pace",
+        label: "session_pace",
         init: 0
     },
     heartRate: {
-        label: "Heart Rate",
+        label: "session_heart_rate",
         init: 0
     }
 };
@@ -114,7 +114,8 @@ Field.prototype.init = function (initialType, size) {
 
         options = FIELD_SETTINGS[type];
 
-        instance = MeasureFactory.get(size, $dom, options.label, self.context.getUnit(type, size === 'large'), options.init, self.context.isPortraitMode());
+        instance = MeasureFactory.get(size, $dom, self.context.translate(options.label)
+            , self.context.getUnit(type, size === 'large'), options.init, self.context.isPortraitMode());
         instance.render(options.hint);
         self.positions[i] = {position: i, type: type, $dom: $dom, instance: instance};
         self.options[type] = options;

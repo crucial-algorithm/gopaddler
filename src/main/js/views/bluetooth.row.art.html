@@ -3,16 +3,16 @@
         <div class="bluetooth-devices-row-data-wrapper">
             <div class="bluetooth-devices-row-data">
             <div class="bluetooth-devices-row-column">
-                <label class="bluetooth-devices-column-label">Name</label> {{device}}
+                <label class="bluetooth-devices-column-label">{{"blt_device_name" | translate}}</label> {{device}}
             </div>
             <div class="bluetooth-devices-row-column">
-                <label class="bluetooth-devices-column-label">Last Seen</label> {{addedAt}}
+                <label class="bluetooth-devices-column-label">{{"blt_device_last_seen" | translate}}</label> {{addedAt}}
             </div>
         </div>
         </div>
         <div class="bluetooth-devices-device-actions">
             <div class="bluetooth-devices-device-forget"
-                 data-paired="{{isPaired}}" data-address="{{address}}">Forget</div>
+                 data-paired="{{isPaired}}" data-address="{{address}}">{{"blt_device_forget" | translate}}</div>
         </div>
     </div>
 </li>

@@ -173,18 +173,18 @@ HomeView.prototype.loadChart = function() {
 
 function showNoCalibrationModal(context) {
     var message = [
-        '<p>Before you start, we need to adjust to your mount system!</p>',
-        '<p>Don\'t worry - it will only take a few seconds...</p>'
+        '<p>' + context.translate('no_calibration_found_alert_message_line1') + '</p>',
+        '<p>' + context.translate('no_calibration_found_alert_message_line2') + '</p>'
     ].join('');
 
-    context.ui.modal.confirm('No calibration found', message
+    context.ui.modal.confirm(context.translate('no_calibration_found_alert_title'), message
         , {
-            text: "Calibrate", callback: function calibrate() {
+            text: context.translate('no_calibration_found_alert_option_calibrate'), callback: function calibrate() {
                 context.navigate('calibration', true, {from: "start-session"});
             }
         }
         , {
-            text: "Try it", callback: function skip() {
+            text: context.translate('no_calibration_found_alert_option_try_it'), callback: function skip() {
                 if (context.userHasCoach())
                     context.navigate('select-session', false, undefined);
                 else
@@ -195,16 +195,16 @@ function showNoCalibrationModal(context) {
 }
 
 function showUpdateAvailableModal(context) {
-    context.ui.modal.alert('New GoPaddler Version'
-        , '<p>You need to update your application so your coach can see your data properly</p>'
-        , {text: "OK"}
+    context.ui.modal.alert(context.translate('new_version_alert_title')
+        , '<p>' + context.translate('new_version_alert_message') + '</p>'
+        , {text: context.translate('new_version_alert_acknowledge')}
     );
 }
 
 function showFirstCalibrationCompletedModal(context) {
-    context.ui.modal.alert('Calibration completed'
-        , '<p>Thanks... now you can go ahead and start a new session</p>'
-        , {text: "OK"}
+    context.ui.modal.alert(context.translate('calibration_completed_alert_title')
+        , '<p>' + context.translate('calibration_completed_alert_message') + '</p>'
+        , {text: context.translate('calibration_completed_alert_acknowledge')}
     );
 }
 
@@ -212,18 +212,18 @@ function showCoachRequestConfirmationModal(context, request) {
     if (!request) return;
 
     var message = [
-        '<p>Wants to be your coach.<p>',
-        '<p class="small">By accepting, your are allowing ', request.coach ,' to have access to your paddling data!<p>'
+        '<p>' + context.translate('coach_request_message_line1') + '</p>',
+        '<p class="small">' + context.translate('coach_request_message_warning_start') +' ', request.coach ,' ' + context.translate('coach_request_message_warning_finish') + '<p>'
     ].join('');
 
     context.ui.modal.confirm(request.coach, message
         , {
-            text: "Allow", callback: function calibrate() {
+            text: context.translate('coach_request_option_allow'), callback: function calibrate() {
                 Api.User.acceptRequest(request.requestID)
             }
         }
         , {
-            text: "Reject", callback: function skip() {
+            text: context.translate('coach_request_option_reject'), callback: function skip() {
                 Api.User.rejectRequest(request.requestID)
             }
         }

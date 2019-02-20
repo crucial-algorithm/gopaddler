@@ -5,16 +5,16 @@
     <button class="{{if isPortraitMode}}portrait-back-button{{/if}}
         app-button left paddler-back" alt="back" data-back></button>
     <div class="paddler-title">
-        <div class="paddler-title-text">Settings</div>
+        <div class="paddler-title-text">{{"blt_screen_title" | translate}}</div>
     </div>
 </div>
 <div class="app-content bluetooth {{if isPortraitMode}}portrait-app-content{{/if}}">
 
-    <h3 data-selector="no-devices-found">No devices found</h3>
-    <p data-selector="no-devices-found">Check that Bluetooth is turned on in your phone's settings or <span class="bluetooth-try-again">try again</span></p>
+    <h3 data-selector="no-devices-found">{{"blt_no_devices_found" | translate}}</h3>
+    <p data-selector="no-devices-found">{{"blt_no_devices_found_instructions" | translate}} <span class="bluetooth-try-again">{{"blt_no_devices_found_try_again" | translate}}</span></p>
 
 
-    <h3 data-selector="searching-devices">Searching for Bluetooth devices</h3>
+    <h3 data-selector="searching-devices">{{"blt_searching" | translate}}</h3>
 
     <div class="bluetooth-devices"></div>
     <div class="bluetooth-devices-search progress-line"></div>

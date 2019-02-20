@@ -1,5 +1,27 @@
 'use strict';
 
+var LANGUAGE = 'pt';
+
+// Start handle i18 stuff -------
+var PT = require('../../../res/i18n/pt');
+var EN = require('../../../res/i18n/en');
+
+var i18n = {
+    en: EN,
+    pt: PT
+};
+
+function translate(key) {
+    return i18n[LANGUAGE].translations[key];
+}
+
+var artTemplateRuntime = require('art-template/lib/runtime');
+artTemplateRuntime.translate = translate;
+
+moment.locale(LANGUAGE);
+
+// END handle i18 stuff -------
+
 var SessionView = require('./views/session.view.js').SessionView;
 var SessionSummaryView = require('./views/session.summary.js').SessionSummaryView;
 var SettingsView = require('./views/settings.view.js').SettingsView;
@@ -58,7 +80,7 @@ function enrichPageArg(page, pageName) {
  */
 App.controller('login', function (page) {
     enrichPageArg(page, 'login');
-    new LoginView(page);
+    new LoginView(page, context);
 });
 
 App.controller('login-with-password', function (page) {
@@ -71,7 +93,7 @@ App.controller('home', function (page, request) {
     enrichPageArg(page, 'home');
     Settings.loadSettings().then(function (s) {
         settings = s;
-        context = new Context(settings, environment);
+        context = new Context(settings, environment, translate, LANGUAGE);
 
         if (environment === 'prod')
             sync.start(context);
@@ -79,7 +101,7 @@ App.controller('home', function (page, request) {
         new HomeView(page, context, request);
     }).fail(function (error, defaultSettings) {
         settings = defaultSettings;
-        context = new Context(settings, environment);
+        context = new Context(settings, environment, translate, LANGUAGE);
     });
 });
 
@@ -109,7 +131,7 @@ App.controller('settings', function (page) {
  */
 App.controller('sessions', function (page) {
     enrichPageArg(page, 'sessions');
-    context = new Context(context.preferences(), environment);
+    context = new Context(context.preferences(), environment, translate, LANGUAGE);
     new SessionsView(page, context);
 });
 
@@ -154,11 +176,11 @@ App.controller('choose-boat', function (page, request) {
     enrichPageArg(page, 'choose-boat');
     Settings.loadSettings().then(function (s) {
         settings = s;
-        context = new Context(settings, environment);
+        context = new Context(settings, environment, translate, LANGUAGE);
         new ChooseBoatView(page, context)
     }).fail(function (error, defaultSettings) {
         settings = defaultSettings;
-        context = new Context(settings, environment);
+        context = new Context(settings, environment, translate, LANGUAGE);
         new ChooseBoatView(page, context)
     });
 

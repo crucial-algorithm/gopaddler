@@ -1,11 +1,14 @@
 'use strict';
 
-var Api = require('../server/api');
+var Api = require('../server/api')
+    , template = require('./signup.art.html');
 
 var $login, $create, $forgot;
 
 function LoginWithPasswordView(page, context) {
     screen.orientation.lock('portrait');
+
+    context.render(page, template({isPortraitMode: context.isPortraitMode()}));
 
     var $page = $(page), running = false;
 

@@ -107,7 +107,7 @@ SelectSessionView.prototype.render = function (page, context) {
         var $li = $(this);
         var idx = parseInt($li.attr('data-session-idx'));
         $li.addClass('selected');
-        var value = "Free Session";
+        var value = context.translate("select_session_free_session");
         if (idx === -1)
             session = undefined;
         else
@@ -184,7 +184,7 @@ SelectSessionView.prototype.render = function (page, context) {
                 elements = elements.add(['<li class="select-session-row " data-session-idx="-1">',
                     '    <div class="select-session-row-wrapper">',
                     '        <div><label class="select-session-date-label">' + moment().format('dddd') + '</label>' + moment().format('MMM DD') + '</div>',
-                    '        <div><label class="select-session-date-label"></label><span class="session-row-expression">Free Session</span></div>',
+                    '        <div><label class="select-session-date-label"></label><span class="session-row-expression">' + context.translate("select_session_free_session") + '</span></div>',
                     '    </div>',
                     '</li>'
                 ].join(''));

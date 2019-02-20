@@ -1,26 +1,24 @@
 var Dragdealer = require('dragdealer');
 
-var TEMPLATE = [
-    '    <div id="pause-slide" class="dragdealer session-slide-to-unlock">',
-    '        <div class="session-slide-to-unlock-handle handle">',
-    '            <div class="session-slide-to-unlock-handle-text">',
-    '                <i class="fas fa-angle-right"></i>&nbsp;slide to unlock',
-    '            </div>',
-    '        </div>',
-    '    </div>'
-].join(' ');
-
-
-function Unlock() {
+function Unlock(context) {
     this.showing = false;
     this.lockHandledAt = null;
     this.inDrag = false;
     this.$dom = null;
     this.intervalID = null;
     this.unlocked = function(){};
+    this.TEMPLATE = [
+        '    <div id="pause-slide" class="dragdealer session-slide-to-unlock">',
+        '        <div class="session-slide-to-unlock-handle handle">',
+        '            <div class="session-slide-to-unlock-handle-text">',
+        '                <i class="fas fa-angle-right"></i>&nbsp;{session_unlock}',
+        '            </div>',
+        '        </div>',
+        '    </div>'
+    ].join(' ').replace('{session_unlock}', context.translate("session_unlock"));
 }
 Unlock.prototype.init = function () {
-    this.$dom = $(TEMPLATE);
+    this.$dom = $(this.TEMPLATE);
     $('body').append(this.$dom);
 };
 
@@ -31,7 +29,7 @@ Unlock.prototype.show = function () {
         return;
     }
 
-    self.$dom = $(TEMPLATE).appendTo($('.app-content'));
+    self.$dom = $(this.TEMPLATE).appendTo($('.app-content'));
     self.lockHandledAt = new Date().getTime();
     self.showing = true;
 

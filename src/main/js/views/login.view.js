@@ -1,9 +1,12 @@
 'use strict';
 
-var Api = require('../server/api');
+var Api = require('../server/api')
+    , template = require('./login.view.art.html');
 
 function LoginView(page, context) {
     screen.orientation.lock('portrait');
+
+    context.render(page, template({isPortraitMode: context.isPortraitMode()}));
 
     var $page = $(page), img;
 

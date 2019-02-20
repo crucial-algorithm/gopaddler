@@ -7,14 +7,14 @@
     <button class="{{if isPortraitMode}}portrait-back-button{{/if}}
         app-button left paddler-back" alt="back" data-back></button>
     <div class="paddler-title">
-        <div class="paddler-title-text">Settings</div>
+        <div class="paddler-title-text">{{"settings_title" | translate}}</div>
     </div>
 </div>
 <div class="app-content settings {{if isPortraitMode}} portrait-settings-content {{/if}}">
 
     <div class="settings-row odd" id="boat">
         <div class="settings-option settings-option-label">
-            Type of boat
+            {{"settings_menu_type_of_boat" | translate}}
         </div>
         <div class="settings-option settings-option-action">
             <div class="settings-option-switch-label">K1</div>
@@ -30,7 +30,7 @@
 
     <div class="settings-row" id="units">
         <div class="settings-option settings-option-label">
-            Units
+            {{"settings_menu_units" | translate}}
         </div>
         <div class="settings-option settings-option-action">
             <div class="settings-option-switch-label">KM</div>
@@ -45,7 +45,7 @@
     </div>
     <div class="settings-row odd">
         <div class="settings-option settings-option-label">
-            black and white
+            {{ "settings_menu_black_and_white" | translate}}
         </div>
         <div class="settings-option settings-option-action">
             <div class="onoffswitch">
@@ -56,7 +56,7 @@
     </div>
     <div class="settings-row">
         <div class="settings-option settings-option-label">
-            Save session layout
+            {{ "settings_menu_save_session_layout" | translate}}
         </div>
         <div class="settings-option settings-option-action">
             <div class="onoffswitch">
@@ -67,7 +67,7 @@
     </div>
     <div class="settings-row odd">
         <div class="settings-option settings-option-label">
-            portrait mode
+            {{ "settings_menu_portrait_mode" | translate}}
         </div>
         <div class="settings-option settings-option-action">
             <div class="onoffswitch">
@@ -78,40 +78,40 @@
     </div>
     <div class="settings-row">
         <div class="settings-option gps-rate settings-option-label" id="gps-update-rate">
-            GPS refresh rate
+            {{ "settings_menu_gps_refresh_rate" | translate}}
         </div>
         <div class="settings-current-gps-rate">&nbsp;</div>
     </div>
 
     <div class="settings-row odd">
         <div class="settings-option settings-option-label" id="bluetooth">
-            Heart Rate Sensor
+            {{ "settings_menu_heart_rate_sensor" | translate}}
         </div>
     </div>
 
     <div class="settings-row">
         <div class="settings-option heart-rate settings-option-label" id="max-heart-rate">
-            Max Heart Rate
+            {{ "settings_menu_max_heart_rate" | translate}}
         </div>
         <div class="settings-current-max-heart-rate">&nbsp;</div>
     </div>
 
     <div class="settings-row">
         <div class="settings-calibrate settings-option-label" id="calibration">
-            Calibrate
+            {{ "settings_menu_calibrate" | translate}}
         </div>
-        <div class="settings-calibrate-help">Learn how</div>
+        <div class="settings-calibrate-help">{{ "settings_menu_calibrate_how_to" | translate}}</div>
     </div>
 
     <div class="settings-row" id="logout">
         <!--div class="settings-facebook-icon"></div-->
         <div class="settings-facebook">
-            Logout
+            {{ "settings_menu_logout" | translate}}
         </div>
     </div>
 
     <div class="settings-footer">
-        Version<span data-selector="version">&nbsp;</span>
+        {{ "settings_menu_version" | translate}}<span data-selector="version">&nbsp;</span>
     </div>
 
 </div>

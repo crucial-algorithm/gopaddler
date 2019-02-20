@@ -81,16 +81,16 @@ function SettingsView(page, context, settings) {
     $boat.on('change', function () {
         var choice = $boat.is(':checked') ? "C" : "K";
         Api.User.saveBoat(choice).fail(function (err) {
-            var title = "Update boat failed", text = '<p>We ran unto trouble.</p><p>Please do try again later</p>';
+            var title = context.translate('settings_update_boat_failed'), text = '<p>' + context.translate('settings_update_boat_failed_message') + '</p><p>' + context.translate('settings_update_boat_failed_try_again_later') + '</p>';
             if (err && err.error === 504) {
-                text = "<p>Internet connection is required to perform this operation</p>";
+                text = "<p>" + context.translate('settings_update_boat_failed_internet_is_required') + "</p>";
             }
 
             if (err && err.error === 408) {
-                text = "<p>Server is unavailable!</p><p>Will be back soon!</p>"
+                text = "<p>" + context.translate('settings_update_boat_failed_server_unavailable') + "</p><p>" + context.translate('settings_update_boat_failed_server_back_soon') + "</p>"
             }
 
-            context.ui.modal.alert(title, text, {text: "ok"});
+            context.ui.modal.alert(title, text, {text: context.translate('settings_update_boat_failed_acknowledge')});
 
             $boat.prop('checked', !$boat.is(':checked'));
 
@@ -105,11 +105,11 @@ function SettingsView(page, context, settings) {
         var isPortraitMode = $portraitMode.is(':checked');
 
         if (isPortraitMode !== settings.isPortraitMode()) {
-            context.ui.modal.confirm('Orientation Changed'
-                ,  '<p>Change in screen orientation requires new calibration</p>' +
-                   '<p>Are you sure you want to continue?</p>'
-                , {text: "Yes", callback: persist.bind(self)}
-                , {text: "No", callback: discard.bind(self)});
+            context.ui.modal.confirm(context.translate('settings_update_orientation_notification')
+                ,  '<p>' + context.translate('settings_update_orientation_notification_line1') + '</p>' +
+                   '<p>' + context.translate('settings_update_orientation_notification_line2') + '</p>'
+                , {text: context.translate('settings_update_orientation_notification_accept'), callback: persist.bind(self)}
+                , {text: context.translate('settings_update_orientation_notification_reject'), callback: discard.bind(self)});
 
         } else {
             persist();
@@ -123,8 +123,9 @@ function SettingsView(page, context, settings) {
             var screenOrientationChanged = isPortraitMode !== settings.isPortraitMode();
             if (screenOrientationChanged) {
                 setTimeout(function () {
-                    context.ui.modal.alert('Applying changes...', '<p>Your screen will be blank for a few seconds</p>', {
-                        text: "ok",
+                    context.ui.modal.alert(context.translate('settings_update_orientation_notification_applying_changes')
+                        , '<p>' + context.translate('settings_update_orientation_notification_applying_changes_message') + '</p>', {
+                        text: context.translate('settings_update_orientation_notification_applying_changes_acknowledge'),
                         callback: function () {
                             Calibration.clear();
                             window.location.reload();

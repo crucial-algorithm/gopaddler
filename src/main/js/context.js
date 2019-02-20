@@ -9,88 +9,91 @@ var units = {
 
     metric: {
         timer: {
-            label: {regular: "", large: ""},
+            label: {regular: "units_metric_timer_regular", large: "units_metric_timer_large"},
             round: false
         },
         splits: {
-            label: {regular: "", large: ""},
+            label: {regular: "units_metric_splits_regular", large: "units_metric_splits_large"},
             round: false
         },
         speed: {
-            label: {regular: "Km/h", large: "Km/h"},
+            label: {regular: "units_metric_speed_regular", large: "units_metric_speed_large"},
             decimalPlaces: 1
         },
         distance: {
-            label: {regular: "meters", large: "meters"},
+            label: {regular: "units_metric_distance_regular", large: "units_metric_distance_large"},
             decimalPlaces: 2
         },
         spm: {
-            label: {regular: "SPM", large: "SPM"},
+            label: {regular: "units_metric_spm_regular", large: "units_metric_spm_large"},
             decimalPlaces: 1
         },
         efficiency: {
-            label: {regular: "m", large: "meters"},
+            label: {regular: "units_metric_efficiency_regular", large: "units_metric_efficiency_large"},
             decimalPlaces: 1
         },
         pace: {
-            label: {regular: "Min/Km", large: "Min/Km"},
+            label: {regular: "units_metric_pace_regular", large: "units_metric_pace_large"},
             round: false
         },
         heartRate: {
-            label: {regular: "BPM", large: "BPM"},
+            label: {regular: "units_metric_heartRate_regular", large: "units_metric_heartRate_large"},
             decimalPlaces: 0
         },
         distance_in_session_list: {
-            label: {regular: "Km", large: "Km"},
+            label: {regular: "units_metric_distance_in_session_list_regular", large: "units_metric_distance_in_session_list_large"},
             decimalPlaces: 2
         }
     },
     imperial: {
         timer: {
-            label: {regular: "", large: ""},
+            label: {regular: "units_imperial_timer_regular", large: "units_imperial_timer_large"},
             round: false
         },
         splits: {
-            label: {regular: "", large: ""},
+            label: {regular: "units_imperial_splits_regular", large: "units_imperial_splits_large"},
             round: false
         },
         speed: {
-            label: {regular: "Mi/h", large: "Mi/h"},
+            label: {regular: "units_imperial_speed_regular", large: "units_imperial_speed_large"},
             decimalPlaces: 1
         },
         distance: {
-            label: {regular: "Mi", large: "Mi"},
+            label: {regular: "units_imperial_distance_regular", large: "units_imperial_distance_large"},
             decimalPlaces: 2
         },
         spm: {
-            label: {regular: "SPM", large: "SPM"},
+            label: {regular: "units_imperial_spm_regular", large: "units_imperial_spm_large"},
             decimalPlaces: 1
         },
         efficiency: {
-            label: {regular: "ft", large: "ft"},
+            label: {regular: "units_imperial_efficiency_regular", large: "units_imperial_efficiency_large"},
             decimalPlaces: 1
         },
         pace: {
-            label: {regular: "Min/Mi", large: "Min/Mi"},
+            label: {regular: "units_imperial_pace_regular", large: "units_imperial_pace_large"},
             decimalPlaces: 0
         },
         heartRate: {
-            label: {regular: "BPM", large: "BPM"},
+            label: {regular: "units_imperial_heartRate_regular", large: "units_imperial_heartRate_large"},
             round: false
         },
         distance_in_session_list: {
-            label: {regular: "Mi", large: "Mi"},
+            label: {regular: "units_imperial_distance_in_session_list_regular", large: "units_imperial_distance_in_session_list_large"},
             decimalPlaces: 2
         }
     }
 };
 
 
-function Context(settings, environment) {
+function Context(settings, environment, translateFn, language) {
     this._settings = settings;
     this._environment = environment;
     this._system = this._settings.isImperial() ? 'imperial' : 'metric';
     this.ui = new UI(this);
+
+    this._translate = translateFn;
+    this._language = language;
 }
 
 Context.prototype.preferences = function () {
@@ -114,7 +117,7 @@ Context.prototype.isPortraitMode = function () {
 Context.prototype.getUnit = function (type, large) {
     var size = large === true ? "large" : "regular";
 
-    return units[this._system][type].label[size];
+    return this.translate(units[this._system][type].label[size]);
 };
 
 /**
@@ -216,6 +219,13 @@ Context.prototype.render = function (page, template) {
     })
 };
 
+Context.prototype.translate = function(key) {
+    return this._translate(key);
+};
+
+Context.prototype.getLanguage = function() {
+    return this._language;
+}
 
 var UI = function (ctx) {
     return {

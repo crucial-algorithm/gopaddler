@@ -11,7 +11,7 @@
     <button class="{{if isPortraitMode}}portrait-back-button{{/if}}
         app-button left paddler-back" data-back data-manual-back></button>
     <div class="paddler-title">
-        <div class="paddler-title-text">Choose your session</div>
+        <div class="paddler-title-text">{{"select_session_title" | translate}}</div>
     </div>
 </div>
 
@@ -20,13 +20,13 @@
     <div class="select-session-available-sessions-wrapper"></div>
 
     <div class="select-session-play">
-        <div class="selected-session">Free Session</div>
+        <div class="selected-session">{{"select_session_free_session" | translate}}</div>
         <div class="select-session-start">
             <div class="select-session-start-play"></div>
         </div>
         <div class="select-session-free-session-toggle">
             <div class="select-session-start-instantly">
-                Warm up before start
+                {{"select_session_warm_up_before_start" | translate}}
             </div>
             <div style="display:table-cell">
                 <div class="onoffswitch start-immediately-switch">

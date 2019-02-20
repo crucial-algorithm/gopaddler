@@ -18,9 +18,9 @@ function ChooseBoatView(page, context) {
 
         selected = option;
 
-        var action = "Go kayak";
+        var action = context.translate('choose_boat_option_k1');
         if (option === "C")
-            action = "Go canoe";
+            action = context.translate('choose_boat_option_c1');
 
         $action.text(action);
         $action.addClass('enabled');
@@ -33,9 +33,9 @@ function ChooseBoatView(page, context) {
         api.User.saveBoat(selected).then(function () {
             App.load('home');
         }).fail(function () {
-            var title = 'Could not store boat setting';
-            var text = '<p>Please try again later.</p><h6 style="text-align: center">Make sure you are connected to the internet.</h6>';
-            context.ui.modal.alert(title, text, {text: "ok"})
+            var title = context.translate('choose_boat_failed_title');
+            var text = '<p>' + context.translate('choose_boat_failed_retry') + '</p><h6 style="text-align: center">' + context.translate('choose_boat_failed_check_internet') + '</h6>';
+            context.ui.modal.alert(title, text, {text: context.translate('choose_boat_failed_acknowledge')})
         })
     })
 }

@@ -216,5 +216,10 @@ module.exports = {
         , settings_update_orientation_notification_applying_changes_message: "Your screen will be blank for a few seconds"
         , settings_update_orientation_notification_applying_changes_acknowledge: "ok"
 
+        , gps_failed_title_ios: "Unable to determine device location"
+        , gps_failed_title_message_ios: "Please enable Location Services in your device settings"
+        , gps_failed_title_android: "Unable to Acquire GPS Signal"
+        , gps_failed_title_message_android: "Please make sure GPS is enabled in your device settings"
+        , gps_failed_acknowledge: "OK"
     }
 };

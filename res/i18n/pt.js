@@ -47,7 +47,7 @@ module.exports = {
         , settings_menu_version: "Versão"
 
         , blt_screen_title: "Bandas Freq. Cardíaca"
-        , blt_searching: "Bandas Freq. Cardíaca"
+        , blt_searching: "Pesquisar dispositivos Bluetooth"
         , blt_no_devices_found: "Nenhum dispositivo encontrado"
         , blt_no_devices_found_instructions: "Verifique se tem o bluetooth ligado ou"
         , blt_no_devices_found_try_again: "tente de novo"
@@ -215,6 +215,12 @@ module.exports = {
         , settings_update_orientation_notification_applying_changes: "A aplicar alterações..."
         , settings_update_orientation_notification_applying_changes_message: "O ecrã poderá ficar branco por uns instantes"
         , settings_update_orientation_notification_applying_changes_acknowledge: "ok"
+
+        , gps_failed_title_ios: "Localização indesponível"
+        , gps_failed_title_message_ios: "Por favor activa os Serviços de Localização nas definições do teu telemóvel"
+        , gps_failed_title_android: "Falha de sinal GPS"
+        , gps_failed_title_message_android: "Garante que o GPS está ligado nas definições do teu telemóvel"
+        , gps_failed_acknowledge: "OK"
 
     }
 };

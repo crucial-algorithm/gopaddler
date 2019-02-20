@@ -67,14 +67,14 @@ GPS.prototype.start = function() {
 
         var message, title;
         if (device.platform === 'iOS') {
-            title = 'Location is disabled';
-            message = 'Please enable Location Services in <i>Settings > Privacy > Location Services</i> and in <i>Settings > Paddler</i>';
+            title = self.appContext.translate('gps_failed_title_ios');
+            message = self.appContext.translate('gps_failed_title_message_ios');
         } else if (device.platform === 'Android') {
-            title = 'Unable to Acquire GPS Signal';
-            message = 'Please make sure GPS is enabled in <i>Settings > Location</i>';
+            title = self.appContext.translate('gps_failed_title_android');
+            message = self.appContext.translate('gps_failed_title_message_android');
         }
         setTimeout(function () {
-            self.appContext.ui.modal.alert(title, '<p>' + message + '</p>', 'OK');
+            self.appContext.ui.modal.alert(title, '<p>' + message + '</p>', self.appContext.translate("gps_failed_acknowledge"));
         }, 2000);
     };
 

@@ -1,6 +1,6 @@
 'use strict';
 
-var LANGUAGE = 'pt';
+var LANGUAGE = localStorage.getItem('language') || 'en';
 
 // Start handle i18 stuff -------
 var PT = require('../../../res/i18n/pt');
@@ -37,6 +37,7 @@ var LoginWithPassword = require('./views/login.with.password.view').LoginWithPas
 var ChooseBoatView = require('./views/choose.boat.view').ChooseBoatView;
 var DefineGPSSpeedView = require('./views/define.gps.update.rate.view').DefineGPSSpeedView;
 var DefineMaxHeartRateView = require('./views/define.max.heart.rate.view').DefineMaxHeartRateView;
+var DefineLanguageView = require('./views/define.language.view').DefineLanguageView;
 var Api = require('./server/api');
 var utils = require('./utils/utils.js');
 var global = require('./global.js');
@@ -194,6 +195,11 @@ App.controller('define-gps-update-rate', function (page, request) {
 App.controller('define-max-heart-rate', function (page, request) {
     enrichPageArg(page, 'define-max-heart-rate');
     new DefineMaxHeartRateView(page, context);
+});
+
+App.controller('define-language', function (page, request) {
+    enrichPageArg(page, 'define-language');
+    new DefineLanguageView(page, context);
 });
 
 function onDeviceReady() {

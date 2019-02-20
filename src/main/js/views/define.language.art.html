@@ -1,0 +1,19 @@
+<link rel="stylesheet" href="css/portrait.css">
+<link rel="stylesheet" href="css/define.language.css">
+
+
+
+<div class="{{if isPortraitMode}} portrait-paddler-topbar {{/if}} app-topbar paddler-topbar">
+    <button class="{{if isPortraitMode}}portrait-back-button{{/if}}
+        app-button left paddler-back" alt="back" data-back></button>
+    <div class="paddler-title">
+        <div class="paddler-title-text">{{"choose_language_title" | translate}}</div>
+    </div>
+</div>
+<div class="app-content define-language {{if isPortraitMode}} define-language-portrait {{/if}}">
+
+    <ul class="define-language-list">
+        <li data-option="en">{{"choose_language_option_english" | translate}}</li>
+        <li data-option="pt">{{"choose_language_option_portuguese" | translate}}</li>
+    </ul>
+</div>

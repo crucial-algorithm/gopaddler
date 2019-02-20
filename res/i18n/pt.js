@@ -33,6 +33,7 @@ module.exports = {
         , forgot_password_create_account: "Criar conta"
 
         , settings_title: "Definições"
+        , settings_menu_language: "Idioma"
         , settings_menu_type_of_boat: "Tipo de barco"
         , settings_menu_units: "Unidades"
         , settings_menu_black_and_white: "Preto e branco"
@@ -177,6 +178,14 @@ module.exports = {
         , choose_boat_failed_retry: "Por favor tente mais tarde."
         , choose_boat_failed_check_internet: "Verifique a sua ligação à internet."
         , choose_boat_failed_acknowledge: "ok"
+
+        , choose_language_title: "Escolha o idioma"
+        , choose_language_option_english: "English"
+        , choose_language_option_portuguese: "Português"
+
+        , choose_language_restart_app_title: "Idioma alterado"
+        , choose_language_restart_app_message: "Reinicia a aplicação para que as alterações tenham efeito"
+        , choose_language_restart_app_acknowledge: "Ok"
 
         , no_calibration_found_alert_title: "Calibração"
         , no_calibration_found_alert_message_line1: "Antes de remar é necessário calibrar a aplicação para o teu dispositivo!"

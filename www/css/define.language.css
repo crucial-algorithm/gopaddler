@@ -1,0 +1,31 @@
+.define-language {
+    height: 82vh;
+    width: 100vw;
+    background-color: #E4594E;
+    color: #FFFFFF;
+}
+
+.define-language {
+    height: 88vh;
+}
+
+.define-language-list {
+    height: 100%;
+}
+
+.define-language-list > li {
+    height: 22vh;
+    line-height: 22vh;
+    font-size: 10vw;
+    text-align: center;
+    font-weight: bold;
+    text-transform: UPPERCASE;
+}
+
+.define-language-list > li:nth-child(even) {
+    background-color: #EE6156;
+}
+
+.define-language-list > li.selected {
+    background-color: #3b3d62;
+}

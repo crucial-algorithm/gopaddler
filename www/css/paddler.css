@@ -303,7 +303,7 @@ body {
     align-items: center;
 }
 
-.settings-current-gps-rate, .settings-current-max-heart-rate {
+.settings-current-gps-rate, .settings-current-max-heart-rate, .settings-current-language {
     vertical-align: middle;
     width: 35%;
     text-align: right;

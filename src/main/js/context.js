@@ -223,9 +223,13 @@ Context.prototype.translate = function(key) {
     return this._translate(key);
 };
 
+Context.prototype.setLanguage = function(language) {
+    this._language = language;
+};
+
 Context.prototype.getLanguage = function() {
     return this._language;
-}
+};
 
 var UI = function (ctx) {
     return {

@@ -12,7 +12,14 @@
 </div>
 <div class="app-content settings {{if isPortraitMode}} portrait-settings-content {{/if}}">
 
-    <div class="settings-row odd" id="boat">
+    <div class="settings-row odd" id="language">
+        <div class="settings-option heart-rate settings-option-label" >
+            {{ "settings_menu_language" | translate}}
+        </div>
+        <div class="settings-current-language">&nbsp;</div>
+    </div>
+
+    <div class="settings-row" id="boat">
         <div class="settings-option settings-option-label">
             {{"settings_menu_type_of_boat" | translate}}
         </div>
@@ -28,7 +35,7 @@
         </div>
     </div>
 
-    <div class="settings-row" id="units">
+    <div class="settings-row odd" id="units">
         <div class="settings-option settings-option-label">
             {{"settings_menu_units" | translate}}
         </div>
@@ -43,7 +50,7 @@
             <div class="settings-option-switch-label">Mi</div>
         </div>
     </div>
-    <div class="settings-row odd">
+    <div class="settings-row">
         <div class="settings-option settings-option-label">
             {{ "settings_menu_black_and_white" | translate}}
         </div>
@@ -54,7 +61,7 @@
             </div>
         </div>
     </div>
-    <div class="settings-row">
+    <div class="settings-row odd">
         <div class="settings-option settings-option-label">
             {{ "settings_menu_save_session_layout" | translate}}
         </div>
@@ -65,7 +72,7 @@
             </div>
         </div>
     </div>
-    <div class="settings-row odd">
+    <div class="settings-row">
         <div class="settings-option settings-option-label">
             {{ "settings_menu_portrait_mode" | translate}}
         </div>
@@ -76,20 +83,20 @@
             </div>
         </div>
     </div>
-    <div class="settings-row">
+    <div class="settings-row odd">
         <div class="settings-option gps-rate settings-option-label" id="gps-update-rate">
             {{ "settings_menu_gps_refresh_rate" | translate}}
         </div>
         <div class="settings-current-gps-rate">&nbsp;</div>
     </div>
 
-    <div class="settings-row odd">
+    <div class="settings-row">
         <div class="settings-option settings-option-label" id="bluetooth">
             {{ "settings_menu_heart_rate_sensor" | translate}}
         </div>
     </div>
 
-    <div class="settings-row">
+    <div class="settings-row odd">
         <div class="settings-option heart-rate settings-option-label" id="max-heart-rate">
             {{ "settings_menu_max_heart_rate" | translate}}
         </div>

@@ -33,6 +33,7 @@ module.exports = {
         , forgot_password_create_account: "Create an account"
 
         , settings_title: "Settings"
+        , settings_menu_language: "Language"
         , settings_menu_type_of_boat: "Type of boat"
         , settings_menu_units: "Units"
         , settings_menu_black_and_white: "black and white"
@@ -177,6 +178,14 @@ module.exports = {
         , choose_boat_failed_retry: "Please try again later."
         , choose_boat_failed_check_internet: "Make sure you are connected to the internet."
         , choose_boat_failed_acknowledge: "ok"
+
+        , choose_language_title: "Pick your language"
+        , choose_language_option_english: "English"
+        , choose_language_option_portuguese: "Português"
+
+        , choose_language_restart_app_title: "Language changed"
+        , choose_language_restart_app_message: "In order for changes to take effect, please restart GoPaddler app"
+        , choose_language_restart_app_acknowledge: "Ok"
 
         , no_calibration_found_alert_title: "No calibration found"
         , no_calibration_found_alert_message_line1: "Before you start, we need to adjust to your mount system!"

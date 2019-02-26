@@ -1,14 +1,16 @@
 'use strict';
 
 var Api = require('../server/api')
-    , template = require('./signup.art.html');
+    , template = require('./signup.art.html')
+    , Context = require('../context').Context
+;
 
 var $login, $create, $forgot;
 
-function LoginWithPasswordView(page, context) {
+function LoginWithPasswordView(page) {
     screen.orientation.lock('portrait');
 
-    context.render(page, template({isPortraitMode: context.isPortraitMode()}));
+    Context.render(page, template({}));
 
     var $page = $(page), running = false;
 

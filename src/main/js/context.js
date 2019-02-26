@@ -201,7 +201,7 @@ Context.prototype.setServerClockGap = function (gap) {
     return this._settings.setServerClockGap(gap);
 };
 
-Context.prototype.render = function (page, template) {
+var render = function (page, template) {
     var $page = $(page), $content;
     $page.append(template);
 
@@ -218,6 +218,9 @@ Context.prototype.render = function (page, template) {
         App.back();
     })
 };
+
+Context.prototype.render = render;
+Context.render = render;
 
 Context.prototype.translate = function(key) {
     return this._translate(key);

@@ -38,6 +38,7 @@ var ChooseBoatView = require('./views/choose.boat.view').ChooseBoatView;
 var DefineGPSSpeedView = require('./views/define.gps.update.rate.view').DefineGPSSpeedView;
 var DefineMaxHeartRateView = require('./views/define.max.heart.rate.view').DefineMaxHeartRateView;
 var DefineLanguageView = require('./views/define.language.view').DefineLanguageView;
+var ManageCoachView = require('./views/manage.coach.view').ManageCoachView;
 var Api = require('./server/api');
 var utils = require('./utils/utils.js');
 var global = require('./global.js');
@@ -200,6 +201,11 @@ App.controller('define-max-heart-rate', function (page, request) {
 App.controller('define-language', function (page, request) {
     enrichPageArg(page, 'define-language');
     new DefineLanguageView(page, context);
+});
+
+App.controller('manage-coach', function (page, request) {
+    enrichPageArg(page, 'manage-coach');
+    new ManageCoachView(page, context);
 });
 
 function onDeviceReady() {

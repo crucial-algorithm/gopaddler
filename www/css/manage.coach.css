@@ -1,0 +1,154 @@
+.manage-coach {
+    color: #ffffff;
+    background-color: #3b3d62;
+}
+
+.coach-list {
+    height: 82vh;
+    width: 100vw;
+    display: none;
+}
+.add-coach {
+    display: flex;
+    width: 100vw;
+}
+
+.add-coach > input {
+    width: 60vw;
+    margin: auto;
+    height: 30px;
+    font-family: 'Courier New', Helvetica;
+    font-size: 26px;
+    font-weight: 900;
+    border: 0;
+    border-radius: 20px;
+    padding: 5px;
+    text-align: center;
+}
+
+.add-coach > input:focus {
+    outline-width: 0;
+}
+
+.portrait-app-content > .coach-list {
+    height: 60vh;
+    width: 100vw;
+}
+
+.coach-list > li {
+    height: 20vh;
+    line-height: 20vh;
+    text-align: center;
+    padding-right: 5vw;
+    width: 100vw;
+    background-color: #313455;
+    color: #ffffff;
+    font-size: 8vh;
+    text-transform: UPPERCASE;
+}
+
+
+.coach-list > li.odd {
+    background-color: #2C2D49;
+}
+
+li.coach-list-device.success {
+    background-color: #4B946A;
+}
+
+.manage-coach > h3 {
+    margin-top: 30vh;
+    text-align: center;
+    font-weight: 600;
+}
+
+.manage-coach > p {
+    text-align: center;
+    margin: 2vw;
+}
+
+[data-selector="no-coach"] {
+    display: none;
+}
+
+/* Devices list */
+li.coach-list-device {
+    white-space: nowrap;
+    height: 64px;
+    line-height: 64px;
+    font-size: 16px;
+    color: #3b3d62;
+}
+.coach-list-row-data-wrapper {
+    display: inline-block;
+    width: 100%;
+}
+
+.coach-list-row-actions {
+    display: inline-block;
+    width: 40%;
+    background-color: #EE6156;
+    color: #ffffff;
+    text-transform: UPPERCASE;
+    text-align: center;
+    vertical-align: top;
+    margin-left: -4px;
+}
+
+.coach-list-row-data {
+    display: table;
+    width: 100%;
+    height: 64px;
+    line-height: 64px;
+    text-transform: uppercase;
+}
+
+.coach-list-row-column {
+    display: table-cell;
+    height: 100%;
+    max-width: 50%;
+    line-height: 100%;
+    vertical-align: middle;
+    text-align: center;
+    font-size: 14px;
+    padding-left: 5px;
+}
+
+.coach-list-column-label {
+    text-transform: uppercase;
+    font-size: 10px;
+    color: #7e8c8d;
+    display: block;
+    padding-bottom: 6px;
+}
+
+.coach-list-column-value {
+    display: inline-block;
+    width: 100%;
+    padding-left: 20px;
+}
+
+
+
+.coach-list-search.progress-line {
+    background-color: #EE6156;
+    height: 1vh;
+    display: none;
+    position: fixed;
+    bottom: 0;
+}
+
+.coach-list-search.progress-line:before {
+    height: 1vh;
+}
+
+.bluetooth > div.bluetooth-scan-button.bluetooth-scan-active {
+    background-color: #4B946A;
+}
+
+.coach-list-search.bluetooth-scan-active {
+    display:flex;
+}
+.coach-list  .ptr--icon,  .coach-list  .ptr--text{
+    color: #FFFFFF;
+}

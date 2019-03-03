@@ -33,6 +33,7 @@ module.exports = {
         , forgot_password_create_account: "Create an account"
 
         , settings_title: "Settings"
+        , settings_menu_coach: "Coach"
         , settings_menu_language: "Language"
         , settings_menu_type_of_boat: "Type of boat"
         , settings_menu_units: "Units"

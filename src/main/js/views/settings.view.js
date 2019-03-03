@@ -18,6 +18,7 @@ function SettingsView(page, context, settings) {
         , $calibrationHelp = $('.settings-calibrate-help', page)
         , $gpsUpdateRate = $('#gps-update-rate', page)
         , $language = $('#language', page)
+        , $coach = $('#coach', page)
         , $maxHeartRate = $('#max-heart-rate', page)
         , $layout = $('#layout', page)
         , $portraitMode = $('#portrait-mode', page);
@@ -64,6 +65,10 @@ function SettingsView(page, context, settings) {
 
     $language.on('tap', function () {
         App.load('define-language');
+    });
+
+    $coach.on('tap', function () {
+        App.load('manage-coach');
     });
 
     $logout.on('tap', function () {

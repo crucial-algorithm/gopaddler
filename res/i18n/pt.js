@@ -33,6 +33,7 @@ module.exports = {
         , forgot_password_create_account: "Criar conta"
 
         , settings_title: "Definições"
+        , settings_menu_coach: "Treinadores"
         , settings_menu_language: "Idioma"
         , settings_menu_type_of_boat: "Tipo de barco"
         , settings_menu_units: "Unidades"
@@ -46,6 +47,12 @@ module.exports = {
         , settings_menu_calibrate_how_to: "Instruções"
         , settings_menu_logout: "Sair"
         , settings_menu_version: "Versão"
+
+        , manage_coach_title: "Gestão de Treinadores"
+        , manage_coach_no_coach_found: "Nenhum treinador encontrado"
+        , manage_coach_label_coach_name: "Treinador"
+        , manage_coach_label_added_at: "Desde"
+        , manage_coach_action_remove: "Abandonar"
 
         , blt_screen_title: "Bandas Freq. Cardíaca"
         , blt_searching: "Pesquisar dispositivos Bluetooth"

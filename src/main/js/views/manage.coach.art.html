@@ -1,6 +1,10 @@
-<link rel="stylesheet" href="css/portrait.css">
 <link rel="stylesheet" href="css/manage.coach.css">
 
+{{if isPortraitMode}}
+<link rel="stylesheet" href="css/portrait.css">
+{{else}}
+<link rel="stylesheet" href="css/manage.coach.landscape.css">
+{{/if}}
 
 
 <div class="{{if isPortraitMode}} portrait-paddler-topbar {{/if}} app-topbar paddler-topbar">
@@ -10,14 +14,17 @@
     </div>
 </div>
 
-<div class="app-content manage-coach {{if isPortraitMode}} portrait-app-content {{/if}}">
-    <div class="coach-before-server-response">{{manage_coach_loading}}</div>
-    <div id="coach-list-header" class="manage-coach-list-header">{{"manage_coach_list_header" | translate}}</div>
-    <div id="coach-list" class="manage-coach-list">&nbsp;</div>
+<div class="app-content manage-coach {{if isPortraitMode}} portrait-app-content portrait {{else}} landscape {{/if}}">
+    <div class="coach-before-server-response">{{"manage_coach_loading" | translate}}</div>
+    <div id="coach-loading" class="manage-coach-server-call progress-line"></div>
+
+    <div class="coach-list-container">
+        <div id="coach-list-header" class="manage-coach-list-header">{{"manage_coach_list_header" | translate}}</div>
+        <div id="coach-list" class="manage-coach-list">&nbsp;</div>
+    </div>
     <div id="coach-actions" class="manage-coach-actions">
         <label>{{"manage_coach_add_another_coach" | translate}}</label>
         <input id="code" type="tel" class="add-coach" name="code" max="999999" min="100000" placeholder="{{'manage_coach_add_code_placeholder' | translate}}"/>
         <div id="button" class="manage-coach-actions-button-connect">{{"manage_coach_connect_button" | translate}}</div>
     </div>
-    <div id="coach-loading" class="manage-coach-server-call progress-line"></div>
 </div>

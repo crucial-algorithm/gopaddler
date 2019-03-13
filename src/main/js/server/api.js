@@ -666,7 +666,7 @@ exports.DebugSessions = {
 exports.Server = {
 
     connect: function () {
-        console.log('connect to server');
+        console.debug('connect to server');
 
         if (!Utils.isNetworkConnected()) return;
 

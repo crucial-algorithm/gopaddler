@@ -66,6 +66,7 @@ module.exports = {
         , manage_coach_no_internet: "Falhou a ligação à internet. Liga a internet e tenta novamente."
         , manage_coach_no_server_found: "Falhou a comunicação com o servidor. Por favor tenta mais tarde."
         , manage_coach_unexpected_error: "Ocorreu um erro imprevisto. Por favor tenta mais tarde."
+        , manage_coach_loading: "A carregar informação do servidor..."
 
         , blt_screen_title: "Bandas Freq. Cardíaca"
         , blt_searching: "Pesquisar dispositivos Bluetooth"

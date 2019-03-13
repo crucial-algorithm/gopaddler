@@ -1,0 +1,56 @@
+.manage-coach.landscape {
+}
+
+.landscape .manage-coach-list {
+    width: 50vw;
+    height: 82vh;
+}
+
+.landscape .manage-coach-list > h1 {
+    width: 40vw;
+    margin: auto;
+    height: 82vh;
+    display: flex;
+    color: #3b3d62;
+    font-weight: 900;
+}
+
+.landscape .manage-coach-actions {
+    width: 50vw;
+    height: 82vh;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+}
+
+.landscape .manage-coach-actions > .add-coach {
+    width: 40vw;
+    margin-bottom: 20px;
+}
+
+.landscape .manage-coach-actions-button-connect {
+    width: 42vw;
+    border-radius: 21vw;
+}
+
+.landscape .coach-list-container {
+    width: 50vw;
+    height: 82vh;
+    float: right;
+    background-color: #F8F8F8;
+    color: #848484;
+}
+
+.landscape .coach-before-server-response {
+    height: 82vh;
+    width: 100vw;
+}
+
+p.landscape.manage-coach-confirm-coach-name {
+    margin: 0;
+}
+
+p.manage-coach.landscape {
+    line-height: 30px;
+}
+

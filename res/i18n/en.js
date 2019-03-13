@@ -66,6 +66,7 @@ module.exports = {
         , manage_coach_no_internet: "Internet connection failed. Connected to the internet and try again."
         , manage_coach_no_server_found: "Failed to connect to server. Please try again later."
         , manage_coach_unexpected_error: "Unexpected error occurred. Please try again later."
+        , manage_coach_loading: "loading coach data from server..."
 
         , blt_screen_title: "Heart Rate Monitors"
         , blt_searching: "Searching for Bluetooth devices"

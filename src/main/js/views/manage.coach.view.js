@@ -143,10 +143,10 @@ ManageCoachView.prototype.render = function (coaches) {
 ManageCoachView.prototype.showConnectToCoachWarning = function (coach, id) {
     var self = this;
     var message = [
-        '<p>' + self.appContext.translate('manage_coach_confirm_statement') + '</p>',
-        '<p class="manage-coach-confirm-coach-name">' + coach + '</p>',
-        '<p>' + self.appContext.translate('manage_coach_confirm_question') + '</p>'
-    ].join('');
+        '<p class="manage-coach {landscape}">' + self.appContext.translate('manage_coach_confirm_statement') + '</p>',
+        '<p class="manage-coach-confirm-coach-name {landscape}">' + coach + '</p>',
+        '<p class="manage-coach {landscape}">' + self.appContext.translate('manage_coach_confirm_question') + '</p>'
+    ].join('').replace(new RegExp('{landscape}', 'g'), this.appContext.isPortraitMode() ? '' : 'landscape');
 
     self.appContext.ui.modal.confirm('', message
         , {

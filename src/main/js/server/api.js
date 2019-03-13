@@ -209,6 +209,13 @@ function _call() {
         return defer.promise();
     }
 
+    if (asteroid.failedConnectAttempts > 0 && asteroid.lastFailedConnectionAttempt > 0 && asteroid.lastFailedConnectionAttempt - Date.now() < 60000) {
+        setTimeout(function () {
+            defer.reject({error: 502, reason: "connection to server failed"});
+        }, 0);
+        return defer.promise();
+    }
+
     asteroid.call.apply(asteroid, arguments).then(function (response) {
 
         defer.resolve(response);
@@ -424,6 +431,22 @@ exports.User = {
         return asteroid.user.hasCoach === true;
     },
 
+    listCoaches: function () {
+        return _call("listAthleteCoaches");
+    },
+
+    getCoachInfo: function(code) {
+        return _call("getCoachInfo", code)
+    },
+
+    leaveCoachTeam: function(coachId) {
+        return _call("leaveCoachTeam", coachId)
+    },
+
+    joinCoachTeam: function (code) {
+        return _call("joinCoachTeam", code)
+    },
+
     acceptRequest: function (coachUserId) {
         _acceptCoachRequest();
         return _call('respondToCoachRequest', coachUserId, true);
@@ -437,7 +460,7 @@ exports.User = {
     isLiveUpdate: isLiveUpdate,
 
     listenForCoachRequests: function (callback) {
-        asteroid.subscribe('users.requests');
+        if (asteroid.subscribe)  asteroid.subscribe('users.requests');
         if (typeof callback === 'function') {
             onCoachRequest = callback;
         }
@@ -640,10 +663,10 @@ exports.DebugSessions = {
     }
 };
 
-
 exports.Server = {
 
     connect: function () {
+        console.log('connect to server');
 
         if (!Utils.isNetworkConnected()) return;
 
@@ -653,10 +676,17 @@ exports.Server = {
 
         asteroid.on('connected', function () {
             connected = true;
+            asteroid.failedConnectAttempts = 0;
+            asteroid.lastFailedConnectionAttempt = null;
+            console.debug('connection established');
         });
 
         asteroid.on('disconnected', function () {
             connected = false;
+            if (asteroid.failedConnectAttempts === undefined) asteroid.failedConnectAttempts = 0;
+            asteroid.failedConnectAttempts++;
+            asteroid.lastFailedConnectionAttempt = Date.now();
+            console.debug('connection failed', asteroid.failedConnectAttempts);
         });
 
         asteroid.on('loggedIn', function () {

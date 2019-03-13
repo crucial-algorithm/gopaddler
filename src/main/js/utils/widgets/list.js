@@ -1,11 +1,12 @@
 var utils = require("../utils");
 
-function List(page, options) {
+function List(page, options, context) {
     var self = this;
     var id = "s" + utils.guid().split('-')[4];
     this.$elem = options.$elem;
     options.ptr = options.ptr || {};
     this.$elem.css("overflow", "scroll");
+    self.appContext = context;
 
     this.$elem.append($([
         '<div id=' + id + '/>',
@@ -50,10 +51,13 @@ function List(page, options) {
                 self.pullToRefreshInstance.destroy();
             } catch (err) {
                 self.pullToRefreshInstance = null;
-                console.log('err caught');
+                console.log('err caught', err);
             }
         }
     });
+
+    self.progress = {};
+    self.lock = {};
 }
 
 List.prototype.rows = function($rows) {
@@ -86,15 +90,111 @@ List.prototype.clear = function () {
 };
 
 List.prototype.destroy = function () {
-    this.pullToRefreshInstance.destroy();
     this.$elem.empty();
+    this.pullToRefreshInstance.destroy();
 };
 
+/**
+ * @deprecated by newRow (handles confirm delete auto of the box)
+ * @param $row
+ * @param stripped
+ */
 List.prototype.appendRow = function ($row, stripped) {
     if (stripped === true)
         this.$ul.append($row);
     else
         this.$ul.append($row.attr('data-selector', 'row'));
 };
+
+
+/**
+ * New method for appendRow that also adds the progress li for row actions confirm
+ * @param $row
+ */
+List.prototype.newRow = function ($row) {
+    this.$ul.append($row.attr('data-selector', 'row'));
+    this.$ul.append($('<li style="display: none;"><div class="progress-line" style="width:1%;"></div></li>'));
+    this.$ul.append($('<li style="width:1%;height:0;"></li>'));
+};
+
+List.prototype.delete = function ($button, id, callback) {
+    if (this.lock[id] === true) {
+        return this._cancelAction($button, id);
+    }
+    this._animateAction($button, id, callback || function(){});
+};
+
+List.prototype._animateAction = function ($button, id, callback) {
+    var self = this;
+    self.lock[id] = true;
+
+    // add progress in order to wait for delete
+    var $parent = $button.closest('li');
+    var $li = $parent.next();
+    var $progress = $li.find('div');
+    var actionId = utils.guid();
+
+    self.progress[id] = {$dom: $progress, $li: $li, start: new Date().getTime(), id: actionId, text: $button.text()};
+
+    $button.addClass('cancel');
+    $parent.addClass('cancel');
+    $button.text(self.appContext.translate('cancel'));
+    $li.show();
+    $progress.css("width", "1%");
+
+
+    $({
+        property: 0
+    }).animate({
+        property: 100
+    }, {
+        duration: 5000,
+        step: function () {
+            var _percent = Math.round(this.property);
+            $progress.css("width", _percent + "%");
+        },
+        complete: function () {
+            if (self.lock[id] !== true || self.progress[id].id !== actionId) return;
+            $li.hide();
+            $parent.removeClass('cancel');
+            var result = callback.apply(self, [/* row = */ $parent, /* progress = */ $li, /*spacer = */ $li.next()]);
+            var defer = $.Deferred();
+            defer.then(function (success) {
+                if (success !== true) return;
+
+                $li.next().remove();
+                $li.remove();
+                $parent.remove();
+            });
+
+            if (result === undefined) {
+                return defer.resolve(true);
+            }
+
+            if (typeof result === "boolean") {
+                // implementation of common behaviour of returning true to stop execution chain
+                return defer.resolve(result === true)
+            }
+
+            if (typeof result.then === "function") {
+                result.then(function (result) {
+                    if (result) return defer.resolve(result === true);
+                    defer.resolve(true);
+                });
+            }
+        }
+    });
+};
+
+List.prototype._cancelAction = function($button, id) {
+    var self = this, progress = self.progress[id];
+    $button.removeClass('cancel');
+    $button.closest('li').removeClass('cancel');
+    $button.text(progress.text);
+    progress.$li.hide();
+    progress.$dom.stop();
+    self.lock[id] = false;
+};
+
 
 exports.List = List;

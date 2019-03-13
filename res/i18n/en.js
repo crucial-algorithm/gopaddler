@@ -48,6 +48,25 @@ module.exports = {
         , settings_menu_logout: "Logout"
         , settings_menu_version: "Version"
 
+        , manage_coach_title: "Coach management"
+        , manage_coach_no_coach_found: "You are not part of a team! Ask your coach for his code for you to join his team."
+        , manage_coach_action_remove: "Leave"
+        , manage_coach_add_code_placeholder: "code"
+        , manage_coach_confirm_statement: "Your are joining the team coached by:"
+        , manage_coach_confirm_question: "Is that ok?"
+        , manage_coach_confirm_proceed: "Yes"
+        , manage_coach_confirm_cancel: "No"
+        , manage_coach_request_unknown_code: "Unknown code"
+        , manage_coach_request_unknown_code_message: "Check the typed code matches the one shared by your coach and try again"
+        , manage_coach_request_unknown_code_acknowledge: "OK"
+        , manage_coach_list_header: "You belong to the following teams:"
+        , manage_coach_connect_button: "Connect"
+        , manage_coach_add_another_coach: "Add new coach?"
+        , manage_coach_pending: "Pending coach acceptance"
+        , manage_coach_no_internet: "Internet connection failed. Connected to the internet and try again."
+        , manage_coach_no_server_found: "Failed to connect to server. Please try again later."
+        , manage_coach_unexpected_error: "Unexpected error occurred. Please try again later."
+
         , blt_screen_title: "Heart Rate Monitors"
         , blt_searching: "Searching for Bluetooth devices"
         , blt_no_devices_found: "No devices found"
@@ -231,5 +250,7 @@ module.exports = {
         , gps_failed_title_android: "Unable to Acquire GPS Signal"
         , gps_failed_title_message_android: "Please make sure GPS is enabled in your device settings"
         , gps_failed_acknowledge: "OK"
+
+        , cancel: "Cancel"
     }
 };

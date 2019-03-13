@@ -3,39 +3,99 @@
     background-color: #3b3d62;
 }
 
-.coach-list {
-    height: 82vh;
+p.manage-coach-confirm-coach-name {
+    font-size: 24px;
+    font-weight: 900;
+    margin: 10px auto 16px;
+}
+
+.manage-coach-list {
+    height: 40vh;
     width: 100vw;
     display: none;
 }
-.add-coach {
-    display: flex;
-    width: 100vw;
+
+.manage-coach-server-call {
+    position: fixed;
+    bottom: 0;
+    height: 6px;
+    background-color: #EE6156;
 }
 
-.add-coach > input {
-    width: 60vw;
-    margin: auto;
-    height: 30px;
-    font-family: 'Courier New', Helvetica;
+.add-coach {
+    width: 86vw;
+    margin: 0 auto 40px auto;
+    height: 60px;
+    font-family: 'Roboto', Helvetica;
     font-size: 26px;
-    font-weight: 900;
+    font-weight: 700;
     border: 0;
-    border-radius: 20px;
+    border-radius: 30px;
     padding: 5px;
     text-align: center;
+    color: #A7A7A7;
+    text-transform: uppercase;
+    letter-spacing: 6px;
 }
 
-.add-coach > input:focus {
+.manage-coach-actions-button-connect {
+    cursor: pointer;
+    height: 40px;
+    width: 84vw;
+    margin: 0 auto;
+    border-radius: 20px;
+    font-size: 20px;
+    background-color: #71B57B;
+    text-transform: uppercase;
+    text-align: center;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+}
+
+.add-coach:focus {
     outline-width: 0;
 }
 
-.portrait-app-content > .coach-list {
-    height: 60vh;
-    width: 100vw;
+.manage-coach-actions {
+    height: 40vh;
+    display: none;
+    flex-direction: column;
 }
 
-.coach-list > li {
+.manage-coach-actions > label {
+    display: none;
+}
+
+.manage-coach-actions.manage-coach-actions-when-has-coaches {
+    align-items: center;
+    justify-content: center;
+}
+
+.manage-coach-actions.manage-coach-actions-when-has-coaches > label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    font-size: 20px;
+}
+
+
+.manage-coach-list > h1 {
+    color: #FFFFFF;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    height: 40vh;
+    justify-content: center;
+    font-weight: normal;
+    width: 84vw;
+    margin: auto;
+    text-align: center;
+}
+
+.manage-coach-list > li {
     height: 20vh;
     line-height: 20vh;
     text-align: center;
@@ -48,11 +108,11 @@
 }
 
 
-.coach-list > li.odd {
+.manage-coach-list > li.odd {
     background-color: #2C2D49;
 }
 
-li.coach-list-device.success {
+li.manage-coach-list-device.success {
     background-color: #4B946A;
 }
 
@@ -72,19 +132,30 @@ li.coach-list-device.success {
 }
 
 /* Devices list */
-li.coach-list-device {
+li.manage-coach-list-coach {
     white-space: nowrap;
     height: 64px;
     line-height: 64px;
     font-size: 16px;
     color: #3b3d62;
 }
-.coach-list-row-data-wrapper {
+
+.manage-coach-list-header {
+    height: 10vh;
+    background-color: #CCCCD3;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    color: #495164;
+}
+
+.manage-coach-list-row-data-wrapper {
     display: inline-block;
     width: 100%;
 }
 
-.coach-list-row-actions {
+.manage-coach-list-row-actions {
     display: inline-block;
     width: 40%;
     background-color: #EE6156;
@@ -95,60 +166,46 @@ li.coach-list-device {
     margin-left: -4px;
 }
 
-.coach-list-row-data {
+.manage-coach-list-row-data {
     display: table;
     width: 100%;
     height: 64px;
     line-height: 64px;
     text-transform: uppercase;
 }
-
-.coach-list-row-column {
-    display: table-cell;
-    height: 100%;
-    max-width: 50%;
-    line-height: 100%;
-    vertical-align: middle;
-    text-align: center;
-    font-size: 14px;
-    padding-left: 5px;
-}
-
-.coach-list-column-label {
-    text-transform: uppercase;
-    font-size: 10px;
-    color: #7e8c8d;
-    display: block;
-    padding-bottom: 6px;
-}
-
-.coach-list-column-value {
+.manage-coach-list-row-data {
     display: inline-block;
     width: 100%;
+}
+
+.manage-coach-list-name {
+    font-size: 20px;
+    font-weight: 900;
+    text-transform: capitalize;
     padding-left: 20px;
 }
 
+.manage-coach-list-pending {
+    font-size: 12px;
+    line-height: 12px;
+    color: #848484;
+    text-transform: lowercase;
+}
 
-
-.coach-list-search.progress-line {
+.manage-coach-list-drag-hint {
+    width: 10px;
     background-color: #EE6156;
-    height: 1vh;
-    display: none;
-    position: fixed;
-    bottom: 0;
+    height: 100%;
+    float: right;
 }
 
-.coach-list-search.progress-line:before {
-    height: 1vh;
-}
-
-.bluetooth > div.bluetooth-scan-button.bluetooth-scan-active {
-    background-color: #4B946A;
-}
-
-.coach-list-search.bluetooth-scan-active {
-    display:flex;
-}
-.coach-list  .ptr--icon,  .coach-list  .ptr--text{
-    color: #FFFFFF;
+.coach-before-server-response {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    height: 90vh;
+    width: 80vw;
+    margin: auto;
+    font-size: 20px;
 }

@@ -129,7 +129,7 @@ li.bluetooth-devices-device {
 
 .bluetooth-devices-search.progress-line {
     background-color: #EE6156;
-    height: 1vh;
+    height: 6px;
     display: none;
     position: fixed;
     bottom: 0;

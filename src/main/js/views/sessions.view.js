@@ -35,13 +35,9 @@ var LAST_30_DAYS_PERIOD_FILTER = 'last-30-days',
  * Add given session to the list of sessions
  *
  * @param {array} sessions
+ * @param {Context} context
  */
 function addSessionsToSessionList(sessions, context) {
-    var totalDistance = 0.0,
-        totalDuration = 0,
-        totalSPM = 0.0,
-        totalLength = 0.0;
-
 
     if (sessions.length === 0) {
         sessionsListWidget.clear();
@@ -124,25 +120,8 @@ function addSessionsToSessionList(sessions, context) {
             });
         });
 
-        // add to totals
-        var x = session.getSessionEnd() - session.getSessionStart();
-        totalDistance += distance;
-        totalDuration += x;
-        totalSPM += (x * session.getAvgSpm());
-        totalLength += (x * session.getAvgEfficiency());
-
-
-        sessionsListWidget.appendRow($li, false);
-        sessionsListWidget.appendRow($('<li style="display: none;"><div class="progress-line" style="width:1%;"></div></li>'), true);
-        sessionsListWidget.appendRow($('<li style="width:1%;height:0;"></li>'), true);
+        sessionsListWidget.newRow($li, false);
     });
-
-    // update summary
-
-    $summaryDistance.text(utils.round2(totalDistance));
-    $summarySpeed.text(utils.round2(totalDistance / (totalDuration / 3600000)));
-    $summarySPM.text(Math.round(totalSPM / totalDuration));
-    $summaryLength.text(utils.round2(totalLength / totalDuration));
 
     setTimeout(function () {
         sessionsListWidget.refresh();
@@ -150,12 +129,33 @@ function addSessionsToSessionList(sessions, context) {
 
 }
 
+function updateGlobalStats(sessions, context) {
+    var totalDistance = 0.0,
+        totalDuration = 0,
+        totalSPM = 0.0,
+        totalLength = 0.0;
+
+    sessions.forEach(function (session) {
+        var duration = moment.duration(session.getSessionEnd() - session.getSessionStart());
+        totalDistance += session.getDistance();
+        totalDuration += duration;
+        totalSPM += (duration * session.getAvgSpm());
+        totalLength += (duration * session.getAvgEfficiency());
+    });
+
+    $summaryDistance.text(utils.round2(totalDistance));
+    $summarySpeed.text(utils.round2(totalDistance / (totalDuration / 3600000)));
+    $summarySPM.text(Math.round(totalSPM / totalDuration));
+    $summaryLength.text(utils.round2(totalLength / totalDuration));
+}
+
 /**
  * Filter list of sessions by the selected filter
  *
  * @param {Context} context
+ * @param {boolean} onlyUpdateGlobals
  */
-function filterSessionsByPeriod(context) {
+function filterSessionsByPeriod(context, onlyUpdateGlobals) {
     var $sessionPeriodFilterButton = $page.find('#session-period-filter-button'),
         calendarValues;
 
@@ -201,11 +201,13 @@ function filterSessionsByPeriod(context) {
     // adjust sessions according to chosen period
     if (selectedFilter === START_FROM_PERIOD_FILTER) {
         Session.getFromDate(filterStartDate.valueOf(), function (sessions) {
-            addSessionsToSessionList(sessions, context);
+            if (onlyUpdateGlobals !== true) addSessionsToSessionList(sessions, context);
+            updateGlobalStats(sessions, context);
         });
     } else {
         Session.getForDates(filterStartDate.valueOf(), filterEndDate.valueOf(), function (sessions) {
-            addSessionsToSessionList(sessions, context);
+            if (onlyUpdateGlobals !== true) addSessionsToSessionList(sessions, context);
+            updateGlobalStats(sessions, context);
         });
     }
 }
@@ -341,7 +343,7 @@ function setupSessionFilter($page, context) {
 
     // filter session when apply is tapped
     $sessionFilterApplyButton.on('tap', function () {
-        filterSessionsByPeriod(context);
+        filterSessionsByPeriod(context, false);
         $sessionPeriodFilter.toggle();
     });
 }
@@ -423,20 +425,20 @@ function SessionsView(page, context) {
                     self.uploadUnsyncedSessions($page);
                 }
             }
-        });
+        }, context);
 
-        filterSessionsByPeriod(context);
+        filterSessionsByPeriod(context, false);
 
         $page.on('touchstart', '.session-row-delete-btn', function (e) {
             var $el = $(event.target);
             var sessionId = $el.attr('session-id');
-
-            if (self.lock[sessionId] === true) {
-                self.cancelDelete($el, sessionId);
-                return;
-            }
-
-            self.confirmDelete($el, sessionId);
+            sessionsListWidget.delete($el, sessionId, function () {
+                return Session.delete(parseInt(sessionId))
+                    .then(function () {
+                        sessionsListWidget.refresh();
+                        filterSessionsByPeriod(appContext, true);
+                    });
+            });
             e.preventDefault();
             e.stopImmediatePropagation();
         });
@@ -453,45 +455,6 @@ function SessionsView(page, context) {
         });
     });
 }
-
-
-SessionsView.prototype.confirmDelete = function ($button, sessionId) {
-    var self = this;
-
-    self.lock[sessionId] = true;
-
-    // change button to cancel
-    $button.addClass('cancel');
-    $button.text('cancel');
-
-    animateDeleteAction.apply(self, [$button, sessionId, function ($row, $progress, $spacer) {
-        Session.delete(parseInt(sessionId))
-            .then(function () {
-
-                if (self.lock[sessionId] !== true || new Date().getTime() - self.progress[sessionId].start < 5000) {
-                    return;
-                }
-
-                $row.remove();
-                $progress.remove();
-                $spacer.remove();
-                sessionsListWidget.refresh();
-
-                filterSessionsByPeriod(appContext);
-
-                self.lock[sessionId] = false;
-            });
-    }]);
-};
-
-SessionsView.prototype.cancelDelete = function ($button, sessionId) {
-    var self = this;
-    self.lock[sessionId] = false;
-    $button.removeClass('cancel');
-    $button.text('delete');
-    self.progress[sessionId].$li.hide();
-    self.progress[sessionId].$dom.stop();
-};
 
 SessionsView.prototype.uploadSession = function ($button, session) {
     var defer = $.Deferred();

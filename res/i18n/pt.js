@@ -49,10 +49,23 @@ module.exports = {
         , settings_menu_version: "Versão"
 
         , manage_coach_title: "Gestão de Treinadores"
-        , manage_coach_no_coach_found: "Nenhum treinador encontrado"
-        , manage_coach_label_coach_name: "Treinador"
-        , manage_coach_label_added_at: "Desde"
+        , manage_coach_no_coach_found: "Não fazes parte de nenhuma equipa! Solicita o código ao teu treinador para te juntares à equipa dele."
         , manage_coach_action_remove: "Abandonar"
+        , manage_coach_add_code_placeholder: "código"
+        , manage_coach_confirm_statement: "Estás a tentar juntar-te à equipa do treinador:"
+        , manage_coach_confirm_question: "Tens a certeza?"
+        , manage_coach_confirm_proceed: "Sim"
+        , manage_coach_confirm_cancel: "Não"
+        , manage_coach_request_unknown_code: "Código desconhecido"
+        , manage_coach_request_unknown_code_message: "Confirma o código partilhado pelo teu treinador e tenta novamente"
+        , manage_coach_request_unknown_code_acknowledge: "OK"
+        , manage_coach_list_header: "Pertences à equipa dos seguintes treinadores:"
+        , manage_coach_connect_button: "Conectar"
+        , manage_coach_add_another_coach: "Adicionar novo treinador?"
+        , manage_coach_pending: "pendente do treinador"
+        , manage_coach_no_internet: "Falhou a ligação à internet. Liga a internet e tenta novamente."
+        , manage_coach_no_server_found: "Falhou a comunicação com o servidor. Por favor tenta mais tarde."
+        , manage_coach_unexpected_error: "Ocorreu um erro imprevisto. Por favor tenta mais tarde."
 
         , blt_screen_title: "Bandas Freq. Cardíaca"
         , blt_searching: "Pesquisar dispositivos Bluetooth"
@@ -237,6 +250,9 @@ module.exports = {
         , gps_failed_title_android: "Falha de sinal GPS"
         , gps_failed_title_message_android: "Garante que o GPS está ligado nas definições do teu telemóvel"
         , gps_failed_acknowledge: "OK"
+
+
+        , cancel: "Cancelar"
 
     }
 };

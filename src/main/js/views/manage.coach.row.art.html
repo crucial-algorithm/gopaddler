@@ -1,18 +1,19 @@
-<li class="coach-list-device">
-    <div class="coach-list-row">
-        <div class="coach-list-row-data-wrapper">
-            <div class="coach-list-row-data">
-                <div class="coach-list-row-column">
-                    <label class="coach-list-column-label">{{"manage_coach_label_coach_name" | translate}}</label> {{coach}}
-                </div>
-                <div class="coach-list-row-column">
-                    <label class="coach-list-column-label">{{"manage_coach_label_added_at" | translate}}</label> {{since}}
+<li class="manage-coach-list-coach">
+    <div class="manage-coach-list-row">
+        <div class="manage-coach-list-row-data-wrapper">
+            <div class="manage-coach-list-row-data">
+                <div class="manage-coach-list-name">
+                    {{coach}}
+                    {{if pending}}
+                        <span class="manage-coach-list-pending">({{"manage_coach_pending" | translate}})</span>
+                    {{/if}}
+                    <div class="list-drag-hint">&nbsp;</div>
                 </div>
             </div>
         </div>
-        <div class="coach-list-row-actions">
-            <div class="coach-list-device-forget"
-                 data-paired="{{isPaired}}" data-address="{{id}}">{{"manage_coach_action_remove" | translate}}</div>
+        <div class="manage-coach-list-row-actions">
+            <div class="manage-coach-list-device-forget list-row-delete-btn"
+                 data-paired="{{isPaired}}" data-coach="{{id}}">{{"manage_coach_action_remove" | translate}}</div>
         </div>
     </div>
 </li>

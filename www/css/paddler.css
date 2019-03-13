@@ -54,6 +54,14 @@ body {
     border: 0;
 }
 
+.app-topbar .app-button[data-back].left.paddler-back:visited
+, .app-topbar .app-button[data-back].left.paddler-back:active
+, .app-topbar .app-button[data-back].left.paddler-back:focus
+{
+    outline:none;
+    border: 0;
+}
+
 .app-content.settings {
     height: 100%;
     background-color: #2C2D49
@@ -182,13 +190,13 @@ body {
     width: 50%;
     text-align: center;
     text-transform: uppercase;
-    background-color: #7E8C8D;
+    background-color: #EF6155;
 }
 
 .info-modal-primary-action {
     display: table-cell;
     text-align: center;
-    background-color: #F59146;
+    background-color: #71B57B;
     text-transform: uppercase;
     font-weight: bold;
 }
@@ -542,7 +550,7 @@ div[aria-live="polite"],  div[aria-live="polite"] > .slick-track{
 }
 
 .progress-line, .progress-line:before {
-    height: 3px;
+    height: 6px;
     width: 100%;
     margin: 0;
 }
@@ -675,14 +683,40 @@ ul.list-widget {
 }
 
 ul.list-widget > li:nth-child(odd) {
-    background-color: #D3D3D3
+    background-color: #EFEFEF
 }
 
 ul.list-widget > li:nth-child(even) {
-    background-color: #E8E8E8
+    background-color: #D3D3D3
 }
 
 .app-page, .app-content {
     background-color: #3b3d62;
+}
+
+
+.list-row-delete-btn {
+    text-align: center;
+    color: #ffffff;
+    background-color: #EE6156;
+}
+
+.list-row-delete-btn.cancel {
+    background-color: #F59146;
+}
+
+.list-drag-hint {
+    width: 10px;
+    background-color: #EE6156;
+    height: 100%;
+    float: right;
+}
+
+.list-drag-hint.cancel {
+    background-color: #F59146;
+}
+
+.cancel .list-drag-hint {
+    background-color: #F59146;
 }
 

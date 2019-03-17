@@ -109,7 +109,7 @@ module.exports = {
 
         , session_duration: "Duração"
         , session_splits: "Intervalos"
-        , session_splits_before_start: "Desbloqueie para iniciar intervalos"
+        , session_splits_before_start: "Desbloqueia para iniciar intervalos"
         , session_speed: "Velocidade"
         , session_distance: "Distância"
         , session_spm: "Cadência de Remada"

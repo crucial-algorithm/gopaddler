@@ -73,7 +73,8 @@ var FIELD_SETTINGS = {
     splits: {
         label: "session_splits",
         init: 'session_splits_before_start',
-        hint: true
+        hint: true,
+        translate: true
     },
     speed: {
         label: "session_speed",
@@ -115,7 +116,9 @@ Field.prototype.init = function (initialType, size) {
         options = FIELD_SETTINGS[type];
 
         instance = MeasureFactory.get(size, $dom, self.context.translate(options.label)
-            , self.context.getUnit(type, size === 'large'), options.init, self.context.isPortraitMode());
+            , self.context.getUnit(type, size === 'large')
+            , options.translate === true ? self.context.translate(options.init) : options.init
+            , self.context.isPortraitMode());
         instance.render(options.hint);
         self.positions[i] = {position: i, type: type, $dom: $dom, instance: instance};
         self.options[type] = options;

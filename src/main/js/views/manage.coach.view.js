@@ -7,6 +7,7 @@ function ManageCoachView(page, context) {
     var self = this;
     self.appContext = context;
     self.page = page;
+    self.usedCoachCodes = {};
     context.render(page, template({isPortraitMode: context.isPortraitMode()}));
     var listCoaches = Api.User.listCoaches();
 
@@ -48,12 +49,19 @@ function ManageCoachView(page, context) {
             }
         });
 
-        self.$button.off('click').on('click', function () {
+        var newCoachRequest = function () {
             var code = parseInt(self.$code.val());
             if (isNaN(code)) {
                 context.ui.modal.alert(context.translate('manage_coach_request_unknown_code')
                     , "<p>" + context.translate('manage_coach_request_unknown_code_message') + "</p>"
                     , context.translate('manage_coach_request_unknown_code_acknowledge'));
+                return;
+            }
+
+            if (self.usedCoachCodes[code] !== undefined) {
+                context.ui.modal.alert(context.translate('manage_coach_request_already_a_coach')
+                    , "<p>" + context.translate('manage_coach_request_already_a_coach_message', [self.usedCoachCodes[code].name]) + "</p>"
+                    , context.translate('manage_coach_request_already_a_coach_acknowledge'));
                 return;
             }
 
@@ -66,8 +74,10 @@ function ManageCoachView(page, context) {
                     self.showConnectToCoachWarning(info.name, info.id)
                 }
             });
+        };
 
-        });
+        self.$button.off('touchstart').on('touchstart', newCoachRequest.bind(self));
+        $('form').off('submit').on('submit', newCoachRequest.bind(self));
 
         listCoaches.then(function (coaches) {
             self.render(coaches);
@@ -126,6 +136,7 @@ ManageCoachView.prototype.render = function (coaches) {
     }, self.appContext);
     self.list.clear();
 
+    self.usedCoachCodes = {};
     for (var i = 0, l = coaches.length; i < l; i++) {
         var coach = coaches[i];
         var $row = $(rowTemplate({
@@ -135,6 +146,7 @@ ManageCoachView.prototype.render = function (coaches) {
             pending: coach.pending === true
         }));
         self.list.newRow($row);
+        self.usedCoachCodes[coach.code] = coach;
     }
 
    self.list.refresh();

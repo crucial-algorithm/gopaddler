@@ -222,8 +222,8 @@ var render = function (page, template) {
 Context.prototype.render = render;
 Context.render = render;
 
-Context.prototype.translate = function(key) {
-    return this._translate(key);
+Context.prototype.translate = function(key, placeholders) {
+    return this._translate(key, placeholders);
 };
 
 Context.prototype.setLanguage = function(language) {

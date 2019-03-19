@@ -10,7 +10,7 @@ if (viewMode === 'portrait') {
 
 var CONFIG = {
     common: {
-        version: "1.1.1",
+        version: "1.1.2",
         apiVersion: 1
     },
     dev : {
@@ -39,7 +39,7 @@ function extend() {
     return arguments[0];
 }
 
-
+console.log("env = ", env);
 if (env !== 'dev' && env !== 'prod' && env !== 'remote-dev')
     throw 'Unknown env. Allowed are: "dev" or "prod" ';
 

@@ -24,7 +24,6 @@ function loginWithFacebook() {
                 defer.reject("response status !== connected");
             }
 
-            screen.orientation.lock('landscape-secondary');
             loginToMeteor(response);
         }, function (err) {
             defer.reject(new Error(err.errorMessage));

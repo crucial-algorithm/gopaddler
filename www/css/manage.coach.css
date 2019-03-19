@@ -38,6 +38,15 @@ p.manage-coach-confirm-coach-name {
     letter-spacing: 6px;
 }
 
+.keyboard-open .add-coach {
+    margin: auto;
+}
+
+
+.keyboard-open .coach-list-container {
+    display: none;
+}
+
 .manage-coach-actions-button-connect {
     cursor: pointer;
     height: 40px;
@@ -79,6 +88,10 @@ p.manage-coach-confirm-coach-name {
     justify-content: center;
     margin-bottom: 20px;
     font-size: 20px;
+}
+
+.keyboard-open .manage-coach-actions.manage-coach-actions-when-has-coaches > label {
+    display: none;
 }
 
 

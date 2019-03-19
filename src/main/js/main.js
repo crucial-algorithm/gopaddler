@@ -11,8 +11,16 @@ var i18n = {
     pt: PT
 };
 
-function translate(key) {
-    return i18n[LANGUAGE].translations[key];
+function translate(key, placeholders) {
+    var text = i18n[LANGUAGE].translations[key] || "";
+    placeholders = placeholders || [];
+    var i = 1;
+    for (var p = 0, l = placeholders.length; p < l; p++) {
+        var placeholder = placeholders[p];
+        text = text.replace(new RegExp("\\$" + i, "g"), placeholder);
+        i++;
+    }
+    return text;
 }
 
 var artTemplateRuntime = require('art-template/lib/runtime');
@@ -273,3 +281,15 @@ function checkOrientationHack() {
         }
     }
 }
+
+// add class when user selects an input
+var $body = $('body');
+$body.on('focus', 'input', function() {
+    console.log('input focus detected');
+    $('.app-page').addClass('keyboard-open');
+});
+
+$body.on('focusout', 'input', function() {
+    console.log('input loose focus detected');
+    $('.app-page').removeClass('keyboard-open');
+});

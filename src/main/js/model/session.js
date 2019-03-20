@@ -249,7 +249,9 @@ Session.prototype.createAPISession = function () {
                 latitude: row.getLatitude(),
                 longitude: row.getLongitude(),
                 heartRate: row.getHeartRate(),
-                split: row.getSplit()
+                split: row.getSplit(),
+                strokes: row.getStrokes(),
+                magnitude: row.getMagnitude()
             });
         }
 
@@ -266,7 +268,7 @@ Session.prototype.createAPISession = function () {
             coachTrainingSessionId: self.getScheduledSessionId(),
             coachTrainingSessionStart: self.getScheduledSessionStart(),
             expression: self.getExpression(),
-            version: 1
+            version: 3
         });
     });
 

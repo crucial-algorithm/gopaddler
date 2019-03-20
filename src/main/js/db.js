@@ -117,6 +117,13 @@ var ddl = [
     [
         ["ALTER TABLE session add column avg_heart_rate REAL default 0"],
         ["UPDATE settings SET version = 10, portrait_mode = 1"]
+    ],
+
+    // v.1.2
+    [
+        ["ALTER TABLE session_data add column strokes INTEGER default 0"],
+        ["ALTER TABLE session_data add column accel_magnitude REAL default 0"],
+        ["UPDATE settings SET version = 11"]
     ]
 
 ];

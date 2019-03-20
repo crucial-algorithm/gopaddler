@@ -1,10 +1,10 @@
-'use strict'
+'use strict';
 
 var utils = require('../utils/utils');
 
 var SPM_STROKE_COUNT = 8;
 
-function StrokeDetector(calibration, onStrokeDetected, onAccelerationTriggered) {
+function StrokeDetector(calibration, onStrokeDetected, onAccelerationTriggered, onMagnitudeTriggered) {
     var self = this;
     self.watchId = undefined;
 
@@ -27,8 +27,10 @@ function StrokeDetector(calibration, onStrokeDetected, onAccelerationTriggered) 
     self.lastEvent = undefined;
 
     self.intervalId = undefined;
+    self.magnitudeIntervalId = undefined;
     self.debugAcceleration = [];
     self.calibration = calibration;
+    self.accelerations = [];
 
     self.debug = false;
 
@@ -37,6 +39,7 @@ function StrokeDetector(calibration, onStrokeDetected, onAccelerationTriggered) 
     self.onAccelerationTriggeredListener = onAccelerationTriggered || function () {};
     self.onStrokeRateChangedListener = function () {};
     self.onThresholdChangedListener = function() {};
+    self.onMagnitudeChangeListener = onMagnitudeTriggered || function(){};
 }
 
 StrokeDetector.exceptions = {
@@ -68,6 +71,7 @@ StrokeDetector.prototype.stop = function () {
     if (navigator.accelerometer)
         navigator.accelerometer.clearWatch(self.watchId);
     clearInterval(self.intervalId);
+    clearInterval(self.magnitudeIntervalId);
 };
 
 StrokeDetector.prototype.start = function () {
@@ -79,6 +83,8 @@ StrokeDetector.prototype.start = function () {
 
         // call event handler
         self.process(acceleration, value);
+
+        self.accelerations.push(value);
 
         // for debug
         self.onAccelerationTriggeredListener(acceleration, value);
@@ -102,6 +108,7 @@ StrokeDetector.prototype.start = function () {
     }
 
     self.intervalId = setInterval(self.refreshSPM.bind(self), 1995);
+    self.magnitudeIntervalId = setInterval(self.refreshMagnitude.bind(self), 1000);
 };
 
 StrokeDetector.prototype.refreshSPM = function () {
@@ -110,16 +117,27 @@ StrokeDetector.prototype.refreshSPM = function () {
     result = self.calculateSPM(range) || {};
 
     if (!isNaN(result.spm))
-        self.onStrokeRateChangedListener(result.spm, result.interval);
+        self.onStrokeRateChangedListener(result.spm, result.interval, self.counter);
 
     // keep only last 8 strokes, without any clean up of stroke rate calculation
     self.strokes = self.strokes.slice(-SPM_STROKE_COUNT);
 
     if (result.spm === 0) {
-        self.onStrokeRateChangedListener(0, undefined);
+        self.onStrokeRateChangedListener(0, undefined, self.counter);
         self.strokes = [];
     }
     return result.spm;
+};
+
+StrokeDetector.prototype.refreshMagnitude = function () {
+    var accelerations = this.accelerations.splice(0);
+    var magnitude = 0, count = 0;
+    for (var i = accelerations.length - 1; i >= 0; i--) {
+        var acceleration = Math.abs(accelerations[i]);
+        magnitude += acceleration * i;
+        count += i;
+    }
+    this.onMagnitudeChangeListener.apply({}, [Math.round(magnitude * (count * 1000) / 1000)])
 };
 
 
@@ -274,7 +292,7 @@ StrokeDetector.prototype.filter = function(acceleration) {
     }
 
     return (value - adjustment) * factor;
-}
+};
 
 /**
  * Checks if last stroke was tracked before negative threshold and current one is after!
@@ -284,7 +302,7 @@ StrokeDetector.prototype.filter = function(acceleration) {
  */
 StrokeDetector.prototype.isAccelerationCrossingThreshold = function(current, previous) {
     return previous != null && current != null && previous.isBiggerThanNegativeThreshold() && current.isSmallerThanOrEquealToNegativeThreshold();
-}
+};
 
 StrokeDetector.prototype.findMaxAbovePositiveThreshold = function (events, acceleration, lastStroke) {
 
@@ -307,7 +325,7 @@ StrokeDetector.prototype.findMaxAbovePositiveThreshold = function (events, accel
     }
 
     return max;
-}
+};
 
 /**
  * Check if we failed to detect strokes between the last one and current potential stroke
@@ -389,7 +407,7 @@ StrokeDetector.prototype.findFuzzyStroke = function (events, current, last) {
     }
 
     return undefined;
-}
+};
 
 
 StrokeDetector.prototype.isValidStroke = function(stroke, before, after, cadence, magnitude) {
@@ -397,7 +415,7 @@ StrokeDetector.prototype.isValidStroke = function(stroke, before, after, cadence
     var log = function (reason) {
         if (self.debug === false) return;
         console.log(self.counter, reason);
-    }
+    };
 
     if (!cadence) {
         log('no cadence');
@@ -482,7 +500,7 @@ StrokeDetector.prototype.calculateSPM = function (strokes) {
 
             // after 2 strokes, if post strokes are inline with avg, it's probably because we counted one stroke
             // more than we should
-            if (intervals.length - i > 1 && adjusted == 0) {
+            if (intervals.length - i > 1 && adjusted === 0) {
 
                 var which = self.pickBestMatch(avg, map[i][1], map[i][0]);
                 var remove;
@@ -626,10 +644,18 @@ Event.prototype.getDetected = function () {
     return this._detected;
 };
 
+/**
+ *
+ * @param {number} stroke
+ */
 Event.prototype.setStroke = function (stroke) {
     this._stroke = stroke;
 };
 
+/**
+ *
+ * @returns {number}
+ */
 Event.prototype.getStroke = function() {
     return this._stroke;
 };
@@ -648,11 +674,11 @@ Event.prototype.add = function (event) {
 
 Event.prototype.setDiscarded = function (discarded) {
     this._discarded = discarded;
-}
+};
 
 Event.prototype.isDiscarded = function () {
     return this._discarded;
-}
+};
 
 Event.prototype.getPosition = function() {
     if (this._positions.length > 2) {
@@ -669,7 +695,7 @@ Event.prototype.relocate = function (before) {
             return;
         }
     }
-}
+};
 
 
 Array.prototype.avg = function () {
@@ -729,7 +755,7 @@ function indexOf(events, value) {
  * @param milis
  */
 function after(list, milis) {
-    if (list.length == 0)
+    if (list.length === 0)
         return [];
 
     var first = list[0].getSampleAt();
@@ -749,7 +775,7 @@ function after(list, milis) {
  * @returns {Array}
  */
 function before(list, milis) {
-    if (list.length == 0)
+    if (list.length === 0)
         return [];
     var last = list[list.length - 1].getSampleAt();
     for (var i = (list.length - 1); i >= 0; i--) {

@@ -184,7 +184,7 @@ SessionView.prototype.render = function (page, context, options) {
         var inRecovery = false;
         if (from) {
             new SessionDetail(session.getId(), startAt + from.finish.time, from.finish.distance / 1000, location.speed, spm.value
-                , location.efficiency, location.latitude, location.longitude, heartRate, from.position
+                , location.efficiency, location.latitude, location.longitude, heartRate, from.position, spm.total, magnitude
             ).save();
             lastSplitStartDistance = from.finish.distance;
             inRecovery = from.isRecovery === true;
@@ -198,7 +198,7 @@ SessionView.prototype.render = function (page, context, options) {
         if (to) {
             splitsIndex[to.position] = to.start.time;
             new SessionDetail(session.getId(), startAt + to.start.time, to.start.distance / 1000, location.speed, spm.value
-                , location.efficiency, location.latitude, location.longitude, heartRate, to.position
+                , location.efficiency, location.latitude, location.longitude, heartRate, to.position, spm.total, magnitude
             ).save();
 
             lastSplitStartDistance = to.start.distance;
@@ -270,7 +270,7 @@ SessionView.prototype.render = function (page, context, options) {
             var position = splits.getPosition();
             // store data
             new SessionDetail(session.getId(), timestamp, location.distance, location.speed, spm.value
-                , location.efficiency, location.latitude, location.longitude, heartRate, splits.getPosition()
+                , location.efficiency, location.latitude, location.longitude, heartRate, splits.getPosition(), spm.total, magnitude
             ).save();
 
             var metric = metrics[position];
@@ -367,8 +367,12 @@ SessionView.prototype.render = function (page, context, options) {
     };
 
     // -- handle stroke related data
-    strokeDetector = new StrokeDetector(calibration, null, self.debug(session));
-    strokeDetector.onStrokeRateChanged(function (value, interval) {
+    var magnitude = 0;
+    strokeDetector = new StrokeDetector(calibration, null, self.debug(session), function (value) {
+        console.log(value);
+        magnitude = value;
+    });
+    strokeDetector.onStrokeRateChanged(function (value, interval, counter) {
         if (paused) return;
 
         if (context.isDev()) {
@@ -376,7 +380,7 @@ SessionView.prototype.render = function (page, context, options) {
             interval = 60 / value * 1000;
         }
 
-        spm = {value: value, interval: interval};
+        spm = {value: value, interval: interval, total: counter};
     });
     strokeDetector.start();
 

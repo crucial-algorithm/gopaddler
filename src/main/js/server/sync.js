@@ -19,11 +19,11 @@ function sync() {
 
     Session.findAllNotSynced(function (sessions) {
         if (sessions.length === 0) {
-            Utils.notify(Api.User.getProfile().name, " All sessions are already synced");
+            Utils.debug(Api.User.getProfile().name, " All sessions are already synced");
             return;
         }
 
-        Utils.notify(Api.User.getProfile().name, " Found " + sessions.length + " sessions to sync");
+        Utils.debug(Api.User.getProfile().name, " Found " + sessions.length + " sessions to sync");
 
         (function loop(sessions) {
             if (sessions.length === 0) return;
@@ -59,7 +59,7 @@ function uploadSession(localSession) {
     // A synced session may reach this point if debug data wasn't yet uploaded... in that case,
     // upload debug data only (fire and forget - don't care if it fails)
     if (localSession.isSynced()) {
-        Utils.notify(Api.User.getProfile().name, "Session "
+        Utils.debug(Api.User.getProfile().name, "Session "
             + moment(new Date(localSession.getSessionStart())).format() + " already synced - going for debug data");
 
         uploadDebugData(localSession);
@@ -67,7 +67,7 @@ function uploadSession(localSession) {
         return defer.promise();
     }
 
-    Utils.notify(Api.User.getProfile().name, "Uploading session from "
+    Utils.debug(Api.User.getProfile().name, "Uploading session from "
         + moment(new Date(localSession.getSessionStart())).format() + "; Sc session #"
         + localSession.scheduledSessionId);
 
@@ -79,17 +79,14 @@ function uploadSession(localSession) {
             Session.debugSyncFinished(localSession.getId(), true);
             defer.resolve();
 
-            Utils.notify(Api.User.getProfile().name, " Session "
+            Utils.debug(Api.User.getProfile().name, " Session "
                 + moment(new Date(localSession.getSessionStart())).format() + " is empty! Marking as synced");
             return defer.promise();
         }
 
-        Utils.notify(Api.User.getProfile().name, " created API session for "
-            + moment(new Date(localSession.getSessionStart())).format());
-
         Api.TrainingSessions.save(trainingSession).done(function (id) {
 
-            Utils.notify(Api.User.getProfile().name, " Session "
+            Utils.debug(Api.User.getProfile().name, " Session "
                 + moment(new Date(localSession.getSessionStart())).format() + " upload successfully; Remote #" + id);
 
             localSession.setRemoteId(id);
@@ -141,7 +138,7 @@ function uploadDebugData(session) {
         return defer.promise();
     }
 
-    Utils.notify(Api.User.getProfile().name, "Uploading debug session from "
+    Utils.debug(Api.User.getProfile().name, "Uploading debug session from "
         + moment(new Date(session.getSessionStart())).format());
 
     debugProcessing[session.getId()] = true;

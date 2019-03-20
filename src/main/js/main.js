@@ -99,7 +99,7 @@ App.controller('login-with-password', function (page) {
 });
 
 App.controller('home', function (page, request) {
-    analytics.setUser(Api.User.getId());
+    analytics.setUser(Api.User.get());
     enrichPageArg(page, 'home');
     Settings.loadSettings().then(function (s) {
         settings = s;

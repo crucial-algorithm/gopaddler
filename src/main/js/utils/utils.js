@@ -94,18 +94,50 @@ function mapBrowserToNative() {
 
 
 function notify(username, message) {
+    _postSlack(getUrl("notifications"), username, message);
+}
+
+function debug(username, message) {
+    _postSlack(getUrl("debug"), username, message);
+}
+
+function usage(username, message) {
+    _postSlack(getUrl("usage"), username, message);
+}
+
+function _postSlack(url, username, message) {
     if (navigator.userAgent === 'gp-dev-ck') {
         console.log("[" + username + "] " + message);
         return;
     }
-
     $.ajax({
         type: "POST",
-        url: "https://hooks.slack.com/services/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",
-        data: JSON.stringify({text: "[" + username + "] " + message
-            , username: "GoPaddler", icon_emoji: ":monkey_face:"}),
+        url: url,
+        data: JSON.stringify({
+            text: "[" + username + "] " + message
+            , username: "GoPaddler", icon_emoji: ":monkey_face:"
+        }),
         dataType: "json"
     });
+}
+
+function getUrl(type) {
+
+    if (type === 'debug') {
+        // # debug
+        return "https://hooks.slack.com/services/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";
+    }
+
+    if (type === 'usage') {
+        // #app
+        return 'https://hooks.slack.com/services/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';
+    }
+
+    if (type === 'notifications') {
+        // # notifications
+        return "https://hooks.slack.com/services/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";
+    }
+
 }
 
 function getRandomInt(min, max) {
@@ -240,6 +272,8 @@ exports.avg = avg;
 exports.kmToMiles = kmToMiles;
 exports.meterToFeet = meterToFeet;
 exports.notify = notify;
+exports.debug = debug;
+exports.usage = usage;
 exports.EndlessIterator = EndlessIterator;
 exports.forceSafariToReflow = forceSafariToReflow;
 exports.guid = guid;

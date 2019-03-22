@@ -244,6 +244,7 @@ SessionView.prototype.render = function (page, context, options) {
             location.speed = speed.calculate(lastKnownGPSPosition, now);
             location.pace = pace.calculate(location.speed);
             location.efficiency = strokeEfficiency.calculate(location.speed, spm.interval);
+            location.strokes = strokeEfficiency.calculatePer100(location.efficiency);
             previousGPSPosition = lastKnownGPSPosition;
         }
 
@@ -400,6 +401,7 @@ SessionView.prototype.render = function (page, context, options) {
         var values = {
             distance: distance - distance % 10,
             efficiency: location.efficiency,
+            strokes: location.strokes,
             pace: location.pace,
             spm: spm.value,
             heartRate: heartRate
@@ -416,6 +418,7 @@ SessionView.prototype.render = function (page, context, options) {
             values.distance = Math.round(latest.distance * 100) / 100;
             values.spm = latest.spm / latest.counter;
             values.efficiency = latest.efficiency / latest.counter;
+            values.strokes = Math.round(100 / (latest.efficiency / latest.counter));
             values.heartRate = latest.heartRate / latest.counter;
             values.speed = (latest.distance / latest.duration) * 3600;
             values.pace = (pace = utils.speedToPace(values.speed)) === null ? 0 : pace;

@@ -38,6 +38,7 @@ Field.prototype.createDomStructure = function (size, enableSplits) {
             '    <div class="measure" data-type="pace"></div>',
             '    <div class="measure" data-type="spm"></div>',
             '    <div class="measure" data-type="efficiency"></div>',
+            '    <div class="measure" data-type="strokes"></div>',
             '    <div class="measure" data-type="heartRate"></div>',
             '</div>'
         ];
@@ -54,6 +55,7 @@ Field.prototype.createDomStructure = function (size, enableSplits) {
             '    <div class="measure" data-type="pace"></div>',
             '    <div class="measure" data-type="spm"></div>',
             '    <div class="measure" data-type="efficiency"></div>',
+            '    <div class="measure" data-type="strokes"></div>',
             '    <div class="measure" data-type="heartRate"></div>',
             '</div>'
         ].join('')).appendTo(this.$element);
@@ -90,6 +92,10 @@ var FIELD_SETTINGS = {
     },
     efficiency: {
         label: "session_efficiency",
+        init: 0
+    },
+    strokes: {
+        label: "session_strokes_hundred",
         init: 0
     },
     pace: {

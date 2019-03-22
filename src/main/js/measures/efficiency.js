@@ -16,5 +16,10 @@ StrokeEfficiency.prototype.calculate = function (speed, interval) {
     return metersPerSecond * (interval / 1000);
 };
 
+StrokeEfficiency.prototype.calculatePer100 = function (displacement) {
+    if (displacement === 0) return 0;
+    return Math.round(100 / displacement * 10) / 10;
+};
+
 
 exports.StrokeEfficiency = StrokeEfficiency;

@@ -32,6 +32,10 @@ var units = {
             label: {regular: "units_metric_efficiency_regular", large: "units_metric_efficiency_large"},
             decimalPlaces: 1
         },
+        strokes: {
+            label: {regular: "units_metric_strokes_regular", large: "units_metric_strokes_large"},
+            decimalPlaces: 1
+        },
         pace: {
             label: {regular: "units_metric_pace_regular", large: "units_metric_pace_large"},
             round: false
@@ -68,6 +72,10 @@ var units = {
         },
         efficiency: {
             label: {regular: "units_imperial_efficiency_regular", large: "units_imperial_efficiency_large"},
+            decimalPlaces: 1
+        },
+        strokes: {
+            label: {regular: "units_imperial_strokes_regular", large: "units_imperial_strokes_large"},
             decimalPlaces: 1
         },
         pace: {

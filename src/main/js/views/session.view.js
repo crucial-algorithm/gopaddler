@@ -182,8 +182,11 @@ SessionView.prototype.render = function (page, context, options) {
     // -- listen for changes in splits and notify server
     splits.onSplitChange(function onSplitChangeListener(from, to, isFinished) {
         var inRecovery = false;
+        var duration = timer.getDuration();
+        var timeSinceStartAt = timer.getTimestamp() - startAt;
+        var pausedTime =  timeSinceStartAt !== duration ? timeSinceStartAt - duration : 0;
         if (from) {
-            new SessionDetail(session.getId(), startAt + from.finish.time, from.finish.distance / 1000, location.speed, spm.value
+            new SessionDetail(session.getId(), startAt + pausedTime + from.finish.time, from.finish.distance / 1000, location.speed, spm.value
                 , location.efficiency, location.latitude, location.longitude, heartRate, from.position, spm.total, magnitude
             ).save();
             lastSplitStartDistance = from.finish.distance;
@@ -197,7 +200,7 @@ SessionView.prototype.render = function (page, context, options) {
 
         if (to) {
             splitsIndex[to.position] = to.start.time;
-            new SessionDetail(session.getId(), startAt + to.start.time, to.start.distance / 1000, location.speed, spm.value
+            new SessionDetail(session.getId(), startAt + pausedTime + to.start.time, to.start.distance / 1000, location.speed, spm.value
                 , location.efficiency, location.latitude, location.longitude, heartRate, to.position, spm.total, magnitude
             ).save();
 
@@ -270,7 +273,7 @@ SessionView.prototype.render = function (page, context, options) {
         if (skip-- <= 0) {
             var position = splits.getPosition();
             // store data
-            new SessionDetail(session.getId(), timestamp, location.distance, location.speed, spm.value
+            new SessionDetail(session.getId(), duration, location.distance, location.speed, spm.value
                 , location.efficiency, location.latitude, location.longitude, heartRate, splits.getPosition(), spm.total, magnitude
             ).save();
 
@@ -370,7 +373,6 @@ SessionView.prototype.render = function (page, context, options) {
     // -- handle stroke related data
     var magnitude = 0;
     strokeDetector = new StrokeDetector(calibration, null, self.debug(session), function (value) {
-        console.log(value);
         magnitude = value;
     });
     strokeDetector.onStrokeRateChanged(function (value, interval, counter) {

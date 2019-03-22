@@ -205,7 +205,6 @@ SessionDetail.getDetailedMetrics = function(sessionId, splits, callback) {
             Utils.notify(Api.User.getProfile().name, " Failed to load records from session detail " + err);
             throw err;
         }
-        callback(rows);
     }, function (error) {
         console.log('Error retrieving sessions: ' + error.message);
     });

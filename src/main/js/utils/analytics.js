@@ -7,7 +7,7 @@ var userName = "John Doe";
 
 var view = function (viewName) {
 //    window.analytics.trackView(name);
-    Utils.usage(username, 'navigated to ' + viewName);
+    Utils.usage(userName, 'navigated to ' + viewName);
 };
 
 var user = function (user) {

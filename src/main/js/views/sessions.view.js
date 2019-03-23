@@ -489,14 +489,14 @@ SessionsView.prototype.uploadSession = function ($button, session) {
             setTimeout(function () {
                 progress.cleanup();
                 if (success === true) {
-                    $button.closest('li').find('[data-selector="synced"]').html('yes');
+                    $button.closest('li').find('[data-selector="synced"]').html(appContext.translate('sessions_synced'));
                 }
                 defer.resolve();
             }, 2000 - diff);
         } else {
             progress.cleanup();
             if (success === true) {
-                $button.closest('li').find('[data-selector="synced"]').html('yes');
+                $button.closest('li').find('[data-selector="synced"]').html(appContext.translate('sessions_synced'));
             }
             defer.resolve();
         }

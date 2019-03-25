@@ -22,27 +22,27 @@
 .app-content.choose-boat > .choose-boat-k {
     float: left;
     width: 50vw;
-    height: 68vh;
+    height: 84vh;
+    line-height: 84vh;
     text-align: center;
-    line-height: 68vh;
     font-size: 36vh;
 }
 
 .app-content.choose-boat > .choose-boat-c {
     float: right;
     width: 50vw;
-    height: 68vh;
+    height: 84vh;
     text-align: center;
-    line-height: 68vh;
+    line-height: 84vh;
     font-size: 36vh;
 }
 
 .app-content.choose-boat-portrait > .choose-boat-k {
     float: unset;
     width: 100vw;
-    height: 40vh;
+    height: 45vh;
     text-align: center;
-    line-height: 40vh;
+    line-height: 45vh;
     font-size: 20vh;
     text-transform: uppercase;
 }
@@ -50,9 +50,9 @@
 .app-content.choose-boat-portrait > .choose-boat-c {
     float: unset;
     width: 100vw;
-    height: 40vh;
+    height: 45vh;
     text-align: center;
-    line-height: 40vh;
+    line-height: 45vh;
     font-size: 20vh;
     text-transform: uppercase;
 }

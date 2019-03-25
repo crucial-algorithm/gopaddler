@@ -388,6 +388,25 @@ function isLiveUpdate() {
 }
 exports.User = {
 
+    accessed: function() {
+        var nbr = parseInt(localStorage.getItem('accesses'));
+        if (isNaN(nbr)) {
+            nbr = 1;
+        } else {
+            nbr++;
+        }
+
+        localStorage.setItem('accesses', nbr);
+    },
+
+    accesses: function() {
+        var nbr = parseInt(localStorage.getItem('accesses'));
+        if (isNaN(nbr)) {
+            localStorage.setItem('accesses', "1");
+            return 1;
+        }
+        return nbr;
+    },
 
     set: function (user) {
         asteroid.user = user;

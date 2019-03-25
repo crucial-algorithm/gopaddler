@@ -47,6 +47,7 @@ var DefineGPSSpeedView = require('./views/define.gps.update.rate.view').DefineGP
 var DefineMaxHeartRateView = require('./views/define.max.heart.rate.view').DefineMaxHeartRateView;
 var DefineLanguageView = require('./views/define.language.view').DefineLanguageView;
 var ManageCoachView = require('./views/manage.coach.view').ManageCoachView;
+var ChooseSportsView = require('./views/choose.sports.view').ChooseSportsView;
 var Api = require('./server/api');
 var utils = require('./utils/utils.js');
 var global = require('./global.js');
@@ -184,16 +185,7 @@ App.controller('select-session', function (page, request) {
 
 App.controller('choose-boat', function (page, request) {
     enrichPageArg(page, 'choose-boat');
-    Settings.loadSettings().then(function (s) {
-        settings = s;
-        context = new Context(settings, environment, translate, LANGUAGE);
-        new ChooseBoatView(page, context)
-    }).fail(function (error, defaultSettings) {
-        settings = defaultSettings;
-        context = new Context(settings, environment, translate, LANGUAGE);
-        new ChooseBoatView(page, context)
-    });
-
+    new ChooseBoatView(page, context);
 });
 
 App.controller('define-gps-update-rate', function (page, request) {
@@ -214,6 +206,19 @@ App.controller('define-language', function (page, request) {
 App.controller('manage-coach', function (page, request) {
     enrichPageArg(page, 'manage-coach');
     new ManageCoachView(page, context);
+});
+
+App.controller('choose-sport', function (page, request) {
+    enrichPageArg(page, 'choose-sport');
+    Settings.loadSettings().then(function (s) {
+        settings = s;
+        context = new Context(settings, environment, translate, LANGUAGE);
+        new ChooseSportsView(page, context);
+    }).fail(function (error, defaultSettings) {
+        settings = defaultSettings;
+        context = new Context(settings, environment, translate, LANGUAGE);
+        new ChooseSportsView(page, context);
+    });
 });
 
 function onDeviceReady() {
@@ -260,10 +265,11 @@ function loadUi() {
     Api.Server.connect();
 
     Api.Auth.login().done(function () {
-        if (Api.User.hasChosenBoat())
+        if (!Api.User.hasChosenBoat()) {
+            App.load('choose-sport');
+        } else {
             App.load('home');
-        else
-            App.load('choose-boat');
+        }
     }).fail(function () {
         App.load('login');
     });

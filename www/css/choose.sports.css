@@ -1,0 +1,49 @@
+.app-content.choose-sports {
+    text-transform: uppercase;
+    color: #fff;
+}
+
+.choose-sports-header {
+    background-color: #7E8C8D;
+    color: #ffffff;
+}
+
+.choose-sports-list {
+    height: calc(100vh - 66px);
+    overflow: auto;
+}
+
+.choose-sports-header-primary {
+    display: block;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 900;
+}
+
+.choose-sports-header-secondary {
+    display: block;
+    height: 26px;
+    font-size: 12px;
+    text-align: center;
+}
+
+.choose-sports-list > li {
+    height: 80px;
+    line-height: 80px;
+    text-align: left;
+    padding-left: 20px;
+    font-weight: bold;
+    background-color: #3B3D62;
+    font-size: 15px;
+}
+
+.choose-sports-list > li:nth-child(even) {
+    background-color: #35375b;
+}
+
+.choose-sport-not-supported-dialog-text {
+    text-align: center;
+    font-size: 18px;
+}

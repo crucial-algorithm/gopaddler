@@ -263,5 +263,19 @@ module.exports = {
 
         , cancel: "Cancelar"
 
+        , choose_sport_header: "What's your thing?"
+        , choose_sport_header_secondary: "(choose the main disciple you will use the app for)"
+        , choose_sport_disciple_marathon_sprint: "Marathon / Sprint"
+        , choose_sport_disciple_ocean: "Canoe ocean race"
+        , choose_sport_disciple_slalom: "White Water (slalom/freestyle/...)"
+        , choose_sport_disciple_dragon_boat: "Dragon boat"
+        , choose_sport_disciple_paracanoe: "Paracanoe"
+        , choose_sport_disciple_sup: "stand up paddling"
+        , choose_sport_disciple_other: "other"
+        , choose_sport_picked_sup: "Currently SUP is not tested! Git it a try and ping us an e-mail with your feedback."
+        , choose_sport_picked_not_supported: "We only tested our app in sprint and marathon! Git it a try and ping us an e-mail with your feedback."
+        , choose_sport_picked_not_supported_title: "We are sorry!"
+        , choose_sport_picked_not_supported_acknowledge: "OK"
+
     }
 };

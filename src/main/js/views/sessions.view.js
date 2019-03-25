@@ -145,7 +145,7 @@ function updateGlobalStats(sessions, context) {
 
     $summaryDistance.text(utils.round2(totalDistance));
     $summarySpeed.text(utils.round2(totalDistance / (totalDuration / 3600000)));
-    $summarySPM.text(Math.round(totalSPM / totalDuration));
+    $summarySPM.text(totalDuration ? Math.round(totalSPM / totalDuration) : 0);
     $summaryLength.text(utils.round2(totalLength / totalDuration));
 }
 

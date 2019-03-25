@@ -59,6 +59,7 @@ function SessionView(page, context, options) {
 SessionView.prototype.render = function (page, context, options) {
     var self = this;
     self.isDebugEnabled = !!Api.User.getProfile().debug;
+    self.sessionFinished = false;
 
     var $page = $(page);
     var calibration = Calibration.load(context.isPortraitMode()) || Calibration.blank();
@@ -155,6 +156,9 @@ SessionView.prototype.render = function (page, context, options) {
 
     // prevent drag using touch during session
     var preventDrag = function (e) {
+        if (self.sessionFinished) {
+            this.removeEventListener("touchmove");
+        }
         e.preventDefault();
     };
     document.addEventListener('touchmove', preventDrag, false);
@@ -476,6 +480,8 @@ SessionView.prototype.render = function (page, context, options) {
             Dialog.hideModal();
             back();
         });
+
+        self.sessionFinished = true;
     };
 
     var confirmBeforeExit = function () {

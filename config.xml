@@ -37,10 +37,6 @@
         <icon density="xxxhdpi" src="res/android/ic_launcher-xxxhdpi.png" />
         <preference name="android-minSdkVersion" value="19" />
         <preference name="android-targetSdkVersion" value="26" />
-        <config-file parent="/resources" target="./res/values/strings.xml">
-            <string name="fb_app_id">529853143847598</string>
-            <string name="fb_app_name">gopaddler</string>
-        </config-file>
     </platform>
     <platform name="ios">
         <icon height="100" src="res/ios/icon-100.png" width="100" />
@@ -107,10 +103,12 @@
     <plugin name="cordova-plugin-nativeaudio" spec="^3.0.9" />
     <plugin name="cordova-plugin-background-mode-bluetooth-central" spec="^1.0.0" />
     <plugin name="cordova-plugin-bluetoothle" spec="^4.4.3" />
-    <plugin name="cordova-plugin-facebook4" spec="^1.9.1">
-        <variable name="APP_ID" value="529853143847598" />
-        <variable name="APP_NAME" value="gopaddler" />
-    </plugin>
     <engine name="ios" spec="^4.5.5" />
     <engine name="android" spec="^7.1.4" />
+    <plugin name="cordova-plugin-facebook4" spec="4.2.1">
+        <variable name="APP_ID" value="529853143847598" />
+        <variable name="APP_NAME" value="gopaddler" />
+        <variable name="FACEBOOK_HYBRID_APP_EVENTS" value="false" />
+        <variable name="FACEBOOK_ANDROID_SDK_VERSION" value="4.40.0" />
+    </plugin>
 </widget>

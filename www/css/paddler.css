@@ -16,6 +16,10 @@ body {
     background-color: #3B3D62;
 }
 
+.paddler-link {
+    color: #ef6156;
+}
+
 .paddler-topbar {
     background-color: #535465;
     height: 18vh;

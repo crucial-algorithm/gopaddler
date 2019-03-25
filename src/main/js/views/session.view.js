@@ -157,7 +157,10 @@ SessionView.prototype.render = function (page, context, options) {
     // prevent drag using touch during session
     var preventDrag = function (e) {
         if (self.sessionFinished) {
-            this.removeEventListener("touchmove");
+            try {
+                this.removeEventListener("touchmove");
+            } catch (err) {}
+            return;
         }
         e.preventDefault();
     };

@@ -73,6 +73,11 @@ function SessionSummaryView(page, context, sessionSummaryArguments) {
     $finish.on('tap', function () {
         App.load('home', undefined, undefined, function () {
             App.removeFromStack();
+            if (session.getId() === 1 && isPastSession !== true) {
+                context.ui.modal.alert(context.translate('phone_mount_cta_title')
+                    , '<p>' + context.translate('phone_mount_cta_message', ['https://gopaddler.com/waterproof-smartphone-mount/?utm_source=app-notification']) + '</p>'
+                    , context.translate('phone_mount_cta_acknowledge'));
+            }
         });
     });
 

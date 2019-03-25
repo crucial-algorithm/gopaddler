@@ -275,5 +275,9 @@ module.exports = {
         , choose_sport_picked_not_supported: "We only tested our app in sprint and marathon! Git it a try and ping us an e-mail with your feedback."
         , choose_sport_picked_not_supported_title: "We are sorry!"
         , choose_sport_picked_not_supported_acknowledge: "OK"
+
+        , phone_mount_cta_title: "In Need of a Phone mount?"
+        , phone_mount_cta_message: 'Checkout our phone mount at our <a class="paddler-link" href="$1">website</a> for a easy to use solution (buy it or build your own - it\'s up to you)'
+        , phone_mount_cta_acknowledge: "OK"
     }
 };

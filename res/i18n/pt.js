@@ -277,5 +277,10 @@ module.exports = {
         , choose_sport_picked_not_supported_title: "We are sorry!"
         , choose_sport_picked_not_supported_acknowledge: "OK"
 
+        , phone_mount_cta_title: "Precisas de um suporte?"
+        , phone_mount_cta_message: 'Visita o nosso <a class="paddler-link" href="$1">website</a> e encomanda o nosso suporte para usares o teu telemóvel com toda a segurança!'
+        , phone_mount_cta_acknowledge: "OK"
+
+
     }
 };

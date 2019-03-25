@@ -280,7 +280,7 @@ SessionView.prototype.render = function (page, context, options) {
         if (skip-- <= 0) {
             var position = splits.getPosition();
             // store data
-            new SessionDetail(session.getId(), duration, location.distance, location.speed, spm.value
+            new SessionDetail(session.getId(), timestamp, location.distance, location.speed, spm.value
                 , location.efficiency, location.latitude, location.longitude, heartRate, splits.getPosition(), spm.total, magnitude
             ).save();
 

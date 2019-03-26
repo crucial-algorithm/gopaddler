@@ -281,7 +281,7 @@ SessionView.prototype.render = function (page, context, options) {
             var position = splits.getPosition();
             // store data
             new SessionDetail(session.getId(), timestamp, location.distance, location.speed, spm.value
-                , location.efficiency, location.latitude, location.longitude, heartRate, splits.getPosition(), spm.total, magnitude
+                , location.efficiency, location.latitude, location.longitude, heartRate, position, spm.total, magnitude
             ).save();
 
             var metric = metrics[position];

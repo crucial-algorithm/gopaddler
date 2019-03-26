@@ -39,7 +39,7 @@
     "kalmanjs": "^1.0.0-beta",
     "moment": "^2.24.0",
     "plist": "^2.1.0",
-    "splits-handler": "git+https://kimile@bitbucket.org/kimile/splits-handler.git#1.3",
+    "splits-handler": "git+https://kimile@bitbucket.org/kimile/splits-handler.git#1.4",
     "zerver": "0.15.19"
   },
   "scripts": {

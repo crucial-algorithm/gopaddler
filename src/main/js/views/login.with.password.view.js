@@ -7,7 +7,7 @@ var Api = require('../server/api')
 
 var $login, $create, $forgot;
 
-function LoginWithPasswordView(page) {
+function LoginWithPasswordView(page, context) {
     screen.orientation.lock('portrait');
 
     Context.render(page, template({}));
@@ -51,7 +51,7 @@ function LoginWithPasswordView(page) {
         e.preventDefault();
         e.stopImmediatePropagation();
 
-        App.load('login');
+        context.navigate('login');
     });
 
 
@@ -75,7 +75,7 @@ function LoginWithPasswordView(page) {
 
         Api.Auth.loginWithPassword(username, password).then(function () {
 
-            App.load('home');
+            context.navigate('home');
             $progress.addClass('hidden');
             running = false;
 
@@ -109,7 +109,7 @@ function LoginWithPasswordView(page) {
 
             Api.Auth.loginWithPassword(username, password).then(function () {
 
-                App.load('home');
+                context.navigate('home');
                 $progress.addClass('hidden');
                 running = false;
 

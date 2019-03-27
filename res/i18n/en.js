@@ -271,8 +271,10 @@ module.exports = {
         , choose_sport_disciple_paracanoe: "Paracanoe"
         , choose_sport_disciple_sup: "stand up paddling"
         , choose_sport_disciple_other: "other"
+        , choose_sport_disciple_coach: "I'm a coach"
         , choose_sport_picked_sup: "Currently SUP is not tested! Git it a try and ping us an e-mail with your feedback."
-        , choose_sport_picked_not_supported: "We only tested our app in sprint and marathon! Git it a try and ping us an e-mail with your feedback."
+        , choose_sport_picked_coach: 'If you are a coach, this app is for your athletes! As a coach, create an account at <a class="paddler-link" href="https://gopaddler.com/for-coaches/">our online service</a> instead!'
+        , choose_sport_picked_not_supported: "We only tested our app in sprint and marathon! Give it a try and ping us an e-mail with your feedback."
         , choose_sport_picked_not_supported_title: "We are sorry!"
         , choose_sport_picked_not_supported_acknowledge: "OK"
 

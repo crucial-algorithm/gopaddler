@@ -173,6 +173,10 @@ Context.prototype.navigate = function (target, clear, args) {
         target = 'calibration-help';
     }
 
+    if (target === 'home' && !Api.User.hasChosenBoat()) {
+        target = 'choose-sport';
+    }
+
     if (clear === true) App.destroyStack();
 
     App.load(target, args, undefined, function () {

@@ -58,12 +58,14 @@ var Settings = require('./model/settings');
 var Context = require('./context').Context;
 
 var settings = undefined;
-var context = undefined;
 var environment = undefined;
+var loadContextDefer = $.Deferred();
+var loadContext = loadContextDefer.promise();
+
 
 function enrichPageArg(page, pageName) {
     var $page = $(page);
-    var callbacks = [];
+    var callbacks = [], destroy = [];
     var appShown = false;
 
     $page.off('appShow').on('appShow', function() {
@@ -71,6 +73,12 @@ function enrichPageArg(page, pageName) {
         analytics.setView(pageName);
         for (var i = 0; i < callbacks.length; i++) {
             callbacks[i].apply({}, [])
+        }
+    });
+
+    $page.off('appDestroy').on('appDestroy', function() {
+        for (var i = 0; i < destroy.length; i++) {
+            destroy[i].apply({}, [])
         }
     });
 
@@ -84,6 +92,12 @@ function enrichPageArg(page, pageName) {
             }
         }
     };
+
+    page.onDestroy = {
+        then: function (callback) {
+            destroy.push(callback);
+        }
+    }
 }
 
 /**
@@ -91,28 +105,25 @@ function enrichPageArg(page, pageName) {
  */
 App.controller('login', function (page) {
     enrichPageArg(page, 'login');
-    new LoginView(page, context);
+    loadContext.then(function (context) {
+        new LoginView(page, context);
+    });
 });
 
 App.controller('login-with-password', function (page) {
     enrichPageArg(page, 'login-with-password');
-    new LoginWithPassword(page, context);
+    loadContext.then(function (context) {
+        new LoginWithPassword(page, context);
+    });
 });
 
 App.controller('home', function (page, request) {
     analytics.setUser(Api.User.get());
     enrichPageArg(page, 'home');
-    Settings.loadSettings().then(function (s) {
-        settings = s;
-        context = new Context(settings, environment, translate, LANGUAGE);
-
+    loadContext.then(function (context) {
         if (environment === 'prod')
             sync.start(context);
-
         new HomeView(page, context, request);
-    }).fail(function (error, defaultSettings) {
-        settings = defaultSettings;
-        context = new Context(settings, environment, translate, LANGUAGE);
     });
 });
 
@@ -121,12 +132,16 @@ App.controller('home', function (page, request) {
  */
 App.controller('session', function (page, scheduledSession) {
     enrichPageArg(page, 'session');
-    new SessionView(page, context, scheduledSession);
+    loadContext.then(function (context) {
+        new SessionView(page, context, scheduledSession);
+    });
 });
 
 App.controller('session-summary', function (page, session) {
     enrichPageArg(page, 'session-summary');
-    new SessionSummaryView(page, context, session);
+    loadContext.then(function (context) {
+        new SessionSummaryView(page, context, session);
+    });
 });
 
 /**
@@ -134,7 +149,16 @@ App.controller('session-summary', function (page, session) {
  */
 App.controller('settings', function (page) {
     enrichPageArg(page, 'settings');
-    new SettingsView(page, context, settings);
+    loadContext.then(function (context) {
+        new SettingsView(page, context, settings);
+        page.onDestroy.then(function () {
+            loadContextDefer = $.Deferred();
+            loadContext = loadContextDefer.promise();
+            context = new Context(context.preferences(), environment, translate, LANGUAGE);
+            loadContextDefer.resolve(context);
+            new SessionsView(page, context);
+        });
+    });
 });
 
 /**
@@ -142,8 +166,9 @@ App.controller('settings', function (page) {
  */
 App.controller('sessions', function (page) {
     enrichPageArg(page, 'sessions');
-    context = new Context(context.preferences(), environment, translate, LANGUAGE);
-    new SessionsView(page, context);
+    loadContext.then(function (context) {
+        new SessionsView(page, context);
+    });
 });
 
 /**
@@ -151,7 +176,9 @@ App.controller('sessions', function (page) {
  */
 App.controller('calibration', function (page, request) {
     enrichPageArg(page, 'calibration');
-    new CalibrationView(page, context, request);
+    loadContext.then(function (context) {
+        new CalibrationView(page, context, request);
+    });
 });
 
 /**
@@ -159,7 +186,9 @@ App.controller('calibration', function (page, request) {
  */
 App.controller('session-basic-touch-tutorial', function (page) {
     enrichPageArg(page, 'session-touch-tips-tutorial');
-    new SessionTipsView(page, context);
+    loadContext.then(function (context) {
+        new SessionTipsView(page, context);
+    });
 });
 
 /**
@@ -167,7 +196,9 @@ App.controller('session-basic-touch-tutorial', function (page) {
  */
 App.controller('calibration-help', function (page, request) {
     enrichPageArg(page, 'calibration-help');
-    new CalibrationHelpView(page, context, request);
+    loadContext.then(function (context) {
+        new CalibrationHelpView(page, context, request);
+    });
 });
 
 /**
@@ -175,48 +206,56 @@ App.controller('calibration-help', function (page, request) {
  */
 App.controller('bluetooth', function (page, request) {
     enrichPageArg(page, 'bluetooth');
-    new BluetoothView(page, context, request);
+    loadContext.then(function (context) {
+        new BluetoothView(page, context, request);
+    });
 });
 
 App.controller('select-session', function (page, request) {
     enrichPageArg(page, 'select-session');
-    new SelectSessionView(page, context, request);
+    loadContext.then(function (context) {
+        new SelectSessionView(page, context, request);
+    });
 });
 
 App.controller('choose-boat', function (page, request) {
     enrichPageArg(page, 'choose-boat');
-    new ChooseBoatView(page, context);
+    loadContext.then(function (context) {
+        new ChooseBoatView(page, context);
+    });
 });
 
 App.controller('define-gps-update-rate', function (page, request) {
     enrichPageArg(page, 'define-gps-update-rate');
-    new DefineGPSSpeedView(page, context);
+    loadContext.then(function (context) {
+        new DefineGPSSpeedView(page, context);
+    });
 });
 
 App.controller('define-max-heart-rate', function (page, request) {
     enrichPageArg(page, 'define-max-heart-rate');
-    new DefineMaxHeartRateView(page, context);
+    loadContext.then(function (context) {
+        new DefineMaxHeartRateView(page, context);
+    });
 });
 
 App.controller('define-language', function (page, request) {
     enrichPageArg(page, 'define-language');
-    new DefineLanguageView(page, context);
+    loadContext.then(function (context) {
+        new DefineLanguageView(page, context);
+    });
 });
 
 App.controller('manage-coach', function (page, request) {
     enrichPageArg(page, 'manage-coach');
-    new ManageCoachView(page, context);
+    loadContext.then(function (context) {
+        new ManageCoachView(page, context);
+    });
 });
 
 App.controller('choose-sport', function (page, request) {
     enrichPageArg(page, 'choose-sport');
-    Settings.loadSettings().then(function (s) {
-        settings = s;
-        context = new Context(settings, environment, translate, LANGUAGE);
-        new ChooseSportsView(page, context);
-    }).fail(function (error, defaultSettings) {
-        settings = defaultSettings;
-        context = new Context(settings, environment, translate, LANGUAGE);
+    loadContext.then(function (context) {
         new ChooseSportsView(page, context);
     });
 });
@@ -226,11 +265,9 @@ function onDeviceReady() {
 
     utils.mapBrowserToNative();
 
-    loadDb();
-
-    setTimeout(function () {
+    loadDb().then(function () {
         loadUi();
-    }, 2000);
+    });
 }
 
 if (navigator.userAgent === 'gp-dev-ck') {
@@ -252,7 +289,7 @@ if (environment === 'prod') {
 }
 
 function loadDb() {
-    db.init();
+    return db.init();
 }
 
 function loadUi() {
@@ -264,12 +301,19 @@ function loadUi() {
 
     Api.Server.connect();
 
+    Settings.loadSettings().then(function (s) {
+        settings = s;
+        loadContextDefer.resolve(new Context(settings, environment, translate, LANGUAGE));
+    }).fail(function (error, defaultSettings) {
+        settings = defaultSettings;
+        loadContextDefer.resolve(new Context(settings, environment, translate, LANGUAGE));
+    });
+
+
     Api.Auth.login().done(function () {
-        if (!Api.User.hasChosenBoat()) {
-            App.load('choose-sport');
-        } else {
-            App.load('home');
-        }
+        loadContext.then(function (context) {
+            context.navigate('home');
+        });
     }).fail(function () {
         App.load('login');
     });

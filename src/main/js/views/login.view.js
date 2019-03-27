@@ -5,7 +5,7 @@ var Api = require('../server/api')
     , Context = require('../context').Context
 ;
 
-function LoginView(page) {
+function LoginView(page, context) {
     screen.orientation.lock('portrait');
 
     Context.render(page, template({}));
@@ -34,9 +34,7 @@ function LoginView(page) {
 
     $login.off('touchstart').on('touchstart', function () {
         Api.Auth.loginWithFacebook().done(function () {
-
-            App.load('home');
-
+            context.navigate('home');
         }).fail(function (err) {
 
             alert(err);
@@ -44,7 +42,7 @@ function LoginView(page) {
     });
 
     $account.off('touchstart click').on('touchstart click', function () {
-        App.load('login-with-password')
+        context.navigate('login-with-password')
     });
 
 

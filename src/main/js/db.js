@@ -141,6 +141,7 @@ var error = function (e) {
  * This method should apply all changes in ddl
  */
 function init() {
+    var defer = $.Deferred();
     connection = window.sqlitePlugin.openDatabase({name: "sessions.db", "location": 2});
 
     determineDbVersion().then(function (version) {
@@ -153,8 +154,12 @@ function init() {
                     tx.executeSql(sql, [], success, error);
                 }
             }
+
+            defer.resolve();
         });
     });
+
+    return defer.promise();
 }
 
 

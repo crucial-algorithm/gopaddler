@@ -12,7 +12,8 @@ function overridePlist(context) {
     obj.UIStatusBarHidden = true;
     obj.UIViewControllerBasedStatusBarAppearance = false;
     obj.CFBundleDisplayName = "GoPaddler";
-    obj.NSLocationWhenInUseUsageDescription = "Track distance and speed";
+    obj.NSLocationWhenInUseUsageDescription = "track distance and speed";
+    obj.NSLocationAlwaysUsageDescription = "track distance and speed";
     obj.NSBluetoothPeripheralUsageDescription = "gopaddler requires Bluetooth to connect to heart rate monitors";
 
 

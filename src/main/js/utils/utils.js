@@ -106,19 +106,23 @@ function usage(username, message) {
 }
 
 function _postSlack(url, username, message) {
-    if (navigator.userAgent === 'gp-dev-ck') {
-        console.log("[" + username + "] " + message);
-        return;
+    try {
+        if (navigator.userAgent === 'gp-dev-ck') {
+            console.log("[" + username + "] " + message);
+            return;
+        }
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: JSON.stringify({
+                text: "[" + username + "] " + message
+                , username: "GoPaddler", icon_emoji: ":monkey_face:"
+            }),
+            dataType: "json"
+        });
+    } catch (excp) {
+        console.log(excp);
     }
-    $.ajax({
-        type: "POST",
-        url: url,
-        data: JSON.stringify({
-            text: "[" + username + "] " + message
-            , username: "GoPaddler", icon_emoji: ":monkey_face:"
-        }),
-        dataType: "json"
-    });
 }
 
 function getUrl(type) {

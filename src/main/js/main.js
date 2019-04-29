@@ -30,6 +30,18 @@ moment.locale(LANGUAGE);
 
 // END handle i18 stuff -------
 
+
+//hack: override App.load
+var originalAppLoad = App.load.bind(App);
+App.load = function (target) {
+    if (target === App.current()) {
+        console.debug('prevented duplicate navigation');
+        return;
+    }
+    var args = Array.prototype.slice.call(arguments);
+    originalAppLoad.apply(this, args);
+};
+
 var SessionView = require('./views/session.view.js').SessionView;
 var SessionSummaryView = require('./views/session.summary.js').SessionSummaryView;
 var SettingsView = require('./views/settings.view.js').SettingsView;

@@ -165,6 +165,10 @@ Context.prototype.displayMetric = function (type, value) {
  * @param args
  */
 Context.prototype.navigate = function (target, clear, args) {
+    if (target === App.current()) {
+        console.debug('prevented duplicate navigation');
+        return;
+    }
     if (target === 'session' && this._settings.isShowTouchGestures()) {
         target = 'session-basic-touch-tutorial';
     }

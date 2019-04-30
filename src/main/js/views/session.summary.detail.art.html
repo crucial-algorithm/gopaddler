@@ -1,0 +1,50 @@
+<div class="summary-intervals-container">
+    <div class="summary-intervals-header">
+        <div>Intervals</div>
+        <div class="summary-intervals-header-expression">{{session}}</div>
+    </div>
+
+    <div class="summary-intervals">
+        <table class="summary-table summary-table-header">
+            <thead class="training-session-mobile-head">
+            <tr>
+                <th width="06%">#</th>
+                <th width="14%">{{"session_summary_detail_duration" | translate}}</th>
+                <th width="14%">{{"session_summary_detail_distance" | translate}}</th>
+                <th width="18%">{{"session_summary_detail_speed" | translate}}</th>
+                <th width="14%">{{"session_summary_detail_spm" | translate}}</th>
+                <th width="18%">{{"session_summary_detail_length" | translate}}</th>
+                <th width="16%">{{"session_summary_detail_heart_rate" | translate}}</th>
+            </tr>
+            </thead>
+        </table>
+        <div class="summary-interval-detail-container">
+            <table class="summary-table summary-table-body">
+                <tbody>
+                {{each intervals}}
+                    <tr data-selector="interval" data-interval="{{$value.index}}" class="{{if $value.first}}summary-table-interval-selected{{/if}}">
+                        <td width="06%">{{$value.position}}</td>
+                        <td width="14%">{{$value.duration}}</td>
+                        <td width="14%">{{$value.distance}}</td>
+                        <td width="18%">{{$value.speed}}</td>
+                        <td width="14%">{{$value.spm}}</td>
+                        <td width="18%">{{$value.length}}</td>
+                        <td width="16%">{{$value.hr}}</td>
+                    </tr>
+                {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="summary-intervals-charts">
+        <div class="summary-intervals-charts-label">{{"session_summary_detail_speed_chart_label" | translate}}</div>
+        <canvas class="summary-intervals-chart" id="speed"></canvas>
+        <div class="summary-intervals-charts-label">{{"session_summary_detail_spm_chart_label" | translate}}</div>
+        <canvas class="summary-intervals-chart" id="spm"></canvas>
+        <div class="summary-intervals-charts-label">{{"session_summary_detail_length_chart_label" | translate}}</div>
+        <canvas class="summary-intervals-chart" id="length"></canvas>
+        <div class="summary-intervals-charts-label">{{"session_summary_detail_hr_chart_label" | translate}}</div>
+        <canvas class="summary-intervals-chart" id="hr"></canvas>
+    </div>
+</div>

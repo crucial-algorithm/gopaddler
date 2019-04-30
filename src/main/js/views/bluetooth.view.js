@@ -23,7 +23,7 @@ function BluetoothView(page, context, request) {
         self.stopScan();
     });
 
-    page.onShown.then(function () {
+    page.onReady.then(function () {
 
         self.$scan = $page.find('.bluetooth-scan-button');
         self.$devices = $page.find('.bluetooth-devices');

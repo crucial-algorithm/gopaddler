@@ -66,7 +66,7 @@ function HomeView(page, context, request) {
 
     self.updateLastSessionDate();
 
-    page.onShown.then(function () {
+    page.onReady.then(function () {
         self.updateLastSessionDate();
         Utils.forceSafariToReflow($('body')[0]);
         if (context.isPortraitMode()) {

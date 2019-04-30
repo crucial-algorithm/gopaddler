@@ -264,6 +264,27 @@ function speedToPace(speed) {
     return minutes + ":" + lpad(seconds, 2);
 }
 
+function calculateAverageSpeed(distance, duration) {
+    if (distance === 0 || duration === 0) return 0;
+    return distance / (duration / 3600000);
+}
+
+function calculateStrokeLength(spm, speed) {
+    if (spm === 0 || speed === 0) return 0;
+    return (speed * 1000 / 3600) / (spm / 60);
+}
+
+function duration(milis) {
+    if (milis < 60000) return (milis / 1000) + "''";
+
+    var minutes = Math.floor(milis / 60000);
+    var seconds = Math.round((milis / 60000 - minutes) * 60);
+
+    if (seconds === 0) return minutes + "'";
+
+    return minutes + "'" + seconds + "''";
+}
+
 exports.mapBrowserToNative = mapBrowserToNative;
 exports.lpad = lpad;
 exports.round2 = round2;
@@ -284,3 +305,6 @@ exports.guid = guid;
 exports.getRandomInt = getRandomInt;
 exports.loopAsync = loopAsync;
 exports.speedToPace = speedToPace;
+exports.calculateAverageSpeed = calculateAverageSpeed;
+exports.calculateStrokeLength = calculateStrokeLength;
+exports.duration = duration;

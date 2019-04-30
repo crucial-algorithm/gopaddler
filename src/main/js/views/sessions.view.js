@@ -403,7 +403,7 @@ function SessionsView(page, context) {
         filterEndDate = moment(context.preferences().getDefaultEndDate());
     }
 
-    page.onShown.then(function () {
+    page.onReady.then(function () {
         var $container = $('#sessions-wrapper-for-pull-to-refresh');
         if (!context.isPortraitMode()) {
             var height = $(document.body).height() - $page.find('.paddler-topbar').height();
@@ -453,6 +453,15 @@ function SessionsView(page, context) {
             e.preventDefault();
             e.stopImmediatePropagation();
         });
+    });
+
+    $page.on('appForward', function () {
+        sessionsListWidget.disable();
+    });
+
+    $page.on('appShow', function () {
+        if (sessionsListWidget)
+            sessionsListWidget.enable();
     });
 }
 

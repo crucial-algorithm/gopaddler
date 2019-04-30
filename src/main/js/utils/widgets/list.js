@@ -2,14 +2,16 @@ var utils = require("../utils");
 
 function List(page, options, context) {
     var self = this;
-    var id = "s" + utils.guid().split('-')[4];
+    self.id = "s" + utils.guid().split('-')[4];
     this.$elem = options.$elem;
     options.ptr = options.ptr || {};
     this.$elem.css("overflow", "scroll");
     self.appContext = context;
+    this.disabled = false;
+    self.options = options;
 
     this.$elem.append($([
-        '<div id=' + id + '/>',
+        '<div id=' + self.id + '/>',
         '<div data-selector="scroll-wrapper" style="position: relative;overflow: scroll;height: ' + this.$elem.height() + 'px">',
         '    <ul class="list-widget">',
         '        <li><empty></li>',
@@ -20,32 +22,15 @@ function List(page, options, context) {
     this.$ul = this.$elem.find('ul');
     this.$scrollWrapper = this.$elem.find('[data-selector="scroll-wrapper"]');
 
-    self.pullToRefreshInstance = PullToRefresh.init({
-        mainElement: "#" + id,
-        getStyles: function () {
-            return ".__PREFIX__ptr {\n pointer-events: none;\n  font-size: 0.85em;\n  font-weight: bold;\n  top: 0;\n  height: 0;\n  transition: height 0.3s, min-height 0.3s;\n  text-align: center;\n  width: 100%;\n  overflow: hidden;\n  display: flex;\n  align-items: flex-end;\n  align-content: stretch;\n}\n.__PREFIX__box {\n  padding: 10px;\n  flex-basis: 100%;\n}\n.__PREFIX__pull {\n  transition: none;\n}\n.__PREFIX__text {\n  margin-top: .33em;\n  color: rgba(0, 0, 0, 0.3);\n}\n.__PREFIX__icon {\n  color: rgba(0, 0, 0, 0.3);\n  transition: transform .3s;\n}\n.__PREFIX__release .__PREFIX__icon {\n  transform: rotate(180deg);\n}";
-        },
-        instructionsPullToRefresh: options.ptr.label,
-        instructionsReleaseToRefresh: options.ptr.release,
-        instructionsRefreshing: options.ptr.refreshing,
-        isBlock: function () {
-            if (options.ptr.disabled === true) return true;
-            var $li = self.$ul.children().first();
-            if (!$li) {
-                return true;
-            }
-            return $li.position().top < 0;
-        },
-        onRefresh: options.ptr.onRefresh,
-        refreshTimeout: 300
-    });
+    self._startPullToRefresh();
 
     if (options.swipe === true) {
         this.swipeEnabled = true;
         this.swipeActionsSelector = options.swipeSelector;
     }
 
-    $(page).off().on('appBeforeBack', function () {
+    self.$page = $(page);
+    self.$page.on('appBeforeBack.' + self.id, function () {
         if (self.pullToRefreshInstance) {
             try {
                 self.pullToRefreshInstance.destroy();
@@ -58,6 +43,7 @@ function List(page, options, context) {
 
     self.progress = {};
     self.lock = {};
+
 }
 
 List.prototype.rows = function($rows) {
@@ -70,8 +56,31 @@ List.prototype.rows = function($rows) {
     }, 0);
 };
 
+List.prototype._startPullToRefresh = function () {
+    var self = this;
+    this.pullToRefreshInstance = PullToRefresh.init({
+        mainElement: "#" + self.id,
+        getStyles: function () {
+            return ".__PREFIX__ptr {\n pointer-events: none;\n  font-size: 0.85em;\n  font-weight: bold;\n  top: 0;\n  height: 0;\n  transition: height 0.3s, min-height 0.3s;\n  text-align: center;\n  width: 100%;\n  overflow: hidden;\n  display: flex;\n  align-items: flex-end;\n  align-content: stretch;\n}\n.__PREFIX__box {\n  padding: 10px;\n  flex-basis: 100%;\n}\n.__PREFIX__pull {\n  transition: none;\n}\n.__PREFIX__text {\n  margin-top: .33em;\n  color: rgba(0, 0, 0, 0.3);\n}\n.__PREFIX__icon {\n  color: rgba(0, 0, 0, 0.3);\n  transition: transform .3s;\n}\n.__PREFIX__release .__PREFIX__icon {\n  transform: rotate(180deg);\n}";
+        },
+        instructionsPullToRefresh: self.options.ptr.label,
+        instructionsReleaseToRefresh: self.options.ptr.release,
+        instructionsRefreshing: self.options.ptr.refreshing,
+        isBlock: function () {
+            if (self.options.ptr.disabled === true) return true;
+            var $li = self.$ul.children().first();
+            if (!$li) {
+                return true;
+            }
+            return $li.position().top < 0;
+        },
+        onRefresh: self.options.ptr.onRefresh,
+        refreshTimeout: 300
+    });
+};
+
 List.prototype.refresh = function () {
-    new IScroll(this.$scrollWrapper[0], {
+    this.iScroll = new IScroll(this.$scrollWrapper[0], {
         scrollbars: false
     });
 
@@ -92,7 +101,21 @@ List.prototype.clear = function () {
 List.prototype.destroy = function () {
     this.$elem.empty();
     this.pullToRefreshInstance.destroy();
+    this.$page.off('appBeforeBack.' + this.id);
 };
+
+List.prototype.disable = function () {
+    this.disabled = true;
+    this.iScroll.disable();
+    this.pullToRefreshInstance.destroy();
+};
+
+List.prototype.enable = function () {
+    this.iScroll.enable();
+    this.disabled = false;
+    this._startPullToRefresh();
+};
+
 
 /**
  * @deprecated by newRow (handles confirm delete auto of the box)

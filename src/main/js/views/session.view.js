@@ -51,7 +51,7 @@ function SessionView(page, context, options) {
     self.appContext = context;
     if (sound === null)  sound = new Sound();
 
-    page.onShown.then(function () {
+    page.onReady.then(function () {
         self.render.apply(self, [page, context, options])
     });
 }

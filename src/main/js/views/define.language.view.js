@@ -30,7 +30,7 @@ function DefineLanguage(page, context) {
         context.setLanguage(selected);
     });
 
-    page.onShown.then(function () {
+    page.onReady.then(function () {
         var $li = $('li[data-option="' + current + '"]').addClass('selected');
 
         $li[0].scrollIntoView();

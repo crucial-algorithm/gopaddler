@@ -3,7 +3,7 @@
 var db = require('../db.js');
 var SessionDetail = require('./session-detail').SessionDetail;
 var utils = require('../utils/utils.js');
-var MeasureEnhancement = require('../core/measure-enhancement').MeasureEnhancement;
+var VERSION_WITH_RECOVERY_IN_DATA = 2;
 
 function Session(sessionStart, angleZ, noiseX, noiseZ, factorX, factorZ, axis, distance, avgSpm, topSpm
     , avgSpeed, topSpeed, avgEfficiency, topEfficiency, sessionEnd) {
@@ -36,6 +36,9 @@ function Session(sessionStart, angleZ, noiseX, noiseZ, factorX, factorZ, axis, d
 
     this.dbgAttempt = undefined;
     this.dbgSyncedRows = 0;
+
+    this.version = VERSION_WITH_RECOVERY_IN_DATA;
+    this.expressionJson = null;
     return this;
 }
 
@@ -226,6 +229,27 @@ Session.prototype.setServerClockGap = function (gap) {
     return this.serverClockGap = gap;
 };
 
+Session.prototype.getVersion = function () {
+    return this.version;
+};
+
+Session.prototype.setVersion = function (value) {
+    return this.version = value;
+};
+
+Session.prototype.getExpressionJson = function () {
+    return this.expressionJson;
+};
+
+/**
+ *
+ * @param value
+ * @returns {*}
+ */
+Session.prototype.setExpressionJson = function (value) {
+    return this.expressionJson = value;
+};
+
 Session.prototype.createAPISession = function () {
 
     var self = this,
@@ -277,8 +301,10 @@ Session.prototype.createAPISession = function () {
 
 Session.prototype.persist = function () {
     var self = this;
-    self.connection.executeSql("INSERT INTO session (id, session_start, anglez, noisex, noisez, factorx, factorz, axis, dbg_file, server_clock_gap) VALUES (?,?,?,?,?,?,?,?,?,?)",
-        [this.id, this.sessionStart, this.angleZ, this.noiseX, this.noiseZ, this.factorX, this.factorZ, this.axis, this.debugFile, this.serverClockGap], function (res) {
+    self.connection.executeSql("INSERT INTO session (id, session_start, anglez, noisex, noisez," +
+        " factorx, factorz, axis, dbg_file, server_clock_gap, version, expr_json) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+        [this.id, this.sessionStart, this.angleZ, this.noiseX, this.noiseZ, this.factorX, this.factorZ, this.axis
+            , this.debugFile, this.serverClockGap, this.version, JSON.stringify(this.expressionJson)], function (res) {
             self.id = res.insertId;
         }, function (error) {
             console.log(error.message);
@@ -329,9 +355,7 @@ Session.prototype.detail = function () {
         defer = $.Deferred();
 
     SessionDetail.get(self.getId(), function (rows) {
-        SessionDetail.getGroupedBySplit(self.getId(), function (splits) {
-            defer.resolve(rows, splits);
-        });
+        defer.resolve(rows);
     });
 
     return defer.promise();
@@ -570,6 +594,8 @@ function sessionFromDbRow(data) {
     session.setExpression(data.expression);
     session.setServerClockGap(data.server_clock_gap);
     session.setAvgHeartRate(data.avg_heart_rate);
+    session.setVersion(data.version);
+    session.setExpressionJson(JSON.parse(data.expr_json));
 
     return session;
 }

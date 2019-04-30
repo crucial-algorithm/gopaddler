@@ -27,7 +27,7 @@ function SelectSessionView(page, context) {
         , isLandscapeMode: !context.isPortraitMode()}));
 
     var self = this;
-    page.onShown.then(function () {
+    page.onReady.then(function () {
         self.render.apply(self, [page, context]);
     });
 }

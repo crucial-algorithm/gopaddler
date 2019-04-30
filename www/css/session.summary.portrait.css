@@ -37,3 +37,8 @@
     line-height: 40px;
     font-weight: 700;
 }
+
+.summary-layout-general {
+    height: 90vh;
+    overflow: auto;
+}

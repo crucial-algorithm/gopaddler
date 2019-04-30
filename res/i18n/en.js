@@ -199,6 +199,18 @@ module.exports = {
         , session_summary_metrics_efficiency: "Length"
         , session_summary_metrics_heart_rate: "HR"
 
+        , session_summary_detail_duration: "D"
+        , session_summary_detail_distance: "m"
+        , session_summary_detail_speed: "Km/h"
+        , session_summary_detail_spm: "SPM"
+        , session_summary_detail_length: "Len."
+        , session_summary_detail_heart_rate: "HR"
+
+        , session_summary_detail_speed_chart_label: "speed"
+        , session_summary_detail_spm_chart_label: "stroke rate"
+        , session_summary_detail_length_chart_label: "stroke length"
+        , session_summary_detail_hr_chart_label: "Heart Rate"
+
         , choose_boat_title: "Choose your boat"
         , choose_boat_actions: "Make your choice..."
         , choose_boat_option_k1: "Go kayak"

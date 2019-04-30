@@ -124,6 +124,14 @@ var ddl = [
         ["ALTER TABLE session_data add column strokes INTEGER default 0"],
         ["ALTER TABLE session_data add column accel_magnitude REAL default 0"],
         ["UPDATE settings SET version = 11"]
+    ],
+
+    // v.1.3
+    [
+        ["ALTER TABLE session_data add column recovery INTEGER default 0"],
+        ["ALTER TABLE session add column version INTEGER default 1"],
+        ["ALTER TABLE session add column expr_json INTEGER default 1"],
+        ["UPDATE settings SET version = 12"]
     ]
 
 ];

@@ -3,7 +3,8 @@ var db = require('../db');
 var Utils = require('../utils/utils');
 var Api = require('../server/api');
 
-function SessionDetail(session, timestamp, distance, speed, spm, efficiency, latitude, longitude, heartRate, split, strokes, magnitude) {
+function SessionDetail(session, timestamp, distance, speed, spm, efficiency, latitude, longitude, heartRate, split
+                       , strokes, magnitude, isRecovery) {
     this.connection = db.getConnection();
     this.session = session;
     this.timestamp = timestamp;
@@ -17,6 +18,7 @@ function SessionDetail(session, timestamp, distance, speed, spm, efficiency, lat
     this.split = split;
     this.strokes = strokes === undefined ? null : strokes;
     this.accelerationMagnitude = magnitude === undefined ? null : magnitude;
+    this.recovery = isRecovery === true;
 }
 
 SessionDetail.prototype.getSession = function () {
@@ -102,12 +104,16 @@ SessionDetail.prototype.getMagnitude = function () {
     return this.accelerationMagnitude;
 };
 
+SessionDetail.prototype.isRecovery = function () {
+    return this.recovery;
+};
+
 SessionDetail.prototype.save = function () {
     this.connection.executeSql("INSERT INTO session_data (session, timestamp, distance, speed, spm, efficiency" +
-        ", latitude, longitude, heart_rate, split, strokes, accel_magnitude) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+        ", latitude, longitude, heart_rate, split, strokes, accel_magnitude, recovery) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
         [this.session, this.timestamp, this.distance, this.speed, this.spm, this.efficiency
             , this.latitude, this.longitude, this.heartRate, this.split, this.strokes
-            , this.accelerationMagnitude], function (res) {
+            , this.accelerationMagnitude, this.recovery === true ? 1 : 0], function (res) {
             // intentionally left blank
         }, function (error) {
             console.log('Error creating session: ' + error.message);
@@ -117,7 +123,7 @@ SessionDetail.prototype.save = function () {
 SessionDetail.get = function(sessionId, callback) {
     var connection = db.getConnection();
     connection.executeSql("SELECT timestamp, distance, speed, spm, efficiency" +
-        ", latitude, longitude, heart_rate, split, strokes, accel_magnitude " +
+        ", latitude, longitude, heart_rate, split, strokes, accel_magnitude, recovery " +
         "FROM session_data WHERE session = ? ORDER BY id ASC",[sessionId], function (res) {
         var rows = [], data;
         try {
@@ -130,34 +136,7 @@ SessionDetail.get = function(sessionId, callback) {
                     , data.latitude ? parseFloat(data.latitude) : undefined
                     , data.longitude ? parseFloat(data.longitude) : undefined
                     , data.heart_rate ? data.heart_rate : 0
-                    , data.split, data.strokes, data.accel_magnitude
-                ));
-            }
-        } catch (err) {
-            Utils.notify(Api.User.getProfile().name, " Failed to load records from session detail " + err);
-            throw err;
-        }
-        callback(rows);
-    }, function (error) {
-        console.log('Error retrieving sessions: ' + error.message);
-    });
-};
-
-SessionDetail.getGroupedBySplit = function(sessionId, callback) {
-    var connection = db.getConnection();
-    connection.executeSql("SELECT timestamp, distance, speed, spm, efficiency, latitude, longitude, heart_rate, split FROM session_data WHERE session = ? ORDER BY id ASC",[sessionId], function (res) {
-        var rows = [], data;
-        try {
-            for (var i = 0; i < res.rows.length; i++) {
-                data = res.rows.item(i);
-
-                rows.push(new SessionDetail(sessionId, parseFloat(data.timestamp), parseFloat(data.distance)
-                    , parseFloat(data.speed), parseFloat(data.spm), parseFloat(data.efficiency)
-                    // the following lines will fail if in equador!
-                    , data.latitude ? parseFloat(data.latitude) : undefined
-                    , data.longitude ? parseFloat(data.longitude) : undefined
-                    , data.heart_rate ? data.heart_rate : 0
-                    , data.split
+                    , data.split, data.strokes, data.accel_magnitude, data.recovery === 1
                 ));
             }
         } catch (err) {

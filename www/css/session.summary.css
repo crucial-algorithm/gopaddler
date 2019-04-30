@@ -102,3 +102,107 @@ canvas.summary-value {
     font-weight: 400;
     line-height: 20px;
 }
+
+
+/* Summary Intervals */
+/* ----------------- */
+
+.summary-intervals-container {
+    height: 90vh;
+    overflow: auto;
+}
+
+.summary-intervals-header {
+    height: 60px;
+    background-color: #EE6156;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.summary-intervals-header-expression {
+    color: #fff;
+    border-radius: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 80vw;
+    white-space: nowrap;
+    padding: 8px;
+    text-align: center;
+}
+
+.summary-intervals {
+    background: #F3F3F3;
+    border: 1px solid #D9D9D9;
+    height: 36vh;
+}
+
+.summary-interval-detail-container {
+    height: calc(36vh - 46px);
+    overflow: auto;
+}
+
+.summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    box-sizing: border-box;
+}
+
+.summary-table-header {
+    color: #B3B3B3;
+    font-size: 10px;
+    text-align: center;
+}
+
+.summary-table-header th {
+    height: 40px;
+    line-height: 40px;
+    padding: 0 0 0 0.75rem;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.summary-table-body {
+    text-align: center;
+    font-size: 12px;
+}
+
+.summary-table-body tr {
+    height: 40px;
+    border-bottom: 1px solid #80808038;
+}
+
+.summary-table-body tr:last-child {
+    border-bottom: 0;
+}
+
+.summary-table-body td {
+    line-height: 40px;
+    vertical-align: middle;
+    padding: 0 0 0 0.75rem;
+}
+
+.summary-table-body tr:first-child td {
+    border-top: 0;
+}
+
+.summary-table-interval-selected {
+    background-color: #666AAB;
+    color: #FFFFFF;
+}
+
+/* Charts */
+.summary-intervals-chart {
+    height: 200px;
+}
+
+.summary-intervals-charts-label {
+    color: #565454;
+    background-color: #D9D9D9;
+    padding-left: 20px;
+    line-height: 50px;
+    text-transform: capitalize;
+}

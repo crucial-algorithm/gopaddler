@@ -4,6 +4,7 @@ var utils = require('../utils/utils.js')
     , Api = require('../server/api')
     , sync = require('../server/sync')
     , template = require('./session.summary.art.html')
+    , detailTemplate = require('./session.summary.detail.art.html')
     , GpChart = require('../utils/widgets/chart').GpChart
 ;
 
@@ -85,11 +86,25 @@ function SessionSummaryView(page, context, sessionSummaryArguments) {
     $page.on('appShow', function () {
 
         session.detail().then(function (records) {
-            self.loadCharts(self.collapseMetrics(records));
+            self.loadCharts(collapseMetrics(records));
+            if (session.getVersion() < 2) return;
+
+            if (!session.getExpression()) return;
+
+            var detail = new SessionSummaryIntervals(session, records);
+            detail.render(context, detailTemplate, $('.summary-layout-intervals'));
+
+            setTimeout(function () {
+                $('[data-selector="slick"]').slick({
+                    dots: true,
+                    speed: 300,
+                    infinite: false,
+                    arrows: false
+                });
+            }, 0);
         });
     });
 }
-
 
 SessionSummaryView.prototype.loadCharts = function(collapsedMetrics) {
     var labels = [], speed = [], spm = [], efficiency = [], hr = [];
@@ -135,10 +150,11 @@ SessionSummaryView.prototype.loadCharts = function(collapsedMetrics) {
     new GpChart($('[data-selector="heart-rate-chart"]'), 'line', labels, dataset(hr), labelFormatter(hr, 0), labelOptions, false);
 };
 
-SessionSummaryView.prototype.collapseMetrics = function(details) {
-
+function collapseMetrics(details, nbrOfPoints) {
     var step, speed = 0, spm = 0, efficiency = 0, hr = 0, count = 0, result = [], i, l
         , distance = details[details.length - 1].getDistance() * 1000, position;
+
+    if (!nbrOfPoints) nbrOfPoints = 10;
 
     if (details.length === 0 || distance < 100) {
         for (i = 0, l = 10; i < l; i++) {
@@ -165,7 +181,7 @@ SessionSummaryView.prototype.collapseMetrics = function(details) {
         return result;
     }
 
-    step = Math.floor(distance / 10);
+    step = Math.floor(distance / nbrOfPoints);
     position = step;
     for (i = 0, l = details.length; i < l; i++) {
         var detail = details[i];
@@ -203,6 +219,157 @@ SessionSummaryView.prototype.collapseMetrics = function(details) {
     }
 
     return result;
+}
+
+
+function SessionSummaryIntervals(session, details) {
+    var interval = null, previous = null, intervals = [], definition = session.getExpressionJson() || [];
+
+    if (session.getVersion() < 2) {
+        return;
+    }
+
+    for (var i = 0, l = details.length; i < l; i++) {
+        var record = details[i];
+        if (record.split === -1) {
+            if (previous) {
+                previous.finishedAt = record.getTimestamp();
+                previous.distanceEnd = record.getDistance();
+                previous = null;
+            }
+            continue;
+        }
+
+        interval = intervals[record.split];
+        if (interval === undefined) {
+            if (previous) {
+                previous.finishedAt = record.getTimestamp();
+                previous.distanceEnd = record.getDistance();
+            }
+            intervals[record.split] = {
+                number: record.split,
+                count: 0,
+                startedAt: record.getTimestamp(),
+                finishedAt: null,
+                distanceStart: record.getDistance(),
+                distanceEnd: null,
+                spmTotal: 0,
+                hrTotal: 0,
+                recovery: record.isRecovery(),
+                isDistanceBased: definition[record.split]._unit.toLowerCase() === 'meters'
+                    || definition[record.split]._unit.toLowerCase() === 'kilometers',
+                records: []
+
+            }
+        }
+
+        intervals[record.split].spmTotal += record.getSpm();
+        intervals[record.split].hrTotal += record.getHeartRate();
+        intervals[record.split].records.push(record);
+        intervals[record.split].count++;
+        previous = interval;
+    }
+
+    console.log(session.expression, intervals);
+//    intervals.map(function (split) {
+//        if (split.recovery) return;
+//        console.log(['duration = ', split.finishedAt - split.startedAt, ' of ', split.recovery ? 'recovery' : 'work'
+//            , 'in a ', split.isDistanceBased ? 'distance' : 'time', ' based interval, having performed '
+//            , Math.round((split.distanceEnd - split.distanceStart) * 1000), ' m'
+//        ].join(''));
+//    });
+
+    this.intervals = intervals;
+    this.session = session;
+}
+
+SessionSummaryIntervals.prototype.render = function(context, template, $container) {
+    var self = this;
+    var position = 1, intervals = [];
+
+    for (var i = 0; i < this.intervals.length; i++) {
+        var interval = this.intervals[i];
+        if (interval.recovery) continue;
+
+
+        var distance = Math.round((interval.distanceEnd - interval.distanceStart) * 1000);
+        var speed = utils.calculateAverageSpeed(interval.distanceEnd - interval.distanceStart
+            , interval.finishedAt - interval.startedAt);
+        var spm = Math.round(interval.spmTotal / interval.count);
+        var length = utils.calculateStrokeLength(interval.spmTotal / interval.count, speed);
+
+        intervals.push({
+            index: i,
+            first: intervals.length === 0,
+            position: position,
+            duration: utils.duration(interval.finishedAt - interval.startedAt),
+            distance: distance,
+            speed: utils.round2(speed),
+            spm: spm,
+            length: utils.round2(length),
+            hr: Math.round(interval.hrTotal / interval.count)
+        });
+        position++;
+    }
+    context.render($container, template({isPortraitMode: context.isPortraitMode()
+        , intervals: intervals, session: self.session.getExpression()}));
+
+
+    setTimeout(function () {
+        self.loadCharts(collapseMetrics(self.intervals[0].records, 50));
+        $container.on('click', '[data-selector="interval"]', function () {
+            var $tr = $(this), interval = self.intervals[parseInt($tr.data('interval'))];
+            $container.find('.summary-table-interval-selected').removeClass('summary-table-interval-selected');
+            $tr.addClass('summary-table-interval-selected');
+            self.loadCharts(collapseMetrics(interval.records, 50));
+        });
+
+    }, 0);
+};
+
+SessionSummaryIntervals.prototype.loadCharts = function(metrics) {
+    var labels = [], speed = [], spm = [], efficiency = [], hr = [];
+
+    metrics.map(function(detail) {
+        labels.push(detail.timestamp);
+        speed.push(detail.speed);
+        spm.push(detail.spm);
+        efficiency.push(detail.efficiency);
+        hr.push(detail.heartRate);
+    });
+
+    var labelFormatter = function(data, places) {
+        return function (value, context) {
+            if (context.dataIndex === 0) return '';
+            if (context.dataIndex === data.length -1 ) return '';
+            if (context.dataIndex % 5 === 0) return utils.round(value, places);
+            return '';
+        }
+    };
+
+    var dataset = function(values) {
+        return {
+            data: values,
+            backgroundbackColor: 'rgba(59, 61, 98, 0)',
+            borderColor: 'rgba(238, 97, 86, 1)',
+            borderWidth: 2,
+            pointRadius: 0
+        }
+    };
+
+    var labelOptions = {
+        weight: 700,
+        size: 10,
+        align: 'start',
+        anchor: 'start',
+        clamp: true
+    };
+
+    new GpChart($('#speed'), 'line', labels, dataset(speed), labelFormatter(speed, 2), labelOptions, false);
+    new GpChart($('#spm'), 'line', labels, dataset(spm), labelFormatter(spm, 0), labelOptions, false);
+    new GpChart($('#length'), 'line', labels, dataset(efficiency), labelFormatter(efficiency, 2), labelOptions, false);
+    new GpChart($('#hr'), 'line', labels, dataset(hr), labelFormatter(hr, 0), labelOptions, false);
+
 };
 
 exports.SessionSummaryView = SessionSummaryView;

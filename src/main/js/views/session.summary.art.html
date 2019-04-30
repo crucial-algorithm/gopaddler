@@ -14,8 +14,9 @@
     <div class="paddler-title-text">{{"session_summary_title" | translate}}</div>
 </div>
 <div class="app-content" style="height:82vh" data-no-scroll="true">
-    <div class="summary-layout">
-        <div id="summary-congrats" class="summary-session">
+    <div class="summary-layout" data-selector="slick">
+        <div class="summary-layout-general">
+            <div id="summary-congrats" class="summary-session">
             <div class="summary-congrats-title">{{"session_summary_congrats" | translate}}</div>
             <div class="summary-icon">
                 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -41,7 +42,7 @@
             <div class="summary-label-highlight">{{"session_summary_session_finished" | translate}}</div>
             <div id="summary-congrats-session" class="summary-current-session"></div>
         </div>
-        <div id="summary-details" class="summary-session-details">
+            <div id="summary-details" class="summary-session-details">
             <div class="summary-icon" style="margin-top: 23px;">
                 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
                          viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
@@ -66,7 +67,7 @@
                 <div class="summary-distance" data-selector="distance"></div>
             </div>
         </div>
-        <div class="summary-stats">
+            <div class="summary-stats">
 
             <h2>{{"session_summary_metrics_title" | translate}}</h2>
 
@@ -111,6 +112,9 @@
                 </div>
             </div>
 
+        </div>
+        </div>
+        <div class="summary-layout-intervals">
         </div>
     </div>
 </div>

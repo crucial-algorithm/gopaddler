@@ -5,7 +5,7 @@ var Api = require('../server/api');
 function ChooseSportsView(page, context) {
     context.render(page, template({isPortraitMode: context.isPortraitMode()}));
 
-    page.onShown.then(function () {
+    page.onReady.then(function () {
         $(".choose-sports-list").on('click', 'li', function (e) {
             var $li = $(e.target)
                 , message = $li.data('message');

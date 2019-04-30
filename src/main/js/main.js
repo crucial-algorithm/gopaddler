@@ -77,14 +77,17 @@ var loadContext = loadContextDefer.promise();
 
 function enrichPageArg(page, pageName) {
     var $page = $(page);
-    var callbacks = [], destroy = [];
-    var appShown = false;
+    var destroy = [], ready = [];
+    var appReady = false;
 
-    $page.off('appShow').on('appShow', function() {
-        appShown = true;
+    $page.on('appShow', function() {
         analytics.setView(pageName);
-        for (var i = 0; i < callbacks.length; i++) {
-            callbacks[i].apply({}, [])
+    });
+
+    $page.off('appReady').on('appReady', function() {
+        appReady = true;
+        for (var i = 0; i < ready.length; i++) {
+            ready[i].apply({}, [])
         }
     });
 
@@ -94,10 +97,10 @@ function enrichPageArg(page, pageName) {
         }
     });
 
-    page.onShown = {
+    page.onReady = {
         then: function (callback) {
-            callbacks.push(callback);
-            if (appShown) {
+            ready.push(callback);
+            if (appReady) {
                 setTimeout(function () {
                     callback.apply({}, []);
                 }, 0);

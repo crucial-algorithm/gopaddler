@@ -11,7 +11,7 @@ function ManageCoachView(page, context) {
     context.render(page, template({isPortraitMode: context.isPortraitMode()}));
     var listCoaches = Api.User.listCoaches();
 
-    page.onShown.then(function () {
+    page.onReady.then(function () {
         self.$listHeader = $('#coach-list-header');
         self.$list = $('#coach-list');
         self.$actions = $('#coach-actions');

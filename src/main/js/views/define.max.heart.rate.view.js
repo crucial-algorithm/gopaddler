@@ -28,7 +28,7 @@ function DefineMaxHeartRateView(page, context) {
         Settings.updateMaxHeartRate(selected);
     });
 
-    page.onShown.then(function () {
+    page.onReady.then(function () {
         var $li = $('li[data-option="' + current + '"]').addClass('selected');
 
         $li[0].scrollIntoView();

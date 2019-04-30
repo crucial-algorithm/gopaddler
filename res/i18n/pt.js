@@ -199,6 +199,18 @@ module.exports = {
         , session_summary_metrics_efficiency: "Deslocamento"
         , session_summary_metrics_heart_rate: "Freq. Cardíaca"
 
+        , session_summary_detail_duration: "D"
+        , session_summary_detail_distance: "m"
+        , session_summary_detail_speed: "Km/h"
+        , session_summary_detail_spm: "RPM"
+        , session_summary_detail_length: "Desl."
+        , session_summary_detail_heart_rate: "R.C."
+
+        , session_summary_detail_speed_chart_label: "Velocidade"
+        , session_summary_detail_spm_chart_label: "Cadência de remada"
+        , session_summary_detail_length_chart_label: "Deslocamento"
+        , session_summary_detail_hr_chart_label: "Ritmo cardíaco"
+
         , choose_boat_title: "Qual o teu barco?"
         , choose_boat_actions: "Seleccione uma opção"
         , choose_boat_option_k1: "Vai kayak"

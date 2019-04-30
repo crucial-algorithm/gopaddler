@@ -22,7 +22,7 @@ function DefineGPSSpeedView(page, context) {
         context.setGpsRefreshRate(selected);
     });
 
-    page.onShown.then(function(){
+    page.onReady.then(function(){
         $('li[data-option="' + current + '"]').addClass('selected');
     })
 }

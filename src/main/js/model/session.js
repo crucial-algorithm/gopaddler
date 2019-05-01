@@ -328,13 +328,15 @@ Session.prototype.finish = function (splits, expression) {
         self.setTopEfficiency(metrics.getMaxEfficiency());
         self.setAvgHeartRate(metrics.getAvgHeartRate());
         self.setExpression(expression);
+        self.setExpressionJson(JSON.stringify(splits));
 
         self.connection.executeSql("update session set distance = ?, avg_spm = ?, top_spm = ?, avg_speed = ?" +
             ", top_speed = ?, avg_efficiency = ?, top_efficiency = ?, avg_heart_rate = ?, session_end = ?" +
-            ", scheduled_session_id = ?,  scheduled_session_start = ?, expression = ? where id = ?"
+            ", scheduled_session_id = ?,  scheduled_session_start = ?, expression = ?, expression_json = ? where id = ?"
             , [metrics.getDistance(), metrics.getAvgSpm(), metrics.getMaxSpm(), metrics.getAvgSpeed(), metrics.getMaxSpeed()
                 , metrics.getAvgEfficiency(), metrics.getMaxEfficiency(), metrics.getAvgHeartRate(), sessionEndAt
-                , self.getScheduledSessionId(), self.getScheduledSessionStart(), self.getExpression(), self.id]
+                , self.getScheduledSessionId(), self.getScheduledSessionStart()
+                , self.getExpression(), self.getExpressionJson(), self.id]
             , function (a) {
                 defer.resolve(this);
             }, function (a) {

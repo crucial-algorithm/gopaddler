@@ -1,0 +1,99 @@
+<div class="summary-zones-container">
+    <div class="summary-zones-header">
+        <div>{{"session_summary_zones_title" | translate}}</div>
+    </div>
+
+
+
+    <div class="summary-zones-zone-container">
+        <div class="summary-zones-label">Velocidade</div>
+        <table class="summary-table summary-table-header summary-zones-table">
+            <thead>
+                <tr>
+                    <th>Km/h</th>
+                    <th>&nbsp;</th>
+                    <th>&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody>
+            {{each speedZones}}
+                <tr>
+                    <td>{{$value.zone}}</td>
+                    <td><div class="summary-zones-table-bar" style="width: {{$value.bar}}%">&nbsp;</div></td>
+                    <td>{{$value.percentage}}%</td>
+                </tr>
+            {{/each}}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="summary-zones-zone-container">
+      <div class="summary-zones-label">Cadência de Remada</div>
+      <table class="summary-table summary-table-header summary-zones-table">
+          <thead>
+              <tr>
+                  <th>RPM</th>
+                  <th>&nbsp;</th>
+                  <th>&nbsp;</th>
+              </tr>
+          </thead>
+          <tbody>
+          {{each spmZones}}
+              <tr>
+                  <td>{{$value.zone}}</td>
+                  <td><div class="summary-zones-table-bar" style="width: {{$value.bar}}%">&nbsp;</div></td>
+                  <td>{{$value.percentage}}%</td>
+              </tr>
+          {{/each}}
+          </tbody>
+      </table>
+    </div>
+
+    <div class="summary-zones-zone-container">
+      <div class="summary-zones-label">Cadência / Velocidade</div>
+      <table class="summary-table summary-table-header summary-zones-table">
+          <thead>
+              <tr>
+                  <th>RPM</th>
+                  <th>Vel. Média</th>
+                  <th>Intervalo</th>
+              </tr>
+          </thead>
+          <tbody>
+          {{each spmToSpeedZones}}
+              <tr>
+                  <td style="width: 15%">{{$value.zone}}</td>
+                  <td style="width: 40%">{{$value.avg}}</td>
+                  <td style="width: 45%; text-align: center">{{$value.min}} - {{$value.max}}</td>
+              </tr>
+          {{/each}}
+          </tbody>
+      </table>
+    </div>
+
+    <div class="summary-zones-zone-container">
+      <div class="summary-zones-label">Ritmo cardiaco</div>
+      <table class="summary-table summary-table-header summary-zones-table">
+          <thead>
+              <tr>
+                  <th>BPM</th>
+                  <th>&nbsp;</th>
+                  <th>&nbsp;</th>
+              </tr>
+          </thead>
+          <tbody>
+          {{each heartRateZones}}
+              <tr>
+                  <td>{{$value.zone}}</td>
+                  <td><div class="summary-zones-table-bar" style="width: {{$value.bar}}%">&nbsp;</div></td>
+                  <td>{{$value.percentage}}%</td>
+              </tr>
+          {{/each}}
+          </tbody>
+      </table>
+    </div>
+
+
+
+
+</div>

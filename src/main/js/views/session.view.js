@@ -185,7 +185,7 @@ SessionView.prototype.render = function (page, context, options) {
         heartRate = hr;
     });
 
-    var splitsIndex = [], lastSplitStartDistance = 0, areSplitsFinished = false, freeze = 0, metrics = [], skip = 0;
+    var lastSplitStartDistance = 0, areSplitsFinished = false, freeze = 0, metrics = [], skip = 0;
     // -- listen for changes in splits and notify server
     splits.onSplitChange(function onSplitChangeListener(from, to, isFinished) {
         var inRecovery = false;
@@ -193,11 +193,14 @@ SessionView.prototype.render = function (page, context, options) {
         var timeSinceStartAt = timer.getTimestamp() - startAt;
         var pausedTime =  timeSinceStartAt !== duration ? timeSinceStartAt - duration : 0;
         if (from) {
-            new SessionDetail(session.getId(), startAt + pausedTime + from.finish.time, from.finish.distance / 1000, location.speed, spm.value
-                , location.efficiency, location.latitude, location.longitude, heartRate, from.position, spm.total, magnitude
-            ).save();
+
             lastSplitStartDistance = from.finish.distance;
             inRecovery = from.isRecovery === true;
+
+            new SessionDetail(session.getId(), startAt + pausedTime + from.finish.time, from.finish.distance / 1000, location.speed, spm.value
+                , location.efficiency, location.latitude, location.longitude, heartRate, from.position, spm.total, magnitude, inRecovery
+            ).save();
+
 
             if (metrics[from.position]) {
                 metrics[from.position].distance = from.finish.distance - from.start.distance;
@@ -206,14 +209,13 @@ SessionView.prototype.render = function (page, context, options) {
         }
 
         if (to) {
-            splitsIndex[to.position] = to.start.time;
-            new SessionDetail(session.getId(), startAt + pausedTime + to.start.time, to.start.distance / 1000, location.speed, spm.value
-                , location.efficiency, location.latitude, location.longitude, heartRate, to.position, spm.total, magnitude
-            ).save();
-
             lastSplitStartDistance = to.start.distance;
             if (to.isRecovery) lastSplitStartDistance = 0;
             inRecovery = to.isRecovery;
+
+            new SessionDetail(session.getId(), startAt + pausedTime + to.start.time, to.start.distance / 1000, location.speed, spm.value
+                , location.efficiency, location.latitude, location.longitude, heartRate, to.position, spm.total, magnitude, inRecovery
+            ).save();
 
             metrics[to.position] = {
                 counter: 0,
@@ -281,7 +283,8 @@ SessionView.prototype.render = function (page, context, options) {
             var position = splits.getPosition();
             // store data
             new SessionDetail(session.getId(), timestamp, location.distance, location.speed, spm.value
-                , location.efficiency, location.latitude, location.longitude, heartRate, position, spm.total, magnitude
+                , location.efficiency, location.latitude, location.longitude, heartRate, position, spm.total
+                , magnitude, splits.isRecovery()
             ).save();
 
             var metric = metrics[position];

@@ -4,7 +4,8 @@ var utils = require('../utils/utils.js')
     , Api = require('../server/api')
     , sync = require('../server/sync')
     , template = require('./session.summary.art.html')
-    , detailTemplate = require('./session.summary.detail.art.html')
+    , intervalsTemplate = require('./session.summary.intervals.art.html')
+    , zonesTemplate = require('./session.summary.zones.art.html')
     , GpChart = require('../utils/widgets/chart').GpChart
 ;
 
@@ -86,14 +87,6 @@ function SessionSummaryView(page, context, sessionSummaryArguments) {
     $page.on('appShow', function () {
 
         session.detail().then(function (records) {
-            self.loadCharts(collapseMetrics(records));
-            if (session.getVersion() < 2) return;
-
-            if (!session.getExpression()) return;
-
-            var detail = new SessionSummaryIntervals(session, records);
-            detail.render(context, detailTemplate, $('.summary-layout-intervals'));
-
             setTimeout(function () {
                 $('[data-selector="slick"]').slick({
                     dots: true,
@@ -102,6 +95,18 @@ function SessionSummaryView(page, context, sessionSummaryArguments) {
                     arrows: false
                 });
             }, 0);
+
+            self.loadCharts(collapseMetrics(records));
+            var output = calculateIntervals(session, records);
+            var zones = new SessionSummaryZones(session, output.working);
+            zones.render(context, zonesTemplate, $('.summary-layout-zones'));
+
+            if (session.getVersion() < 2) return;
+
+            if (!session.getExpression()) return;
+
+            var intervals = new SessionSummaryIntervals(session, output.intervals);
+            intervals.render(context, intervalsTemplate, $('.summary-layout-intervals'));
         });
     });
 }
@@ -221,13 +226,29 @@ function collapseMetrics(details, nbrOfPoints) {
     return result;
 }
 
-
-function SessionSummaryIntervals(session, details) {
-    var interval = null, previous = null, intervals = [], definition = session.getExpressionJson() || [];
+/**
+ *
+ * @param session
+ * @param details  Session data records
+ */
+function calculateIntervals(session, details) {
 
     if (session.getVersion() < 2) {
-        return;
+        return {
+            intervals: [],
+            working: details
+        }
     }
+
+    if (!session.getExpression()) {
+        return {
+            intervals: [],
+            working: details
+        }
+    }
+
+    var interval = null, previous = null, intervals = [], definition, workingDetails = [];
+    definition = session.getExpressionJson();
 
     for (var i = 0, l = details.length; i < l; i++) {
         var record = details[i];
@@ -255,7 +276,7 @@ function SessionSummaryIntervals(session, details) {
                 distanceEnd: null,
                 spmTotal: 0,
                 hrTotal: 0,
-                recovery: record.isRecovery(),
+                recovery: definition[record.split]._recovery === true,
                 isDistanceBased: definition[record.split]._unit.toLowerCase() === 'meters'
                     || definition[record.split]._unit.toLowerCase() === 'kilometers',
                 records: []
@@ -268,19 +289,20 @@ function SessionSummaryIntervals(session, details) {
         intervals[record.split].records.push(record);
         intervals[record.split].count++;
         previous = interval;
+        workingDetails.push(record);
     }
 
-    console.log(session.expression, intervals);
-//    intervals.map(function (split) {
-//        if (split.recovery) return;
-//        console.log(['duration = ', split.finishedAt - split.startedAt, ' of ', split.recovery ? 'recovery' : 'work'
-//            , 'in a ', split.isDistanceBased ? 'distance' : 'time', ' based interval, having performed '
-//            , Math.round((split.distanceEnd - split.distanceStart) * 1000), ' m'
-//        ].join(''));
-//    });
 
+    return {
+        intervals: intervals,
+        working: workingDetails
+    }
+}
+
+function SessionSummaryIntervals(session, intervals) {
     this.intervals = intervals;
     this.session = session;
+    console.log(session.expression, this.intervals);
 }
 
 SessionSummaryIntervals.prototype.render = function(context, template, $container) {
@@ -370,6 +392,83 @@ SessionSummaryIntervals.prototype.loadCharts = function(metrics) {
     new GpChart($('#length'), 'line', labels, dataset(efficiency), labelFormatter(efficiency, 2), labelOptions, false);
     new GpChart($('#hr'), 'line', labels, dataset(hr), labelFormatter(hr, 0), labelOptions, false);
 
+};
+
+
+function SessionSummaryZones(session, records) {
+    var SPM_ZONE_STEP = Api.User.getProfile().boat === "C" ? 5 : 10
+        , spmZones = [], speedZones = [], heartRateZones = [], spmToSpeedZones = [], level = 0;
+
+    for (var i = 0; i < records.length; i++) {
+        var record = records[i];
+        level = Math.floor(record.getSpm() / SPM_ZONE_STEP);
+        if (spmZones[level] === undefined) spmZones[level] = 0;
+        if (spmToSpeedZones[level] === undefined) spmToSpeedZones[level] = [];
+        spmZones[level]++;
+        spmToSpeedZones[level].push(record.getSpeed());
+
+        level = Math.floor(record.getSpeed());
+        if (speedZones[level] === undefined) speedZones[level] = 0;
+        speedZones[level]++;
+
+        level = Math.floor(record.getHeartRate() / 10);
+        if (heartRateZones[level] === undefined) heartRateZones[level] = 0;
+        heartRateZones[level]++;
+    }
+
+    this.speedZones = [];
+    var percentage, max = utils.minMaxAvgStddev(speedZones).max / records.length * 100;
+    for (var sz = 0; sz < speedZones.length; sz++) {
+        if (speedZones[sz] === undefined) continue;
+        percentage = Math.round(speedZones[sz] / records.length * 100);
+        if (percentage === 0) continue;
+        this.speedZones.push({zone: sz, percentage: percentage, bar: percentage * 100/ max});
+    }
+
+    this.spmZones = [];
+    max = utils.minMaxAvgStddev(spmZones).max / records.length * 100;
+    for (var spm = 0; spm < spmZones.length; spm++) {
+        if (spmZones[spm] === undefined) continue;
+        percentage = Math.round(spmZones[spm] / records.length * 100);
+        if (percentage === 0) continue;
+        this.spmZones.push({zone: spm * SPM_ZONE_STEP, percentage: percentage, bar: percentage * 100/ max});
+    }
+
+    this.heartRateZones = [];
+    max = utils.minMaxAvgStddev(heartRateZones).max / records.length * 100;
+    for (var hr = 0; hr < heartRateZones.length; hr++) {
+        if (heartRateZones[hr] === undefined) continue;
+        percentage = Math.round(heartRateZones[hr] / records.length * 100);
+        if (percentage === 0) continue;
+        this.heartRateZones.push({zone: hr * 10, percentage: percentage, bar: percentage * 100/ max});
+    }
+
+    this.spmToSpeedZones = [];
+    for (var ss = 0; ss < spmToSpeedZones.length; ss++) {
+        if (spmToSpeedZones[ss] === undefined || spmToSpeedZones[ss].length === 0) continue;
+        var stats = utils.minMaxAvgStddev(spmToSpeedZones[ss]);
+        this.spmToSpeedZones.push({
+            zone: ss * SPM_ZONE_STEP,
+            avg: utils.round2(stats.avg),
+            min: utils.round2(stats.avg - stats.stddev),
+            max: utils.round2(stats.avg + stats.stddev)
+        });
+    }
+}
+
+SessionSummaryZones.prototype.render = function(context, template, $container) {
+    var self = this;
+
+    context.render($container, template({isPortraitMode: context.isPortraitMode()
+        , speedZones: self.speedZones
+        , spmZones: self.spmZones
+        , heartRateZones: self.heartRateZones
+        , spmToSpeedZones: self.spmToSpeedZones
+    }));
+
+    setTimeout(function () {
+
+    }, 0);
 };
 
 exports.SessionSummaryView = SessionSummaryView;

@@ -95,6 +95,12 @@ function enrichPageArg(page, pageName) {
         for (var i = 0; i < destroy.length; i++) {
             destroy[i].apply({}, [])
         }
+
+        // clear page events
+        $page.off();
+
+        console.log('appDestroy');
+
     });
 
     page.onReady = {

@@ -463,6 +463,10 @@ function SessionsView(page, context) {
         if (sessionsListWidget)
             sessionsListWidget.enable();
     });
+
+    $page.on('appDestroy', function () {
+        sessionsListWidget = null;
+    });
 }
 
 SessionsView.prototype.uploadSession = function ($button, session) {

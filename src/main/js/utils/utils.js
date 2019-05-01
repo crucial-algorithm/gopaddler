@@ -285,6 +285,32 @@ function duration(milis) {
     return minutes + "'" + seconds + "''";
 }
 
+function minMaxAvgStddev(data) {
+    var total = 0, min = null, max = null;
+    data.map(function (value) {
+        total += value;
+        if (min === null || value < min) {
+            min = value;
+        }
+        if (max === null || value > max) {
+            max = value;
+        }
+    });
+    var avg = total / data.length;
+    var diffs = 0;
+    data.map(function (value) {
+        diffs += (avg - value) * (avg - value);
+    });
+
+    var stddev = Math.sqrt(diffs / data.length);
+    return {
+        min: min,
+        max: max,
+        avg: avg,
+        stddev: stddev
+    }
+};
+
 exports.mapBrowserToNative = mapBrowserToNative;
 exports.lpad = lpad;
 exports.round2 = round2;
@@ -308,3 +334,4 @@ exports.speedToPace = speedToPace;
 exports.calculateAverageSpeed = calculateAverageSpeed;
 exports.calculateStrokeLength = calculateStrokeLength;
 exports.duration = duration;
+exports.minMaxAvgStddev = minMaxAvgStddev;

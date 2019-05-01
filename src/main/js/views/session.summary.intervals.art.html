@@ -1,20 +1,20 @@
 <div class="summary-intervals-container">
     <div class="summary-intervals-header">
-        <div>Intervals</div>
+        <div>{{"session_summary_intervals_title" | translate}}</div>
         <div class="summary-intervals-header-expression">{{session}}</div>
     </div>
 
     <div class="summary-intervals">
         <table class="summary-table summary-table-header">
-            <thead class="training-session-mobile-head">
+            <thead>
             <tr>
                 <th width="06%">#</th>
-                <th width="14%">{{"session_summary_detail_duration" | translate}}</th>
-                <th width="14%">{{"session_summary_detail_distance" | translate}}</th>
-                <th width="18%">{{"session_summary_detail_speed" | translate}}</th>
-                <th width="14%">{{"session_summary_detail_spm" | translate}}</th>
-                <th width="18%">{{"session_summary_detail_length" | translate}}</th>
-                <th width="16%">{{"session_summary_detail_heart_rate" | translate}}</th>
+                <th width="14%">{{"session_summary_intervals_duration" | translate}}</th>
+                <th width="14%">{{"session_summary_intervals_distance" | translate}}</th>
+                <th width="18%">{{"session_summary_intervals_speed" | translate}}</th>
+                <th width="14%">{{"session_summary_intervals_spm" | translate}}</th>
+                <th width="18%">{{"session_summary_intervals_length" | translate}}</th>
+                <th width="16%">{{"session_summary_intervals_heart_rate" | translate}}</th>
             </tr>
             </thead>
         </table>
@@ -38,13 +38,13 @@
     </div>
 
     <div class="summary-intervals-charts">
-        <div class="summary-intervals-charts-label">{{"session_summary_detail_speed_chart_label" | translate}}</div>
+        <div class="summary-intervals-charts-label">{{"session_summary_intervals_speed_chart_label" | translate}}</div>
         <canvas class="summary-intervals-chart" id="speed"></canvas>
-        <div class="summary-intervals-charts-label">{{"session_summary_detail_spm_chart_label" | translate}}</div>
+        <div class="summary-intervals-charts-label">{{"session_summary_intervals_spm_chart_label" | translate}}</div>
         <canvas class="summary-intervals-chart" id="spm"></canvas>
-        <div class="summary-intervals-charts-label">{{"session_summary_detail_length_chart_label" | translate}}</div>
+        <div class="summary-intervals-charts-label">{{"session_summary_intervals_length_chart_label" | translate}}</div>
         <canvas class="summary-intervals-chart" id="length"></canvas>
-        <div class="summary-intervals-charts-label">{{"session_summary_detail_hr_chart_label" | translate}}</div>
+        <div class="summary-intervals-charts-label">{{"session_summary_intervals_hr_chart_label" | translate}}</div>
         <canvas class="summary-intervals-chart" id="hr"></canvas>
     </div>
 </div>

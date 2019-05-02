@@ -213,7 +213,13 @@ module.exports = {
         , session_summary_intervals_hr_chart_label: "Ritmo cardíaco"
 
         , session_summary_zones_title: "Zonas"
-        , session_summary_zones_table_header_title: "Zona"
+        , session_summary_zones_speed_label: "Velocidade"
+        , session_summary_zones_spm_label: "Cadência de Remada"
+        , session_summary_zones_spm_speed_label: "Cadência / Velocidade"
+        , session_summary_zones_spm_speed_unit: "RPM"
+        , session_summary_zones_spm_speed_avg_speed_header: "Vel. Média"
+        , session_summary_zones_spm_speed_interval_speed_header: "Intervalo"
+        , session_summary_zones_hr_label: "Ritmo cardiaco"
 
         , choose_boat_title: "Qual o teu barco?"
         , choose_boat_actions: "Seleccione uma opção"

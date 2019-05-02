@@ -106,10 +106,18 @@ canvas.summary-value {
 
 /* Summary Intervals */
 /* ----------------- */
-
+.summary-layout-intervals, .summary-layout-zones {
+    height: 90vh;
+    overflow: hidden;
+}
 .summary-intervals-container {
     height: 90vh;
-    overflow: auto;
+    overflow: hidden;
+}
+
+.summary-intervals-charts {
+    width: 90vw;
+    margin: 0 auto;
 }
 
 .summary-intervals-header {
@@ -124,6 +132,13 @@ canvas.summary-value {
     text-transform: uppercase;
 }
 
+.summary-intervals-body {
+    height: calc(90vh - 64px);
+    overflow: auto;
+    width: 90vw;
+    margin: 0 auto;
+}
+
 .summary-intervals-header-expression {
     color: #fff;
     border-radius: 4px;
@@ -135,10 +150,12 @@ canvas.summary-value {
     text-align: center;
 }
 
-.summary-intervals {
+.summary-intervals-table {
     background: #F3F3F3;
     border: 1px solid #D9D9D9;
     height: 36vh;
+    margin-top: 10px;
+    border-radius: 0 0 4px 4px;
 }
 
 .summary-interval-detail-container {
@@ -158,11 +175,17 @@ canvas.summary-value {
     text-align: center;
 }
 
+.summary-table-header > thead > tr {
+    height: 30px;
+}
+
 .summary-table-header th {
-    height: 40px;
-    line-height: 40px;
+    height: 30px;
+    line-height: 30px;
     padding: 0 0 0 0.75rem;
     border-bottom: 2px solid #dee2e6;
+    font-size: 14px;
+    text-transform: capitalize;
 }
 
 .summary-table-body {
@@ -204,11 +227,18 @@ canvas.summary-value {
     padding-left: 20px;
     line-height: 50px;
     text-transform: capitalize;
+    margin-top: 20px;
+    border-radius: 4px 4px 0 0;
 }
+
+
 
 
 /* Zones */
 /* ------*/
+.summary-zones-zone-card:first-child > .summary-zones-label {
+    margin-top: 10px;
+}
 .summary-zones-header {
     height: 60px;
     background-color: #EE6156;
@@ -222,8 +252,13 @@ canvas.summary-value {
 }
 
 .summary-zones-zone-container {
+    height: calc(90vh - 64px);
+    overflow: auto;
     width: 90vw;
-    margin: 20px auto;
+    margin: 0 auto;
+}
+
+.summary-zones-zone-card {
     border-radius: 4px;
     background-color: #F3F3F3;
 
@@ -253,4 +288,7 @@ canvas.summary-value {
 
 .summary-zones-table-bar {
     background-color: #EE6156;
+}
+.summary-zones-table-bar.summary-zones-table-bar-discarded {
+    background-color: #71B57B;
 }

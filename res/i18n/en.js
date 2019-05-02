@@ -213,7 +213,13 @@ module.exports = {
         , session_summary_intervals_hr_chart_label: "Heart Rate"
 
         , session_summary_zones_title: "Zones"
-        , session_summary_zones_table_header_title: "Zone"
+        , session_summary_zones_speed_label: "Speed"
+        , session_summary_zones_spm_label: "Stroke rate"
+        , session_summary_zones_spm_speed_label: "Stroke rate / Speed"
+        , session_summary_zones_spm_speed_unit: "SPM"
+        , session_summary_zones_spm_speed_avg_speed_header: "Avg. Speed"
+        , session_summary_zones_spm_speed_interval_speed_header: "Interval"
+        , session_summary_zones_hr_label: "Heart Rate"
 
         , choose_boat_title: "Choose your boat"
         , choose_boat_actions: "Make your choice..."

@@ -284,12 +284,15 @@ function calculateIntervals(session, details) {
             }
         }
 
-        intervals[record.split].spmTotal += record.getSpm();
-        intervals[record.split].hrTotal += record.getHeartRate();
-        intervals[record.split].records.push(record);
-        intervals[record.split].count++;
+        if (intervals[record.split].recovery === false ) {
+            intervals[record.split].spmTotal += record.getSpm();
+            intervals[record.split].hrTotal += record.getHeartRate();
+            intervals[record.split].records.push(record);
+            intervals[record.split].count++;
+            workingDetails.push(record);
+        }
+
         previous = interval;
-        workingDetails.push(record);
     }
 
 
@@ -397,7 +400,9 @@ SessionSummaryIntervals.prototype.loadCharts = function(metrics) {
 
 function SessionSummaryZones(session, records) {
     var SPM_ZONE_STEP = Api.User.getProfile().boat === "C" ? 5 : 10
-        , spmZones = [], speedZones = [], heartRateZones = [], spmToSpeedZones = [], level = 0;
+        , spmZones = [], speedZones = [], heartRateZones = [], spmToSpeedZones = [], level = 0
+        , HIDE_PERCENTAGE_THRESHOLD = 5
+    ;
 
     for (var i = 0; i < records.length; i++) {
         var record = records[i];
@@ -418,20 +423,46 @@ function SessionSummaryZones(session, records) {
 
     this.speedZones = [];
     var percentage, max = utils.minMaxAvgStddev(speedZones).max / records.length * 100;
+    var lower = session.getAvgSpeed() - utils.minMaxAvgStddev(records.map(function (rec) {return rec.speed})).stddev;
+    var discarding = false;
     for (var sz = 0; sz < speedZones.length; sz++) {
         if (speedZones[sz] === undefined) continue;
         percentage = Math.round(speedZones[sz] / records.length * 100);
         if (percentage === 0) continue;
-        this.speedZones.push({zone: sz, percentage: percentage, bar: percentage * 100/ max});
+        if (sz < lower && percentage < HIDE_PERCENTAGE_THRESHOLD) discarding = true;
+        this.speedZones.push({zone: sz, percentage: percentage, bar: percentage * 100/ max, discard: discarding});
+        discarding = false;
     }
 
     this.spmZones = [];
     max = utils.minMaxAvgStddev(spmZones).max / records.length * 100;
+    lower = session.getAvgSpm() - utils.minMaxAvgStddev(records.map(function (rec) {return rec.spm})).stddev;
+    discarding = false;
     for (var spm = 0; spm < spmZones.length; spm++) {
         if (spmZones[spm] === undefined) continue;
         percentage = Math.round(spmZones[spm] / records.length * 100);
         if (percentage === 0) continue;
-        this.spmZones.push({zone: spm * SPM_ZONE_STEP, percentage: percentage, bar: percentage * 100/ max});
+        if (spm * SPM_ZONE_STEP < lower && percentage < HIDE_PERCENTAGE_THRESHOLD) discarding = true;
+        this.spmZones.push({zone: spm * SPM_ZONE_STEP, percentage: percentage, bar: percentage * 100/ max, discard: discarding});
+        discarding = false;
+    }
+
+
+    this.spmToSpeedZones = [];
+    lower = session.getAvgSpm() - utils.minMaxAvgStddev(records.map(function (rec) {return rec.spm})).stddev;
+    for (var ss = 0; ss < spmToSpeedZones.length; ss++) {
+        if (spmToSpeedZones[ss] === undefined || spmToSpeedZones[ss].length === 0) continue;
+        percentage = Math.round(spmToSpeedZones[ss].length / records.length * 100);
+        if (percentage === 0) continue;
+        if (ss * SPM_ZONE_STEP < lower && percentage < HIDE_PERCENTAGE_THRESHOLD) continue;
+        var stats = utils.minMaxAvgStddev(spmToSpeedZones[ss]);
+        this.spmToSpeedZones.push({
+            zone: ss * SPM_ZONE_STEP,
+            avg: utils.round2(stats.avg),
+            min: utils.round2(stats.avg - stats.stddev),
+            max: utils.round2(stats.avg + stats.stddev)
+        });
+        discarding = false;
     }
 
     this.heartRateZones = [];
@@ -443,17 +474,6 @@ function SessionSummaryZones(session, records) {
         this.heartRateZones.push({zone: hr * 10, percentage: percentage, bar: percentage * 100/ max});
     }
 
-    this.spmToSpeedZones = [];
-    for (var ss = 0; ss < spmToSpeedZones.length; ss++) {
-        if (spmToSpeedZones[ss] === undefined || spmToSpeedZones[ss].length === 0) continue;
-        var stats = utils.minMaxAvgStddev(spmToSpeedZones[ss]);
-        this.spmToSpeedZones.push({
-            zone: ss * SPM_ZONE_STEP,
-            avg: utils.round2(stats.avg),
-            min: utils.round2(stats.avg - stats.stddev),
-            max: utils.round2(stats.avg + stats.stddev)
-        });
-    }
 }
 
 SessionSummaryZones.prototype.render = function(context, template, $container) {

@@ -3,10 +3,15 @@
     height: 82vh;
 }
 
+.summary-layout-general {
+    width: 100vw;
+}
+
 .summary-session-details {
     width: 50vw;
     height: 82vh;
     overflow: hidden;
+    float: left;
 }
 
 #summary-congrats {
@@ -14,16 +19,17 @@
     height: 100%;
     width: 50%;
     background-color: #EE6156;
+    float: left;
 }
 
 
 .summary-stats {
     width: 50vw;
     background-color: #3b3d62;
-    padding: 2%;
     vertical-align: top;
     text-align: center;
     overflow: auto;
+    float: right;
 }
 
 .summary-congrats-title {
@@ -61,4 +67,16 @@
 
 .summary-distance {
     width: 100%;
+}
+
+.summary-zones-zone-card:last-child {
+    margin-bottom: 90px;
+}
+
+.summary-intervals-table {
+    height: 162px;
+}
+
+.summary-interval-detail-container {
+    height: 132px;
 }

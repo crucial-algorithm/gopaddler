@@ -91,15 +91,12 @@ function SessionSummaryView(page, context, sessionSummaryArguments) {
     $page.on('appShow', function () {
 
         session.detail().then(function (records) {
-            setTimeout(function () {
-                $('[data-selector="slick"]').slick({
-                    dots: true,
-                    speed: 300,
-                    infinite: false,
-                    arrows: false
-                });
-            }, 0);
-
+            $('[data-selector="slick"]').slick({
+                dots: true,
+                speed: 300,
+                infinite: false,
+                arrows: false
+            });
             self.loadCharts(collapseMetrics(records));
             var output = calculateIntervals(session, records);
             var zones = new SessionSummaryZones(session, output.working);

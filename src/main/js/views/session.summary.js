@@ -83,6 +83,10 @@ function SessionSummaryView(page, context, sessionSummaryArguments) {
         });
     });
 
+    if (session.getExpression() === null) {
+        $page.find('.summary-layout-intervals').remove();
+    }
+
 
     $page.on('appShow', function () {
 
@@ -305,7 +309,6 @@ function calculateIntervals(session, details) {
 function SessionSummaryIntervals(session, intervals) {
     this.intervals = intervals;
     this.session = session;
-    console.log(session.expression, this.intervals);
 }
 
 SessionSummaryIntervals.prototype.render = function(context, template, $container) {

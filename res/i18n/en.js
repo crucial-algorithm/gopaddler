@@ -187,6 +187,7 @@ module.exports = {
         , sessions_no_session_found: "You have no sessions for the selected period."
         , sessions_force_sync: "sync"
         , sessions_delete: "delete"
+        , sessions_free: "free"
 
         , session_summary_title: "Summary"
         , session_summary_finish_button: "Finish"

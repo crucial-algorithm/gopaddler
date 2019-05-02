@@ -187,6 +187,7 @@ module.exports = {
         , sessions_no_session_found: "Não há sessões para este período"
         , sessions_force_sync: "Sinc."
         , sessions_delete: "Apagar"
+        , sessions_free: "Livre"
 
         , session_summary_title: "Sumário"
         , session_summary_finish_button: "Terminar"

@@ -92,7 +92,8 @@ function addSessionsToSessionList(sessions, context) {
         $([
                 '<div class="session-row-data">',
                 '	<div>',
-                '		<label class="session-row-label">{hour}</label> {day}',
+                '		<label class="session-row-label">{day}</label> <div>{date}</div>',
+                '		<label class="session-row-label">{intervaled}</label>',
                 '	</div>',
                 '	<div>',
                 '		{duration}',
@@ -105,8 +106,10 @@ function addSessionsToSessionList(sessions, context) {
                 '	</div>',
                 '</div>'
             ].join('')
-                .replace('{hour}', sessionAt.format('HH:mm'))
-                .replace('{day}', sessionAt.format('MMM D'))
+                .replace('{day}', sessionAt.format('ddd'))
+                .replace('{date}', sessionAt.format('MMM D'))
+                .replace('{intervaled}'
+                    , Api.User.hasCoach() && session.getExpression() === null ? context.translate('sessions_free') : '&nbsp;')
                 .replace('{duration}', dDisplay)
                 .replace('{distance}', utils.round2(distance || 0) + ' ' + appContext.getUnit('distance_in_session_list'))
                 .replace('{synced}', session.isSynced() ? context.translate('sessions_synced') : context.translate('sessions_not_synced'))

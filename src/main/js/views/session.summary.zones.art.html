@@ -13,7 +13,7 @@
                 {{each speedZones}}
                     <tr>
                         <td>{{$value.zone}}</td>
-                        <td><div class="summary-zones-table-bar" style="width: {{$value.bar}}%">&nbsp;</div></td>
+                        <td><div class="summary-zones-table-bar {{if $value.discard}}summary-zones-table-bar-discarded{{/if}}" style="width: {{$value.bar}}%">&nbsp;</div></td>
                         <td>{{$value.percentage}}%</td>
                     </tr>
                 {{/each}}

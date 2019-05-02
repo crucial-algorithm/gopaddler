@@ -231,14 +231,14 @@ canvas.summary-value {
     border-radius: 4px 4px 0 0;
 }
 
+.summary-intervals-charts canvas:last-child {
+    margin-bottom: 60px;
+}
 
 
 
 /* Zones */
 /* ------*/
-.summary-zones-zone-card:first-child > .summary-zones-label {
-    margin-top: 10px;
-}
 .summary-zones-header {
     height: 60px;
     background-color: #EE6156;
@@ -261,7 +261,14 @@ canvas.summary-value {
 .summary-zones-zone-card {
     border-radius: 4px;
     background-color: #F3F3F3;
+}
 
+.summary-zones-zone-card:first-child > .summary-zones-label {
+    margin-top: 10px;
+}
+
+.summary-zones-zone-card:last-child {
+    margin-bottom: 60px;
 }
 
 .summary-zones-table {

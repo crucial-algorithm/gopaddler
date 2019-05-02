@@ -101,5 +101,23 @@ Timer.prototype.format = function (time) {
     return this.zeroPad(hour) + ':' + this.zeroPad(minute) + ':' + this.zeroPad(second);
 };
 
+Timer.prototype.formatWithMilis = function (time) {
+    var hour, minute, second, elapsed, milisString = time + "";
+
+    elapsed = Math.round(time / 1000);
+    minute = Math.floor(elapsed / 60);
+    second = elapsed - minute * 60;
+    milisString = milisString.substr(milisString.length - 3, 3);
+
+    hour = 0;
+    if (hour > 0) {
+        hour = Math.floor(minute / 60);
+        minute = minute - hour * 60;
+        return this.zeroPad(hour) + ':' + this.zeroPad(minute) + ':' + this.zeroPad(second);
+    }
+
+    return this.zeroPad(minute) + ':' + this.zeroPad(second) + "." + milisString;
+
+};
 
 exports.Timer = Timer;

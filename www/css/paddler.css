@@ -724,3 +724,33 @@ ul.list-widget > li:nth-child(even) {
     background-color: #F59146;
 }
 
+.widget-distance-progress-bar {
+    height: 90vh;
+    width: 24px;
+    margin-top: 5vh;
+    border: 1px solid #fff;
+    position: fixed;
+    top: 0;
+    right: 12px;
+    z-index: 10000;
+}
+
+.widget-distance-progress-bar > .level {
+    background-color: #ffffffb8;
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+}
+
+.widget-distance-progress-bar > .label {
+    z-index: 1;
+    position: absolute;
+    bottom: 18px;
+    font-size: 16px;
+    color: #fff;
+    width: 42px;
+    margin-left: -10px;
+    text-align: center;
+    background-color: #EE6156;
+    font-weight: 600;
+}

@@ -19,6 +19,7 @@ var StrokeEfficiency = require('../measures/efficiency').StrokeEfficiency;
 var Field = require('../measures/field.js').Field;
 var template = require('./session.view.art.html');
 var Unlock = require('../utils/widgets/unlock').Unlock;
+var DistanceProgressBar = require('../utils/widgets/distance-progress-bar').DistanceProgressBar;
 var Sound = require('../utils/sound').Sound;
 
 
@@ -75,6 +76,8 @@ SessionView.prototype.render = function (page, context, options) {
     var strokeDetector;
     var timer = new Timer(options.startedAt);
     var paused = false;
+    var distanceProgressHandler = new DistanceProgressBar($page);
+    var lastFinishedSplit = null;
 
     if (context.preferences().isShowBlackAndWhite()) {
 
@@ -95,17 +98,21 @@ SessionView.prototype.render = function (page, context, options) {
         $page.find(".app-content").removeClass('black-and-white');
     }
 
-    function splitsHandler(value, isRecovery, isFinished, isBasedInDistance, splitStop) {
+    function splitsHandler(value, isRecovery, isFinished, isBasedInDistance, splitStop, stats) {
         if (paused) return;
         var unit = isRecovery === true ? 'Recovery' : '';
 
+        if (lastFinishedSplit && lastFinishedSplit.isDistanceBased === true && freeze > 0) {
+            return;
+        }
+
         if (isFinished === true) {
-            value = '-';
+            return;
         } else if (isBasedInDistance === false) {
             value = timer.format(value);
         } else {
-            value = Math.ceil(value / 10) * 10;
-            value = Math.round(value);
+            distanceProgressHandler.update(Math.ceil(value / 10) * 10);
+            value = timer.format(timer.getDuration() - stats.start.time);
         }
 
         top.setValue("splits", value);
@@ -193,14 +200,14 @@ SessionView.prototype.render = function (page, context, options) {
         var timeSinceStartAt = timer.getTimestamp() - startAt;
         var pausedTime =  timeSinceStartAt !== duration ? timeSinceStartAt - duration : 0;
         if (from) {
-
+            lastFinishedSplit = from;
             lastSplitStartDistance = from.finish.distance;
             inRecovery = from.isRecovery === true;
 
-            new SessionDetail(session.getId(), startAt + pausedTime + from.finish.time, from.finish.distance / 1000, location.speed, spm.value
-                , location.efficiency, location.latitude, location.longitude, heartRate, from.position, spm.total, magnitude, inRecovery
+            new SessionDetail(session.getId(), startAt + pausedTime + from.finish.time, from.finish.distance / 1000
+                , location.speed, spm.value, location.efficiency, location.latitude, location.longitude, heartRate
+                , from.position, spm.total, magnitude, inRecovery
             ).save();
-
 
             if (metrics[from.position]) {
                 metrics[from.position].distance = from.finish.distance - from.start.distance;
@@ -213,8 +220,9 @@ SessionView.prototype.render = function (page, context, options) {
             if (to.isRecovery) lastSplitStartDistance = 0;
             inRecovery = to.isRecovery;
 
-            new SessionDetail(session.getId(), startAt + pausedTime + to.start.time, to.start.distance / 1000, location.speed, spm.value
-                , location.efficiency, location.latitude, location.longitude, heartRate, to.position, spm.total, magnitude, inRecovery
+            new SessionDetail(session.getId(), startAt + pausedTime + to.start.time, to.start.distance / 1000
+                , location.speed, spm.value, location.efficiency, location.latitude, location.longitude, heartRate
+                , to.position, spm.total, magnitude, inRecovery
             ).save();
 
             metrics[to.position] = {
@@ -226,6 +234,11 @@ SessionView.prototype.render = function (page, context, options) {
                 duration: 0
             };
             skip = 1;
+
+            if (to.isDistanceBased) {
+                distanceProgressHandler.start(/* duration in meters = */ to.duration);
+            }
+
         } else {
             lastSplitStartDistance = 0;
         }
@@ -233,11 +246,13 @@ SessionView.prototype.render = function (page, context, options) {
         areSplitsFinished = isFinished;
         if (inRecovery === true /** prevent freeze when on start on minute turn = */ && to.position >= 0) {
             freeze = 5;
+            distanceProgressHandler.finish();
         }
 
         if (isFinished === true) {
             freeze = 5;
             skip = 1;
+            distanceProgressHandler.finish();
         }
 
         Api.TrainingSessions.live.splitChanged(from, to, isFinished);
@@ -434,7 +449,14 @@ SessionView.prototype.render = function (page, context, options) {
             values.heartRate = latest.heartRate / latest.counter;
             values.speed = (latest.distance / latest.duration) * 3600;
             values.pace = (pace = utils.speedToPace(values.speed)) === null ? 0 : pace;
+
+            // set summary after interval finished in splits field
+            if (lastFinishedSplit && lastFinishedSplit.isDistanceBased === true )
+                values.splits = timer.formatWithMilis(lastFinishedSplit.finish.time - lastFinishedSplit.start.time);
+        } else if (splits.isFinished()) {
+            values.splits = '-';
         }
+
 
         top.setValues(values);
         middle.setValues(values);

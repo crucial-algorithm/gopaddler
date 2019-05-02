@@ -16,7 +16,7 @@ var mockupSessions = [
     {
         expression: "50m/10'' + 50m/10'",
         id: 1,
-        splits: [{_duration: 50, _recovery: false, _unit: 'meters'}, {_duration: 10, _recovery: true, _unit: 'seconds'},{_duration: 50, _recovery: false, _unit: 'meters'}],
+        splits: [{_duration: 100, _recovery: false, _unit: 'meters'}, {_duration: 20, _recovery: true, _unit: 'seconds'},{_duration: 100, _recovery: false, _unit: 'meters'}],
         date: moment().add(-2, 'd')
     }
 ];

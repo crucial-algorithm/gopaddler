@@ -58,3 +58,12 @@
     width: 24vw;
     height: 24vw;
 }
+
+.widget-distance-progress-bar {
+    left: 6px;
+    width: 20px
+}
+
+.widget-distance-progress-bar > .label {
+    background: #3B3D62;
+}

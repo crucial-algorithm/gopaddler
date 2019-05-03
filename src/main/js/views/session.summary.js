@@ -285,7 +285,7 @@ function calculateIntervals(session, details) {
             }
         }
 
-        if (intervals[record.split].recovery === false ) {
+        if (intervals[record.split].recovery === false) {
             intervals[record.split].spmTotal += record.getSpm();
             intervals[record.split].hrTotal += record.getHeartRate();
             intervals[record.split].records.push(record);
@@ -296,7 +296,7 @@ function calculateIntervals(session, details) {
         previous = interval;
     }
 
-    if (intervals[intervals.length -1].finishedAt === null) {
+    if (intervals[intervals.length -1] !== undefined && intervals[intervals.length -1].finishedAt === null) {
         intervals[intervals.length -1].finishedAt = record.getTimestamp();
         intervals[intervals.length -1].distanceEnd = record.getDistance();
     }

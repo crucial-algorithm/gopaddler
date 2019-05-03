@@ -67,6 +67,8 @@ function emulateCordova () {
                 }
             }
 
+            if (!session) session = sessions[0];
+
             success({rows: {length: session.data.length, item: function (index) {
                 if (!session)
                     return null;

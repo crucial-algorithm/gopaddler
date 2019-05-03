@@ -309,7 +309,7 @@ function minMaxAvgStddev(data) {
         avg: avg,
         stddev: stddev
     }
-};
+}
 
 exports.mapBrowserToNative = mapBrowserToNative;
 exports.lpad = lpad;

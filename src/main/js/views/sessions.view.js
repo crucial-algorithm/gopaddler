@@ -468,6 +468,7 @@ function SessionsView(page, context) {
     });
 
     $page.on('appDestroy', function () {
+        sessionsListWidget.destroy();
         sessionsListWidget = null;
     });
 }

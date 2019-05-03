@@ -1,4 +1,7 @@
 var utils = require("../utils");
+var GPPullToRefresh = require('../widgets/pull-to-refresh').GPPullToRefresh;
+
+
 
 function List(page, options, context) {
     var self = this;
@@ -29,18 +32,6 @@ function List(page, options, context) {
         this.swipeActionsSelector = options.swipeSelector;
     }
 
-    self.$page = $(page);
-    self.$page.on('appBeforeBack.' + self.id, function () {
-        if (self.pullToRefreshInstance) {
-            try {
-                self.pullToRefreshInstance.destroy();
-            } catch (err) {
-                self.pullToRefreshInstance = null;
-                console.log('err caught', err);
-            }
-        }
-    });
-
     self.progress = {};
     self.lock = {};
 
@@ -58,24 +49,9 @@ List.prototype.rows = function($rows) {
 
 List.prototype._startPullToRefresh = function () {
     var self = this;
-    this.pullToRefreshInstance = PullToRefresh.init({
-        mainElement: "#" + self.id,
-        getStyles: function () {
-            return ".__PREFIX__ptr {\n pointer-events: none;\n  font-size: 0.85em;\n  font-weight: bold;\n  top: 0;\n  height: 0;\n  transition: height 0.3s, min-height 0.3s;\n  text-align: center;\n  width: 100%;\n  overflow: hidden;\n  display: flex;\n  align-items: flex-end;\n  align-content: stretch;\n}\n.__PREFIX__box {\n  padding: 10px;\n  flex-basis: 100%;\n}\n.__PREFIX__pull {\n  transition: none;\n}\n.__PREFIX__text {\n  margin-top: .33em;\n  color: rgba(0, 0, 0, 0.3);\n}\n.__PREFIX__icon {\n  color: rgba(0, 0, 0, 0.3);\n  transition: transform .3s;\n}\n.__PREFIX__release .__PREFIX__icon {\n  transform: rotate(180deg);\n}";
-        },
-        instructionsPullToRefresh: self.options.ptr.label,
-        instructionsReleaseToRefresh: self.options.ptr.release,
-        instructionsRefreshing: self.options.ptr.refreshing,
-        isBlock: function () {
-            if (self.options.ptr.disabled === true) return true;
-            var $li = self.$ul.children().first();
-            if (!$li) {
-                return true;
-            }
-            return $li.position().top < 0;
-        },
-        onRefresh: self.options.ptr.onRefresh,
-        refreshTimeout: 300
+    this.pullToRefreshInstance = new GPPullToRefresh({
+        selector: "#" + self.id,
+        ptr: self.options.ptr
     });
 };
 
@@ -99,15 +75,16 @@ List.prototype.clear = function () {
 };
 
 List.prototype.destroy = function () {
+    if (this.pullToRefreshInstance)
+        this.pullToRefreshInstance.destroy();
     this.$elem.empty();
-    this.pullToRefreshInstance.destroy();
-    this.$page.off('appBeforeBack.' + this.id);
 };
 
 List.prototype.disable = function () {
     this.disabled = true;
     this.iScroll.disable();
-    this.pullToRefreshInstance.destroy();
+    if (this.pullToRefreshInstance)
+        this.pullToRefreshInstance.destroy();
 };
 
 List.prototype.enable = function () {

@@ -39,9 +39,9 @@ SelectSessionView.prototype.render = function (page, context) {
         , $start = $page.find('.select-session-start')
         , $warmUpFirst = $page.find('#warmup-first')
         , $wrapper = $('.select-session-available-sessions-wrapper')
-        , $list, sessions, session, list;
+        , $list, sessions, session, listWidget;
 
-    list = new List(page, {
+    listWidget = new List(page, {
         $elem: $wrapper,
         swipe: false,
         ptr: {
@@ -95,10 +95,11 @@ SelectSessionView.prototype.render = function (page, context) {
         Api.TrainingSessions.live.deviceDisconnected();
         Api.TrainingSessions.live.clearCommandListeners();
         setTimeout(function () {
-            App.load('home', 'slide-right', undefined, function () {
+            App.load('home', function () {
                 App.removeFromStack();
             });
         }, 1);
+        listWidget.destroy();
         return false;
     });
 
@@ -158,6 +159,7 @@ SelectSessionView.prototype.render = function (page, context) {
     function start(expression, splits, remoteScheduledSessionId, startedAt, isWarmUpFirst, wasStartedRemotely) {
         clearInterval(self.deviceActiveIntervalId);
         Api.TrainingSessions.live.clearCommandListeners();
+        listWidget.destroy();
         context.navigate('session', false, {
             expression: expression,
             splits: splits,
@@ -167,6 +169,7 @@ SelectSessionView.prototype.render = function (page, context) {
             wasStartedRemotely: wasStartedRemotely
         });
 
+        $page.off();
     }
 
     function renderSessions(_sessions) {
@@ -202,10 +205,10 @@ SelectSessionView.prototype.render = function (page, context) {
             ].join(''));
         }
 
-        list.rows(elements);
+        listWidget.rows(elements);
         setTimeout(function () {
             $list.find('li:first').trigger('tap');
-        }, 0)
+        }, 0);
     }
 };
 

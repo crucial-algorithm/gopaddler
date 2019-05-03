@@ -78,6 +78,7 @@ SessionView.prototype.render = function (page, context, options) {
     var paused = false;
     var distanceProgressHandler = new DistanceProgressBar($page);
     var lastFinishedSplit = null;
+    var $window = $(window);
 
     if (context.preferences().isShowBlackAndWhite()) {
 
@@ -161,25 +162,9 @@ SessionView.prototype.render = function (page, context, options) {
     var large = new Field($('.session-large-measure', page), fields.large, LARGE, context, self.hasSplitsDefined);
 
 
-    // prevent drag using touch during session
-    var preventDrag = function (e) {
-        if (self.sessionFinished) {
-            try {
-                this.removeEventListener("touchmove");
-            } catch (err) {}
-            return;
-        }
-        e.preventDefault();
-    };
-    document.addEventListener('touchmove', preventDrag, false);
-
-    $(window).on('scroll.scrolldisabler', function (event) {
-        $(window).scrollTop(0);
+    $window.on('scroll.session', function (event) {
+        $window.scrollTop(0);
         event.preventDefault();
-    });
-
-    $(window).on('touchmove', function (e) {
-        e.preventDefault();
     });
 
     // prepare iterator for live update
@@ -478,7 +463,6 @@ SessionView.prototype.render = function (page, context, options) {
             resetLayout();
         }
 
-        document.removeEventListener('touchmove', preventDrag, false);
         if (isRemoteCommand && context.userHasCoach()) {
             context.navigate('select-session', false, undefined);
         } else {
@@ -576,7 +560,11 @@ SessionView.prototype.render = function (page, context, options) {
     };
 
     $page.on('appBeforeBack', function (e) {
-        return confirmBeforeExit() === true;
+        if (confirmBeforeExit() === true) {
+            $window.off('scroll.session');
+            $window.off('touchmove.session');
+            return true;
+        }
     });
 
     var unlock = new Unlock(context);

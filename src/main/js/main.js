@@ -79,6 +79,7 @@ function enrichPageArg(page, pageName) {
     var $page = $(page);
     var destroy = [], ready = [];
     var appReady = false;
+    var destroyed = false;
 
     $page.on('appShow', function() {
         analytics.setView(pageName);
@@ -92,6 +93,7 @@ function enrichPageArg(page, pageName) {
     });
 
     $page.off('appDestroy').on('appDestroy', function() {
+        if (destroyed === true) debugger;
         for (var i = 0; i < destroy.length; i++) {
             destroy[i].apply({}, [])
         }
@@ -100,7 +102,9 @@ function enrichPageArg(page, pageName) {
         $page.off();
 
         console.log('appDestroy');
-
+        ready = [];
+        destroy = [];
+        destroyed = true;
     });
 
     page.onReady = {
@@ -177,7 +181,6 @@ App.controller('settings', function (page) {
             loadContext = loadContextDefer.promise();
             context = new Context(context.preferences(), environment, translate, LANGUAGE);
             loadContextDefer.resolve(context);
-            new SessionsView(page, context);
         });
     });
 });

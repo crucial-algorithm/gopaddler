@@ -296,6 +296,10 @@ function calculateIntervals(session, details) {
         previous = interval;
     }
 
+    if (intervals[intervals.length -1].finishedAt === null) {
+        intervals[intervals.length -1].finishedAt = record.getTimestamp();
+        intervals[intervals.length -1].distanceEnd = record.getDistance();
+    }
 
     return {
         intervals: intervals,

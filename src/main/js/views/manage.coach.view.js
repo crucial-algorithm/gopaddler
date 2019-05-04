@@ -95,7 +95,6 @@ function ManageCoachView(page, context) {
             self.$loading.hide();
         });
     });
-
 }
 
 ManageCoachView.prototype.render = function (coaches) {
@@ -150,6 +149,10 @@ ManageCoachView.prototype.render = function (coaches) {
     }
 
    self.list.refresh();
+
+    $(self.page).on('appBeforeBack', function () {
+        self.list.destroy();
+    });
 };
 
 ManageCoachView.prototype.showConnectToCoachWarning = function (coach, id) {

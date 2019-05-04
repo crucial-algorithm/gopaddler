@@ -12,6 +12,7 @@ function List(page, options, context) {
     self.appContext = context;
     this.disabled = false;
     self.options = options;
+    self.swipedGroup = null;
 
     this.$elem.append($([
         '<div id=' + self.id + '/>',
@@ -64,12 +65,13 @@ List.prototype._startPullToRefresh = function () {
 };
 
 List.prototype.refresh = function () {
+    var self = this;
     this.iScroll = new IScroll(this.$scrollWrapper[0], {
         scrollbars: false
     });
 
     if (this.swipeEnabled === true) {
-        Swiped.init({
+        self.swipedGroup = Swiped.init({
             query: '[data-selector="row"]',
             list: true,
             left: 0,
@@ -86,6 +88,7 @@ List.prototype.destroy = function () {
     if (this.pullToRefreshInstance)
         this.pullToRefreshInstance.destroy();
     this.$elem.empty();
+    destroySwiped(this.swipedGroup);
 };
 
 List.prototype.disable = function () {
@@ -93,12 +96,23 @@ List.prototype.disable = function () {
     this.iScroll.disable();
     if (this.pullToRefreshInstance)
         this.pullToRefreshInstance.destroy();
+    destroySwiped(this.swipedGroup);
 };
 
 List.prototype.enable = function () {
+    console.log('called enable in swipped group');
     this.iScroll.enable();
     this.disabled = false;
     this._startPullToRefresh();
+
+    if (this.swipeEnabled === true) {
+        this.swipedGroup = Swiped.init({
+            query: '[data-selector="row"]',
+            list: true,
+            left: 0,
+            right: $(this.swipeActionsSelector).width()
+        });
+    }
 };
 
 
@@ -204,5 +218,16 @@ List.prototype._cancelAction = function($button, id) {
     self.lock[id] = false;
 };
 
+function destroySwiped(swipedGroup) {
+    if (!swipedGroup) return;
+
+    if (Array.isArray(swipedGroup)) {
+        swipedGroup.map(function (r) {
+            r.destroy()
+        });
+    } else {
+        swipedGroup.destroy();
+    }
+}
 
 exports.List = List;

@@ -21,6 +21,7 @@ function BluetoothView(page, context, request) {
 
     $page.on('appBeforeBack', function () {
         self.stopScan();
+        if (self.list) self.list.destroy();
     });
 
     page.onReady.then(function () {

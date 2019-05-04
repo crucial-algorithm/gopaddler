@@ -30,12 +30,9 @@ exports.IO = {
 
         file.createWriter(function (fileWriter) {
 
-            console.log('writting to', fileWriter);
-
             fileWriter.seek(fileWriter.length);
             var blob = new Blob([content], {type: 'text/plain'});
             fileWriter.write(blob);
-            console.log('finished');
 
         }, function fail() {
             console.log("write to log failed");

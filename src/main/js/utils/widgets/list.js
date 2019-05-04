@@ -51,7 +51,15 @@ List.prototype._startPullToRefresh = function () {
     var self = this;
     this.pullToRefreshInstance = new GPPullToRefresh({
         selector: "#" + self.id,
-        ptr: self.options.ptr
+        ptr: self.options.ptr,
+        isBlock: function () {
+            if (self.options.ptr.disabled === true) return true;
+            var $li = self.$ul.children().first();
+            if (!$li) {
+                return true;
+            }
+            return $li.position().top < 0;
+        }
     });
 };
 

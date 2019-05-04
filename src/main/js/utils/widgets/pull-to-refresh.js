@@ -13,14 +13,7 @@ function GPPullToRefresh(options) {
         instructionsPullToRefresh: options.ptr.label,
         instructionsReleaseToRefresh: options.ptr.release,
         instructionsRefreshing: options.ptr.refreshing,
-        isBlock: function () {
-            if (options.ptr.disabled === true) return true;
-            var $li = self.$ul.children().first();
-            if (!$li) {
-                return true;
-            }
-            return $li.position().top < 0;
-        },
+        isBlock: options.isBlock,
         onRefresh: options.ptr.onRefresh,
         refreshTimeout: 300
     });

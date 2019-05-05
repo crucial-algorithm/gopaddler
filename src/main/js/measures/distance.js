@@ -30,6 +30,10 @@ Distance.prototype.calculate = function (position, duration) {
     this.distance += GPS.calcDistance(this.previous, position);
     this.positions.push({duration: duration, distance: this.distance, speed: position.coords.speed});
 
+    if (this.positions.length > 50) {
+        this.positions.shift();
+    }
+
     this.previous = position;
     return this.distance;
 };
@@ -105,8 +109,10 @@ Distance.prototype.distanceToTime = function (distance) {
         direction = -1;
     }
 
-    var gap = Math.abs(reference.distance - distance);
-    var distInOneMili = reference.speed / 1000; // speed is in meters per second
+    // speed is in meters per second
+    var distInOneMili = reference.speed / 1000;
+    // multiply by 1000 to convert km in meters (to match speed unit)
+    var gap = Math.abs(reference.distance - distance) * 1000;
 
     return Math.round(reference.duration + (gap / distInOneMili * direction))
 };

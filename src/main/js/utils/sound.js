@@ -1,6 +1,6 @@
 var playStartCountDown, playFinishCountDown, playFinish;
 
-var START_COUNTDOWN_FILE = "start.mp3"
+var START_COUNTDOWN_FILE = "start.m4a"
     , FINISH_COUNTDOWN_FILE = "finish.m4a"
     , FINISH_FILE = "finish-immediately.m4a";
 
@@ -42,7 +42,6 @@ function Sound() {
 }
 
 Sound.prototype.playStartCountDown = function () {
-
     this.start.play();
 };
 

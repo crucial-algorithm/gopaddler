@@ -142,7 +142,7 @@ SessionView.prototype.render = function (page, context, options) {
             , timer.getCurrentDuration.bind(timer));
         splits.onStartCountDownUserNotification(function () { sound.playStartCountDown() });
         splits.onFinishCountDownUserNotification(function () { sound.playFinishCountDown() });
-        splits.onFinishUserNotification(function () { sound.playFinish() });
+        splits.onFinishUserNotification(function () { sound.playFinish(); navigator.vibrate(1000) });
     } else {
         splits = new Splits();
     }

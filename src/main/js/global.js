@@ -103,6 +103,10 @@ function emulateCordova () {
         };
     }
 
+    if (!navigator.vibrate) {
+        navigator.vibrate = function(duration){console.debug('vibrating for ', duration)}
+    }
+
     window.Connection = {"WIFI": 1, "ETHERNET": 2};
 
     window.screen = {

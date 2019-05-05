@@ -18,14 +18,13 @@ function GPPullToRefresh(options) {
         refreshTimeout: 300
     });
 
-    console.log('created instance of pulltorefresh with id ', this.id);
+    console.debug('created instance of pulltorefresh with id ', this.id);
 }
 
 GPPullToRefresh.prototype.destroy = function() {
     var self = this;
     if (self.destroyed === true) {
-        debugger;
-        console.log('Attempt to destroy already destroyed instance ', self.id);
+        console.error('Attempt to destroy already destroyed instance ', self.id);
         return;
     }
 
@@ -33,10 +32,10 @@ GPPullToRefresh.prototype.destroy = function() {
     self.destroyed = true;
     self.instance = {
         destroy: function () {
-            console.log('Uncontrolled attempt to destroy already destroyed instance ', self.id);
+            console.error('Uncontrolled attempt to destroy already destroyed instance ', self.id);
         }
     };
-    console.log('Destroyed instance ', self.id);
+    console.debug('Destroyed instance ', self.id);
 };
 
 

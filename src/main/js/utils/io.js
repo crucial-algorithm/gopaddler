@@ -9,7 +9,7 @@ exports.IO = {
             return defer.promise();
         }
 
-        console.log('open ', filename);
+        console.debug('open ', filename);
 
         var success = function (dir) {
             dir.getFile(filename, {create: true}, function (file) {

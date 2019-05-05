@@ -334,13 +334,13 @@ SessionView.prototype.render = function (page, context, options) {
     }, false);
 
     Api.TrainingSessions.live.on(Api.LiveEvents.RESUME_SPLITS, function (commandId, payload) {
-        console.log('resume splits', commandId);
+        console.debug('resume splits', commandId);
         splits.increment(timer.getCurrentDuration(), distance.timeToDistance(timer.getCurrentDuration()) * 1000);
         Api.TrainingSessions.live.commandSynced(commandId);
     }, false);
 
     Api.TrainingSessions.live.on(Api.LiveEvents.FINISH_WARMUP, function (commandId, payload) {
-        console.log('Finished warm-up @', timer.getCurrentDuration(), payload.durationFinishedAt);
+        console.debug('Finished warm-up @', timer.getCurrentDuration(), payload.durationFinishedAt);
         var currentDuration = timer.getCurrentDuration();
         finishWarmUp(currentDuration);
         splits.reset(0, currentDuration
@@ -527,7 +527,7 @@ SessionView.prototype.render = function (page, context, options) {
                 splits.start(timer.getDuration(), null, function onStart(timestamp, isDistanceBased) {
                     // save offset in session
                     session.setScheduledSessionStart(timestamp);
-                    console.log('on start immediately', timestamp, timer.getCurrentDuration());
+                    console.debug('on start immediately', timestamp, timer.getCurrentDuration());
                     var duration = timer.getCurrentDuration();
                     Api.TrainingSessions.live.finishedWarmUp(duration, distance.timeToDistance(duration) * 1000, isDistanceBased)
                 });
@@ -535,7 +535,7 @@ SessionView.prototype.render = function (page, context, options) {
             }, function finish() {
                 clear();
             }, function cancel() {
-                console.log('canceled');
+                console.debug('canceled');
                 isConfirmDialogOpen = false;
                 Dialog.hideModal();
             });

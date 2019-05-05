@@ -345,6 +345,10 @@ SessionSummaryIntervals.prototype.render = function(context, template, $containe
 
 
     setTimeout(function () {
+        if (!self.intervals || self.intervals.length === 0) {
+            self.loadCharts([]);
+            return;
+        }
         self.loadCharts(collapseMetrics(self.intervals[0].records, 50));
         $container.on('click', '[data-selector="interval"]', function () {
             var $tr = $(this), interval = self.intervals[parseInt($tr.data('interval'))];

@@ -467,7 +467,7 @@ function SessionSummaryZones(session, records) {
         this.spmToSpeedZones.push({
             zone: ss * SPM_ZONE_STEP,
             avg: utils.round2(stats.avg),
-            min: utils.round2(stats.avg - stats.stddev),
+            min: utils.round2(Math.max(0, stats.avg - stats.stddev)),
             max: utils.round2(stats.avg + stats.stddev)
         });
         discarding = false;

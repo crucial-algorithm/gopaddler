@@ -72,6 +72,11 @@ SelectSessionView.prototype.render = function (page, context) {
         Api.TrainingSessions.live.commandSynced(commandId);
     }, true);
 
+    Api.TrainingSessions.live.on(Api.LiveEvents.STATUS, function (commandId) {
+        Api.TrainingSessions.live.updateStatus(context.LIVE_STATUS.AWAITING_TO_START, null);
+        Api.TrainingSessions.live.commandSynced(commandId);
+    }, true);
+
     Api.TrainingSessions.live.on(Api.LiveEvents.START, function (commandId, payload) {
         console.log('start session', payload, "[", commandId, "]");
 
@@ -81,6 +86,7 @@ SelectSessionView.prototype.render = function (page, context) {
             , payload.startedAt
             , /* isWarmupFirst = */ true
             , /* wasStartedRemotely = */ true
+            , /* liveSessionId = */ payload.sessionId
         );
     }, false);
 
@@ -123,9 +129,9 @@ SelectSessionView.prototype.render = function (page, context) {
 
     $start.on('tap', function () {
         if (session)
-            start(session.getExpression(), session.getSplits(), session.getId(), null, $warmUpFirst.is(':checked'), false);
+            start(session.getExpression(), session.getSplits(), session.getId(), null, $warmUpFirst.is(':checked'), false, null);
         else
-            start(null, null, null, null, false, false);
+            start(null, null, null, null, false, false, null);
     });
 
     $('.select-session-play input').on('change', function () {
@@ -151,12 +157,13 @@ SelectSessionView.prototype.render = function (page, context) {
      *
      * @param expression
      * @param splits
-     * @param remoteScheduledSessionId
+     * @param remoteScheduledSessionId          Scheduled session
      * @param startedAt
      * @param {boolean} isWarmUpFirst
      * @param {boolean} wasStartedRemotely
+     * @param {String}  liveSessionId
      */
-    function start(expression, splits, remoteScheduledSessionId, startedAt, isWarmUpFirst, wasStartedRemotely) {
+    function start(expression, splits, remoteScheduledSessionId, startedAt, isWarmUpFirst, wasStartedRemotely, liveSessionId) {
         clearInterval(self.deviceActiveIntervalId);
         Api.TrainingSessions.live.clearCommandListeners();
         listWidget.destroy();
@@ -166,7 +173,8 @@ SelectSessionView.prototype.render = function (page, context) {
             isWarmUpFirst: isWarmUpFirst === true,
             remoteScheduledSessionId: remoteScheduledSessionId,
             startedAt: startedAt,
-            wasStartedRemotely: wasStartedRemotely
+            wasStartedRemotely: wasStartedRemotely,
+            liveSessionId: liveSessionId
         });
 
         $page.off();

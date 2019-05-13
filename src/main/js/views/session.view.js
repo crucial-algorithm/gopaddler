@@ -348,6 +348,11 @@ SessionView.prototype.render = function (page, context, options) {
         Api.TrainingSessions.live.commandSynced(commandId);
     }, false);
 
+    Api.TrainingSessions.live.on(Api.LiveEvents.STATUS, function (commandId) {
+        Api.TrainingSessions.live.updateStatus(context.LIVE_STATUS.RUNNING, options.liveSessionId);
+        Api.TrainingSessions.live.commandSynced(commandId);
+    }, true);
+
     // -- start splits immediately
     if (self.hasSplitsDefined && !self.isWarmUpFirst) {
         session.setScheduledSessionStart(session.getSessionStart());
@@ -586,6 +591,8 @@ SessionView.prototype.render = function (page, context, options) {
     self.syncClockInterval = setInterval(function () {
         Api.TrainingSessions.live.syncClock(Api.User.getId());
     }, 300000);
+
+    Api.TrainingSessions.live.updateStatus(context.LIVE_STATUS.RUNNING, options.liveSessionId);
 
 };
 

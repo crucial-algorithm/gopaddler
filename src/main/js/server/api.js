@@ -630,6 +630,9 @@ exports.TrainingSessions = {
             _call('commandSyncedInDevice', id, type, payload)
         },
 
+        /**
+         * Start listening for coach commands in live session (or just before start)
+         */
         startListening: function () {
 
             if (!isLiveUpdate())
@@ -666,6 +669,13 @@ exports.TrainingSessions = {
 
         clearCommandListeners: function () {
             resetListeners()
+        },
+
+        updateStatus: function (status, sessionId) {
+            if (!isLiveUpdate())
+                return;
+
+            _call('updateDeviceStatus', status, sessionId === undefined ? null : sessionId)
         }
     }
 };

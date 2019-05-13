@@ -80,6 +80,8 @@ function HomeView(page, context, request) {
                 showCoachRequestConfirmationModal(context, request); // create a memory leak, but that's ok for now
             }, 1000);
         });
+
+        Api.TrainingSessions.live.updateStatus(context.LIVE_STATUS.OFFLINE, null);
     });
 
     // store device information

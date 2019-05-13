@@ -303,4 +303,11 @@ var UI = function (ctx) {
     }
 };
 
+
+Context.prototype.LIVE_STATUS = {
+    AWAITING_TO_START: 'Ready',
+    RUNNING: 'Running',
+    OFFLINE: 'Offline'
+};
+
 exports.Context = Context;

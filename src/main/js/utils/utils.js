@@ -226,7 +226,7 @@ function loopAsync(list, callback) {
         },
 
         current: function () {
-            return value;
+            return value === undefined ? null : value;
         },
 
         isFinished: function () {

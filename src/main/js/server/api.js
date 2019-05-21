@@ -261,7 +261,7 @@ function _callWithoutTimeout() {
 /**
  * Authentication methods.
  */
-exports.Auth = {
+var Auth = {
 
     login: function () {
 
@@ -386,7 +386,7 @@ function _setLoginMethod(method) {
 function isLiveUpdate() {
     return asteroid.user.profile.liveUpdateEvery > 0 && Utils.isNetworkConnected();
 }
-exports.User = {
+var User = {
 
     accessed: function() {
         var nbr = parseInt(localStorage.getItem('accesses'));
@@ -507,7 +507,7 @@ var resetListeners = function () {
     }
 };
 
-exports.LiveEvents = {
+var LiveEvents = {
     PING: "ping",
     START: "start",
     PAUSE: "pause",
@@ -526,7 +526,7 @@ resetListeners();
 /**
  * Training Session methods.
  */
-exports.TrainingSessions = {
+var TrainingSessions = {
 
     save: function (trainingSession) {
 
@@ -627,7 +627,14 @@ exports.TrainingSessions = {
             if (!isLiveUpdate())
                 return;
 
-            _call('commandSyncedInDevice', id, type, payload)
+            if (!id) console.log('called sync with no id');
+            console.log(['[ ', asteroid.user.profile.name, ' ]', ' called sync on ', id, ' @', new Date().toISOString()].join(''));
+
+            _call('commandSyncedInDevice', id, type, payload).fail(function (err) {
+                console.log(['[ ', asteroid.user.profile.name, ' ]', ' sync on', id, ' failed with error: ', [err.reason, err.error].join(' | '), ' @', new Date().toISOString()].join(''));
+            }).then(function () {
+                console.log(['[ ', asteroid.user.profile.name, ' ]', ' synced ', id, ' successfully @', new Date().toISOString()].join(''));
+            });
         },
 
         /**
@@ -684,7 +691,7 @@ exports.TrainingSessions = {
 /**
  * Debug Session methods.
  */
-exports.DebugSessions = {
+var DebugSessions = {
 
     save: function (debugSession) {
 
@@ -692,7 +699,7 @@ exports.DebugSessions = {
     }
 };
 
-exports.Server = {
+var Server = {
 
     connect: function () {
         console.debug('connect to server');
@@ -737,16 +744,65 @@ exports.Server = {
         });
 
         // listener for commands
+        var commands = [];
         asteroid.ddp.on("added", function (msg) {
             if (msg.collection !== 'liveCommands')
                 return;
+            commands.push(msg);
+        });
+
+        function callCommandListeners(msg) {
+            if (!msg) {
+                console.error('msg cannot be null in callCommandListeners');
+                return;
+            }
             var record = msg.fields;
             var listeners = liveListeners[record.command] || [];
 
             for (var lst = 0, lstLen = listeners.length; lst < lstLen; lst++) {
                 listeners[lst].apply({}, [msg.id, record.payload]);
             }
-        });
+        }
+
+        setInterval(function () {
+            if (commands.length === 0) return;
+
+            if (commands.length === 1) {
+                callCommandListeners(commands[0]);
+                commands = [];
+                return;
+            }
+
+            // handle ping
+            console.log(['[ ', asteroid.user.profile.name, ' ]', ' clear ping'].join(''));
+            acknowledge(clearCommandsOfType(commands, LiveEvents.PING));
+            console.log(['[ ', asteroid.user.profile.name, ' ]', ' done with clear ping'].join(''));
+
+            // handle push expressions
+            var pushExpressions = clearCommandsOfType(commands, LiveEvents.PUSH_EXPRESSION);
+            for (var p = 0; p < pushExpressions.length; p++) {
+                callCommandListeners(pushExpressions[p]);
+            }
+            console.log(['[ ', asteroid.user.profile.name, ' ]', ' clear PUSH_EXPRESSION'].join(''));
+            acknowledge(pushExpressions);
+            console.log(['[ ', asteroid.user.profile.name, ' ]', ' done with PUSH_EXPRESSION'].join(''));
+
+            // check if there is a finish expression... if there is, clear any commands between start and finish
+            clearCommandsBeforeFinish(commands);
+
+            Utils.loopAsync(commands, function (it) {
+                if (it.isFinished()) {
+                    commands = [];
+                    return;
+                }
+                var command = it.current();
+                callCommandListeners(command);
+                setTimeout(function () {
+                    it.next();
+                }, 50);
+            });
+
+        }, 500);
 
         // listener for friends requests
         asteroid.ddp.on("added", function (msg) {
@@ -765,8 +821,57 @@ exports.Server = {
     }
 };
 
+function clearCommandsOfType(messages, type) {
+    var discarded = [], message, position = 0, total = messages.length, counter = 0;
+    while (counter < total) {
+        counter++;
+
+        message = messages[position];
+        if (message.fields.command === type) {
+            discarded.push(message);
+            messages.splice(position, 1);
+            continue;
+        }
+        position++;
+    }
+    return discarded;
+}
+
+function clearCommandsBeforeFinish(messages) {
+    for (var i = messages.length - 1; i >= 0; i--) {
+        var message = messages[i].fields;
+        if (message.command === LiveEvents.FINISH) {
+            console.log(['[ ', asteroid.user.profile.name, ' ]', ' clear all commands of already finished session!'].join(''));
+            messages = messages.splice(i);
+            break;
+        }
+    }
+    return messages;
+}
+
+
+
+function acknowledge(messages) {
+    if (!$.isArray(messages)) {
+        TrainingSessions.live.commandSynced(messages.id);
+        return;
+    }
+
+    for (var i = 0; i < messages.length; i++) {
+        TrainingSessions.live.commandSynced(messages[i].id);
+    }
+}
+
 function reject() {
     var defer = $.Deferred();
     defer.reject();
     return defer.promise();
 }
+
+
+exports.Auth = Auth;
+exports.User = User;
+exports.LiveEvents = LiveEvents;
+exports.TrainingSessions = TrainingSessions;
+exports.DebugSessions = DebugSessions;
+exports.Server = Server;

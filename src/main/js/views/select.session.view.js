@@ -66,19 +66,18 @@ SelectSessionView.prototype.render = function (page, context) {
     Api.TrainingSessions.live.startListening();
     Api.TrainingSessions.live.syncClock(Api.User.getId());
 
-    Api.TrainingSessions.live.on(Api.LiveEvents.PING, function (commandId) {
-        console.log('ping');
-        Api.TrainingSessions.live.deviceReady();
-        Api.TrainingSessions.live.commandSynced(commandId);
-    }, true);
-
-    Api.TrainingSessions.live.on(Api.LiveEvents.STATUS, function (commandId) {
-        Api.TrainingSessions.live.updateStatus(context.LIVE_STATUS.AWAITING_TO_START, null);
-        Api.TrainingSessions.live.commandSynced(commandId);
-    }, true);
-
     Api.TrainingSessions.live.on(Api.LiveEvents.START, function (commandId, payload) {
-        console.log('start session', payload, "[", commandId, "]");
+        console.log(['[ ', Api.User.getProfile().name, ' ] received start session [', commandId, ']'].join(''));
+
+        // it's x seconds old... coach should already have been warned and
+        // removed athlete from session! Don't run command!
+        if (Date.now() - payload.startedAt > 15000) {
+            console.log(['[ ', Api.User.getProfile().name, ' ]'
+                , ' Ignoring start command because it\'s too old (', Date.now() - payload.startedAt, ' milis)'
+                , ' @', new Date().toISOString(), '[', commandId, ']'].join(''));
+            Api.TrainingSessions.live.commandSynced(commandId);
+            return;
+        }
 
         $warmUpFirst.prop('checked', false);
         Api.TrainingSessions.live.commandSynced(commandId);

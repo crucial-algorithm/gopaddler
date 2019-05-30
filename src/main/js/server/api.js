@@ -788,19 +788,12 @@ var Server = {
             console.log(['[ ', asteroid.user.profile.name, ' ]', ' done with PUSH_EXPRESSION'].join(''));
 
             // check if there is a finish expression... if there is, clear any commands between start and finish
-            clearCommandsBeforeFinish(commands);
+            commands = clearCommandsBeforeFinish(commands);
 
-            Utils.loopAsync(commands, function (it) {
-                if (it.isFinished()) {
-                    commands = [];
-                    return;
-                }
-                var command = it.current();
-                callCommandListeners(command);
-                setTimeout(function () {
-                    it.next();
-                }, 50);
-            });
+            for (var i = 0; i < commands.length; i++) {
+                callCommandListeners(commands[i]);
+            }
+            commands = [];
 
         }, 500);
 
@@ -842,7 +835,7 @@ function clearCommandsBeforeFinish(messages) {
         var message = messages[i].fields;
         if (message.command === LiveEvents.FINISH) {
             console.log(['[ ', asteroid.user.profile.name, ' ]', ' clear all commands of already finished session!'].join(''));
-            messages = messages.splice(i);
+            messages = messages.splice(i + 1);
             break;
         }
     }

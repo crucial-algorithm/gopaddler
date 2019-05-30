@@ -322,7 +322,7 @@ SessionView.prototype.render = function (page, context, options) {
 
     Api.TrainingSessions.live.on(Api.LiveEvents.START_SPLIT, function (commandId, payload) {
 
-        splits.setDistance(distance.timeToDistance(payload.duration));
+        splits.resetDistance(distance.timeToDistance(payload.duration));
         splits.increment();
         Api.TrainingSessions.live.commandSynced(commandId, Api.LiveEvents.START_SPLIT, {
             distance: location.distance,

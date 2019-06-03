@@ -348,9 +348,9 @@ SessionView.prototype.render = function (page, context, options) {
         Api.TrainingSessions.live.commandSynced(commandId);
     }, false);
 
-    Api.TrainingSessions.live.on(Api.LiveEvents.STATUS, function (commandId) {
-        Api.TrainingSessions.live.updateStatus(context.LIVE_STATUS.RUNNING, options.liveSessionId);
-        Api.TrainingSessions.live.commandSynced(commandId);
+    Api.TrainingSessions.live.on(Api.LiveEvents.HARD_RESET, function (commandId, payload) {
+        localStorage.setItem('hard_reset', new Date().toISOString());
+        location.reload();
     }, true);
 
     // -- start splits immediately

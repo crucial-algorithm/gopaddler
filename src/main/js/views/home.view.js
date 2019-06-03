@@ -115,6 +115,18 @@ function HomeView(page, context, request) {
         Api.TrainingSessions.live.commandSynced(id)
     }, true);
 
+
+    var hardResetFrom = localStorage.getItem('hard_reset');
+    if (hardResetFrom) {
+        localStorage.removeItem('hard_reset');
+        hardResetFrom = new Date(hardResetFrom);
+        if (Date.now() - hardResetFrom.getTime() < 10000) {
+            setTimeout(function () {
+                App.load('coach-slave');
+            }, 2000);
+        }
+    }
+
 }
 
 HomeView.prototype.updateLastSessionDate = function () {

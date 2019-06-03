@@ -35,6 +35,7 @@ function SelectSessionView(page, context) {
 SelectSessionView.prototype.render = function (page, context) {
     var self = this
         , $page = $(page)
+        , $back = $page.find('.app-button[data-back]')
         , $selectedSession = $page.find('.selected-session')
         , $start = $page.find('.select-session-start')
         , $warmUpFirst = $page.find('#warmup-first')
@@ -52,6 +53,14 @@ SelectSessionView.prototype.render = function (page, context) {
                 })
             }
         }
+    });
+
+    // bind event to back button
+    $back.on('touchstart', function (e) {
+        e.stopPropagation();
+        App.back('home', function () {
+        });
+        return false;
     });
 
     $list = $wrapper.find('ul');

@@ -96,6 +96,11 @@ CoachSlaveView.prototype.onRendered = function () {
     self.$page.on('tap', function () {
         unlock.show();
     });
+
+    Api.TrainingSessions.live.on(Api.LiveEvents.HARD_RESET, function (commandId, payload) {
+        localStorage.setItem('hard_reset', new Date().toISOString());
+        location.reload();
+    }, true);
 };
 
 /**

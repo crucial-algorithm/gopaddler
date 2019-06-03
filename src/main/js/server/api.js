@@ -499,7 +499,8 @@ var resetListeners = function () {
         resumeSplits: [],
         pushExpression: [],
         syncClock: [],
-        finishWarmup: []
+        finishWarmup: [],
+        hardReset: []
     };
 
     if (syncClockListeners && syncClockListeners.length > 0) {
@@ -518,7 +519,8 @@ var LiveEvents = {
     PUSH_EXPRESSION: "pushExpression",
     SYNC_CLOCK: "syncClock",
     CLOCK_SYNCED: 'clockSynced',
-    FINISH_WARMUP: 'finishWarmup'
+    FINISH_WARMUP: 'finishWarmup',
+    HARD_RESET: 'hardReset'
 };
 
 resetListeners();

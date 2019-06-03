@@ -469,7 +469,7 @@ SessionView.prototype.render = function (page, context, options) {
         }
 
         if (isRemoteCommand && context.userHasCoach()) {
-            context.navigate('select-session', false, undefined);
+            context.navigate('coach-slave', false, undefined);
         } else {
             App.load('session-summary', {session: session, isPastSession: false}, undefined, function () {
                 App.removeFromStack();

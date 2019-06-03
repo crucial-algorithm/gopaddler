@@ -56,49 +56,7 @@ SelectSessionView.prototype.render = function (page, context) {
 
     $list = $wrapper.find('ul');
 
-    Api.TrainingSessions.live.deviceReady();
-    self.deviceActiveIntervalId = setInterval(function () {
-        Api.TrainingSessions.live.deviceReady();
-    }, 1000);
-
-
-    var expressions = {};
-    Api.TrainingSessions.live.startListening();
-    Api.TrainingSessions.live.syncClock(Api.User.getId());
-
-    Api.TrainingSessions.live.on(Api.LiveEvents.START, function (commandId, payload) {
-        console.log(['[ ', Api.User.getProfile().name, ' ] received start session [', commandId, ']'].join(''));
-
-        // it's x seconds old... coach should already have been warned and
-        // removed athlete from session! Don't run command!
-        if (Date.now() - payload.startedAt > 15000) {
-            console.log(['[ ', Api.User.getProfile().name, ' ]'
-                , ' Ignoring start command because it\'s too old (', Date.now() - payload.startedAt, ' milis)'
-                , ' @', new Date().toISOString(), '[', commandId, ']'].join(''));
-            Api.TrainingSessions.live.commandSynced(commandId);
-            return;
-        }
-
-        $warmUpFirst.prop('checked', false);
-        Api.TrainingSessions.live.commandSynced(commandId);
-        start(payload.expression, payload.splits, /* RemoteSessionId = */ null
-            , payload.startedAt
-            , /* isWarmupFirst = */ true
-            , /* wasStartedRemotely = */ true
-            , /* liveSessionId = */ payload.sessionId
-        );
-    }, false);
-
-    Api.TrainingSessions.live.on(Api.LiveEvents.PUSH_EXPRESSION, function (commandId, session) {
-        expressions[session.expression] = session.splits;
-        Api.TrainingSessions.live.commandSynced(commandId);
-        console.log('sync session', session)
-    }, false);
-
     $page.on('appBeforeBack', function () {
-        clearInterval(self.deviceActiveIntervalId);
-        Api.TrainingSessions.live.deviceDisconnected();
-        Api.TrainingSessions.live.clearCommandListeners();
         setTimeout(function () {
             App.load('home', function () {
                 App.removeFromStack();
@@ -108,16 +66,25 @@ SelectSessionView.prototype.render = function (page, context) {
         return false;
     });
 
+    var slave = false;
     $list.on('tap', 'li', function selectSessionHandler(e) {
         $list.find('li').removeClass('selected');
         var $li = $(this);
         var idx = parseInt($li.attr('data-session-idx'));
         $li.addClass('selected');
+        slave = false;
         var value = context.translate("select_session_free_session");
-        if (idx === -1)
-            session = undefined;
-        else
+        if (idx === -1) {
+            session = null;
+            slave = false;
+        } else if (idx === -2) {
+            session = null;
+            value = context.translate("select_session_slave_mode_description");
+            slave = true;
+        } else {
             session = sessions[idx];
+            slave = false;
+        }
 
         if (session)
             value = sessions[idx].getExpression();
@@ -127,6 +94,13 @@ SelectSessionView.prototype.render = function (page, context) {
     });
 
     $start.on('tap', function () {
+        if (slave) {
+            clearInterval(self.deviceActiveIntervalId);
+            Api.TrainingSessions.live.clearCommandListeners();
+            listWidget.destroy();
+            context.navigate('coach-slave', true);
+            return;
+        }
         if (session)
             start(session.getExpression(), session.getSplits(), session.getId(), null, $warmUpFirst.is(':checked'), false, null);
         else
@@ -211,6 +185,15 @@ SelectSessionView.prototype.render = function (page, context) {
                 '</li>'
             ].join(''));
         }
+
+        // add coach slave
+        elements = elements.add(['<li class="select-session-row " data-session-idx="-2">',
+            '    <div class="select-session-row-wrapper">',
+            '        <div><label class="select-session-date-label">' + moment().format('dddd') + '</label>' + moment().format('MMM DD') + '</div>',
+            '        <div><label class="select-session-date-label"></label><span class="session-row-expression">' + context.translate("select_session_slave_mode") + '</span></div>',
+            '    </div>',
+            '</li>'
+        ].join(''));
 
         listWidget.rows(elements);
         setTimeout(function () {

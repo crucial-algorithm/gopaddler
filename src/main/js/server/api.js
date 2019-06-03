@@ -585,7 +585,7 @@ var TrainingSessions = {
         syncClock: function (id) {
             if (!isLiveUpdate())
                 return;
-            _call('syncDeviceClock', id)
+            return _call('syncDeviceClock', id)
         },
 
         /**

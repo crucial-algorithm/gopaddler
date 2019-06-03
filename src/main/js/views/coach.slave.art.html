@@ -1,0 +1,15 @@
+<link rel="stylesheet" href="css/portrait.css">
+<link rel="stylesheet" href="css/coach.slave.css">
+
+{{if isLandscapeMode}}
+<link rel="stylesheet" href="css/coach.slave.landscape.css">
+{{/if}}
+
+
+<div class="app-content" data-no-scroll="true">
+    <div class="coach-slave blink">
+        <i class="fas fa-satellite-dish"></i>
+        <label class="coach-slave-label-connecting">{{ "coach_slave_connecting_to_server" | translate}}</label>
+        <label class="coach-slave-label-connected">{{ "coach_slave_ready" | translate}}</label>
+    </div>
+</div>

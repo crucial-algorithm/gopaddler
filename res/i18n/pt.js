@@ -104,6 +104,8 @@ module.exports = {
 
         , select_session_title: "Escolha uma sessão"
         , select_session_free_session: "Sessão Livre"
+        , select_session_slave_mode: "Delegar ao treinador"
+        , select_session_slave_mode_description: "Inicia para delegar"
         , select_session_warm_up_before_start: "Aquecer antes de iniciar"
 
         , session_tip_hold_to_pause: "Pressionar e deslizar para desbloquear"
@@ -306,6 +308,18 @@ module.exports = {
         , phone_mount_cta_message: 'Visita o nosso <a class="paddler-link" href="$1">website</a> e encomanda o nosso suporte para usares o teu telemóvel com toda a segurança!'
         , phone_mount_cta_acknowledge: "OK"
 
+        , coach_slave_network_not_available_title: "Dispositivo Offline"
+        , coach_slave_network_not_available_message: "Por favor liga a internet antes de usar esta funcionalidade."
+        , coach_slave_network_not_available_acknowledge: "OK"
+
+        , coach_slave_server_not_available_title: "Servidor indesponível"
+        , coach_slave_server_not_available_message: "Impossível estabelecer ligação ao servidor! Tenta mais tarde."
+        , coach_slave_server_not_available_acknowledge: "OK"
+
+        , coach_slave_connecting_to_server: "A ligar ao servidor..."
+        , coach_slave_ready: "À espera do arranque do treinador..."
+        , coach_slave_cancel: "Cancelar"
+        , coach_slave_leave: "Sair"
 
     }
 };

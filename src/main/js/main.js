@@ -25,6 +25,14 @@ function translate(key, placeholders) {
 
 var artTemplateRuntime = require('art-template/lib/runtime');
 artTemplateRuntime.translate = translate;
+artTemplateRuntime.isLandscapeMode = function () {
+    console.log('global isLadscapeMode');
+    var isLandscape = false;
+    loadContext.then(function (context) {
+        isLandscape = context.isPortraitMode() === false;
+    });
+    return isLandscape;
+};
 
 moment.locale(LANGUAGE);
 
@@ -60,6 +68,7 @@ var DefineMaxHeartRateView = require('./views/define.max.heart.rate.view').Defin
 var DefineLanguageView = require('./views/define.language.view').DefineLanguageView;
 var ManageCoachView = require('./views/manage.coach.view').ManageCoachView;
 var ChooseSportsView = require('./views/choose.sports.view').ChooseSportsView;
+var CoachSlaveView = require('./views/coach.slave.view').CoachSlaveView;
 var Api = require('./server/api');
 var utils = require('./utils/utils.js');
 var global = require('./global.js');
@@ -281,6 +290,13 @@ App.controller('choose-sport', function (page, request) {
     enrichPageArg(page, 'choose-sport');
     loadContext.then(function (context) {
         new ChooseSportsView(page, context);
+    });
+});
+
+App.controller('coach-slave', function (page, request) {
+    enrichPageArg(page, 'coach-slave');
+    loadContext.then(function (context) {
+        new CoachSlaveView(page, context);
     });
 });
 

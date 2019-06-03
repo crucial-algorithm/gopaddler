@@ -104,6 +104,8 @@ module.exports = {
 
         , select_session_title: "Choose your session"
         , select_session_free_session: "Free Session"
+        , select_session_slave_mode: "Give control to coach"
+        , select_session_slave_mode_description: "Start to handle control"
         , select_session_warm_up_before_start: "Warm up before start"
 
         , session_tip_hold_to_pause: "Press and slide to unlock"
@@ -304,5 +306,19 @@ module.exports = {
         , phone_mount_cta_title: "In Need of a Phone mount?"
         , phone_mount_cta_message: 'Checkout our phone mount at our <a class="paddler-link" href="$1">website</a> for a easy to use solution (buy it or build your own - it\'s up to you)'
         , phone_mount_cta_acknowledge: "OK"
+
+        , coach_slave_network_not_available_title: "Network not available"
+        , coach_slave_network_not_available_message: "This feature requires internet access! Please connect before using."
+        , coach_slave_network_not_available_acknowledge: "OK"
+
+        , coach_slave_server_not_available_title: "Server not available"
+        , coach_slave_server_not_available_message: "We were unable to connect to the server! Try again later"
+        , coach_slave_server_not_available_acknowledge: "OK"
+
+        , coach_slave_connecting_to_server: "Connecting to server..."
+        , coach_slave_ready: "Waiting for coach to start..."
+        , coach_slave_cancel: "Cancel"
+        , coach_slave_leave: "Leave"
+
     }
 };

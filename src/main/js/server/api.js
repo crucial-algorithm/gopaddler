@@ -550,7 +550,7 @@ var TrainingSessions = {
             if (!isLiveUpdate())
                 return;
 
-            _call('deviceReadyToStart');
+            return _call('deviceReadyToStart');
         },
 
         deviceDisconnected: function () {
@@ -648,7 +648,6 @@ var TrainingSessions = {
             if (commandListenerID) return;
             var sub = asteroid.subscribe('coachRemoteCommands');
             commandListenerID = sub.id;
-
         },
 
         stopListening: function () {

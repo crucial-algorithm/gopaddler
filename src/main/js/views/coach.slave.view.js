@@ -27,10 +27,12 @@ CoachSlaveView.prototype.onRendered = function () {
         return;
     }
 
+    Api.TrainingSessions.live.syncClock(Api.User.getId());
 
-    Api.TrainingSessions.live.startListening();
     var serverResponded = false, maxRetries = 7, attempt = 0;
-    Api.TrainingSessions.live.syncClock(Api.User.getId()).then(function () {
+    Api.TrainingSessions.live.startListening();
+
+    Api.TrainingSessions.live.deviceReady().then(function () {
         serverResponded = true;
         $('.coach-slave.blink').removeClass('blink').addClass('coach-slave-connected');
     });
@@ -48,10 +50,8 @@ CoachSlaveView.prototype.onRendered = function () {
         if (serverResponded === true) {
             clearInterval(checkServerStatusInterval);
         }
-
     }, 1000);
 
-    Api.TrainingSessions.live.deviceReady();
     self.deviceActiveIntervalId = setInterval(function () {
         Api.TrainingSessions.live.deviceReady();
     }, 1000);
@@ -123,7 +123,7 @@ CoachSlaveView.prototype.startSession = function (expression, splits, startedAt,
 
 CoachSlaveView.prototype.confirmLeave = function () {
     var self = this;
-    var $controls, $resume, $finish;
+    var $resume, $finish;
 
     var modal = self.context.ui.modal.undecorated([
         '   <div class="session-controls session-controls-free-session">',

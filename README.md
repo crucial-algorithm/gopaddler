@@ -70,6 +70,28 @@ If truly desperate, edit ./platforms/ios/CordovaLib/Classes/Public/CDVViewContro
 }
 ```
 
+#### Multiple MissingDefaultResource errors
+If multiple errors occur stating MissingDefaultResource where generating --release version, just like the one bellow,
+```
+> Task :app:lintVitalRelease
+/Users/kimile/gopaddler/workspace/app/platforms/android/app/src/main/res/drawable-land-hdpi/screen.png: Error: The drawable "screen" in drawable-land-hdpi has no declaration in the base drawable folder or in a drawable-densitydpi folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+```
+follow these instructions:
+1. Create a folder called drawable at <project>/platforms/android/app/src/main/res/
+2. Copy screen.png to that folder (use larger image)
+3. Run cordova again
+
+#### Duplicate PermissionHelper.java and BuildHelper.java
+These files were included into android platform starting in version 6.x; Just remove duplicate files:
+```
+rm ./app/src/main/java/org/apache/cordova/PermissionHelper.java
+rm ./app/src/main/java/org/apache/cordova/BuildHelper.java
+```
+If it does not work, try removing compat and adding again (version 1.2):
+```
+cordova plugin rm cordova-plugin-compat --force
+cordova plugin add cordova-plugin-compat@1.2
+```
 
 ### Generating splash screen
 #### Install
@@ -77,3 +99,5 @@ Follow instruction @ https://github.com/AlexDisler/cordova-splash
 Note: requires brew install ImageMagic
 
 cordova-splash --splash=./res/splash.png
+
+

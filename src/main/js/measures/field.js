@@ -163,6 +163,17 @@ Field.prototype.init = function (initialType, size) {
 
 };
 
+Field.prototype.animateTransition = function () {
+    var self = this;
+    setTimeout(function () {
+        var $active = self.$element.find('.slick-active');
+        $active.animate({marginLeft: $active.width() / 1.7 * -1}, 1000, undefined, function () {
+            $active.animate({marginLeft: 0}, 1000);
+        });
+    }, 2000);
+
+};
+
 /**
  * define current position
  * @param p

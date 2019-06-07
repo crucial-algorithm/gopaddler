@@ -166,10 +166,6 @@ Context.prototype.displayMetric = function (type, value) {
  */
 Context.prototype.navigate = function (target, clear, args) {
 
-    if (target === 'session' && this._settings.isShowTouchGestures()) {
-        target = 'session-basic-touch-tutorial';
-    }
-
     if (target === 'calibration' && this._settings.isShowCalibrationTips()) {
         target = 'calibration-help';
     }
@@ -184,6 +180,10 @@ Context.prototype.navigate = function (target, clear, args) {
         if (clear === true)
             App.removeFromStack();
     });
+};
+
+Context.prototype.isShowTouchGestures = function () {
+    return this._settings.isShowTouchGestures();
 };
 
 Context.prototype.userHasCoach = function () {

@@ -22,8 +22,10 @@ Unlock.prototype.init = function () {
     $('body').append(this.$dom);
 };
 
-Unlock.prototype.show = function () {
+Unlock.prototype.show = function (duration) {
     var self = this;
+
+    duration = isNaN(parseInt(duration))? 3000 : parseInt(duration);
 
     if (self.showing === true) {
         return;
@@ -65,7 +67,7 @@ Unlock.prototype.show = function () {
             return;
         }
 
-        if (new Date().getTime() - self.lockHandledAt > 3000) {
+        if (new Date().getTime() - self.lockHandledAt > duration) {
             self.hide();
         }
     }, 1034)

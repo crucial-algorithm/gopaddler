@@ -580,6 +580,11 @@ SessionView.prototype.render = function (page, context, options) {
         unlock.show();
     });
 
+    if (context.isShowTouchGestures()) {
+        large.animateTransition();
+        unlock.show(10000);
+    }
+
 
     function finishWarmUp(timestamp) {
         Dialog.hideModal();

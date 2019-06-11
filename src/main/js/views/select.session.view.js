@@ -55,25 +55,22 @@ SelectSessionView.prototype.render = function (page, context) {
         }
     });
 
-    // bind event to back button
-    $back.on('touchstart', function (e) {
-        e.stopPropagation();
-        App.back('home', function () {
-        });
-        return false;
-    });
-
-    $list = $wrapper.find('ul');
-
-    $page.on('appBeforeBack', function () {
+    function back(e) {
         setTimeout(function () {
             App.load('home', function () {
                 App.removeFromStack();
             });
         }, 1);
         listWidget.destroy();
-        return false;
-    });
+        console.log('called');
+    }
+
+    // bind event to back button
+    $back.on('touchstart', back);
+
+    $list = $wrapper.find('ul');
+
+    $page.on('appBeforeBack', back);
 
     var slave = false;
     $list.on('tap', 'li', function selectSessionHandler(e) {

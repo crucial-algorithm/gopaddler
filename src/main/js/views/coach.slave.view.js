@@ -75,16 +75,11 @@ CoachSlaveView.prototype.onRendered = function () {
         self.$page.off();
     }, false);
 
-    self.$page.on('appBeforeBack', function () {
+    self.$page.on('appDestroy', function () {
         clearInterval(self.deviceActiveIntervalId);
         clearInterval(checkServerStatusInterval);
         Api.TrainingSessions.live.deviceDisconnected();
         Api.TrainingSessions.live.clearCommandListeners();
-        setTimeout(function () {
-            App.load('select-session', function () {
-                App.removeFromStack();
-            });
-        }, 1);
         return false;
     });
 

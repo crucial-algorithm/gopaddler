@@ -318,7 +318,9 @@ SessionView.prototype.render = function (page, context, options) {
 
     session.setSessionStart(startAt);
     session.persist();
-    Api.TrainingSessions.live.started(startAt, self.expression);
+    Api.TrainingSessions.live.started(startAt, self.expression).then(function (liveSessionId) {
+        Api.TrainingSessions.live.updateStatus(context.LIVE_STATUS.RUNNING, liveSessionId);
+    });
 
     Api.TrainingSessions.live.on(Api.LiveEvents.START_SPLIT, function (commandId, payload) {
 
@@ -583,6 +585,7 @@ SessionView.prototype.render = function (page, context, options) {
     if (context.isShowTouchGestures()) {
         large.animateTransition();
         unlock.show(10000);
+        context.preferences().touchGesturesShown();
     }
 
 
@@ -596,9 +599,6 @@ SessionView.prototype.render = function (page, context, options) {
     self.syncClockInterval = setInterval(function () {
         Api.TrainingSessions.live.syncClock(Api.User.getId());
     }, 300000);
-
-    Api.TrainingSessions.live.updateStatus(context.LIVE_STATUS.RUNNING, options.liveSessionId);
-
 };
 
 SessionView.prototype.debug = function (session) {

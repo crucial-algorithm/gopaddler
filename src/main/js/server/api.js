@@ -566,7 +566,7 @@ var TrainingSessions = {
             if (!isLiveUpdate())
                 return;
 
-            _call('deviceStarted', startedAt, expression)
+            return _call('deviceStarted', startedAt, expression)
         },
 
         finishedWarmUp: function (duration, distance, isBasedInDistance) {

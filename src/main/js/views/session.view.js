@@ -318,8 +318,13 @@ SessionView.prototype.render = function (page, context, options) {
 
     session.setSessionStart(startAt);
     session.persist();
-    Api.TrainingSessions.live.started(startAt, self.expression).then(function (liveSessionId) {
-        Api.TrainingSessions.live.updateStatus(context.LIVE_STATUS.RUNNING, liveSessionId);
+
+    Api.TrainingSessions.live.resetSessionData();
+
+    Api.TrainingSessions.live.syncClock(Api.User.getId()).then(function () {
+        Api.TrainingSessions.live.started(startAt, self.expression).then(function (liveSessionId) {
+            Api.TrainingSessions.live.updateStatus(context.LIVE_STATUS.RUNNING, liveSessionId);
+        });
     });
 
     Api.TrainingSessions.live.on(Api.LiveEvents.START_SPLIT, function (commandId, payload) {
@@ -358,7 +363,11 @@ SessionView.prototype.render = function (page, context, options) {
     // -- start splits immediately
     if (self.hasSplitsDefined && !self.isWarmUpFirst) {
         session.setScheduledSessionStart(session.getSessionStart());
-        splits.start(undefined, undefined, undefined);
+        splits.start(undefined, undefined, function onStart(timestamp, isDistanceBased, duration) {
+            // save offset in session
+            session.setScheduledSessionStart(timestamp);
+            Api.TrainingSessions.live.finishedWarmUp(duration, distance.timeToDistance(duration) * 1000, isDistanceBased)
+        });
     }
 
 

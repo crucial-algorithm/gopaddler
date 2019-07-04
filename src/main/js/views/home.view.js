@@ -17,6 +17,8 @@ function HomeView(page, context, request) {
     var name = Api.User.getProfile().name ? Api.User.getProfile().name
         : Api.User.getProfile().email;
 
+    Api.TrainingSessions.live.startListening();
+
     Api.TrainingSessions.live.checkApiVersion().then(function (version) {
         var appVersion = __API_VERSION__;
         if (!appVersion || version > appVersion) {
@@ -105,11 +107,13 @@ function HomeView(page, context, request) {
 
     // reply with current time in order to allow server to calculate the difference between device and server clock
     Api.TrainingSessions.live.on(Api.LiveEvents.SYNC_CLOCK, function (id, payload) {
-
+        console.log(['[ ', Api.User.getName(), ' ]', ' Sync clock interim message ', id, ' @', new Date().toISOString()].join(''));
         Api.TrainingSessions.live.commandSynced(id, Api.LiveEvents.SYNC_CLOCK, {begin: payload.begin, device: Api.User.getId(), clock: Date.now()})
     }, true);
 
+    Api.TrainingSessions.live.syncClock(Api.User.getId());
     Api.TrainingSessions.live.on(Api.LiveEvents.CLOCK_SYNCED, function (id, payload) {
+        console.log(['[ ', Api.User.getName(), ' ]', ' Finished clock sync ', id, ' @', new Date().toISOString()].join(''));
         Settings.updateServerClockGap(payload.serverClock);
         context.setServerClockGap(payload.serverClock);
         Api.TrainingSessions.live.commandSynced(id)

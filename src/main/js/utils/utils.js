@@ -108,7 +108,7 @@ function usage(username, message) {
 function _postSlack(url, username, message) {
     try {
         if (navigator.userAgent === 'gp-dev-ck') {
-            console.debug("[" + username + "] " + message);
+            console.debug("[ " + username + " ] " + message);
             return;
         }
         $.ajax({

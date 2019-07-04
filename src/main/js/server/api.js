@@ -428,6 +428,10 @@ var User = {
         return asteroid.user.profile;
     },
 
+    getName: function () {
+        return asteroid.user.profile.name;
+    },
+
     hasChosenBoat: function () {
         return asteroid.user.profile.boat === 'K' || asteroid.user.profile.boat === "C"
     },
@@ -486,10 +490,11 @@ var User = {
     }
 };
 
-var liveListeners, commandListenerID, lastPingAt = null;
+var liveListeners, commandListenerID, lastPingAt = null, internalLiveListeners = {};
 
 var resetListeners = function () {
     var syncClockListeners = (liveListeners || {}).syncClock ;
+    var clockSyncedListeners = (liveListeners || {}).clockSynced ;
     liveListeners = {
         ping: [],
         start: [],
@@ -506,6 +511,11 @@ var resetListeners = function () {
     if (syncClockListeners && syncClockListeners.length > 0) {
         liveListeners.syncClock = syncClockListeners;
     }
+
+    if (clockSyncedListeners && clockSyncedListeners.length > 0) {
+        liveListeners.clockSynced = clockSyncedListeners;
+    }
+
 };
 
 var LiveEvents = {
@@ -525,6 +535,19 @@ var LiveEvents = {
 
 resetListeners();
 
+var lastClockSyncedAt = 0
+    , syncClockCommandId = null, syncClockPayload = {}
+    , liveSessionDefer = null, liveSessionCreated = null
+    ;
+
+/**
+ *
+ * @returns {boolean}
+ */
+function isClockSynced() {
+    return lastClockSyncedAt >= 180000;
+}
+
 /**
  * Training Session methods.
  */
@@ -540,6 +563,12 @@ var TrainingSessions = {
     },
 
     live: {
+
+        resetSessionData: function () {
+            liveSessionDefer = new $.Deferred();
+            liveSessionCreated = liveSessionDefer.promise();
+
+        },
 
         checkApiVersion: function () {
             if (!isLiveUpdate()) {
@@ -565,14 +594,26 @@ var TrainingSessions = {
         started: function (startedAt, expression) {
             if (!isLiveUpdate())
                 return;
+            console.log(['[ ', asteroid.user.profile.name, ' ]', ' Called deviceStarted @', new Date().toISOString()].join(''));
 
-            return _call('deviceStarted', startedAt, expression)
+            var defer = $.Deferred();
+            _call('deviceStarted', startedAt, expression).then(function (id) {
+                liveSessionDefer.resolve();
+                defer.resolve(id);
+            }).fail(function (err) {
+                liveSessionDefer.reject();
+                defer.resolve(err)
+            });
+
+            return defer.promise();
+
         },
 
         finishedWarmUp: function (duration, distance, isBasedInDistance) {
             if (!isLiveUpdate())
                 return;
 
+            console.log(['[ ', asteroid.user.profile.name, ' ]', ' Called finished warm-up @', new Date().toISOString()].join(''));
             _call('deviceFinishedWarmUp', duration, distance, isBasedInDistance)
         },
 
@@ -587,7 +628,30 @@ var TrainingSessions = {
         syncClock: function (id) {
             if (!isLiveUpdate())
                 return;
-            return _call('syncDeviceClock', id)
+
+            var defer = $.Deferred();
+
+            if (isClockSynced()) {
+                defer.resolve(syncClockCommandId, syncClockPayload);
+                return defer.promise();
+            }
+
+            internalLiveListeners[LiveEvents.CLOCK_SYNCED] = function (id, payload) {
+                lastClockSyncedAt = Date.now();
+                syncClockCommandId = id;
+                syncClockPayload = payload;
+                console.log(['[ ', asteroid.user.profile.name, ' ]', ' Internal clock sync listener triggered ', id, ' @', new Date().toISOString()].join(''));
+                setTimeout(function () {
+                    defer.resolve(id, payload);
+                }, 10000);
+            };
+
+            _call('syncDeviceClock', id).fail(function (err) {
+                console.log(['[ ', asteroid.user.profile.name, ' ]', ' Clock sync start failed @', new Date().toISOString()].join(''), err);
+                defer.reject(err)
+            });
+
+            return defer.promise();
         },
 
         /**
@@ -597,7 +661,12 @@ var TrainingSessions = {
             if (!isLiveUpdate())
                 return;
 
-            _call('splitChangedInLiveDevice', from, to)
+            liveSessionCreated.then(function () {
+                console.log(['[ ', asteroid.user.profile.name, ' ]', ' Called splitChangedInLiveDevice @', new Date().toISOString()].join(''));
+                _call('splitChangedInLiveDevice', from, to)
+            }).fail(function () {
+                console.log('skipping splitChangedInLiveDevice because live session is not there');
+            });
         },
 
         update: function (data, status) {
@@ -759,6 +828,9 @@ var Server = {
             }
             var record = msg.fields;
             var listeners = liveListeners[record.command] || [];
+
+            if (internalLiveListeners[record.command]) internalLiveListeners[record.command]
+                .apply({}, [msg.id, record.payload]);
 
             for (var lst = 0, lstLen = listeners.length; lst < lstLen; lst++) {
                 listeners[lst].apply({}, [msg.id, record.payload]);

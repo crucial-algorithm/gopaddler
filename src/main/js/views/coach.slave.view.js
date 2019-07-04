@@ -27,16 +27,17 @@ CoachSlaveView.prototype.onRendered = function () {
         return;
     }
 
-    Api.TrainingSessions.live.syncClock(Api.User.getId());
-
-    var serverResponded = false, maxRetries = 7, attempt = 0;
-    Api.TrainingSessions.live.startListening();
-
-    Api.TrainingSessions.live.deviceReady().then(function () {
-        serverResponded = true;
-        $('.coach-slave.blink').removeClass('blink').addClass('coach-slave-connected');
+    Api.TrainingSessions.live.syncClock(Api.User.getId()).then(function () {
+        Api.TrainingSessions.live.startListening();
+        Api.TrainingSessions.live.deviceReady().then(function () {
+            serverResponded = true;
+            $('.coach-slave.blink').removeClass('blink').addClass('coach-slave-connected');
+        });
+    }).fail(function () {
+        // TODO: show error to the user!
     });
 
+    var serverResponded = false, maxRetries = 7, attempt = 0;
     var checkServerStatusInterval = setInterval(function () {
         attempt++;
 

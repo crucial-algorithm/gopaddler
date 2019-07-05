@@ -19,8 +19,16 @@ function CoachSlaveView(page, context) {
 CoachSlaveView.prototype.onRendered = function () {
     var self = this, context = self.context;
 
+    var unlock = new Unlock(self.context);
+    unlock.onUnlocked(function () {
+        self.confirmLeave();
+    });
 
-    if (!Utils.isNetworkConnected()) {
+    self.$page.on('tap', function () {
+        unlock.show();
+    });
+
+    if (!Utils.isNetworkConnected() || 1 === 1) {
         context.ui.modal.alert(context.translate('coach_slave_network_not_available_title')
             , "<p>" + context.translate('coach_slave_network_not_available_message') + "</p>"
             , context.translate('coach_slave_network_not_available_acknowledge'));
@@ -82,15 +90,6 @@ CoachSlaveView.prototype.onRendered = function () {
         Api.TrainingSessions.live.deviceDisconnected();
         Api.TrainingSessions.live.clearCommandListeners();
         return false;
-    });
-
-    var unlock = new Unlock(self.context);
-    unlock.onUnlocked(function () {
-        self.confirmLeave();
-    });
-
-    self.$page.on('tap', function () {
-        unlock.show();
     });
 
     Api.TrainingSessions.live.on(Api.LiveEvents.HARD_RESET, function (commandId, payload) {

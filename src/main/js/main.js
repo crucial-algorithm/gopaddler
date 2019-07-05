@@ -110,7 +110,6 @@ function enrichPageArg(page, pageName) {
         // clear page events
         $page.off();
 
-        console.log('appDestroy');
         ready = [];
         destroy = [];
         destroyed = true;

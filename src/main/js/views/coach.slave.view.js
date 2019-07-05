@@ -17,7 +17,7 @@ function CoachSlaveView(page, context) {
 }
 
 CoachSlaveView.prototype.onRendered = function () {
-    var self = this;
+    var self = this, context = self.context;
 
 
     if (!Utils.isNetworkConnected()) {

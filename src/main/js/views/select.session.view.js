@@ -62,7 +62,6 @@ SelectSessionView.prototype.render = function (page, context) {
             });
         }, 1);
         listWidget.destroy();
-        console.log('called');
     }
 
     // bind event to back button

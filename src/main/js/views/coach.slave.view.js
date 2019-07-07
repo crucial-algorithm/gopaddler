@@ -28,7 +28,7 @@ CoachSlaveView.prototype.onRendered = function () {
         unlock.show();
     });
 
-    if (!Utils.isNetworkConnected() || 1 === 1) {
+    if (!Utils.isNetworkConnected()) {
         context.ui.modal.alert(context.translate('coach_slave_network_not_available_title')
             , "<p>" + context.translate('coach_slave_network_not_available_message') + "</p>"
             , context.translate('coach_slave_network_not_available_acknowledge'));

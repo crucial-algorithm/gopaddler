@@ -675,7 +675,9 @@ var TrainingSessions = {
                 return;
 
             // Check if coach is watching
-            if (lastPingAt !== null && new Date().getTime() - lastPingAt > 6 * 60 * 1000) {
+            if (lastPingAt !== null && new Date().getTime() - lastPingAt > 6 * 60 * 1000
+            // disable this optimization meanwhile, while live sessions are still unstable
+                && 1 !== 1) {
                 return;
             }
 

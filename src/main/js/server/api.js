@@ -629,9 +629,12 @@ var TrainingSessions = {
             if (!isLiveUpdate())
                 return;
 
+            console.log(['[ ', asteroid.user.profile.name, ' ]', ' calling sync clock ', id, ' @', new Date().toISOString()].join(''));
+
             var defer = $.Deferred();
 
             if (isClockSynced()) {
+                console.log(['[ ', asteroid.user.profile.name, ' ]', ' last clock update is still recent ', id, ' @', new Date().toISOString()].join(''));
                 defer.resolve(syncClockCommandId, syncClockPayload);
                 return defer.promise();
             }
@@ -641,9 +644,7 @@ var TrainingSessions = {
                 syncClockCommandId = id;
                 syncClockPayload = payload;
                 console.log(['[ ', asteroid.user.profile.name, ' ]', ' Internal clock sync listener triggered ', id, ' @', new Date().toISOString()].join(''));
-                setTimeout(function () {
-                    defer.resolve(id, payload);
-                }, 10000);
+                defer.resolve(id, payload);
             };
 
             _call('syncDeviceClock', id).fail(function (err) {

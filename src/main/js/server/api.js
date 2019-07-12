@@ -579,7 +579,7 @@ var TrainingSessions = {
 
         deviceReady: function () {
             if (!isLiveUpdate())
-                return;
+                return reject();
 
             return _call('deviceReadyToStart');
         },
@@ -593,7 +593,7 @@ var TrainingSessions = {
 
         started: function (startedAt, expression) {
             if (!isLiveUpdate())
-                return;
+                return reject();
             console.log(['[ ', asteroid.user.profile.name, ' ]', ' Called deviceStarted @', new Date().toISOString()].join(''));
 
             var defer = $.Deferred();
@@ -627,7 +627,7 @@ var TrainingSessions = {
 
         syncClock: function (id) {
             if (!isLiveUpdate())
-                return;
+                return reject();
 
             console.log(['[ ', asteroid.user.profile.name, ' ]', ' calling sync clock ', id, ' @', new Date().toISOString()].join(''));
 

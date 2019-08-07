@@ -317,7 +317,9 @@ module.exports = {
         , coach_slave_server_not_available_acknowledge: "OK"
 
         , coach_slave_connecting_to_server: "A ligar ao servidor..."
+        , coach_slave_connection_failed: "Ligação falhou"
         , coach_slave_ready: "À espera do arranque do treinador..."
+        , coach_slave_retry: "Tentar novamente"
         , coach_slave_cancel: "Cancelar"
         , coach_slave_leave: "Sair"
 

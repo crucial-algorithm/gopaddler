@@ -6,7 +6,7 @@ var connected = false, loggedIn = false, retries = 0;
 var lastUserAddedMsg = null;
 var onCoachRequest = function(){};
 
-var asteroid = {};
+var asteroid = null;
 
 var serverAvailable = function (d) {
     var defer = d || $.Deferred();
@@ -207,6 +207,8 @@ function _call() {
             defer.reject({error: 504, reason: "no internet connection"});
         }, 0);
         return defer.promise();
+    } else if (!asteroid) {
+        Server.connect();
     }
 
     if (asteroid.failedConnectAttempts > 0 && asteroid.lastFailedConnectionAttempt > 0 && asteroid.lastFailedConnectionAttempt - Date.now() < 60000) {

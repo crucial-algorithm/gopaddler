@@ -1,3 +1,5 @@
+'use static';
+
 var template = require('./coach.slave.art.html');
 var Utils = require('../utils/utils');
 var Api = require('../server/api');
@@ -9,6 +11,7 @@ function CoachSlaveView(page, context) {
     var self = this;
     self.$page = $(page);
     self.deviceActiveIntervalId = null;
+    self.checkServerStatusInterval = null;
     self.context = context;
 
     page.onReady.then(function () {
@@ -17,21 +20,43 @@ function CoachSlaveView(page, context) {
 }
 
 CoachSlaveView.prototype.onRendered = function () {
-    var self = this, context = self.context;
+    var self = this
+        , $retryButton = $('.coach-slave-retry')
+        , $container = $('.coach-slave.blink')
+    ;
 
     var unlock = new Unlock(self.context);
     unlock.onUnlocked(function () {
         self.confirmLeave();
     });
 
-    self.$page.on('tap', function () {
-        unlock.show();
+    $retryButton.off('click').on('click', function (e) {
+        e.stopImmediatePropagation();
+
+        $container.removeClass('coach-slave-connection-failed').addClass('blink');
+        self.connectToServer($container);
     });
+
+    self.$page.on('tap', function (e) {
+        if (e.target !== $retryButton[0]) unlock.show();
+    });
+
+    self.connectToServer($container);
+};
+
+CoachSlaveView.prototype.connectToServer = function ($container) {
+    var self = this, context = self.context;
+    var serverResponded = false, maxRetries = 7, attempt = 0;
+
+    clearInterval(self.deviceActiveIntervalId);
+    clearInterval(self.checkServerStatusInterval);
 
     if (!Utils.isNetworkConnected()) {
         context.ui.modal.alert(context.translate('coach_slave_network_not_available_title')
             , "<p>" + context.translate('coach_slave_network_not_available_message') + "</p>"
             , context.translate('coach_slave_network_not_available_acknowledge'));
+
+        $container.removeClass('blink').addClass('coach-slave-connection-failed');
         return;
     }
 
@@ -39,25 +64,27 @@ CoachSlaveView.prototype.onRendered = function () {
         Api.TrainingSessions.live.startListening();
         Api.TrainingSessions.live.deviceReady().then(function () {
             serverResponded = true;
-            $('.coach-slave.blink').removeClass('blink').addClass('coach-slave-connected');
+            $container.removeClass('blink')
+                .removeClass('coach-slave-connection-failed').addClass('coach-slave-connected');
         });
     }).fail(function () {
         // TODO: show error to the user!
     });
 
-    var serverResponded = false, maxRetries = 7, attempt = 0;
-    var checkServerStatusInterval = setInterval(function () {
+    self.checkServerStatusInterval = setInterval(function () {
         attempt++;
 
         if (attempt > maxRetries) {
-            clearInterval(checkServerStatusInterval);
+            clearInterval(self.checkServerStatusInterval);
             context.ui.modal.alert(context.translate('coach_slave_server_not_available_title')
                 , "<p>" + context.translate('coach_slave_server_not_available_message') + "</p>"
                 , context.translate('coach_slave_server_not_available_acknowledge'));
+
+            $container.removeClass('blink').addClass('coach-slave-connection-failed');
         }
 
         if (serverResponded === true) {
-            clearInterval(checkServerStatusInterval);
+            clearInterval(self.checkServerStatusInterval);
         }
     }, 1000);
 
@@ -86,7 +113,7 @@ CoachSlaveView.prototype.onRendered = function () {
 
     self.$page.on('appDestroy', function () {
         clearInterval(self.deviceActiveIntervalId);
-        clearInterval(checkServerStatusInterval);
+        clearInterval(self.checkServerStatusInterval);
         Api.TrainingSessions.live.deviceDisconnected();
         Api.TrainingSessions.live.clearCommandListeners();
         return false;

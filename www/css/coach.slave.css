@@ -47,7 +47,43 @@
     background-size: 70%;
 }
 
-.coach-slavel-finish {
-    background: #EE6156 url(../images/flag.svg) no-repeat 50% 50%;
-    background-size: 60%;
+.coach-slave-retry {
+    background-color: #EE6156;
+    color: white;
+    width: 40vw;
+    margin-top: 30vw;
+    font-size: 14px;
+    padding: 20px;
+    border-radius: 50px;
+    position: fixed;
+    bottom: 60px;
+    display: none;
+    text-transform: UPPERCASE;
+    text-align: center;
+    font-weight: 600;
+}
+
+.coach-slave-connection-failed > .coach-slave-retry {
+    display: block;
+}
+
+.coach-slave.coach-slave-connection-failed  {
+    color: rgba(255, 255, 255, 0.2);
+}
+
+.coach-slave-label-failed {
+    display: none;
+}
+
+.coach-slave-connection-failed > .coach-slave-label-failed {
+    display: inline;
+    font-weight: 800;
+    color: #EE6156;
+    font-size: 20px;
+}
+
+.coach-slave-connection-failed > .coach-slave-label-connecting,
+.coach-slave-connection-failed > .coach-slave-label-connected
+{
+    display: none;
 }

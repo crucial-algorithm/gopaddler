@@ -316,7 +316,9 @@ module.exports = {
         , coach_slave_server_not_available_acknowledge: "OK"
 
         , coach_slave_connecting_to_server: "Connecting to server..."
+        , coach_slave_connection_failed: "Connection failed"
         , coach_slave_ready: "Waiting for coach to start..."
+        , coach_slave_retry: "Retry"
         , coach_slave_cancel: "Cancel"
         , coach_slave_leave: "Leave"
 

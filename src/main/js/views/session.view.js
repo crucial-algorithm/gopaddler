@@ -580,6 +580,8 @@ SessionView.prototype.render = function (page, context, options) {
             $window.off('scroll.session');
             $window.off('touchmove.session');
             return true;
+        } else {
+            return false;
         }
     });
 

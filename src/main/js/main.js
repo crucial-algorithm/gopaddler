@@ -86,7 +86,7 @@ var loadContext = loadContextDefer.promise();
 
 function enrichPageArg(page, pageName) {
     var $page = $(page);
-    var destroy = [], ready = [];
+    var destroy = [], ready = [], androidBackButton = [];
     var appReady = false;
     var destroyed = false;
 
@@ -115,6 +115,12 @@ function enrichPageArg(page, pageName) {
         destroyed = true;
     });
 
+    $page.off('androidBackButton').on('androidBackButton', function () {
+        for (var i = 0; i < androidBackButton.length; i++) {
+            androidBackButton[i].apply({}, [])
+        }
+    });
+
     page.onReady = {
         then: function (callback) {
             ready.push(callback);
@@ -130,7 +136,14 @@ function enrichPageArg(page, pageName) {
         then: function (callback) {
             destroy.push(callback);
         }
+    };
+
+    page.onAndroidBackButton = {
+        then: function (callback) {
+            androidBackButton.push(callback)
+        }
     }
+
 }
 
 /**

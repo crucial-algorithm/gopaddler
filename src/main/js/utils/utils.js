@@ -80,8 +80,8 @@ function mapBrowserToNative() {
     document.addEventListener("backbutton", function (e) {
         try {
             var success = App.back();
-            if (success === false && App.current() === 'home') {
-                navigator.app.exitApp();
+            if (success === false) {
+                $(App.getPage()).trigger('androidBackButton');
             }
         } catch (te) {
             console.log(te);

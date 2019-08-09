@@ -17,6 +17,10 @@ function CoachSlaveView(page, context) {
     page.onReady.then(function () {
         self.onRendered(self.$page, context);
     });
+
+    page.onAndroidBackButton.then(function () {
+        self.confirmLeave();
+    });
 }
 
 CoachSlaveView.prototype.onRendered = function () {

@@ -68,6 +68,10 @@ function HomeView(page, context, request) {
 
     self.updateLastSessionDate();
 
+    page.onAndroidBackButton.then(function () {
+        navigator.app.exitApp();
+    });
+
     page.onReady.then(function () {
         self.updateLastSessionDate();
         Utils.forceSafariToReflow($('body')[0]);

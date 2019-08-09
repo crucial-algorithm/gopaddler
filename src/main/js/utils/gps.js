@@ -66,10 +66,10 @@ GPS.prototype.start = function() {
             return;
 
         var message, title;
-        if (device.platform === 'iOS') {
+        if (self.appContext.isIOS()) {
             title = self.appContext.translate('gps_failed_title_ios');
             message = self.appContext.translate('gps_failed_title_message_ios');
-        } else if (device.platform === 'Android') {
+        } else if (self.appContext.isAndroid()) {
             title = self.appContext.translate('gps_failed_title_android');
             message = self.appContext.translate('gps_failed_title_message_android');
         }

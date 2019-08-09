@@ -27,9 +27,9 @@ function HomeView(page, context, request) {
     });
 
     if (context.isPortraitMode()) {
-        context.render(page, portrait({name: name}));
+        context.render(page, portrait({name: name, isAndroid: context.isAndroid()}));
     } else {
-        context.render(page, landscape());
+        context.render(page, landscape({isAndroid: context.isAndroid()}));
     }
 
     screen.orientation.lock(context.isPortraitMode() ? 'portrait' : 'landscape-secondary');
@@ -131,6 +131,15 @@ function HomeView(page, context, request) {
         }
     }
 
+    $('#exit').on('tap', function (e) {
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        try {
+            navigator.app.exitApp();
+        } catch(err) {
+            console.error(err);
+        }
+    });
 }
 
 HomeView.prototype.updateLastSessionDate = function () {

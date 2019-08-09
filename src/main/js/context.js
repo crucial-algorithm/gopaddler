@@ -247,6 +247,14 @@ Context.prototype.getLanguage = function() {
     return this._language;
 };
 
+Context.prototype.isAndroid = function() {
+    return device.platform === "Android"
+};
+
+Context.prototype.isIOS = function() {
+    return device.platform === "iOS"
+};
+
 var UI = function (ctx) {
     return {
         infiniteProgressBarForLi: function ($insertAfterElem, isInfinite) {

@@ -16,7 +16,8 @@
     <div class="home-settings-btn" id="btn-settings">
         <div class="home-row-wrapper">
             <div class="home-icon settings-icon">&nbsp;</div>
-            <div class="home-row-title">{{"home_menu_settings" | translate}}</div>
+            <div class="home-row-title {{if isAndroid}} home-row-title-for-exit-android {{/if}}">{{"home_menu_settings" | translate}}</div>
+            {{if isAndroid}}<div class="home-exit-button" id="exit"><i class="fas fa-power-off"></i></div>{{/if}}
         </div>
     </div>
 </div>

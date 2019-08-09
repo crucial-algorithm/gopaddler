@@ -79,7 +79,10 @@ function mapBrowserToNative() {
 
     document.addEventListener("backbutton", function (e) {
         try {
-            App.back();
+            var success = App.back();
+            if (success === false && App.current() === 'home') {
+                navigator.app.exitApp();
+            }
         } catch (te) {
             console.log(te);
         }

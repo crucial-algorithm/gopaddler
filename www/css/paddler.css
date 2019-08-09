@@ -127,7 +127,7 @@ body {
     background-repeat: no-repeat;
 }
 
-.home-row-title {
+.home-row-title, .home-exit-button {
     display: table-cell;
     color: #FFFFFF;
     vertical-align: middle;
@@ -136,6 +136,20 @@ body {
     font-size: 9vw;
     padding-left: 2%;
     letter-spacing: 0.2vw;
+}
+
+.home-row-title.home-row-title-for-exit-android {
+    width: 55%;
+}
+
+.home-exit-button {
+    width: 15%;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.13);
+    color: #9e9e9e;
+    z-index: 10;
+    font-size: 30px;
+    padding: 0;
 }
 
 .sessions-icon {

@@ -6,7 +6,7 @@ var connected = false, loggedIn = false, retries = 0;
 var lastUserAddedMsg = null;
 var onCoachRequest = function(){};
 
-var asteroid = null;
+var asteroid = {};
 
 var serverAvailable = function (d) {
     var defer = d || $.Deferred();

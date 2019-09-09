@@ -60,7 +60,7 @@ function SettingsView(page, context, settings) {
     });
 
     $maxHeartRate.on('tap', function () {
-        App.load('define-max-heart-rate');
+        App.load('define-heart-rate');
     });
 
     $language.on('tap', function () {
@@ -172,7 +172,7 @@ function SettingsView(page, context, settings) {
     $page.on('appShow', function () {
         var rate = context.getGpsRefreshRate();
         $('.settings-current-gps-rate').text(rate === 0 ? 'Auto' : rate + " sec");
-        $('.settings-current-max-heart-rate').text(context.getMaxHearthRate());
+        $('.settings-current-max-heart-rate').text(context.getRestingHeartRate() + " / " + context.getMaxHeartRate());
         $('.settings-current-language').text(context.getLanguage());
     })
 }

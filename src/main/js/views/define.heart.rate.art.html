@@ -1,0 +1,24 @@
+<link rel="stylesheet" href="css/portrait.css">
+<link rel="stylesheet" href="css/define.heart.rate.css">
+
+
+
+<div class="{{if isPortraitMode}} portrait-paddler-topbar {{/if}} app-topbar paddler-topbar">
+    <button class="{{if isPortraitMode}}portrait-back-button{{/if}}
+        app-button left paddler-back" alt="back" data-back></button>
+    <div class="paddler-title">
+        <div class="paddler-title-text">{{"heart_rate_title" | translate}}</div>
+    </div>
+</div>
+<div class="app-content define-heart-rate {{if isPortraitMode}} define-heart-rate-portrait {{/if}}">
+    <div class="define-heart-rate-control">
+        <label for="resting-heart-rate">{{ "heart_rate_resting" | translate}}</label>
+        <input type="number" value="{{resting}}" min="0" max="300" name="resting" id="resting-heart-rate">
+    </div>
+
+    <div class="define-heart-rate-control">
+        <label for="max-heart-rate">{{ "heart_rate_max" | translate}}</label>
+        <input type="number" value="{{max}}" min="0" max="300" name="max" id="max-heart-rate">
+    </div>
+
+</div>

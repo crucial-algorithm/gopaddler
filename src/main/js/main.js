@@ -64,7 +64,7 @@ var SelectSessionView = require('./views/select.session.view').SelectSessionView
 var LoginWithPassword = require('./views/login.with.password.view').LoginWithPasswordView;
 var ChooseBoatView = require('./views/choose.boat.view').ChooseBoatView;
 var DefineGPSSpeedView = require('./views/define.gps.update.rate.view').DefineGPSSpeedView;
-var DefineMaxHeartRateView = require('./views/define.max.heart.rate.view').DefineMaxHeartRateView;
+var DefineHeartRateView = require('./views/define.heart.rate.view').DefineHeartRateView;
 var DefineLanguageView = require('./views/define.language.view').DefineLanguageView;
 var ManageCoachView = require('./views/manage.coach.view').ManageCoachView;
 var ChooseSportsView = require('./views/choose.sports.view').ChooseSportsView;
@@ -277,10 +277,10 @@ App.controller('define-gps-update-rate', function (page, request) {
     });
 });
 
-App.controller('define-max-heart-rate', function (page, request) {
-    enrichPageArg(page, 'define-max-heart-rate');
+App.controller('define-heart-rate', function (page, request) {
+    enrichPageArg(page, 'define-heart-rate');
     loadContext.then(function (context) {
-        new DefineMaxHeartRateView(page, context);
+        new DefineHeartRateView(page, context);
     });
 });
 

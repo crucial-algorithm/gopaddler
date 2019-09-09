@@ -42,7 +42,7 @@ module.exports = {
         , settings_menu_portrait_mode: "Modo vertical"
         , settings_menu_gps_refresh_rate: "Velocidade GPS"
         , settings_menu_heart_rate_sensor: "Bandas Freq. Cardíaca"
-        , settings_menu_max_heart_rate: "Max. Freq. Cardíaca"
+        , settings_menu_heart_rate: "Freq. Cardíaca"
         , settings_menu_calibrate: "Calibração"
         , settings_menu_calibrate_how_to: "Instruções"
         , settings_menu_logout: "Sair"
@@ -83,7 +83,9 @@ module.exports = {
 
         , gps_refresh_rate_title: "Velocidade GPS"
 
-        , max_heart_rate_title: "Máxima Frequência Cardíaca"
+        , heart_rate_title: "Frequência Cardíaca"
+        , heart_rate_resting: "Em repouso"
+        , heart_rate_max: "Máxima"
 
         , calibrate_step_1_mount_phone: "Montar o telefone"
         , calibrate_step_1_mount_phone_line1: "Fixar o telefone cuidadosamente no barco"

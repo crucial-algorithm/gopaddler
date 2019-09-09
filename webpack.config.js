@@ -18,8 +18,8 @@ var CONFIG = {
         endpoint: "ws://local.gopaddler.com/websocket"
     },
     "remote-dev": {
-        server: "https://dev.gopaddler.com",
-        endpoint: "wss://dev.gopaddler.com/websocket"
+        server: "https://dev-2.gopaddler.com",
+        endpoint: "wss://dev-2.gopaddler.com/websocket"
     },
     prod: {
         server: "https://app.gopaddler.com",

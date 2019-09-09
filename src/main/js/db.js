@@ -132,6 +132,12 @@ var ddl = [
         ["ALTER TABLE session add column version INTEGER default 1"],
         ["ALTER TABLE session add column expr_json INTEGER default 1"],
         ["UPDATE settings SET version = 12"]
+    ],
+
+    // v.1.4
+    [
+        ["ALTER TABLE settings add column resting_heart_rate INTEGER default 60"],
+        ["UPDATE settings SET version = 13"]
     ]
 
 ];

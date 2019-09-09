@@ -9,7 +9,7 @@ var CONSTANTS  = {
 
 function Settings(version, units, syncOnlyOnWifi, restoreLayout, showTouchGestures
     , showCalibrationTips, default_session_filter, default_start_date, default_end_date
-    , showBlackAndWhite, portraitMode, gpsRate, maxHeartRate, serverClockGap) {
+    , showBlackAndWhite, portraitMode, gpsRate, restingHeartRate, maxHeartRate, serverClockGap) {
     this._version = version;
     this._units = units;
     this._restoreLayout = restoreLayout;
@@ -21,6 +21,7 @@ function Settings(version, units, syncOnlyOnWifi, restoreLayout, showTouchGestur
     this._showBlackAndWhite = showBlackAndWhite;
     this._portraitMode = portraitMode;
     this._gpsRefreshRate = gpsRate;
+    this._restingHeartRate = restingHeartRate;
     this._maxHeartRate = maxHeartRate;
     this._serverClockGap = serverClockGap;
 }
@@ -117,6 +118,14 @@ Settings.prototype.setGpsRefreshRate = function(rate) {
     this._gpsRefreshRate = rate;
 };
 
+Settings.prototype.getRestingHeartRate = function () {
+    return this._restingHeartRate;
+};
+
+Settings.prototype.setRestingHeartRate = function (rate) {
+    this._restingHeartRate = rate;
+};
+
 Settings.prototype.getMaxHeartRate = function() {
     return this._maxHeartRate;
 };
@@ -171,6 +180,7 @@ function loadSettings() {
                 row.black_and_white,
                 row.portrait_mode === 1,
                 row.gps_rate,
+                row.resting_heart_rate,
                 row.max_heart_rate,
                 row.server_clock_gap
             ));
@@ -188,9 +198,9 @@ function saveSettings(units, showBlackAndWhite, restoreLayout, portraitMode) {
         , [units, showBlackAndWhite ? 1 : 0, restoreLayout ? 1 : 0, portraitMode ? 1 : 0]);
 }
 
-function updateMaxHeartRate(value) {
+function updateHeartRate(resting, max) {
     var connection = db.getConnection();
-    connection.executeSql("update settings set max_heart_rate = ?", [value]);
+    connection.executeSql("update settings set resting_heart_rate = ?, max_heart_rate = ?", [resting, max]);
 }
 
 function updateGpsRefreshRate(rate) {
@@ -205,7 +215,7 @@ function updateServerClockGap(gap) {
 
 exports.loadSettings = loadSettings;
 exports.saveSettings = saveSettings;
-exports.updateMaxHeartRate = updateMaxHeartRate;
+exports.updateHeartRate = updateHeartRate;
 exports.Settings = Settings;
 exports.updateGpsRefreshRate = updateGpsRefreshRate;
 exports.updateServerClockGap = updateServerClockGap;

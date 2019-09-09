@@ -1,0 +1,67 @@
+.define-heart-rate {
+    height: 82vh;
+    width: 100vw;
+    color: #FFFFFF;
+}
+
+.define-heart-rate {
+    height: 88vh;
+}
+
+.define-heart-rate-control {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.define-heart-rate-control:first-child {
+    margin-top: 5vh;
+}
+
+.define-heart-rate-control > label {
+    margin-bottom: 20px;
+    font-size: 20px;
+    text-transform: uppercase;
+}
+
+.define-heart-rate-control > input[type="number"] {
+    width: 86vw;
+    margin: 0 auto 40px auto;
+    height: 60px;
+    font-family: 'Roboto', Helvetica;
+    font-size: 26px;
+    font-weight: 700;
+    border: 0;
+    border-radius: 30px;
+    padding: 5px;
+    text-align: center;
+    color: #A7A7A7;
+    text-transform: uppercase;
+    letter-spacing: 6px;
+}
+
+.define-heart-rate-control > input[type="number"]:focus {
+    outline: none;
+}
+
+.define-heart-rate-list {
+    height: 100%;
+}
+
+.define-heart-rate-list > li {
+    height: 22vh;
+    line-height: 22vh;
+    font-size: 10vh;
+    text-align: center;
+    font-weight: bold;
+    text-transform: UPPERCASE;
+}
+
+.define-heart-rate-list > li:nth-child(even) {
+    background-color: #EE6156;
+}
+
+.define-heart-rate-list > li.selected {
+    background-color: #3b3d62;
+}

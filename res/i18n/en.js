@@ -42,7 +42,7 @@ module.exports = {
         , settings_menu_portrait_mode: "portrait mode"
         , settings_menu_gps_refresh_rate: "GPS refresh rate"
         , settings_menu_heart_rate_sensor: "Heart Rate Sensor"
-        , settings_menu_max_heart_rate: "Max Heart Rate"
+        , settings_menu_heart_rate: "Heart Rate"
         , settings_menu_calibrate: "Calibrate"
         , settings_menu_calibrate_how_to: "Learn how"
         , settings_menu_logout: "Logout"
@@ -83,7 +83,9 @@ module.exports = {
 
         , gps_refresh_rate_title: "GPS Refresh Rate"
 
-        , max_heart_rate_title: "Max Heart Rate"
+        , heart_rate_title: "Heart Rate"
+        , heart_rate_resting: "Resting"
+        , heart_rate_max: "Maximum"
 
         , calibrate_step_1_mount_phone: "Mount Phone"
         , calibrate_step_1_mount_phone_line1: "Secure your device in a fixed position"

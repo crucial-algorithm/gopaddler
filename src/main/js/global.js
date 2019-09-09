@@ -44,7 +44,8 @@ function emulateCordova () {
         // SELECT SETTINGS
         if (sql.toLowerCase().indexOf("settings") >= 0) {
             data = [
-                {version: 2000, units: 'K', show_touch_events_tips: 1, black_and_white: false, restore_layout: true, portrait_mode: __IS_PORTRAIT_MODE__, gps_rate: 0, max_heart_rate: 186}
+                {version: 2000, units: 'K', show_touch_events_tips: 1, black_and_white: false, restore_layout: true, portrait_mode: __IS_PORTRAIT_MODE__
+                    , gps_rate: 0, max_heart_rate: 186, resting_heart_rate: 58}
             ];
             success({
                 rows: {

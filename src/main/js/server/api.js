@@ -447,9 +447,8 @@ var User = {
         return _call('saveUserBoat', choice);
     },
 
-    saveMaxHeartRate: function (choice) {
-        asteroid.user.profile.maxHeartRate = choice;
-        return _call('saveMaxHeartRate', choice);
+    saveHeartRate: function (resting, max) {
+        return _call('saveHeartRate', resting, max);
     },
 
     hasCoach: function () {

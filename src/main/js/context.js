@@ -198,7 +198,16 @@ Context.prototype.setGpsRefreshRate = function (rate) {
     return this._settings.setGpsRefreshRate(rate);
 };
 
-Context.prototype.getMaxHearthRate = function () {
+Context.prototype.getRestingHeartRate = function () {
+    /**@type Settings*/
+    return this._settings.getRestingHeartRate();
+};
+
+Context.prototype.setRestingHeartRate = function (rate) {
+    return this._settings.setRestingHeartRate(rate);
+};
+
+Context.prototype.getMaxHeartRate = function () {
     return this._settings.getMaxHeartRate();
 };
 

@@ -137,6 +137,7 @@ var ddl = [
     // v.1.4
     [
         ["ALTER TABLE settings add column resting_heart_rate INTEGER default 60"],
+        ["ALTER TABLE session_data add column motion TEXT"],
         ["UPDATE settings SET version = 13"]
     ]
 

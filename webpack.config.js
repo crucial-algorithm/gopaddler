@@ -11,15 +11,16 @@ if (viewMode === 'portrait') {
 var CONFIG = {
     common: {
         version: "1.4.0",
-        apiVersion: 2
+        apiVersion: 2,
+        sessionVersion: 4
     },
     dev : {
         server: "http://local.gopaddler.com",
         endpoint: "ws://local.gopaddler.com/websocket"
     },
     "remote-dev": {
-        server: "https://dev-2.gopaddler.com",
-        endpoint: "wss://dev-2.gopaddler.com/websocket"
+        server: "https://dev.gopaddler.com",
+        endpoint: "wss://dev.gopaddler.com/websocket"
     },
     prod: {
         server: "https://app.gopaddler.com",
@@ -61,7 +62,8 @@ module.exports = {
             __WEB_URL__: JSON.stringify(config.server),
             __VERSION__: JSON.stringify(config.version),
             __IS_PORTRAIT_MODE__: JSON.stringify(isPortraitMode),
-            __API_VERSION__: JSON.stringify(config.apiVersion)
+            __API_VERSION__: JSON.stringify(config.apiVersion),
+            __SESSION_FORMAT_VERSION__: JSON.stringify(config.sessionVersion)
         })
     ],
     module: {

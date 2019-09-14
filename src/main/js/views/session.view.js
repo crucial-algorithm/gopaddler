@@ -3,6 +3,7 @@
 var IO = require('../utils/io.js').IO;
 var GPS = require('../utils/gps').GPS;
 var HeartRateSensor = require('../device/heartrate-sensor').HeartRateSensor;
+var MotionSensor = require('../device/motion').MotionSensor;
 var Dialog = require('../utils/widgets/dialog');
 var utils = require('../utils/utils');
 var Calibration = require('../model/calibration').Calibration;
@@ -67,6 +68,7 @@ SessionView.prototype.render = function (page, context, options) {
     var session = self.createSession(calibration);
     var gps = new GPS(context);
     var heartRateSensor = new HeartRateSensor();
+    var motionSensor = new MotionSensor(calibration);
     /**@type Distance */
     var distance = new Distance(context);
     var speed = new Speed(context);
@@ -284,7 +286,7 @@ SessionView.prototype.render = function (page, context, options) {
             // store data
             new SessionDetail(session.getId(), timestamp, location.distance, location.speed, spm.value
                 , location.efficiency, location.latitude, location.longitude, heartRate, position, spm.total
-                , magnitude, splits.isRecovery()
+                , magnitude, splits.isRecovery(), motionSensor.read()
             ).save();
 
             var metric = metrics[position];
@@ -315,6 +317,9 @@ SessionView.prototype.render = function (page, context, options) {
         }
 
     });
+
+    // motion sensor monitor
+    motionSensor.start(startAt);
 
     session.setSessionStart(startAt);
     session.persist();
@@ -499,6 +504,7 @@ SessionView.prototype.render = function (page, context, options) {
         gps.stop();
         strokeDetector.stop();
         heartRateSensor.stop();
+        motionSensor.stop();
 
         // clean buffer
         if (self.isDebugEnabled)

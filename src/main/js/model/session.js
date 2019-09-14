@@ -258,11 +258,13 @@ Session.prototype.createAPISession = function () {
     SessionDetail.get(self.getId(), function (rows) {
 
         var dataPoints = [],
-            row;
+            row, next, motion = self.handleMotionString(null);
 
         for (var j = 0; j < rows.length; j++) {
 
             row = rows[j];
+            next = rows[j + 1];
+            motion = self.handleMotionString(next ? next.getMotion() : null);
 
             dataPoints.push({
                 timestamp: row.getTimestamp(),
@@ -275,7 +277,10 @@ Session.prototype.createAPISession = function () {
                 heartRate: row.getHeartRate(),
                 split: row.getSplit(),
                 strokes: row.getStrokes(),
-                magnitude: row.getMagnitude()
+                magnitude: row.getMagnitude(),
+                leftToRight: motion.leftToRight,
+                frontToBack: motion.frontToBack,
+                rotation: motion.rotation
             });
         }
 
@@ -292,11 +297,45 @@ Session.prototype.createAPISession = function () {
             coachTrainingSessionId: self.getScheduledSessionId(),
             coachTrainingSessionStart: self.getScheduledSessionStart(),
             expression: self.getExpression(),
-            version: 3
+            version: __SESSION_FORMAT_VERSION__
         });
     });
 
     return defer.promise();
+};
+
+/**
+ *
+ * @param string
+ * @return {{leftToRight: Array, rotation: Array, frontToBack: Array}}
+ */
+Session.prototype.handleMotionString = function (string) {
+    if (!string) return {leftToRight: [], frontToBack: [], rotation: []};
+
+    var parts = string.split('|')
+        , leftToRight = parts[0].split(';')
+        , frontToBack = parts[1].split(';')
+        , rotation = parts[2].split(';');
+
+    var parse = function (list) {
+        var result = [];
+        for (var i = 0, l = list.length; i < l; i++) {
+            var parts = list[i].split('&');
+            var duration = parseInt(parts[0]);
+            var value = parseInt(parts[1]);
+            if (isNaN(value)) continue;
+            result.push({duration: duration, value: value});
+        }
+        return result;
+    };
+
+    leftToRight = parse(leftToRight);
+    frontToBack = parse(frontToBack);
+    rotation = parse(rotation);
+
+    return {
+        leftToRight: leftToRight, frontToBack: frontToBack, rotation: rotation
+    }
 };
 
 Session.prototype.persist = function () {

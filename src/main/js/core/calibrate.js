@@ -2,11 +2,13 @@
 
 var Calibration = require('../model/calibration.js').Calibration;
 var utils = require('../utils/utils');
+var MotionSensor = require('../device/motion').MotionSensor;
 
 function Calibrate (isPortraitMode, callback) {
     this.callback = callback;
     this.watchId = undefined;
     this.isPortraitMode = isPortraitMode;
+    this.motionSensor = new MotionSensor(null);
 
 
     this.GRAVITY_EARTH = 9.80665;
@@ -24,7 +26,7 @@ Calibrate.prototype.start = function() {
         if (i === self.MEASURES) {
             self.stop();
             document.PREVENT_SYNC = false;
-            self.calculate(x, y, z);
+            self.calculate.apply(self, [x, y, z]);
             self.callback.call();
         }
 
@@ -49,6 +51,7 @@ Calibrate.prototype.start = function() {
         var options = { frequency: 40 };
         try {
             self.watchId = navigator.accelerometer.watchAcceleration(onSuccess, onError, options);
+            self.motionSensor.start();
         } catch (e) {
             console.log('hmmm... browser?');
         }
@@ -126,6 +129,7 @@ Calibrate.prototype.calculatePortraitMode = function (sumx, sumy, sumz) {
 Calibrate.prototype.stop = function () {
     var self = this;
     navigator.accelerometer.clearWatch(self.watchId);
+    self.motionSensor.stop();
 };
 
 Calibrate.prototype.store = function (predominant, angleZ, noiseX, noiseY, noiseZ, factorX, factorY, factorZ) {
@@ -133,8 +137,11 @@ Calibrate.prototype.store = function (predominant, angleZ, noiseX, noiseY, noise
         return Math.round(value * 10000000000000000) / 10000000000000000
     };
 
+    var calibration = this.motionSensor.getCalibration();
     new Calibration(predominant, round(angleZ), round(noiseX)
-        , round(noiseY), round(noiseZ), round(factorX), round(factorY), round(factorZ)).save(this.isPortraitMode);
+        , round(noiseY), round(noiseZ), round(factorX), round(factorY), round(factorZ)
+        , calibration.alpha, calibration.beta, calibration.gamma
+    ).save(this.isPortraitMode);
 };
 
 

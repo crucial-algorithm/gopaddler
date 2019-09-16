@@ -7,6 +7,8 @@ function MotionSensor(calibration) {
     this.leftToRight = [];
     this.frontToBack = [];
 
+    this.leftToRightListener = function(){};
+
     this.offset = null;
 
 }
@@ -21,7 +23,7 @@ MotionSensor.prototype.start = function(offset) {
 
 MotionSensor.prototype.stop = function() {
     if (!this.hasSupport) return;
-    window.removeEventListener("deviceorientation", this.eventHandler);
+    window.removeEventListener("deviceorientation", this.eventHandler, true);
 };
 
 MotionSensor.prototype.handler = function (event) {
@@ -32,6 +34,8 @@ MotionSensor.prototype.handler = function (event) {
     this.leftToRight.push({time: now, value: event.gamma});
     // beta: front back motion
     this.frontToBack.push({time: now, value: event.beta});
+
+    this.handleListeners();
 };
 
 MotionSensor.prototype.read = function () {
@@ -43,8 +47,35 @@ MotionSensor.prototype.read = function () {
     this.frontToBack = [];
     this.leftToRight = [];
 
-    console.log(leftToRight.join(';') + '|' + frontToBack.join(';') + '|' + rotation.join(';'));
     return leftToRight.join(';') + '|' + frontToBack.join(';') + '|' + rotation.join(';');
+};
+
+/**
+ *
+ */
+MotionSensor.prototype.handleListeners = function () {
+    var length = this.leftToRight.length;
+    if (length < 2) return;
+
+    var previous = this.leftToRight[length - 2], current = this.leftToRight[length - 1];
+    if ((previous.value < 0 && current.value < 0) || (previous.value  >= 0 && current.value >= 0)) return;
+
+    if (current.value < 0) {
+        this.leftToRightListener.apply({}, [{left: true, right: false}]);
+    } else if (current.value > 0) {
+        this.leftToRightListener.apply({}, [{left: false, right: true}]);
+    } else {
+        this.leftToRightListener.apply({}, [{left: false, right: false}]);
+    }
+};
+
+
+/**
+ * listen to left/right changes
+ * @param {function} callback
+ */
+MotionSensor.prototype.listenLeftToRight = function (callback) {
+    this.leftToRightListener = callback;
 };
 
 
@@ -66,6 +97,12 @@ MotionSensor.prototype.getCalibration = function () {
 };
 
 
+/**
+ * Calculate positive and negative max with data array (used for left/right and front-back)
+ * @param data
+ * @param adjustment
+ * @return {*}
+ */
 function compute(data, adjustment) {
     var max = 0, position = null, previousBellowZero = data[0] < 0, compute = [];
     for (var i = 0, l = data.length; i < l; i++) {

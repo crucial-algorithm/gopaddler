@@ -24,7 +24,6 @@ var DistanceProgressBar = require('../utils/widgets/distance-progress-bar').Dist
 var Sound = require('../utils/sound').Sound;
 
 
-
 var DEFAULT_POSITIONS = {
     top: 'timer',
     middle: 'speed',
@@ -51,7 +50,7 @@ function SessionView(page, context, options) {
     var self = this;
     context.render(page, template({isPortraitMode: context.isPortraitMode()}));
     self.appContext = context;
-    if (sound === null)  sound = new Sound();
+    if (sound === null) sound = new Sound();
 
     page.onReady.then(function () {
         self.render.apply(self, [page, context, options])
@@ -68,7 +67,7 @@ SessionView.prototype.render = function (page, context, options) {
     var session = self.createSession(calibration);
     var gps = new GPS(context);
     var heartRateSensor = new HeartRateSensor();
-    var motionSensor = new MotionSensor(calibration);
+    self.motionSensor = new MotionSensor(calibration);
     /**@type Distance */
     var distance = new Distance(context);
     var speed = new Speed(context);
@@ -87,9 +86,9 @@ SessionView.prototype.render = function (page, context, options) {
         $page.find(".session-small-measures").addClass('black-and-white');
         $page.find(".session-large-measure").addClass('black-and-white');
 
-        if(!context.isPortraitMode()) {
+        if (!context.isPortraitMode()) {
             var width = $page.width();
-            $page.find(".session-large-measure").css({width: Math.floor(width/2) - 1});
+            $page.find(".session-large-measure").css({width: Math.floor(width / 2) - 1});
         }
 
         $page.find(".big-measure-label").addClass('black-and-white');
@@ -142,9 +141,16 @@ SessionView.prototype.render = function (page, context, options) {
         splits = new Splits(self.splitsDefinition, splitsHandler, options.wasStartedRemotely === true
             , distance.distanceToTime.bind(distance), distance.timeToDistance.bind(distance)
             , timer.getCurrentDuration.bind(timer));
-        splits.onStartCountDownUserNotification(function () { sound.playStartCountDown() });
-        splits.onFinishCountDownUserNotification(function () { sound.playFinishCountDown() });
-        splits.onFinishUserNotification(function () { sound.playFinish(); navigator.vibrate(1000) });
+        splits.onStartCountDownUserNotification(function () {
+            sound.playStartCountDown()
+        });
+        splits.onFinishCountDownUserNotification(function () {
+            sound.playFinishCountDown()
+        });
+        splits.onFinishUserNotification(function () {
+            sound.playFinish();
+            navigator.vibrate(1000)
+        });
     } else {
         splits = new Splits();
     }
@@ -185,7 +191,7 @@ SessionView.prototype.render = function (page, context, options) {
         var inRecovery = false;
         var duration = timer.getDuration();
         var timeSinceStartAt = timer.getTimestamp() - startAt;
-        var pausedTime =  timeSinceStartAt !== duration ? timeSinceStartAt - duration : 0;
+        var pausedTime = timeSinceStartAt !== duration ? timeSinceStartAt - duration : 0;
         if (from) {
             lastFinishedSplit = from;
             lastSplitStartDistance = from.finish.distance;
@@ -286,7 +292,7 @@ SessionView.prototype.render = function (page, context, options) {
             // store data
             new SessionDetail(session.getId(), timestamp, location.distance, location.speed, spm.value
                 , location.efficiency, location.latitude, location.longitude, heartRate, position, spm.total
-                , magnitude, splits.isRecovery(), motionSensor.read()
+                , magnitude, splits.isRecovery(), self.motionSensor.read()
             ).save();
 
             var metric = metrics[position];
@@ -319,7 +325,7 @@ SessionView.prototype.render = function (page, context, options) {
     });
 
     // motion sensor monitor
-    motionSensor.start(startAt);
+    self.motionSensor.start(startAt);
 
     session.setSessionStart(startAt);
     session.persist();
@@ -457,7 +463,7 @@ SessionView.prototype.render = function (page, context, options) {
             values.pace = (pace = utils.speedToPace(values.speed)) === null ? 0 : pace;
 
             // set summary after interval finished in splits field
-            if (lastFinishedSplit && lastFinishedSplit.isDistanceBased === true )
+            if (lastFinishedSplit && lastFinishedSplit.isDistanceBased === true)
                 values.splits = timer.formatWithMilis(lastFinishedSplit.finish.time - lastFinishedSplit.start.time);
         } else if (splits.isFinished()) {
             values.splits = '-';
@@ -504,7 +510,7 @@ SessionView.prototype.render = function (page, context, options) {
         gps.stop();
         strokeDetector.stop();
         heartRateSensor.stop();
-        motionSensor.stop();
+        self.motionSensor.stop();
 
         // clean buffer
         if (self.isDebugEnabled)
@@ -616,6 +622,14 @@ SessionView.prototype.render = function (page, context, options) {
     self.syncClockInterval = setInterval(function () {
         Api.TrainingSessions.live.syncClock(Api.User.getId());
     }, 300000);
+
+
+    self.tester = {
+        isTestingLeftRight: false
+    };
+
+    self.motionSensor.listenLeftToRight(self.leftToRightDebug.bind(this));
+
 };
 
 SessionView.prototype.debug = function (session) {
@@ -623,15 +637,16 @@ SessionView.prototype.debug = function (session) {
     self.sensorData = [];
 
     if (self.isDebugEnabled !== true)
-        return function () {};
+        return function () {
+        };
 
 
     // Open debug file
     IO.open(session.getDebugFile()).then(function (file) {
         self.sensorDataFile = file;
     }).fail(function () {
-            self.sensorDataFileError = true;
-        });
+        self.sensorDataFileError = true;
+    });
 
     self.sensorDataFileError = false;
     return function onAccelerationTriggered(acceleration, value) {
@@ -675,8 +690,7 @@ SessionView.prototype.createSession = function (calibration) {
 SessionView.prototype.confirm = function (onresume, onfinish) {
     var self = this;
     var $controls, $resume, $finish;
-
-    var modal = self.appContext.ui.modal.undecorated([
+    var controlTemplate = [
         '   <div class="session-controls session-controls-free-session">',
         '   	<div class="session-controls-round-button session-resume">',
         '   		<div class="session-controls-round-button-label">' + self.appContext.translate('session_resume') + '</div>',
@@ -684,12 +698,28 @@ SessionView.prototype.confirm = function (onresume, onfinish) {
         '       <div class="session-controls-round-button  session-finish">',
         '   		<div class="session-controls-round-button-label">' + self.appContext.translate('session_finish') + '</div>',
         '       </div>',
-        '   </div'
-    ].join(''));
+        '   </div>'
+    ];
+
+    if (Api.User.isAppTester()) {
+        var isActive = function () {
+            if (self.tester.isTestingLeftRight) return ' session-controls-square-toggled ';
+            else return '';
+        };
+        controlTemplate = controlTemplate.concat([
+            '   <div class="session-app-tester-controls">',
+            '   	<div data-selector="left-right-debug" class="session-controls-square-button' + isActive() + '">',
+            '   		Left/right Debug',
+            '       </div>',
+            '   </div>'
+        ]);
+    }
+
+    var modal = self.appContext.ui.modal.undecorated(controlTemplate.join(''));
 
     $controls = modal.$modal.find('.session-controls');
-    $resume = modal.$modal.find('.session-resume');
-    $finish = modal.$modal.find('.session-finish');
+    $resume = $controls.find('.session-resume');
+    $finish = $controls.find('.session-finish');
 
     // add behavior
     $resume.on('touchend', function (e) {
@@ -704,34 +734,62 @@ SessionView.prototype.confirm = function (onresume, onfinish) {
         e.stopImmediatePropagation();
     });
 
+    var $leftRight = modal.$modal.find('[data-selector="left-right-debug"]');
+    $leftRight.off('click').on('click', function () {
+        self.tester.isTestingLeftRight = !self.tester.isTestingLeftRight;
+        $leftRight.toggleClass('session-controls-square-toggled');
+        if (self.tester.isTestingLeftRight)
+            $('.session-left-right-container').css('display', 'flex');
+        else
+            $('.session-left-right-container').css('display', 'none');
+    });
+
 };
 
 SessionView.prototype.confirmFinishWarmUp = function (onStartOnMinuteTurn, onStartImmediately, onfinish, onCancel) {
     var self = this;
     var $controls, $startOnMinuteTurn, $startImmediately, $finish, $cancel;
+    var template = [
+        [
+            '    <div class="session-controls">',
+            '    <div class="session-controls-row">',
+            '    	<div class="session-controls-round-button session-start-on-minute-turn blue">',
+            '    		<div class="session-controls-round-button-label">' + self.appContext.translate('session_start_at_minute_turn') + '</div>',
+            '        </div>',
 
-    var modal = self.appContext.ui.modal.undecorated([
-        '    <div class="session-controls">',
-        '    <div class="session-controls-row">',
-        '    	<div class="session-controls-round-button session-start-on-minute-turn blue">',
-        '    		<div class="session-controls-round-button-label">' + self.appContext.translate('session_start_at_minute_turn') + '</div>',
-        '        </div>',
+            '		<div class="session-controls-round-button session-cancel grey">',
+            '    		<div class="session-controls-round-button-label">' + self.appContext.translate('session_cancel') + '</div>',
+            '        </div>',
+            '     </div>',
+            '    <div class="session-controls-row">',
+            '        <div class="session-controls-round-button  session-start-immediately yellow">',
+            '    		<div class="session-controls-round-button-label">' + self.appContext.translate('session_start_now') + '</div>',
+            '        </div>',
 
-        '		<div class="session-controls-round-button session-cancel grey">',
-        '    		<div class="session-controls-round-button-label">' + self.appContext.translate('session_cancel') + '</div>',
-        '        </div>',
-        '     </div>',
-        '    <div class="session-controls-row">',
-        '        <div class="session-controls-round-button  session-start-immediately yellow">',
-        '    		<div class="session-controls-round-button-label">' + self.appContext.translate('session_start_now') + '</div>',
-        '        </div>',
+            '        <div class="session-controls-round-button  session-finish red">',
+            '    		<div class="session-controls-round-button-label">' + self.appContext.translate('session_finish') + '</div>',
+            '        </div>',
+            '     </div>',
+            '    </div'
+        ]
+    ];
 
-        '        <div class="session-controls-round-button  session-finish red">',
-        '    		<div class="session-controls-round-button-label">' + self.appContext.translate('session_finish') + '</div>',
-        '        </div>',
-        '     </div>',
-        '    </div'
-    ].join(''));
+    if (Api.User.isAppTester()) {
+        var isActive = function () {
+            if (self.tester.isTestingLeftRight) return ' session-controls-square-toggled ';
+            else return '';
+        };
+        template = template.concat([
+            '   <div class="session-app-tester-controls">',
+            '   	<div data-selector="left-right-debug" class="session-controls-square-button' + isActive() + '">',
+            '   		Left/right Debug',
+            '       </div>',
+            '   </div>'
+        ]);
+    }
+
+
+    var modal = self.appContext.ui.modal.undecorated(template.join(''));
 
     $controls = modal.$modal.find('.session-controls');
 
@@ -764,8 +822,32 @@ SessionView.prototype.confirmFinishWarmUp = function (onStartOnMinuteTurn, onSta
         onCancel.apply(self, []);
         e.preventDefault();
         e.stopImmediatePropagation();
-    })
+    });
 
+    var $leftRight = modal.$modal.find('[data-selector="left-right-debug"]');
+    $leftRight.off('click').on('click', function () {
+        self.tester.isTestingLeftRight = !self.tester.isTestingLeftRight;
+        $leftRight.toggleClass('session-controls-square-toggled');
+        if (self.tester.isTestingLeftRight)
+            $('.session-left-right-container').css('display', 'flex');
+        else
+            $('.session-left-right-container').css('display', 'none');
+    });
+};
+
+SessionView.prototype.leftToRightDebug = function () {
+    var self = this;
+    if (Api.User.isAppTester() === false) return;
+    if (self.tester.isTestingLeftRight === false) return;
+
+    var $left = $('.session-left'), $right = $('.session-right');
+
+    self.motionSensor.listenLeftToRight(function (event) {
+        if (event.left === true) $left.addClass('active');
+        if (event.left === false) $left.removeClass('active');
+        if (event.right === true) $right.addClass('active');
+        if (event.right === false) $right.removeClass('active');
+    })
 };
 
 function saveLayout(top, middle, bottom, large) {

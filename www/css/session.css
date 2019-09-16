@@ -39,3 +39,20 @@
 .small-measure-line {
     display:table-row;
 }
+
+.session-left-right-container {
+    display: none;
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 2;
+}
+
+.session-left, .session-right {
+    width: 50vw;
+    height: 80vh;
+}
+
+.session-right.active, .session-left.active {
+    background-color: rgba(0, 0, 0, 0.5);;
+}

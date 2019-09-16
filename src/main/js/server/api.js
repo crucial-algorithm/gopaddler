@@ -148,8 +148,15 @@ function _finishLogin(defer, user, method) {
         return;
     }
 
-    _call('hasCoach').then(function (value) {
-        user.hasCoach = value;
+    _call('getAthleteInfoPostLogin').then(function (info) {
+        user.hasCoach = info.hasCoach;
+        user.boat = info.boat;
+        user.gender = info.gender;
+        user.birthDate = info.birthDate;
+        user.heartRateZones = info.heartRateZones;
+        user.speedZones = info.speedZones;
+        user.strokeRateZones = info.strokeRateZones;
+        user.roles = info.roles;
         _storeUser(user);
     }).fail(function (err) {
         console.log(err);
@@ -435,7 +442,11 @@ var User = {
     },
 
     hasChosenBoat: function () {
-        return asteroid.user.profile.boat === 'K' || asteroid.user.profile.boat === "C"
+        return asteroid.user.boat === 'K' || asteroid.user.boat === "C"
+    },
+
+    isAppTester: function () {
+        return asteroid.user.roles && asteroid.user.roles.indexOf('app-tester') > -1
     },
 
     saveDevice: function (device) {

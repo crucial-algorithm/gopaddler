@@ -67,7 +67,7 @@ SessionView.prototype.render = function (page, context, options) {
     var session = self.createSession(calibration);
     var gps = new GPS(context);
     var heartRateSensor = new HeartRateSensor();
-    self.motionSensor = new MotionSensor(calibration);
+    self.motionSensor = new MotionSensor(calibration, context.isPortraitMode());
     /**@type Distance */
     var distance = new Distance(context);
     var speed = new Speed(context);

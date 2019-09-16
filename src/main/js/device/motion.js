@@ -1,11 +1,12 @@
-function MotionSensor(calibration) {
+function MotionSensor(calibration, isPortraitMode) {
 
     this.hasSupport = !!window.DeviceOrientationEvent;
     this.calibration = calibration;
+    this.isPortraitMode = !!isPortraitMode;
 
-    this.rotation = [];
-    this.leftToRight = [];
-    this.frontToBack = [];
+    this.alpha = [];
+    this.gamma = [];
+    this.beta = [];
 
     this.leftToRightListener = function(){};
 
@@ -29,23 +30,30 @@ MotionSensor.prototype.stop = function() {
 MotionSensor.prototype.handler = function (event) {
     var now = Date.now() - this.offset;
     // alpha: rotation around z-axis
-    this.rotation.push({time: now, value: event.alpha});
-    // gamma: left to right
-    this.leftToRight.push({time: now, value: event.gamma});
-    // beta: front back motion
-    this.frontToBack.push({time: now, value: event.beta});
+    this.alpha.push({time: now, value: event.alpha});
+    // gamma: rotation around y axis
+    this.gamma.push({time: now, value: event.gamma});
+    // beta: rotation around x axis
+    this.beta.push({time: now, value: event.beta});
 
     this.handleListeners();
 };
 
 MotionSensor.prototype.read = function () {
-    var rotation = compute(this.rotation, this.calibration.getAlpha());
-    var frontToBack = compute(this.frontToBack, this.calibration.getBeta());
-    var leftToRight = compute(this.leftToRight, this.calibration.getGamma());
+    var rotation = [] // discarding rotation for now, until we find a way to use it properly
+        , frontToBack, leftToRight;
 
-    this.rotation = [];
-    this.frontToBack = [];
-    this.leftToRight = [];
+    if (this.isPortraitMode) {
+        frontToBack = compute(this.beta, this.calibration.getBeta());
+        leftToRight = compute(this.gamma, this.calibration.getGamma());
+    } else {
+        frontToBack = compute(this.gamma, this.calibration.getGamma());
+        leftToRight = compute(this.alpha, this.calibration.getAlpha());
+    }
+
+    this.alpha = [];
+    this.gamma = [];
+    this.beta = [];
 
     return leftToRight.join(';') + '|' + frontToBack.join(';') + '|' + rotation.join(';');
 };
@@ -54,10 +62,10 @@ MotionSensor.prototype.read = function () {
  *
  */
 MotionSensor.prototype.handleListeners = function () {
-    var length = this.leftToRight.length;
+    var measures = this.isPortraitMode ? this.gamma : this.alpha,  length = measures.length;
     if (length < 2) return;
 
-    var previous = this.leftToRight[length - 2], current = this.leftToRight[length - 1];
+    var previous = measures[length - 2], current = measures[length - 1];
     if ((previous.value < 0 && current.value < 0) || (previous.value  >= 0 && current.value >= 0)) return;
 
     if (current.value < 0) {
@@ -90,24 +98,24 @@ MotionSensor.prototype.getCalibration = function () {
     };
 
     return {
-        alpha: avg(this.rotation),
-        beta: avg(this.frontToBack),
-        gamma: avg(this.leftToRight)
+        alpha: avg(this.alpha),
+        beta: avg(this.beta),
+        gamma: avg(this.gamma)
     }
 };
 
 
 /**
  * Calculate positive and negative max with data array (used for left/right and front-back)
- * @param data
- * @param adjustment
+ * @param {{time: number, value: number}[]} measures
+ * @param {number} adjustment
  * @return {*}
  */
-function compute(data, adjustment) {
-    var max = 0, position = null, previousBellowZero = data[0] < 0, compute = [];
-    for (var i = 0, l = data.length; i < l; i++) {
-        var when = data[i].time;
-        var value = data[i].value - adjustment;
+function compute(measures, adjustment) {
+    var max = 0, position = null, previousBellowZero = measures[0] < 0, compute = [];
+    for (var i = 0, l = measures.length; i < l; i++) {
+        var when = measures[i].time;
+        var value = measures[i].value - adjustment;
         if (Math.abs(value) > Math.abs(max)) {
             position = when;
             max = value;
@@ -121,7 +129,7 @@ function compute(data, adjustment) {
         previousBellowZero = value < 0;
     }
 
-    if (compute.length > 0 && compute[compute.length - 1].position < data.length - 1) {
+    if (compute.length > 0 && compute[compute.length - 1].position < measures.length - 1) {
         compute.push({time: position, value: max});
     }
 

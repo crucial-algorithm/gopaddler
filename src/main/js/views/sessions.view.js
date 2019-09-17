@@ -481,7 +481,7 @@ SessionsView.prototype.uploadSession = function ($button, session) {
         return defer.promise();
     }
 
-    if (session.isSynced()) {
+    if (session.isSynced() && !Api.User.isAppTester()) {
         defer.resolve();
         return defer.promise();
     }

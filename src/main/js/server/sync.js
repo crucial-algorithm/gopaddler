@@ -58,7 +58,7 @@ function uploadSession(localSession) {
 
     // A synced session may reach this point if debug data wasn't yet uploaded... in that case,
     // upload debug data only (fire and forget - don't care if it fails)
-    if (localSession.isSynced()) {
+    if (localSession.isSynced() && !Api.User.isAppTester()) {
         Utils.debug(Api.User.getProfile().name, "Session "
             + moment(new Date(localSession.getSessionStart())).format() + " already synced - going for debug data");
 

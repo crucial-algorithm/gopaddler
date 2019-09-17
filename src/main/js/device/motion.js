@@ -62,15 +62,18 @@ MotionSensor.prototype.read = function () {
  *
  */
 MotionSensor.prototype.handleListeners = function () {
-    var measures = this.isPortraitMode ? this.gamma : this.alpha,  length = measures.length;
+    var measures = this.isPortraitMode ? this.gamma : this.alpha, length = measures.length;
+    var adjustment = this.isPortraitMode ? this.calibration.gamma : this.calibration.alpha;
+
     if (length < 2) return;
 
     var previous = measures[length - 2], current = measures[length - 1];
-    if ((previous.value < 0 && current.value < 0) || (previous.value  >= 0 && current.value >= 0)) return;
+    if ((previous.value - adjustment < 0 && current.value - adjustment < 0)
+        || (previous.value - adjustment >= 0 && current.value - adjustment >= 0)) return;
 
-    if (current.value < 0) {
+    if (current.value - adjustment < 0) {
         this.leftToRightListener.apply({}, [{left: true, right: false}]);
-    } else if (current.value > 0) {
+    } else if (current.value - adjustment > 0) {
         this.leftToRightListener.apply({}, [{left: false, right: true}]);
     } else {
         this.leftToRightListener.apply({}, [{left: false, right: false}]);

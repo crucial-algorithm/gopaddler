@@ -751,7 +751,7 @@ SessionView.prototype.confirmFinishWarmUp = function (onStartOnMinuteTurn, onSta
     var $controls, $startOnMinuteTurn, $startImmediately, $finish, $cancel;
     var template = [
         [
-            '    <div class="session-controls">',
+            '<div class="session-controls">',
             '    <div class="session-controls-row">',
             '    	<div class="session-controls-round-button session-start-on-minute-turn blue">',
             '    		<div class="session-controls-round-button-label">' + self.appContext.translate('session_start_at_minute_turn') + '</div>',
@@ -770,7 +770,7 @@ SessionView.prototype.confirmFinishWarmUp = function (onStartOnMinuteTurn, onSta
             '    		<div class="session-controls-round-button-label">' + self.appContext.translate('session_finish') + '</div>',
             '        </div>',
             '     </div>',
-            '    </div'
+            '</div>'
         ]
     ];
 

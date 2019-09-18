@@ -146,7 +146,7 @@ class Sync {
             return;
         }
         setTimeout(function () {
-            setInterval(sync.bind(self), 300000);
+            setInterval(Sync.uploadSessions.bind(self), 300000);
             setInterval(syncScheduledSessions.bind(self), 300000);
             syncScheduledSessions();
         }, 10000);

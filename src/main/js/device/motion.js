@@ -1,111 +1,115 @@
-function MotionSensor(calibration, isPortraitMode) {
+'use strict';
 
-    this.hasSupport = !!window.DeviceOrientationEvent;
-    this.calibration = calibration;
-    this.isPortraitMode = !!isPortraitMode;
+class MotionSensor {
 
-    this.alpha = [];
-    this.gamma = [];
-    this.beta = [];
+    /**
+     *
+     * @param {Calibration} calibration
+     * @param isPortraitMode
+     */
+    constructor(calibration, isPortraitMode) {
 
-    this.leftToRightListener = function(){};
+        this.hasSupport = !!window.DeviceOrientationEvent;
+        this.calibration = calibration;
+        this.isPortraitMode = !!isPortraitMode;
 
-    this.offset = null;
+        this.alpha = [];
+        this.gamma = [];
+        this.beta = [];
 
-}
+        this.leftToRightListener = function(){};
 
-MotionSensor.prototype.start = function(offset) {
-    if (!this.hasSupport) return;
-    this.offset = offset;
-    this.eventHandler = this.handler.bind(this);
-    window.addEventListener("deviceorientation", this.eventHandler , true);
-};
+        this.offset = null;
 
-
-MotionSensor.prototype.stop = function() {
-    if (!this.hasSupport) return;
-    window.removeEventListener("deviceorientation", this.eventHandler, true);
-};
-
-MotionSensor.prototype.handler = function (event) {
-    var now = Date.now() - this.offset;
-    // alpha: rotation around z-axis
-    this.alpha.push({time: now, value: event.alpha});
-    // gamma: rotation around y axis
-    this.gamma.push({time: now, value: event.gamma});
-    // beta: rotation around x axis
-    this.beta.push({time: now, value: event.beta});
-
-    this.handleListeners();
-};
-
-MotionSensor.prototype.read = function () {
-    var rotation = [] // discarding rotation for now, until we find a way to use it properly
-        , frontToBack, leftToRight;
-
-    if (this.isPortraitMode) {
-        frontToBack = compute(this.beta, this.calibration.getBeta());
-        leftToRight = compute(this.gamma, 0);
-    } else {
-        frontToBack = compute(this.gamma, this.calibration.getGamma());
-        leftToRight = compute(this.alpha, 0);
     }
 
-    this.alpha = [];
-    this.gamma = [];
-    this.beta = [];
-
-    return leftToRight.join(';') + '|' + frontToBack.join(';') + '|' + rotation.join(';');
-};
-
-/**
- *
- */
-MotionSensor.prototype.handleListeners = function () {
-    var measures = this.isPortraitMode ? this.gamma : this.alpha, length = measures.length;
-    var adjustment = 0;
-
-    if (length < 2) return;
-
-    var previous = measures[length - 2], current = measures[length - 1];
-    if ((previous.value - adjustment < 0 && current.value - adjustment < 0)
-        || (previous.value - adjustment >= 0 && current.value - adjustment >= 0)) return;
-
-    if (current.value - adjustment < 0) {
-        this.leftToRightListener.apply({}, [{left: true, right: false}]);
-    } else if (current.value - adjustment > 0) {
-        this.leftToRightListener.apply({}, [{left: false, right: true}]);
-    } else {
-        this.leftToRightListener.apply({}, [{left: false, right: false}]);
+    start(offset) {
+        if (!this.hasSupport) return;
+        this.offset = offset;
+        this.eventHandler = this.handler.bind(this);
+        window.addEventListener("deviceorientation", this.eventHandler , true);
     }
-};
 
+    stop() {
+        if (!this.hasSupport) return;
+        window.removeEventListener("deviceorientation", this.eventHandler, true);
+    }
 
-/**
- * listen to left/right changes
- * @param {function} callback
- */
-MotionSensor.prototype.listenLeftToRight = function (callback) {
-    this.leftToRightListener = callback;
-};
+    handler(event) {
+        var now = Date.now() - this.offset;
+        // alpha: rotation around z-axis
+        this.alpha.push({time: now, value: event.alpha});
+        // gamma: rotation around y axis
+        this.gamma.push({time: now, value: event.gamma});
+        // beta: rotation around x axis
+        this.beta.push({time: now, value: event.beta});
 
+        this.handleListeners();
+    }
 
-MotionSensor.prototype.getCalibration = function () {
-    var avg = function (list) {
-        var total = 0, length = list.length;
-        if (length === 0) return null;
-        for (var i = 0; i < length; i++) {
-            total += list[i].value;
+    read() {
+        var rotation = [] // discarding rotation for now, until we find a way to use it properly
+            , frontToBack, leftToRight;
+
+        if (this.isPortraitMode) {
+            frontToBack = compute(this.beta, this.calibration.beta);
+            leftToRight = compute(this.gamma, 0);
+        } else {
+            frontToBack = compute(this.gamma, this.calibration.gamma);
+            leftToRight = compute(this.alpha, 0);
         }
-        return total / length;
-    };
 
-    return {
-        alpha: avg(this.alpha),
-        beta: avg(this.beta),
-        gamma: avg(this.gamma)
+        this.alpha = [];
+        this.gamma = [];
+        this.beta = [];
+
+        return leftToRight.join(';') + '|' + frontToBack.join(';') + '|' + rotation.join(';');
     }
-};
+
+    handleListeners() {
+        var measures = this.isPortraitMode ? this.gamma : this.alpha, length = measures.length;
+        var adjustment = 0;
+
+        if (length < 2) return;
+
+        var previous = measures[length - 2], current = measures[length - 1];
+        if ((previous.value - adjustment < 0 && current.value - adjustment < 0)
+            || (previous.value - adjustment >= 0 && current.value - adjustment >= 0)) return;
+
+        if (current.value - adjustment < 0) {
+            this.leftToRightListener.apply({}, [{left: true, right: false}]);
+        } else if (current.value - adjustment > 0) {
+            this.leftToRightListener.apply({}, [{left: false, right: true}]);
+        } else {
+            this.leftToRightListener.apply({}, [{left: false, right: false}]);
+        }
+    }
+
+    /**
+     * listen to left/right changes
+     * @param {function} callback
+     */
+    listenLeftToRight(callback) {
+        this.leftToRightListener = callback;
+    }
+
+    getCalibration() {
+        var avg = function (list) {
+            var total = 0, length = list.length;
+            if (length === 0) return null;
+            for (var i = 0; i < length; i++) {
+                total += list[i].value;
+            }
+            return total / length;
+        };
+
+        return {
+            alpha: avg(this.alpha),
+            beta: avg(this.beta),
+            gamma: avg(this.gamma)
+        }
+    }
+}
 
 
 /**
@@ -141,5 +145,4 @@ function compute(measures, adjustment) {
     });
 }
 
-
-exports.MotionSensor = MotionSensor;
+export default MotionSensor;

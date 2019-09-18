@@ -1,7 +1,8 @@
 'use strict';
+import Context from '../context';
+import Sync from '../server/sync';
+import Session from '../model/session';
 
-var Sync = require('../server/sync');
-var Session = require('../model/session').Session;
 var Utils = require('../utils/utils.js');
 var Api = require('../server/api');
 var template = require('./sessions.art.html');
@@ -58,20 +59,20 @@ function addSessionsToSessionList(sessions, context) {
 
     sessionsListWidget.clear();
     // add each session to the session list
-    sessions.forEach(function (session) {
+    sessions.forEach(function (/**@type Session */ session) {
 
         var $li = $('<li class="session-row" data-id="' + session.id + '"></li>'),
             $main = $('<div class="session-row-data-wrapper"></div>'),
-            sessionAt = moment(new Date(session.getSessionStart())),
-            duration = moment.duration(session.getSessionEnd() - session.getSessionStart()),
+            sessionAt = moment(new Date(session.sessionStart)),
+            duration = moment.duration(session.sessionEnd - session.sessionStart),
             dDisplay = utils.lpad(duration.hours(), 2) + ':' + utils.lpad(duration.minutes(), 2),
-            distance = session.getDistance();
+            distance = session.distance;
 
         if (appContext.preferences().isImperial()) {
             distance = utils.kmToMiles(distance);
         }
 
-        sessionsDict[session.getId()] = session;
+        sessionsDict[session.id] = session;
 
         // add controls
         $('<div class="session-row-wrapper"></div>').append($main)
@@ -83,7 +84,7 @@ function addSessionsToSessionList(sessions, context) {
                     '	</div>',
                     '</div>'
                 ].join('')
-                .replace(new RegExp('{session-id}', 'g'), session.getId())
+                .replace(new RegExp('{session-id}', 'g'), session.id)
                 .replace('{sync}', context.translate('sessions_force_sync'))
                 .replace('{delete}', context.translate('sessions_delete'))
             )).appendTo($li);
@@ -109,10 +110,10 @@ function addSessionsToSessionList(sessions, context) {
                 .replace('{day}', sessionAt.format('ddd'))
                 .replace('{date}', sessionAt.format('MMM D'))
                 .replace('{intervaled}'
-                    , Api.User.hasCoach() && session.getExpression() === null ? context.translate('sessions_free') : '&nbsp;')
+                    , Api.User.hasCoach() && session.expression === null ? context.translate('sessions_free') : '&nbsp;')
                 .replace('{duration}', dDisplay)
                 .replace('{distance}', utils.round2(distance || 0) + ' ' + appContext.getUnit('distance_in_session_list'))
-                .replace('{synced}', session.isSynced() ? context.translate('sessions_synced') : context.translate('sessions_not_synced'))
+                .replace('{synced}', session.synced ? context.translate('sessions_synced') : context.translate('sessions_not_synced'))
         ).appendTo($main);
 
         // on a session tap, open session-summary with its details
@@ -138,12 +139,12 @@ function updateGlobalStats(sessions, context) {
         totalSPM = 0.0,
         totalLength = 0.0;
 
-    sessions.forEach(function (session) {
-        var duration = moment.duration(session.getSessionEnd() - session.getSessionStart());
-        totalDistance += session.getDistance();
+    sessions.forEach(/** @param {Session} session */function (session) {
+        let duration = moment.duration(session.sessionEnd - session.sessionStart);
+        totalDistance += session.distance;
         totalDuration += duration;
-        totalSPM += (duration * session.getAvgSpm());
-        totalLength += (duration * session.getAvgEfficiency());
+        totalSPM += (duration * session.avgSpm);
+        totalLength += (duration * session.avgEfficiency);
     });
 
     $summaryDistance.text(utils.round2(totalDistance));
@@ -351,229 +352,201 @@ function setupSessionFilter($page, context) {
     });
 }
 
-/**
- * Initialize Sessions view
- *
- * @param page
- * @param context
- */
-function SessionsView(page, context) {
-    context.render(page, template({isPortraitMode: context.isPortraitMode()
-        , isLandscapeMode: !context.isPortraitMode()}));
 
-    var self = this,
-        $back = $('.back-button', page);
-    appContext = context;
-    $page = $(page);
+class SessionsView {
 
-    // initialize calendar as undefined so date are retrieved from preferences and not it
-    $calendar = undefined;
+    constructor(page, context) {
+        Context.render(page, template({isPortraitMode: context.isPortraitMode()
+            , isLandscapeMode: !context.isPortraitMode()}));
 
-    $chart = $('.sessions-summary-chart');
+        const self = this;
+        let $back = $('.back-button', page);
+        appContext = context;
+        $page = $(page);
 
-    $summaryDistance = $page.find('#total-distance');
-    $summarySpeed = $page.find('#summary-speed');
-    $summarySPM = $page.find('#summary-spm');
-    $summaryLength = $page.find('#summary-length');
-    $summaryTime = $page.find('#total-duration');
+        // initialize calendar as undefined so date are retrieved from preferences and not it
+        $calendar = undefined;
 
-    // set unit labes according to user preference
-    $page.find('#sessions-summary-distance-unit').html(context.getUnit('distance_in_session_list'));
-    $page.find('#sessions-summary-speed-unit').html(context.getUnit('speed'));
+        $chart = $('.sessions-summary-chart');
 
-    // bind event to back button
-    $back.on('touchstart', function () {
-        App.back('home', function () {
+        $summaryDistance = $page.find('#total-distance');
+        $summarySpeed = $page.find('#summary-speed');
+        $summarySPM = $page.find('#summary-spm');
+        $summaryLength = $page.find('#summary-length');
+        $summaryTime = $page.find('#total-duration');
+
+        // set unit labes according to user preference
+        $page.find('#sessions-summary-distance-unit').html(context.getUnit('distance_in_session_list'));
+        $page.find('#sessions-summary-speed-unit').html(context.getUnit('speed'));
+
+        // bind event to back button
+        $back.on('touchstart', function () {
+            App.back('home', function () {
+            });
         });
-    });
 
-    $page.on('appDestroy', function () {
-        $back.off('touchstart');
-    });
+        $page.on('appDestroy', function () {
+            $back.off('touchstart');
+        });
 
-    // handle delete
-    self.lock = {};
-    self.progress = {};
+        // handle delete
+        self.lock = {};
+        self.progress = {};
 
-    // load sessions according to user preferences
-    setSessionPeriod(context.preferences().getDefaultSessionFilter());
+        // load sessions according to user preferences
+        setSessionPeriod(context.preferences().getDefaultSessionFilter());
 
-    if (context.preferences().getDefaultStartDate() !== null && context.preferences().getDefaultStartDate() !== undefined) {
-        filterStartDate = moment(context.preferences().getDefaultStartDate());
-    }
-
-    if (context.preferences().getDefaultEndDate() !== null && context.preferences().getDefaultStartDate() !== undefined) {
-        filterEndDate = moment(context.preferences().getDefaultEndDate());
-    }
-
-    page.onReady.then(function () {
-        var $container = $('#sessions-wrapper-for-pull-to-refresh');
-        if (!context.isPortraitMode()) {
-            var height = $(document.body).height() - $page.find('.paddler-topbar').height();
-            $container.height(height);
+        if (context.preferences().getDefaultStartDate() !== null && context.preferences().getDefaultStartDate() !== undefined) {
+            filterStartDate = moment(context.preferences().getDefaultStartDate());
         }
 
-        // initialize and bind events to session filter
-        setupSessionFilter($page, context);
+        if (context.preferences().getDefaultEndDate() !== null && context.preferences().getDefaultStartDate() !== undefined) {
+            filterEndDate = moment(context.preferences().getDefaultEndDate());
+        }
 
-        sessionsListWidget = new List(page, {
-            $elem: $container,
-            swipe: true,
-            swipeSelector: '.session-row-actions',
-            ptr: {
-                label: 'Pull down to sync',
-                release: 'Release to sync',
-                refreshing: 'Syncing sessions',
-                onRefresh: function () {
-                    self.uploadUnsyncedSessions($page);
-                }
+        page.onReady.then(function () {
+            var $container = $('#sessions-wrapper-for-pull-to-refresh');
+            if (!context.isPortraitMode()) {
+                var height = $(document.body).height() - $page.find('.paddler-topbar').height();
+                $container.height(height);
             }
-        }, context);
 
-        filterSessionsByPeriod(context, false);
+            // initialize and bind events to session filter
+            setupSessionFilter($page, context);
 
-        $page.on('touchstart', '.session-row-delete-btn', function (e) {
-            var $el = $(event.target);
-            var sessionId = $el.attr('session-id');
-            sessionsListWidget.delete($el, sessionId, function () {
-                return Session.delete(parseInt(sessionId))
-                    .then(function () {
-                        sessionsListWidget.refresh();
-                        filterSessionsByPeriod(appContext, true);
-                    });
+            sessionsListWidget = new List(page, {
+                $elem: $container,
+                swipe: true,
+                swipeSelector: '.session-row-actions',
+                ptr: {
+                    label: 'Pull down to sync',
+                    release: 'Release to sync',
+                    refreshing: 'Syncing sessions',
+                    onRefresh: function () {
+                        self.uploadUnsyncedSessions($page);
+                    }
+                }
+            }, context);
+
+            filterSessionsByPeriod(context, false);
+
+            $page.on('touchstart', '.session-row-delete-btn', function (e) {
+                var $el = $(event.target);
+                var sessionId = $el.attr('session-id');
+                sessionsListWidget.delete($el, sessionId, function () {
+                    return Session.delete(parseInt(sessionId))
+                        .then(function () {
+                            sessionsListWidget.refresh();
+                            filterSessionsByPeriod(appContext, true);
+                        });
+                });
+                e.preventDefault();
+                e.stopImmediatePropagation();
             });
-            e.preventDefault();
-            e.stopImmediatePropagation();
+
+            $page.on('touchstart', '.session-row-upload-btn', function (e) {
+                const $el = $(event.target);
+                let sessionId = parseInt($el.attr('session-id'))
+                    , session = sessionsDict[sessionId];
+
+                self.uploadSession($el, session);
+
+                e.preventDefault();
+                e.stopImmediatePropagation();
+            });
         });
 
-        $page.on('touchstart', '.session-row-upload-btn', function (e) {
-            var $el = $(event.target);
-            var sessionId = parseInt($el.attr('session-id'))
-                , session = sessionsDict[sessionId];
-
-            self.uploadSession($el, session);
-
-            e.preventDefault();
-            e.stopImmediatePropagation();
+        $page.on('appForward', function () {
+            sessionsListWidget.disable();
         });
-    });
 
-    $page.on('appForward', function () {
-        sessionsListWidget.disable();
-    });
+        $page.on('appShow', function () {
+            if (sessionsListWidget)
+                sessionsListWidget.enable();
+        });
 
-    $page.on('appShow', function () {
-        if (sessionsListWidget)
-            sessionsListWidget.enable();
-    });
-
-    $page.on('appDestroy', function () {
-        sessionsListWidget.destroy();
-        sessionsListWidget = null;
-    });
-}
-
-SessionsView.prototype.uploadSession = function ($button, session) {
-    var defer = $.Deferred();
-
-    if (!session) {
-        defer.resolve();
-        return defer.promise();
+        $page.on('appDestroy', function () {
+            sessionsListWidget.destroy();
+            sessionsListWidget = null;
+        });
     }
 
-    if (session.isSynced() && !Api.User.isAppTester()) {
-        defer.resolve();
-        return defer.promise();
-    }
+    /**
+     *
+     * @param $button
+     * @param {Session} session
+     * @return {*}
+     */
+    uploadSession($button, session) {
+        const defer = $.Deferred();
 
-    var start = new Date().getTime();
-    var progress = appContext.ui.infiniteProgressBarForLi($button.closest('li'));
+        if (!session) {
+            defer.resolve();
+            return defer.promise();
+        }
 
-    Sync.uploadSession(session)
-        .then(function () {
-            finish(start, $button, true, defer);
-        })
-        .fail(function (err) {
-            finish(start, $button, false, defer);
+        if (session.synced && !Api.User.isAppTester()) {
+            defer.resolve();
+            return defer.promise();
+        }
 
-            Utils.notify(Api.User.getProfile().name, err.message);
-        });
+        let start = Date.now();
+        let progress = appContext.ui.infiniteProgressBarForLi($button.closest('li'));
+
+        Sync.uploadSession(session)
+            .then(function () {
+                finish(start, $button, true, defer);
+            })
+            .fail(function (err) {
+                finish(start, $button, false, defer);
+
+                Utils.notify(Api.User.getProfile().name, err.message);
+            });
 
 
-    function finish(start, $button, success, defer) {
-        var diff;
-        if ((diff = (new Date().getTime()) - start) < 2000) {
-            setTimeout(function () {
+        function finish(start, $button, success, defer) {
+            var diff;
+            if ((diff = (new Date().getTime()) - start) < 2000) {
+                setTimeout(function () {
+                    progress.cleanup();
+                    if (success === true) {
+                        $button.closest('li').find('[data-selector="synced"]').html(appContext.translate('sessions_synced'));
+                    }
+                    defer.resolve();
+                }, 2000 - diff);
+            } else {
                 progress.cleanup();
                 if (success === true) {
                     $button.closest('li').find('[data-selector="synced"]').html(appContext.translate('sessions_synced'));
                 }
                 defer.resolve();
-            }, 2000 - diff);
-        } else {
-            progress.cleanup();
-            if (success === true) {
-                $button.closest('li').find('[data-selector="synced"]').html(appContext.translate('sessions_synced'));
             }
-            defer.resolve();
         }
+
+        return defer.promise();
     }
 
-    return defer.promise();
-};
+    uploadUnsyncedSessions($page) {
 
-SessionsView.prototype.uploadUnsyncedSessions = function ($page) {
+        var self = this
+            , sessionKeys = Object.keys(sessionsDict);
 
-    var self = this
-        , sessionKeys = Object.keys(sessionsDict);
+        if (sessionKeys.length === 0)
+            return;
 
-    if (sessionKeys.length === 0)
-        return;
+        (function loop(keys) {
+            let id = keys.shift()
+                , session = sessionsDict[parseInt(id)];
 
-    (function loop(keys) {
-        var id = keys.shift()
-            , session = sessionsDict[parseInt(id)];
+            self.uploadSession($page.find('.session-row-upload-btn[session-id="' + session.id + '"]'), session)
+                .then(function () {
+                    if (keys.length > 0)
+                        loop(keys);
+                });
 
-        self.uploadSession($page.find('.session-row-upload-btn[session-id="' + session.getId() + '"]'), session)
-            .then(function () {
-                if (keys.length > 0)
-                    loop(keys);
-            });
+        })(sessionKeys);
+    }
 
-    })(sessionKeys);
-};
-
-
-function animateDeleteAction($button, sessionId, callback) {
-    var self = this;
-
-    // add progress in order to wait for delete
-    var $parent = $button.closest('li');
-    var $li = $parent.next();
-    var $progress = $li.find('div');
-    var id = Utils.guid();
-
-    self.progress[sessionId] = {$dom: $progress, $li: $li, start: new Date().getTime(), id: id};
-
-    $li.show();
-    $progress.css("width", "1%");
-
-    $({
-        property: 0
-    }).animate({
-        property: 100
-    }, {
-        duration: 5000,
-        step: function () {
-            var _percent = Math.round(this.property);
-            $progress.css("width", _percent + "%");
-        },
-        complete: function () {
-            if (self.lock[sessionId] !== true || self.progress[sessionId].id !== id) return;
-            $li.hide();
-            callback.apply(self, [/* row = */ $parent, /* progress = */ $li, /*spacer = */ $li.next()]);
-        }
-    });
 }
 
-exports.SessionsView = SessionsView;
+export default SessionsView;

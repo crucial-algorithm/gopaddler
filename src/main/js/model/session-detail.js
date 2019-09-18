@@ -158,7 +158,7 @@ SessionDetail.get = function(sessionId, callback) {
 /**
  * 
  * @param {Integer} sessionId
- * @param {Array.Integer} splits
+ * @param {number[]} splits
  * @param {function} callback
  */
 SessionDetail.getDetailedMetrics = function(sessionId, splits, callback) {

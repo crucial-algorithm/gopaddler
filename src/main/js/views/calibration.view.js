@@ -1,35 +1,38 @@
 'use strict';
+import Context from '../context';
+import Calibrate from '../core/calibrate';
+import template from './calibration.view.art.html';
 
-var Calibrate = require('../core/calibrate.js').Calibrate;
-var template = require('./calibration.view.art.html');
 
-function CalibrationView(page, context, request) {
-    context.render(page, template());
+class CalibrationView {
+    constructor(page, context, request) {
+        Context.render(page, template());
 
-    var $page = $(page)
-        , $content = $page.find('.app-content')
-        , $calibrate = $page.find('.calibrate')
-        , isStartSession = !!(request.from === 'start-session');
+        const $page = $(page)
+            , $content = $page.find('.app-content')
+            , $calibrate = $page.find('.calibrate')
+            , isStartSession = !!(request.from === 'start-session');
 
-    setTimeout(function () {
-        $content.css({"line-height": $page.height() + "px"});
-    }, 0);
+        setTimeout(function () {
+            $content.css({"line-height": $page.height() + "px"});
+        }, 0);
 
-    setTimeout(function () {
-        var cal = new Calibrate(context.isPortraitMode(), function () {
-            $calibrate.removeClass('listening');
-            $calibrate.addClass('finished');
-            $calibrate.html("Done!");
-            setTimeout(function () {
-                if (isStartSession)
-                    context.navigate('home', true, {from: "calibration"});
-                else
-                    App.back();
-            }, 1500);
-        });
-        cal.start();
+        setTimeout(function () {
+            let cal = new Calibrate(context.isPortraitMode(), function () {
+                $calibrate.removeClass('listening');
+                $calibrate.addClass('finished');
+                $calibrate.html("Done!");
+                setTimeout(function () {
+                    if (isStartSession)
+                        context.navigate('home', true, {from: "calibration"});
+                    else
+                        App.back();
+                }, 1500);
+            });
+            cal.start();
 
-    }, 1000);
+        }, 1000);
+    }
 }
 
-exports.CalibrationView = CalibrationView;
+export default CalibrationView;

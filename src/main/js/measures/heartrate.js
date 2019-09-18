@@ -1,22 +1,24 @@
 'use strict';
 
-function HeartRate () {
-    this.value = 0;
+class HeartRate {
+    constructor() {
+        this.value = 0;
+    }
+
+    calculate(heartRateMeasure) {
+        // @TODO: implement some smoothing logic
+        this.value = heartRateMeasure;
+
+        return this.value;
+    }
+
+    reset() {
+        this.value = 0;
+    }
+
+    getValue() {
+        return this.value;
+    }
 }
 
-HeartRate.prototype.calculate = function (heartRateMeasure) {
-    // @TODO: implement some smoothing logic
-    this.value = heartRateMeasure;
-
-    return this.value;
-};
-
-HeartRate.prototype.reset = function () {
-    this.value = 0;
-};
-
-HeartRate.prototype.getValue = function () {
-    return this.value;
-};
-
-exports.HeartRate = HeartRate;
+export default HeartRate;

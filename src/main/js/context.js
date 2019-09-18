@@ -5,8 +5,7 @@ var Api = require('./server/api');
 var Dialog = require('./utils/widgets/dialog');
 
 
-var units = {
-
+const units = {
     metric: {
         timer: {
             label: {regular: "units_metric_timer_regular", large: "units_metric_timer_large"},
@@ -94,237 +93,226 @@ var units = {
 };
 
 
-function Context(settings, environment, translateFn, language) {
-    this._settings = settings;
-    this._environment = environment;
-    this._system = this._settings.isImperial() ? 'imperial' : 'metric';
-    this.ui = new UI(this);
+class Context {
 
-    this._translate = translateFn;
-    this._language = language;
-}
+    constructor(settings, environment, translateFn, language) {
+        this._settings = settings;
+        this._environment = environment;
+        this._system = this._settings.isImperial() ? 'imperial' : 'metric';
 
-Context.prototype.preferences = function () {
-    return this._settings;
-};
+        this._translate = translateFn;
+        this._language = language;
 
-Context.prototype.isDev = function () {
-    return this._environment === 'dev';
-};
-
-Context.prototype.isPortraitMode = function () {
-    return this._settings.isPortraitMode();
-};
-
-/**
- *
- * @param type
- * @param large
- * @returns {*}
- */
-Context.prototype.getUnit = function (type, large) {
-    var size = large === true ? "large" : "regular";
-
-    return this.translate(units[this._system][type].label[size]);
-};
-
-/**
- * Should we round this type?
- * @param type
- * @returns {boolean}
- */
-Context.prototype.round = function (type) {
-    return units[this._system][type].round !== false && units[this._system][type].decimalPlaces >= 0;
-};
-
-/**
- *
- * @param type
- * @returns {*}
- */
-Context.prototype.getUnitDecimalPlaces = function (type) {
-    return units[this._system][type].decimalPlaces;
-};
-
-Context.prototype.displayMetric = function (type, value) {
-    if (units[this._system][type] === undefined) {
-        throw 'unkown field type - ' + type;
+        this._ui = Context.UI(this);
     }
 
-    if (isNaN(value)) return 0;
-
-    if (this.round(type))
-        return utils.round(value, this.getUnitDecimalPlaces(type));
-    return value;
-};
-
-/**
- * navigate to target
- * @param target
- * @param clear
- * @param args
- */
-Context.prototype.navigate = function (target, clear, args) {
-
-    if (target === 'calibration' && this._settings.isShowCalibrationTips()) {
-        target = 'calibration-help';
+    preferences() {
+        return this._settings;
     }
 
-    if (target === 'home' && !Api.User.hasChosenBoat()) {
-        target = 'choose-sport';
+    isDev() {
+        return this._environment === 'dev';
     }
 
-    if (clear === true) App.destroyStack();
-
-    App.load(target, args, undefined, function () {
-        if (clear === true)
-            App.removeFromStack();
-    });
-};
-
-Context.prototype.isShowTouchGestures = function () {
-    return this._settings.isShowTouchGestures();
-};
-
-Context.prototype.userHasCoach = function () {
-    return Api.User.hasCoach();
-};
-
-Context.prototype.getGpsRefreshRate = function () {
-    return this._settings.getGpsRefreshRate();
-};
-
-Context.prototype.setGpsRefreshRate = function (rate) {
-    return this._settings.setGpsRefreshRate(rate);
-};
-
-Context.prototype.getRestingHeartRate = function () {
-    /**@type Settings*/
-    return this._settings.getRestingHeartRate();
-};
-
-Context.prototype.setRestingHeartRate = function (rate) {
-    return this._settings.setRestingHeartRate(rate);
-};
-
-Context.prototype.getMaxHeartRate = function () {
-    return this._settings.getMaxHeartRate();
-};
-
-Context.prototype.setMaxHeartRate = function (rate) {
-    return this._settings.setMaxHeartRate(rate);
-};
-
-Context.prototype.getServerClockGap = function () {
-    return this._settings.getServerClockGap();
-};
-
-Context.prototype.setServerClockGap = function (gap) {
-    return this._settings.setServerClockGap(gap);
-};
-
-var render = function (page, template) {
-    var $page = $(page), $content;
-    $page.append(template);
-
-
-    if (($content = $page.find('[data-no-scroll="true"]')).length) {
-        $content.height($(window).height())
+    isPortraitMode() {
+        return this._settings.isPortraitMode();
     }
 
-    $page.find('.paddler-back').off('click').on('click', function () {
-        App.back();
-    });
+    getUnit(type, large) {
+        var size = large === true ? "large" : "regular";
 
-    $page.find('[data-back]:not([data-manual-back])').off('click').on('click', function () {
-        App.back();
-    })
-};
+        return this.translate(units[this._system][type].label[size]);
+    }
 
-Context.prototype.render = render;
-Context.render = render;
+    /**
+     * Should we round this type?
+     * @param type
+     * @returns {boolean}
+     */
+    round(type) {
+        return units[this._system][type].round !== false && units[this._system][type].decimalPlaces >= 0;
+    }
 
-Context.prototype.translate = function(key, placeholders) {
-    return this._translate(key, placeholders);
-};
+    getUnitDecimalPlaces(type) {
+        return units[this._system][type].decimalPlaces;
+    }
 
-Context.prototype.setLanguage = function(language) {
-    this._language = language;
-};
+    displayMetric(type, value) {
+        if (units[this._system][type] === undefined) {
+            throw 'unkown field type - ' + type;
+        }
 
-Context.prototype.getLanguage = function() {
-    return this._language;
-};
+        if (isNaN(value)) return 0;
 
-Context.prototype.isAndroid = function() {
-    return device.platform === "Android"
-};
+        if (this.round(type))
+            return utils.round(value, this.getUnitDecimalPlaces(type));
+        return value;
+    }
 
-Context.prototype.isIOS = function() {
-    return device.platform === "iOS"
-};
+    navigate(target, clear, args) {
 
-var UI = function (ctx) {
-    return {
-        infiniteProgressBarForLi: function ($insertAfterElem, isInfinite) {
-            var $progress = $('<div class="progress-line"/>');
-            var $container = $('<li/>');
-            var $alignLi = $('<li style="height: 0"/>');
+        if (target === 'calibration' && this._settings.isShowCalibrationTips()) {
+            target = 'calibration-help';
+        }
 
-            if (isInfinite === false) {
-                $progress
-                    .removeClass('progress-line')
-                    .addClass('progress-waiting-cancel');
-            }
+        if (target === 'home' && !Api.User.hasChosenBoat()) {
+            target = 'choose-sport';
+        }
 
-            if (ctx.isPortraitMode()) {
-                $container = $progress;
-            } else {
-                $progress.appendTo($container);
-            }
+        if (clear === true) App.destroyStack();
 
-            $container.insertAfter($insertAfterElem);
-            $alignLi.insertAfter($container);
+        App.load(target, args, undefined, function () {
+            if (clear === true)
+                App.removeFromStack();
+        });
+    }
 
-            return {
-                cleanup: function () {
-                    $container.remove();
-                    $alignLi.remove();
+    isShowTouchGestures() {
+        return this._settings.isShowTouchGestures();
+    }
+
+    static userHasCoach() {
+        return Api.User.hasCoach();
+    }
+
+    getGpsRefreshRate() {
+        return this._settings.getGpsRefreshRate();
+    }
+
+    setGpsRefreshRate(rate) {
+        return this._settings.setGpsRefreshRate(rate);
+    }
+
+    getRestingHeartRate() {
+        /**@type Settings*/
+        return this._settings.getRestingHeartRate();
+    }
+
+    setRestingHeartRate(rate) {
+        return this._settings.setRestingHeartRate(rate);
+    }
+
+    getMaxHeartRate() {
+        return this._settings.getMaxHeartRate();
+    }
+
+    setMaxHeartRate(rate) {
+        return this._settings.setMaxHeartRate(rate);
+    }
+
+    getServerClockGap() {
+        return this._settings.getServerClockGap();
+    }
+
+    setServerClockGap(gap) {
+        return this._settings.setServerClockGap(gap);
+    }
+
+    translate(key, placeholders) {
+        return this._translate(key, placeholders);
+    }
+
+    setLanguage(language) {
+        this._language = language;
+    }
+
+    getLanguage() {
+        return this._language;
+    }
+
+    isAndroid() {
+        return device.platform === "Android"
+    }
+
+    isIOS() {
+        return device.platform === "iOS"
+    }
+
+    get ui() {
+        return this._ui;
+    }
+
+    static render(page, template) {
+        var $page = $(page), $content;
+        $page.append(template);
+
+
+        if (($content = $page.find('[data-no-scroll="true"]')).length) {
+            $content.height($(window).height())
+        }
+
+        $page.find('.paddler-back').off('click').on('click', function () {
+            App.back();
+        });
+
+        $page.find('[data-back]:not([data-manual-back])').off('click').on('click', function () {
+            App.back();
+        })
+    }
+
+    static LiveStatus() {
+        return {
+            AWAITING_TO_START: 'Ready',
+            RUNNING: 'Running',
+            OFFLINE: 'Offline'
+        }
+    }
+
+    static UI(ctx) {
+        return {
+            infiniteProgressBarForLi: function ($insertAfterElem, isInfinite) {
+                var $progress = $('<div class="progress-line"/>');
+                var $container = $('<li/>');
+                var $alignLi = $('<li style="height: 0"/>');
+
+                if (isInfinite === false) {
+                    $progress
+                        .removeClass('progress-line')
+                        .addClass('progress-waiting-cancel');
+                }
+
+                if (ctx.isPortraitMode()) {
+                    $container = $progress;
+                } else {
+                    $progress.appendTo($container);
+                }
+
+                $container.insertAfter($insertAfterElem);
+                $alignLi.insertAfter($container);
+
+                return {
+                    cleanup: function () {
+                        $container.remove();
+                        $alignLi.remove();
+                    },
+
+                    $progress: function() {
+                        return $progress
+                    },
+
+                    $container: function () {
+                        return $container;
+                    }
+                }
+
+            },
+
+            modal: {
+                alert: function (title, message, primary) {
+                    return Dialog.alert(ctx.isPortraitMode(), title, message, primary);
                 },
 
-                $progress: function() {
-                    return $progress
+                undecorated: function ($content) {
+                    return Dialog.undecorated(ctx.isPortraitMode(), $content);
                 },
 
-                $container: function () {
-                    return $container;
+                confirm: function(title, message, primary, secondary) {
+                    return Dialog.confirm(ctx.isPortraitMode(), title, message, primary, secondary);
                 }
             }
 
-        },
-
-        modal: {
-            alert: function (title, message, primary) {
-                return Dialog.alert(ctx.isPortraitMode(), title, message, primary);
-            },
-
-            undecorated: function ($content) {
-                return Dialog.undecorated(ctx.isPortraitMode(), $content);
-            },
-
-            confirm: function(title, message, primary, secondary) {
-                return Dialog.confirm(ctx.isPortraitMode(), title, message, primary, secondary);
-            }
         }
-
     }
-};
+}
 
-
-Context.prototype.LIVE_STATUS = {
-    AWAITING_TO_START: 'Ready',
-    RUNNING: 'Running',
-    OFFLINE: 'Offline'
-};
-
-exports.Context = Context;
+export default Context;

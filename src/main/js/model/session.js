@@ -5,608 +5,633 @@ var SessionDetail = require('./session-detail').SessionDetail;
 var utils = require('../utils/utils.js');
 var VERSION_WITH_RECOVERY_IN_DATA = 2;
 
-function Session(sessionStart, angleZ, noiseX, noiseZ, factorX, factorZ, axis, distance, avgSpm, topSpm
-    , avgSpeed, topSpeed, avgEfficiency, topEfficiency, sessionEnd) {
-    this.connection = db.getConnection();
-    this.id = null;
-    this.remoteId = null;
-    this.sessionStart = sessionStart;
-    this.scheduledSessionId = null;
-    this.scheduledSessionStart = null;
-    this.sessionEnd = sessionEnd;
-    this.angleZ = angleZ;
-    this.noiseX = noiseX;
-    this.noiseZ = noiseZ;
-    this.factorX = factorX;
-    this.factorZ = factorZ;
-    this.axis = axis;
-    this.debugFile = null;
-    this.distance = distance;
-    this.avgSpm = avgSpm;
-    this.topSpm = topSpm;
-    this.avgSpeed = avgSpeed;
-    this.topSpeed = topSpeed;
-    this.topEfficiency = topEfficiency;
-    this.avgEfficiency = avgEfficiency;
-    this.avgHeartRate = 0;
-    this.synced = false;
-    this.serverClockGap = 0;
 
-    this.expression = null;
+class Session {
 
-    this.dbgAttempt = undefined;
-    this.dbgSyncedRows = 0;
+    constructor(sessionStart, angleZ, noiseX, noiseZ, factorX, factorZ, axis, distance, avgSpm, topSpm
+        , avgSpeed, topSpeed, avgEfficiency, topEfficiency, sessionEnd) {
 
-    this.version = VERSION_WITH_RECOVERY_IN_DATA;
-    this.expressionJson = null;
-    return this;
-}
+        this.connection = db.getConnection();
+        this._id = null;
+        this._remoteId = null;
+        this._sessionStart = sessionStart;
+        this._scheduledSessionId = null;
+        this._scheduledSessionStart = null;
+        this._angleZ = angleZ;
+        this._noiseX = noiseX;
+        this._noiseZ = noiseZ;
+        this._factorX = factorX;
+        this._factorZ = factorZ;
+        this._axis = axis;
+        this._distance = distance;
+        this._avgSpm = avgSpm;
+        this._topSpm = topSpm;
+        this._avgSpeed = avgSpeed;
+        this._topSpeed = topSpeed;
+        this._avgEfficiency = avgEfficiency;
+        this._topEfficiency = topEfficiency;
+        this._sessionEnd = sessionEnd;
+        this._debugFile = null;
+        this._avgHeartRate = 0;
+        this._synced = false;
+        this._syncedAt = null;
+        this._serverClockGap = 0;
 
-Session.prototype.setId = function (id) {
-    this.id = id;
-};
-Session.prototype.getId = function () {
-    return this.id;
-};
+        this._expression = null;
 
-Session.prototype.setRemoteId = function (id) {
-    this.remoteId = id;
-};
-Session.prototype.getRemoteId = function () {
-    return this.remoteId;
-};
+        this._dbgAttempt = undefined;
+        this._dbgSyncedRows = 0;
 
-Session.prototype.setSessionStart = function (sessionStart) {
-    this.sessionStart = sessionStart;
-    this.debugFile = this.sessionStart + ".csv";
-};
-Session.prototype.getSessionStart = function () {
-    return this.sessionStart;
-};
-
-Session.prototype.setScheduledSessionId = function (id) {
-    this.scheduledSessionId = id;
-};
-Session.prototype.getScheduledSessionId = function () {
-    return this.scheduledSessionId;
-};
-
-Session.prototype.setScheduledSessionStart = function (timestamp) {
-    this.scheduledSessionStart = timestamp;
-};
-Session.prototype.getScheduledSessionStart = function () {
-    return this.scheduledSessionStart;
-};
-
-Session.prototype.setSessionEnd = function (sessionEnd) {
-    this.sessionEnd = sessionEnd;
-};
-Session.prototype.getSessionEnd = function () {
-    return this.sessionEnd;
-};
-Session.prototype.setAngleZ = function (angleZ) {
-    this.angleZ = angleZ;
-};
-Session.prototype.getAngleZ = function () {
-    return this.angleZ;
-};
-Session.prototype.setNoiseX = function (noiseX) {
-    this.noiseX = noiseX;
-};
-Session.prototype.getNoiseX = function () {
-    return this.noiseX;
-};
-Session.prototype.setNoiseZ = function (noiseZ) {
-    this.noiseZ = noiseZ;
-};
-Session.prototype.getNoiseZ = function () {
-    return this.noiseZ;
-};
-Session.prototype.setFactorX = function (factorX) {
-    this.factorX = factorX;
-};
-Session.prototype.getFactorX = function () {
-    return this.factorX;
-};
-Session.prototype.setFactorZ = function (factorZ) {
-    this.factorZ = factorZ;
-};
-Session.prototype.getFactorZ = function () {
-    return this.factorZ;
-};
-Session.prototype.setAxis = function (axis) {
-    this.axis = axis;
-};
-Session.prototype.getAxis = function () {
-    return this.axis;
-};
-Session.prototype.setDebugFile = function (debug) {
-    this.debugFile = debug;
-};
-Session.prototype.getDebugFile = function () {
-    return this.debugFile;
-};
-
-Session.prototype.setAvgSpm = function (avgSpm) {
-    this.avgSpm = avgSpm;
-};
-Session.prototype.getAvgSpm = function () {
-    return this.avgSpm;
-};
-Session.prototype.setTopSpm = function (topSpm) {
-    this.topSpm = topSpm;
-};
-Session.prototype.getTopSpm = function () {
-    return this.topSpm;
-};
-Session.prototype.setAvgSpeed = function (avgSpeed) {
-    this.avgSpeed = avgSpeed;
-};
-Session.prototype.getAvgSpeed = function () {
-    return this.avgSpeed;
-};
-Session.prototype.setTopSpeed = function (topSpeed) {
-    this.topSpeed = topSpeed;
-};
-Session.prototype.getTopSpeed = function () {
-    return this.topSpeed;
-};
-
-Session.prototype.setTopEfficiency = function (value) {
-    this.topEfficiency = value;
-};
-
-Session.prototype.getTopEfficiency = function () {
-    return this.topEfficiency;
-};
-
-Session.prototype.setAvgEfficiency = function (value) {
-    this.avgEfficiency = value;
-};
-
-Session.prototype.getAvgEfficiency = function () {
-    return this.avgEfficiency;
-};
-
-Session.prototype.setAvgHeartRate = function (value) {
-    this.avgHeartRate = value;
-};
-
-Session.prototype.getAvgHeartRate = function () {
-    return this.avgHeartRate;
-};
-
-Session.prototype.setDistance = function (distance) {
-    this.distance = distance;
-};
-Session.prototype.getDistance = function () {
-    return this.distance;
-};
-
-Session.prototype.setExpression = function (expression) {
-    this.expression = expression;
-};
-Session.prototype.getExpression = function () {
-    return this.expression;
-};
-
-Session.prototype.setDebugAttempt = function (attempt) {
-    this.dbgAttempt = attempt;
-};
-Session.prototype.getDebugAttempt = function () {
-    return this.dbgAttempt;
-};
-
-Session.prototype.setSynced = function (synced) {
-    this.synced = (synced === true);
-};
-
-Session.prototype.isSynced = function () {
-    return this.synced;
-};
-
-Session.prototype.setDbgSyncedRows = function (rows) {
-    this.dbgSyncedRows = rows;
-};
-
-Session.prototype.getDbgSyncedRows = function () {
-    return this.dbgSyncedRows;
-};
-
-Session.prototype.getSyncedAt = function () {
-    return this.syncedAt;
-};
-
-Session.prototype.setSyncedAt = function (syncedAt) {
-    this.syncedAt = syncedAt;
-};
-
-Session.prototype.getServerClockGap = function () {
-    return this.serverClockGap;
-};
-
-Session.prototype.setServerClockGap = function (gap) {
-    return this.serverClockGap = gap;
-};
-
-Session.prototype.getVersion = function () {
-    return this.version;
-};
-
-Session.prototype.setVersion = function (value) {
-    return this.version = value;
-};
-
-Session.prototype.getExpressionJson = function () {
-    return this.expressionJson;
-};
-
-/**
- *
- * @param value
- * @returns {*}
- */
-Session.prototype.setExpressionJson = function (value) {
-    return this.expressionJson = value;
-};
-
-Session.prototype.createAPISession = function () {
-
-    var self = this,
-        defer = $.Deferred();
-
-    SessionDetail.get(self.getId(), function (rows) {
-
-        var dataPoints = [],
-            row, next, motion = self.handleMotionString(null);
-
-        for (var j = 0; j < rows.length; j++) {
-
-            row = rows[j];
-            next = rows[j + 1];
-            motion = self.handleMotionString(next ? next.getMotion() : null);
-
-            dataPoints.push({
-                timestamp: row.getTimestamp(),
-                distance: utils.round(row.getDistance(), 4),
-                speed: utils.round2(row.getSpeed()),
-                spm: row.getSpm(),
-                spmEfficiency: utils.round2(row.getEfficiency()),
-                latitude: row.getLatitude(),
-                longitude: row.getLongitude(),
-                heartRate: row.getHeartRate(),
-                split: row.getSplit(),
-                strokes: row.getStrokes(),
-                magnitude: row.getMagnitude(),
-                leftToRight: motion.leftToRight,
-                frontToBack: motion.frontToBack,
-                rotation: motion.rotation
-            });
-        }
-
-        defer.resolve({
-            timestamp: new Date(self.getSessionStart()).getTime(),
-            serverClockGap: self.getServerClockGap(),
-            data: dataPoints,
-            angleZ: self.getAngleZ(),
-            noiseX: self.getNoiseX(),
-            noiseZ: self.getNoiseZ(),
-            factorX: self.getFactorX(),
-            factorZ: self.getFactorZ(),
-            axis: self.getAxis(),
-            coachTrainingSessionId: self.getScheduledSessionId(),
-            coachTrainingSessionStart: self.getScheduledSessionStart(),
-            expression: self.getExpression(),
-            version: __SESSION_FORMAT_VERSION__
-        });
-    });
-
-    return defer.promise();
-};
-
-/**
- *
- * @param string
- * @return {{leftToRight: Array, rotation: Array, frontToBack: Array}}
- */
-Session.prototype.handleMotionString = function (string) {
-    if (!string) return {leftToRight: [], frontToBack: [], rotation: []};
-
-    var parts = string.split('|')
-        , leftToRight = parts[0].split(';')
-        , frontToBack = parts[1].split(';')
-        , rotation = parts[2].split(';');
-
-    var parse = function (list) {
-        var result = [];
-        for (var i = 0, l = list.length; i < l; i++) {
-            var parts = list[i].split('&');
-            var duration = parseInt(parts[0]);
-            var value = parseInt(parts[1]);
-            if (isNaN(value)) continue;
-            result.push({duration: duration, value: value});
-        }
-        return result;
-    };
-
-    leftToRight = parse(leftToRight);
-    frontToBack = parse(frontToBack);
-    rotation = parse(rotation);
-
-    return {
-        leftToRight: leftToRight, frontToBack: frontToBack, rotation: rotation
+        this._version = VERSION_WITH_RECOVERY_IN_DATA;
+        this._expressionJson = null;
     }
-};
 
-Session.prototype.persist = function () {
-    var self = this;
-    self.connection.executeSql("INSERT INTO session (id, session_start, anglez, noisex, noisez," +
-        " factorx, factorz, axis, dbg_file, server_clock_gap, version, expr_json) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
-        [this.id, this.sessionStart, this.angleZ, this.noiseX, this.noiseZ, this.factorX, this.factorZ, this.axis
-            , this.debugFile, this.serverClockGap, this.version, JSON.stringify(this.expressionJson)], function (res) {
-            self.id = res.insertId;
-        }, function (error) {
-            console.log(error.message);
-        });
-    return this;
-};
+    handleMotionString(string) {
+        if (!string) return {leftToRight: [], frontToBack: [], rotation: []};
 
-Session.prototype.finish = function (splits, expression) {
-    var self = this, defer = $.Deferred();
-    
-    var sessionEndAt = Date.now();
-    self.setSessionEnd(sessionEndAt);
+        let parts = string.split('|')
+            , leftToRight = parts[0].split(';')
+            , frontToBack = parts[1].split(';')
+            , rotation = parts[2].split(';');
 
-    self.calculateMetrics(splits).then(function (/**@type SessionDetailMetrics */ metrics) {
-        self.setDistance(metrics.getDistance());
-        self.setAvgSpeed(metrics.getAvgSpeed());
-        self.setTopSpeed(metrics.getMaxSpeed());
-        self.setAvgSpm(metrics.getAvgSpm());
-        self.setTopSpm(metrics.getMaxSpm());
-        self.setAvgEfficiency(metrics.getAvgEfficiency());
-        self.setTopEfficiency(metrics.getMaxEfficiency());
-        self.setAvgHeartRate(metrics.getAvgHeartRate());
-        self.setExpression(expression);
-        self.setExpressionJson(splits);
+        const parse = function (list) {
+            let result = [];
+            for (let i = 0, l = list.length; i < l; i++) {
+                let parts = list[i].split('&');
+                let duration = parseInt(parts[0]);
+                let value = parseInt(parts[1]);
+                if (isNaN(value)) continue;
+                result.push({duration: duration, value: value});
+            }
+            return result;
+        };
 
-        self.connection.executeSql("update session set distance = ?, avg_spm = ?, top_spm = ?, avg_speed = ?" +
-            ", top_speed = ?, avg_efficiency = ?, top_efficiency = ?, avg_heart_rate = ?, session_end = ?" +
-            ", scheduled_session_id = ?,  scheduled_session_start = ?, expression = ?, expr_json = ? where id = ?"
-            , [metrics.getDistance(), metrics.getAvgSpm(), metrics.getMaxSpm(), metrics.getAvgSpeed(), metrics.getMaxSpeed()
-                , metrics.getAvgEfficiency(), metrics.getMaxEfficiency(), metrics.getAvgHeartRate(), sessionEndAt
-                , self.getScheduledSessionId(), self.getScheduledSessionStart()
-                , self.getExpression(), JSON.stringify(self.getExpressionJson()), self.id]
-            , function (a) {
-                defer.resolve(this);
-            }, function (a) {
-                console.log('error', a);
-                defer.reject(this);
-            });
-    });
+        leftToRight = parse(leftToRight);
+        frontToBack = parse(frontToBack);
+        rotation = parse(rotation);
 
-    return defer;
-};
-
-/**
- * Get session_data for this session
- * @returns {*}
- */
-Session.prototype.detail = function () {
-    var self = this,
-        defer = $.Deferred();
-
-    SessionDetail.get(self.getId(), function (rows) {
-        defer.resolve(rows);
-    });
-
-    return defer.promise();
-};
-
-/**
- *
- * @param {Array} splits
- */
-Session.prototype.calculateMetrics = function (splits) {
-    var self = this,
-        defer = $.Deferred();
-
-    var relevantSplits = [];
-    if (splits && splits.length > 0) {
-        for (var i = 0; i < splits.length; i++) {
-            if (splits[i]._recovery === true) continue;
-            relevantSplits.push(i);
+        return {
+            leftToRight: leftToRight, frontToBack: frontToBack, rotation: rotation
         }
     }
 
-    SessionDetail.getDetailedMetrics(self.getId(), relevantSplits, function (/**@type SessionDetailMetrics */metrics) {
-        defer.resolve(metrics);
-    });
+    createAPISession() {
 
-    return defer.promise();
-};
+        const self = this,
+            defer = $.Deferred();
 
-Session.delete = function (id) {
-    var connection = db.getConnection();
-    var defer = $.Deferred();
-    connection.transaction(function (tx) {
-        tx.executeSql("DELETE FROM session_data where session = ?", [id], function () {
-            tx.executeSql("DELETE FROM session where id = ?", [id], function s() {
-                defer.resolve();
-            }, function () {
+        SessionDetail.get(self.id, function (rows) {
+
+            let dataPoints = [],
+                row, next, motion = self.handleMotionString(null);
+
+            for (let j = 0; j < rows.length; j++) {
+
+                row = rows[j];
+                next = rows[j + 1];
+                motion = self.handleMotionString(next ? next.getMotion() : null);
+
+                dataPoints.push({
+                    timestamp: row.getTimestamp(),
+                    distance: utils.round(row.getDistance(), 4),
+                    speed: utils.round2(row.getSpeed()),
+                    spm: row.getSpm(),
+                    spmEfficiency: utils.round2(row.getEfficiency()),
+                    latitude: row.getLatitude(),
+                    longitude: row.getLongitude(),
+                    heartRate: row.getHeartRate(),
+                    split: row.getSplit(),
+                    strokes: row.getStrokes(),
+                    magnitude: row.getMagnitude(),
+                    leftToRight: motion.leftToRight,
+                    frontToBack: motion.frontToBack,
+                    rotation: motion.rotation
+                });
+            }
+
+            defer.resolve({
+                timestamp: new Date(self.sessionStart).getTime(),
+                serverClockGap: self.serverClockGap,
+                data: dataPoints,
+                angleZ: self.angleZ,
+                noiseX: self.noiseX,
+                noiseZ: self.noiseZ,
+                factorX: self.factorX,
+                factorZ: self.factorZ,
+                axis: self.axis,
+                coachTrainingSessionId: self.scheduledSessionId,
+                coachTrainingSessionStart: self.scheduledSessionStart,
+                expression: self.expression,
+                version: __SESSION_FORMAT_VERSION__
+            });
+        });
+
+        return defer.promise();
+    }
+
+    persist() {
+        const self = this;
+        self.connection.executeSql("INSERT INTO session (id, session_start, anglez, noisex, noisez," +
+            " factorx, factorz, axis, dbg_file, server_clock_gap, version, expr_json) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+            [this.id, this.sessionStart, this.angleZ, this.noiseX, this.noiseZ, this.factorX, this.factorZ, this.axis
+                , this.debugFile, this.serverClockGap, this.version, JSON.stringify(this.expressionJson)], function (res) {
+                self.id = res.insertId;
+            }, function (error) {
+                console.log(error.message);
+            });
+        return this;
+    }
+
+    finish(splits, expression) {
+        const self = this, defer = $.Deferred();
+
+        let sessionEndAt = Date.now();
+        self.sessionEnd = sessionEndAt;
+
+        self.calculateMetrics(splits).then(function (/**@type SessionDetailMetrics */ metrics) {
+            self.distance = metrics.getDistance();
+            self.avgSpeed = metrics.getAvgSpeed();
+            self.topSpeed = metrics.getMaxSpeed();
+            self.avgSpm = metrics.getAvgSpm();
+            self.topSpm = metrics.getMaxSpm();
+            self.avgEfficiency = metrics.getAvgEfficiency();
+            self.topEfficiency = metrics.getMaxEfficiency();
+            self.avgHeartRate = metrics.getAvgHeartRate();
+            self.expression = expression;
+            self.expressionJson = splits;
+
+            self.connection.executeSql("update session set distance = ?, avg_spm = ?, top_spm = ?, avg_speed = ?" +
+                ", top_speed = ?, avg_efficiency = ?, top_efficiency = ?, avg_heart_rate = ?, session_end = ?" +
+                ", scheduled_session_id = ?,  scheduled_session_start = ?, expression = ?, expr_json = ? where id = ?"
+                , [metrics.getDistance(), metrics.getAvgSpm(), metrics.getMaxSpm(), metrics.getAvgSpeed(), metrics.getMaxSpeed()
+                    , metrics.getAvgEfficiency(), metrics.getMaxEfficiency(), metrics.getAvgHeartRate(), sessionEndAt
+                    , self.scheduledSessionId, self.scheduledSessionStart
+                    , self.expression, JSON.stringify(self.expressionJson), self.id]
+                , function (a) {
+                    defer.resolve(this);
+                }, function (a) {
+                    console.log('error', a);
+                    defer.reject(this);
+                });
+        });
+
+        return defer;
+    }
+
+    /**
+     * Get session_data for this session
+     * @returns {*}
+     */
+    detail() {
+        const self = this,
+            defer = $.Deferred();
+
+        SessionDetail.get(self.id, function (rows) {
+            defer.resolve(rows);
+        });
+
+        return defer.promise();
+    }
+
+    calculateMetrics(splits) {
+        const self = this,
+            defer = $.Deferred();
+
+        let relevantSplits = [];
+        if (splits && splits.length > 0) {
+            for (let i = 0; i < splits.length; i++) {
+                if (splits[i]._recovery === true) continue;
+                relevantSplits.push(i);
+            }
+        }
+
+        SessionDetail.getDetailedMetrics(self.id, relevantSplits, function (/**@type SessionDetailMetrics */metrics) {
+            defer.resolve(metrics);
+        });
+
+        return defer.promise();
+    }
+
+    static delete(id) {
+        const connection = db.getConnection();
+        const defer = $.Deferred();
+        connection.transaction(function (tx) {
+            tx.executeSql("DELETE FROM session_data where session = ?", [id], function () {
+                tx.executeSql("DELETE FROM session where id = ?", [id], function s() {
+                    defer.resolve();
+                }, function () {
+                    defer.fail();
+                });
+
+            }, function error() {
                 defer.fail();
             });
+        });
+        return defer.promise();
+    }
 
+    /**
+     * Mark session as having been synced
+     * @param remoteId
+     * @param id
+     * @return {*}
+     */
+    static synced(remoteId, id) {
+        const connection = db.getConnection();
+        const defer = $.Deferred();
+        connection.executeSql("update session set synced = 1, synced_at = ?, remote_id = ? where id = ?", [Date.now(), remoteId, id], function success() {
+            defer.resolve();
         }, function error() {
             defer.fail();
         });
-    });
-    return defer.promise();
-};
+        return defer.promise();
+    }
 
-
-Session.synced = function (remoteId, id) {
-    var connection = db.getConnection();
-    var defer = $.Deferred();
-    connection.executeSql("update session set synced = 1, synced_at = ?, remote_id = ? where id = ?", [new Date().getTime(), remoteId, id], function success() {
-        defer.resolve();
-    }, function error() {
-        defer.fail();
-    });
-    return defer.promise();
-};
-
-Session.startDebugSync = function (id, total) {
-    var connection = db.getConnection();
-    var defer = $.Deferred();
-    connection.executeSql("update session set dbg_attempt = if(dbg_attempt is null, 1, dbg_attempt + 1), dbg_tot_rows = ? where id = ?", [total, id], function success() {
-        defer.resolve();
-    }, function error() {
-        defer.fail();
-    });
-    return defer.promise();
-};
-
-Session.debugSynced = function (id, rows) {
-    var connection = db.getConnection();
-    var defer = $.Deferred();
-    connection.executeSql("update session set dbg_sync_rows = dbg_sync_rows + ? where id = ?", [rows, id], function success() {
-        defer.resolve();
-    }, function error() {
-        defer.fail();
-    });
-    return defer.promise();
-};
-
-Session.debugSyncFinished = function (id, success) {
-    var connection = db.getConnection();
-    var defer = $.Deferred();
-    connection.executeSql("update session set dbg_synced = ?, dbg_synced_at = ? where id = ?", [success ? 1 : 0, new Date().getTime(), id], function success() {
-        defer.resolve();
-    }, function error() {
-        defer.fail();
-    });
-    return defer.promise();
-};
-
-Session.incrementAttempt = function (id) {
-    var connection = db.getConnection();
-    var defer = $.Deferred();
-    connection.executeSql("update session set dbg_attempt = dbg_attempt + 1 where id = ?", [id], function success() {
-        defer.resolve();
-    }, function error() {
-        defer.fail();
-    });
-    return defer.promise();
-};
-
-Session.sessionsSummary = function () {
-    var defer = $.Deferred();
-    var connection = db.getConnection();
-    connection.executeSql("SELECT sum(distance) distance, max(top_speed) speed, sum(session_end - session_start) duration FROM session", [], function (res) {
-        var record = res.rows.item(0);
-        defer.resolve({
-            distance: record.distance,
-            speed: record.speed,
-            duration: record.duration
+    static startDebugSync(id, total) {
+        const connection = db.getConnection();
+        const defer = $.Deferred();
+        connection.executeSql("update session set dbg_attempt = if(dbg_attempt is null, 1, dbg_attempt + 1), dbg_tot_rows = ? where id = ?", [total, id], function success() {
+            defer.resolve();
+        }, function error() {
+            defer.fail();
         });
-    }, function (error) {
-        defer.fail(error);
-    });
-    return defer.promise();
-};
+        return defer.promise();
+    }
 
-Session.findAllNotSynced = function (callback) {
-    var connection = db.getConnection();
-    connection.executeSql("SELECT * FROM session WHERE synced <> 1 OR (dbg_synced = 0 AND (strftime('%s', 'now') - session_start/1000) < (86400 * 5))", [], function (res) {
-        var rows = [];
-        for (var i = 0; i < res.rows.length; i++) {
-            rows.push(sessionFromDbRow(res.rows.item(i)));
-        }
-        callback(rows);
-    }, function (error) {
-        console.log('Error retrieving sessions: ' + error.message);
-    });
-};
+    static debugSynced(id, rows) {
+        const connection = db.getConnection();
+        const defer = $.Deferred();
+        connection.executeSql("update session set dbg_sync_rows = dbg_sync_rows + ? where id = ?", [rows, id], function success() {
+            defer.resolve();
+        }, function error() {
+            defer.fail();
+        });
+        return defer.promise();
+    }
 
-Session.all = function (callback) {
-    var self = this;
-    var connection = db.getConnection();
-    connection.executeSql("SELECT * FROM session order by id desc", [], function (res) {
-        var rows = [];
-        for (var i = 0; i < res.rows.length; i++) {
-            rows.push(sessionFromDbRow(res.rows.item(i)));
-        }
-        callback(rows);
-    }, function (error) {
-        console.log('Error retrieving sessions: ' + error.message);
-    });
-};
+    static debugSyncFinished(id, success) {
+        const connection = db.getConnection();
+        const defer = $.Deferred();
+        connection.executeSql("update session set dbg_synced = ?, dbg_synced_at = ? where id = ?", [success ? 1 : 0, new Date().getTime(), id], function success() {
+            defer.resolve();
+        }, function error() {
+            defer.fail();
+        });
+        return defer.promise();
+    }
 
-Session.last = function () {
-    var connection = db.getConnection();
-    var defer = $.Deferred();
-    connection.executeSql("SELECT * FROM session order by id desc limit 1", [], function (res) {
+    static incrementAttempt(id) {
+        const connection = db.getConnection();
+        const defer = $.Deferred();
+        connection.executeSql("update session set dbg_attempt = dbg_attempt + 1 where id = ?", [id], function success() {
+            defer.resolve();
+        }, function error() {
+            defer.fail();
+        });
+        return defer.promise();
+    }
 
-        if (res.rows.length > 0) {
-            defer.resolve(sessionFromDbRow(res.rows.item(0)));
-            return;
-        }
-        defer.resolve(undefined);
-    }, function (error) {
-        defer.reject(error.message);
-    });
+    static sessionsSummary() {
+        const connection = db.getConnection();
+        const defer = $.Deferred();
+        connection.executeSql("SELECT sum(distance) distance, max(top_speed) speed, sum(session_end - session_start) duration FROM session", [], function (res) {
+            var record = res.rows.item(0);
+            defer.resolve({
+                distance: record.distance,
+                speed: record.speed,
+                duration: record.duration
+            });
+        }, function (error) {
+            defer.fail(error);
+        });
+        return defer.promise();
+    }
 
-    return defer.promise();
-};
+    static findAllNotSynced(callback) {
+        const connection = db.getConnection();
+        connection.executeSql("SELECT * FROM session WHERE synced <> 1 OR (dbg_synced = 0 AND (strftime('%s', 'now') - session_start/1000) < (86400 * 5))", [], function (res) {
+            var rows = [];
+            for (var i = 0; i < res.rows.length; i++) {
+                rows.push(sessionFromDbRow(res.rows.item(i)));
+            }
+            callback(rows);
+        }, function (error) {
+            console.log('Error retrieving sessions: ' + error.message);
+        });
+    }
 
-Session.getFromDate = function (date, callback) {
-    var connection = db.getConnection();
+    static all(callback) {
+        const self = this;
+        const connection = db.getConnection();
+        connection.executeSql("SELECT * FROM session order by id desc", [], function (res) {
+            let rows = [];
+            for (let i = 0; i < res.rows.length; i++) {
+                rows.push(sessionFromDbRow(res.rows.item(i)));
+            }
+            callback(rows);
+        }, function (error) {
+            console.log('Error retrieving sessions: ' + error.message);
+        });
+    }
 
-    connection.executeSql('SELECT * FROM session WHERE session_end >= ? order by id desc', [date], function (res) {
-        var rows = [];
-        for (var i = 0; i < res.rows.length; i++) {
-            rows.push(sessionFromDbRow(res.rows.item(i)));
-        }
-        callback(rows);
-    }, function (error) {
-        console.log('Error retrieving sessions: ' + error.message);
-    });
-};
+    static last() {
+        const connection = db.getConnection();
+        const defer = $.Deferred();
+        connection.executeSql("SELECT * FROM session order by id desc limit 1", [], function (res) {
 
-Session.getForDates = function (startDate, endDate, callback) {
-    var connection = db.getConnection();
+            if (res.rows.length > 0) {
+                defer.resolve(sessionFromDbRow(res.rows.item(0)));
+                return;
+            }
+            defer.resolve(undefined);
+        }, function (error) {
+            defer.reject(error.message);
+        });
 
-    connection.executeSql('SELECT * FROM session WHERE session_end >= ? AND session_end <= ? order by id desc', [startDate, endDate], function (res) {
-        var rows = [];
-        for (var i = 0; i < res.rows.length; i++) {
-            rows.push(sessionFromDbRow(res.rows.item(i)));
-        }
-        callback(rows);
-    }, function (error) {
-        console.log('Error retrieving sessions: ' + error.message);
-    });
-};
+        return defer.promise();
+    }
 
-Session.get = function (id) {
-    var connection = db.getConnection();
-    var defer = $.Deferred();
-    connection.executeSql("SELECT * FROM session where id = ?", [id], function (res) {
+    static getFromDate(date, callback) {
+        const connection = db.getConnection();
 
-        if (res.rows.length > 0) {
-            defer.resolve(sessionFromDbRow(res.rows.item(0)));
-            return;
-        }
-        defer.resolve(undefined);
-    }, function (error) {
-        defer.reject(error.message);
-    });
+        connection.executeSql('SELECT * FROM session WHERE session_end >= ? order by id desc', [date], function (res) {
+            var rows = [];
+            for (var i = 0; i < res.rows.length; i++) {
+                rows.push(sessionFromDbRow(res.rows.item(i)));
+            }
+            callback(rows);
+        }, function (error) {
+            console.log('Error retrieving sessions: ' + error.message);
+        });
+    }
 
-    return defer.promise();
-};
+    static getForDates(startDate, endDate, callback) {
+        const connection = db.getConnection();
 
+        connection.executeSql('SELECT * FROM session WHERE session_end >= ? AND session_end <= ? order by id desc', [startDate, endDate], function (res) {
+            var rows = [];
+            for (var i = 0; i < res.rows.length; i++) {
+                rows.push(sessionFromDbRow(res.rows.item(i)));
+            }
+            callback(rows);
+        }, function (error) {
+            console.log('Error retrieving sessions: ' + error.message);
+        });
+    }
+
+    static get(id) {
+        const connection = db.getConnection();
+        const defer = $.Deferred();
+        connection.executeSql("SELECT * FROM session where id = ?", [id], function (res) {
+
+            if (res.rows.length > 0) {
+                defer.resolve(sessionFromDbRow(res.rows.item(0)));
+                return;
+            }
+            defer.resolve(undefined);
+        }, function (error) {
+            defer.reject(error.message);
+        });
+
+        return defer.promise();
+    }
+
+    get sessionStart() {
+        return this._sessionStart;
+    }
+
+    set sessionStart(value) {
+        this._sessionStart = value;
+        this.debugFile = this.sessionStart + ".csv";
+    }
+
+    get angleZ() {
+        return this._angleZ;
+    }
+
+    set angleZ(value) {
+        this._angleZ = value;
+    }
+
+    get noiseX() {
+        return this._noiseX;
+    }
+
+    set noiseX(value) {
+        this._noiseX = value;
+    }
+
+    get noiseZ() {
+        return this._noiseZ;
+    }
+
+    set noiseZ(value) {
+        this._noiseZ = value;
+    }
+
+    get factorX() {
+        return this._factorX;
+    }
+
+    set factorX(value) {
+        this._factorX = value;
+    }
+
+    get factorZ() {
+        return this._factorZ;
+    }
+
+    set factorZ(value) {
+        this._factorZ = value;
+    }
+
+    get axis() {
+        return this._axis;
+    }
+
+    set axis(value) {
+        this._axis = value;
+    }
+
+    get distance() {
+        return this._distance;
+    }
+
+    set distance(value) {
+        this._distance = value;
+    }
+
+    get avgSpm() {
+        return this._avgSpm;
+    }
+
+    set avgSpm(value) {
+        this._avgSpm = value;
+    }
+
+    get topSpm() {
+        return this._topSpm;
+    }
+
+    set topSpm(value) {
+        this._topSpm = value;
+    }
+
+    get avgSpeed() {
+        return this._avgSpeed;
+    }
+
+    set avgSpeed(value) {
+        this._avgSpeed = value;
+    }
+
+    get topSpeed() {
+        return this._topSpeed;
+    }
+
+    set topSpeed(value) {
+        this._topSpeed = value;
+    }
+
+    get avgEfficiency() {
+        return this._avgEfficiency;
+    }
+
+    set avgEfficiency(value) {
+        this._avgEfficiency = value;
+    }
+
+    get topEfficiency() {
+        return this._topEfficiency;
+    }
+
+    set topEfficiency(value) {
+        this._topEfficiency = value;
+    }
+
+    get sessionEnd() {
+        return this._sessionEnd;
+    }
+
+    set sessionEnd(value) {
+        this._sessionEnd = value;
+    }
+
+    get id() {
+        return this._id;
+    }
+
+    set id(value) {
+        this._id = value;
+    }
+
+    get remoteId() {
+        return this._remoteId;
+    }
+
+    set remoteId(value) {
+        this._remoteId = value;
+    }
+
+    get scheduledSessionId() {
+        return this._scheduledSessionId;
+    }
+
+    set scheduledSessionId(value) {
+        this._scheduledSessionId = value;
+    }
+
+    get scheduledSessionStart() {
+        return this._scheduledSessionStart;
+    }
+
+    set scheduledSessionStart(value) {
+        this._scheduledSessionStart = value;
+    }
+
+    get debugFile() {
+        return this._debugFile;
+    }
+
+    set debugFile(value) {
+        this._debugFile = value;
+    }
+
+    get avgHeartRate() {
+        return this._avgHeartRate;
+    }
+
+    set avgHeartRate(value) {
+        this._avgHeartRate = value;
+    }
+
+    get synced() {
+        return this._synced;
+    }
+
+    set synced(value) {
+        this._synced = (value === true);
+    }
+
+    get syncedAt() {
+        return this._syncedAt;
+    }
+
+    set syncedAt(value) {
+        this._syncedAt = value;
+    }
+
+    get serverClockGap() {
+        return this._serverClockGap;
+    }
+
+    set serverClockGap(value) {
+        this._serverClockGap = value;
+    }
+
+    get expression() {
+        return this._expression;
+    }
+
+    set expression(value) {
+        this._expression = value;
+    }
+
+    get debugAttempt() {
+        return this._dbgAttempt;
+    }
+
+    set debugAttempt(value) {
+        this._dbgAttempt = value;
+    }
+
+    get dbgSyncedRows() {
+        return this._dbgSyncedRows;
+    }
+
+    set dbgSyncedRows(value) {
+        this._dbgSyncedRows = value;
+    }
+
+    get version() {
+        return this._version;
+    }
+
+    set version(value) {
+        this._version = value;
+    }
+
+    get expressionJson() {
+        return this._expressionJson;
+    }
+
+    set expressionJson(value) {
+        this._expressionJson = value;
+    }
+}
 
 function sessionFromDbRow(data) {
-    var session = new Session(
+    let session = new Session(
         data.session_start,
         data.anglez,
         data.noisex,
@@ -624,22 +649,21 @@ function sessionFromDbRow(data) {
         data.session_end
     );
 
-    session.setId(data.id);
-    session.setDebugAttempt(data.dbg_attempt);
-    session.setRemoteId(data.remote_id);
-    session.setDbgSyncedRows(data.dbg_sync_rows);
-    session.setScheduledSessionId(data.scheduled_session_id);
-    session.setScheduledSessionStart(data.scheduled_session_start);
-    session.setSyncedAt(data.synced_at);
-    session.setSynced(data.synced === 1);
-    session.setExpression(data.expression);
-    session.setServerClockGap(data.server_clock_gap);
-    session.setAvgHeartRate(data.avg_heart_rate);
-    session.setVersion(data.version);
-    session.setExpressionJson(JSON.parse(data.expr_json));
+    session.id = data.id;
+    session.debugAttempt = data.dbg_attempt;
+    session.remoteId = data.remote_id;
+    session.dbgSyncedRows = data.dbg_sync_rows;
+    session.scheduledSessionId = data.scheduled_session_id;
+    session.scheduledSessionStart = data.scheduled_session_start;
+    session.syncedAt = data.synced_at;
+    session.synced = data.synced === 1;
+    session.expression = data.expression;
+    session.serverClockGap = data.server_clock_gap;
+    session.avgHeartRate = data.avg_heart_rate;
+    session.version = data.version;
+    session.expressionJson = JSON.parse(data.expr_json);
 
     return session;
 }
 
-
-exports.Session = Session;
+export default Session;

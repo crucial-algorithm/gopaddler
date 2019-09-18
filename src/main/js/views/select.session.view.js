@@ -1,6 +1,8 @@
 'use strict';
+import Context from '../context';
+import ScheduledSession from '../model/scheduled-session';
+
 var Api = require('../server/api');
-var ScheduledSession = require('../model/scheduled-session').ScheduledSession;
 var Utils = require('../utils/utils');
 var template = require('./select.session.art.html');
 var List = require('../utils/widgets/list').List;
@@ -21,201 +23,210 @@ var mockupSessions = [
     }
 ];
 
+class SelectSessionView {
+    constructor(page, context) {
+        Context.render(page, template({isPortraitMode: context.isPortraitMode()
+            , isLandscapeMode: !context.isPortraitMode()}));
 
-function SelectSessionView(page, context) {
-    context.render(page, template({isPortraitMode: context.isPortraitMode()
-        , isLandscapeMode: !context.isPortraitMode()}));
-
-    var self = this;
-    page.onReady.then(function () {
-        self.render.apply(self, [page, context]);
-    });
-}
-
-SelectSessionView.prototype.render = function (page, context) {
-    var self = this
-        , $page = $(page)
-        , $back = $page.find('.app-button[data-back]')
-        , $selectedSession = $page.find('.selected-session')
-        , $start = $page.find('.select-session-start')
-        , $warmUpFirst = $page.find('#warmup-first')
-        , $wrapper = $('.select-session-available-sessions-wrapper')
-        , $list, sessions, session, listWidget;
-
-    listWidget = new List(page, {
-        $elem: $wrapper,
-        swipe: false,
-        ptr: {
-            onRefresh: function () {
-                ScheduledSession.sync().then(renderSessions).fail(function (err) {
-                    console.log(err);
-                    renderSessions([]);
-                })
-            }
-        }
-    });
-
-    function back(e) {
-        setTimeout(function () {
-            App.load('home', function () {
-                App.removeFromStack();
-            });
-        }, 1);
-        listWidget.destroy();
+        var self = this;
+        page.onReady.then(function () {
+            self.render.apply(self, [page, context]);
+        });
     }
 
-    // bind event to back button
-    $back.on('touchstart', back);
+    render(page, context) {
+        var self = this
+            , $page = $(page)
+            , $back = $page.find('.app-button[data-back]')
+            , $selectedSession = $page.find('.selected-session')
+            , $start = $page.find('.select-session-start')
+            , $warmUpFirst = $page.find('#warmup-first')
+            , $wrapper = $('.select-session-available-sessions-wrapper')
+            , $list, /**@type ScheduledSession[] */ sessions, /**@type ScheduledSession */ session, listWidget;
 
-    $list = $wrapper.find('ul');
+        listWidget = new List(page, {
+            $elem: $wrapper,
+            swipe: false,
+            ptr: {
+                onRefresh: function () {
+                    ScheduledSession.sync().then(renderSessions).fail(function (err) {
+                        console.log(err);
+                        renderSessions([]);
+                    })
+                }
+            }
+        });
 
-    $page.on('appBeforeBack', back);
-
-    var slave = false;
-    $list.on('tap', 'li', function selectSessionHandler(e) {
-        $list.find('li').removeClass('selected');
-        var $li = $(this);
-        var idx = parseInt($li.attr('data-session-idx'));
-        $li.addClass('selected');
-        slave = false;
-        var value = context.translate("select_session_free_session");
-        if (idx === -1) {
-            session = null;
-            slave = false;
-        } else if (idx === -2) {
-            session = null;
-            value = context.translate("select_session_slave_mode_description");
-            slave = true;
-        } else {
-            session = sessions[idx];
-            slave = false;
+        function back(e) {
+            setTimeout(function () {
+                App.load('home', function () {
+                    App.removeFromStack();
+                });
+            }, 1);
+            listWidget.destroy();
         }
 
-        if (session)
-            value = sessions[idx].getExpression();
+        // bind event to back button
+        $back.on('touchstart', back);
 
-        $selectedSession.text(value);
-        Utils.forceSafariToReflow($('.select-session-play')[0]);
-    });
+        $list = $wrapper.find('ul');
 
-    $start.on('tap', function () {
-        if (slave) {
+        $page.on('appBeforeBack', back);
+
+        let slave = false;
+        $list.on('tap', 'li', function selectSessionHandler(e) {
+            $list.find('li').removeClass('selected');
+            var $li = $(this);
+            var idx = parseInt($li.attr('data-session-idx'));
+            $li.addClass('selected');
+            slave = false;
+            var value = context.translate("select_session_free_session");
+            if (idx === -1) {
+                session = null;
+                slave = false;
+            } else if (idx === -2) {
+                session = null;
+                value = context.translate("select_session_slave_mode_description");
+                slave = true;
+            } else {
+                session = sessions[idx];
+                slave = false;
+            }
+
+            if (session)
+                value = sessions[idx].expression;
+
+            $selectedSession.text(value);
+            Utils.forceSafariToReflow($('.select-session-play')[0]);
+        });
+
+        $start.on('tap', function () {
+            if (slave) {
+                clearInterval(self.deviceActiveIntervalId);
+                Api.TrainingSessions.live.clearCommandListeners();
+                listWidget.destroy();
+                context.navigate('coach-slave', true);
+                return;
+            }
+            if (session)
+                start(session.expression, session.splits, session.id, null, $warmUpFirst.is(':checked'), false, null);
+            else
+                start(null, null, null, null, false, false, null);
+        });
+
+        $('.select-session-play input').on('change', function () {
+            Utils.forceSafariToReflow($('.select-session-play')[0]);
+        });
+
+        if (context.isDev()) {
+            setTimeout(function () {
+                var sessions = [], session;
+                for (var i = 0; i < mockupSessions.length; i++) {
+                    session = new ScheduledSession();
+                    session.fromJson(mockupSessions[i]);
+                    sessions.push(session);
+                }
+                renderSessions(sessions);
+            }, 0);
+        } else {
+            renderSessions(ScheduledSession.load() || []);
+        }
+
+
+        /**
+         *
+         * @param expression
+         * @param splits
+         * @param remoteScheduledSessionId          Scheduled session
+         * @param startedAt
+         * @param {boolean} isWarmUpFirst
+         * @param {boolean} wasStartedRemotely
+         * @param {String}  liveSessionId
+         */
+        function start(expression, splits, remoteScheduledSessionId, startedAt, isWarmUpFirst, wasStartedRemotely, liveSessionId) {
             clearInterval(self.deviceActiveIntervalId);
             Api.TrainingSessions.live.clearCommandListeners();
             listWidget.destroy();
-            context.navigate('coach-slave', true);
-            return;
+            context.navigate('session', false, {
+                expression: expression,
+                splits: splits,
+                isWarmUpFirst: isWarmUpFirst === true,
+                remoteScheduledSessionId: remoteScheduledSessionId,
+                startedAt: startedAt,
+                wasStartedRemotely: wasStartedRemotely,
+                liveSessionId: liveSessionId
+            });
+
+            $page.off();
         }
-        if (session)
-            start(session.getExpression(), session.getSplits(), session.getId(), null, $warmUpFirst.is(':checked'), false, null);
-        else
-            start(null, null, null, null, false, false, null);
-    });
 
-    $('.select-session-play input').on('change', function () {
-        Utils.forceSafariToReflow($('.select-session-play')[0]);
-    });
+        /**
+         *
+         * @param {ScheduledSession[]} _sessions
+         */
+        function renderSessions(_sessions) {
+            let date, elements = $();
 
-    if (context.isDev()) {
-        setTimeout(function () {
-            var sessions = [], session;
-            for (var i = 0; i < mockupSessions.length; i++) {
-                session = new ScheduledSession();
-                session.fromJson(mockupSessions[i]);
-                sessions.push(session);
-            }
-            renderSessions(sessions);
-        }, 0);
-    } else {
-        renderSessions(ScheduledSession.load() || []);
-    }
+            sessions = _sessions;
+            sessions = sort(sessions);
 
+            for (let s = 0; s < sessions.length; s++) {
+                session = sessions[s];
 
-    /**
-     *
-     * @param expression
-     * @param splits
-     * @param remoteScheduledSessionId          Scheduled session
-     * @param startedAt
-     * @param {boolean} isWarmUpFirst
-     * @param {boolean} wasStartedRemotely
-     * @param {String}  liveSessionId
-     */
-    function start(expression, splits, remoteScheduledSessionId, startedAt, isWarmUpFirst, wasStartedRemotely, liveSessionId) {
-        clearInterval(self.deviceActiveIntervalId);
-        Api.TrainingSessions.live.clearCommandListeners();
-        listWidget.destroy();
-        context.navigate('session', false, {
-            expression: expression,
-            splits: splits,
-            isWarmUpFirst: isWarmUpFirst === true,
-            remoteScheduledSessionId: remoteScheduledSessionId,
-            startedAt: startedAt,
-            wasStartedRemotely: wasStartedRemotely,
-            liveSessionId: liveSessionId
-        });
+                if (session === null) {
+                    // Add free session
+                    elements = elements.add(['<li class="select-session-row " data-session-idx="-1">',
+                        '    <div class="select-session-row-wrapper">',
+                        '        <div><label class="select-session-date-label">' + moment().format('dddd') + '</label>' + moment().format('MMM DD') + '</div>',
+                        '        <div><label class="select-session-date-label"></label><span class="session-row-expression">' + context.translate("select_session_free_session") + '</span></div>',
+                        '    </div>',
+                        '</li>'
+                    ].join(''));
 
-        $page.off();
-    }
+                    continue;
+                }
 
-    function renderSessions(_sessions) {
-        var session, date;
-        var elements = $();
-        sessions = _sessions;
-
-        sessions = sort(sessions);
-
-        for (var s = 0; s < sessions.length; s++) {
-            session = sessions[s];
-
-            if (session === null) {
-                // Add free session
-                elements = elements.add(['<li class="select-session-row " data-session-idx="-1">',
+                date = moment(session.date);
+                elements = elements.add(['<li class="select-session-row" data-session-idx="' + s + '">',
                     '    <div class="select-session-row-wrapper">',
-                    '        <div><label class="select-session-date-label">' + moment().format('dddd') + '</label>' + moment().format('MMM DD') + '</div>',
-                    '        <div><label class="select-session-date-label"></label><span class="session-row-expression">' + context.translate("select_session_free_session") + '</span></div>',
+                    '        <div><label class="select-session-date-label">' + date.format('dddd') + '</label>' + date.format('MMM DD') + '</div>',
+                    '        <div><label class="select-session-date-label"></label><span class="session-row-expression">' + session.expression + '</span></div>',
                     '    </div>',
                     '</li>'
                 ].join(''));
-
-                continue;
             }
 
-            date = moment(session.getDate());
-            elements = elements.add(['<li class="select-session-row" data-session-idx="' + s + '">',
+            // add coach slave
+            elements = elements.add(['<li class="select-session-row " data-session-idx="-2">',
                 '    <div class="select-session-row-wrapper">',
-                '        <div><label class="select-session-date-label">' + date.format('dddd') + '</label>' + date.format('MMM DD') + '</div>',
-                '        <div><label class="select-session-date-label"></label><span class="session-row-expression">' + session.getExpression() + '</span></div>',
+                '        <div><label class="select-session-date-label">' + moment().format('dddd') + '</label>' + moment().format('MMM DD') + '</div>',
+                '        <div><label class="select-session-date-label"></label><span class="session-row-expression">' + context.translate("select_session_slave_mode") + '</span></div>',
                 '    </div>',
                 '</li>'
             ].join(''));
+
+            listWidget.rows(elements);
+            setTimeout(function () {
+                $list.find('li:first').trigger('tap');
+            }, 0);
         }
-
-        // add coach slave
-        elements = elements.add(['<li class="select-session-row " data-session-idx="-2">',
-            '    <div class="select-session-row-wrapper">',
-            '        <div><label class="select-session-date-label">' + moment().format('dddd') + '</label>' + moment().format('MMM DD') + '</div>',
-            '        <div><label class="select-session-date-label"></label><span class="session-row-expression">' + context.translate("select_session_slave_mode") + '</span></div>',
-            '    </div>',
-            '</li>'
-        ].join(''));
-
-        listWidget.rows(elements);
-        setTimeout(function () {
-            $list.find('li:first').trigger('tap');
-        }, 0);
     }
-};
+}
 
+/**
+ *
+ * @param {ScheduledSession[]} sessions
+ * @return {*[]|*}
+ */
 function sort(sessions) {
 
     if (!sessions || sessions.length === 0)
         return [null];
 
-    var session, date, begin = [];
+    let /**@type ScheduledSession */ session, date, begin = [];
     for (var s = sessions.length - 1; s >= 0; s--) {
         session = sessions[s];
-        date = moment(session.getDate());
+        date = moment(session.date);
         if (date.diff(new Date(), 'days') === 0) {
             begin.unshift(session);
             sessions.splice(s, 1);
@@ -233,4 +244,5 @@ function sort(sessions) {
 
 }
 
-exports.SelectSessionView = SelectSessionView;
+
+export default SelectSessionView;

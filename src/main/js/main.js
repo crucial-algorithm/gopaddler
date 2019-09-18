@@ -1,12 +1,37 @@
 'use strict';
 
+
+import HomeView from './views/home.view';
+import SessionView from './views/session.view';
+import SessionSummaryView from './views/session.summary';
+import SettingsView from './views/settings.view';
+import LoginView from './views/login.view';
+import SessionsView from './views/sessions.view';
+import CalibrationView from './views/calibration.view';
+import CalibrationHelpView from './views/calibration.help.view';
+import BluetoothView from './views/bluetooth.view';
+import SessionTipsView from './views/session.tips.view';
+import SelectSessionView from './views/select.session.view';
+import LoginWithPasswordView from './views/login.with.password.view';
+import ChooseBoatView from './views/choose.boat.view';
+import DefineGPSSpeedView from './views/define.gps.update.rate.view';
+import DefineHeartRateView from './views/define.heart.rate.view';
+import DefineLanguageView from './views/define.language.view';
+import ManageCoachView from './views/manage.coach.view';
+import ChooseSportsView from './views/choose.sports.view';
+import CoachSlaveView from './views/coach.slave.view';
+import Context from './context';
+import global from './global';
+import Sync from './server/sync';
+
+
 var LANGUAGE = localStorage.getItem('language') || 'en';
 
 // Start handle i18 stuff -------
-var PT = require('../../../res/i18n/pt');
-var EN = require('../../../res/i18n/en');
+const PT = require('../../../res/i18n/pt');
+const EN = require('../../../res/i18n/en');
 
-var i18n = {
+const i18n = {
     en: EN,
     pt: PT
 };
@@ -50,38 +75,16 @@ App.load = function (target) {
     originalAppLoad.apply(this, args);
 };
 
-var SessionView = require('./views/session.view.js').SessionView;
-var SessionSummaryView = require('./views/session.summary.js').SessionSummaryView;
-var SettingsView = require('./views/settings.view.js').SettingsView;
-var HomeView = require('./views/home.view.js').HomeView;
-var LoginView = require('./views/login.view.js').LoginView;
-var SessionsView = require('./views/sessions.view.js').SessionsView;
-var CalibrationView = require('./views/calibration.view.js').CalibrationView;
-var CalibrationHelpView = require('./views/calibration.help.view.js').CalibrationHelpView;
-var BluetoothView = require('./views/bluetooth.view').BluetoothView;
-var SessionTipsView = require('./views/session.tips.view.js').SessionTipsView;
-var SelectSessionView = require('./views/select.session.view').SelectSessionView;
-var LoginWithPassword = require('./views/login.with.password.view').LoginWithPasswordView;
-var ChooseBoatView = require('./views/choose.boat.view').ChooseBoatView;
-var DefineGPSSpeedView = require('./views/define.gps.update.rate.view').DefineGPSSpeedView;
-var DefineHeartRateView = require('./views/define.heart.rate.view').DefineHeartRateView;
-var DefineLanguageView = require('./views/define.language.view').DefineLanguageView;
-var ManageCoachView = require('./views/manage.coach.view').ManageCoachView;
-var ChooseSportsView = require('./views/choose.sports.view').ChooseSportsView;
-var CoachSlaveView = require('./views/coach.slave.view').CoachSlaveView;
-var Api = require('./server/api');
-var utils = require('./utils/utils.js');
-var global = require('./global.js');
-var db = require('./db.js');
-var sync = require('./server/sync.js');
-var analytics = require('./utils/analytics.js');
-var Settings = require('./model/settings');
-var Context = require('./context').Context;
+const Api = require('./server/api');
+const utils = require('./utils/utils.js');
+const db = require('./db.js');
+const analytics = require('./utils/analytics.js');
+const Settings = require('./model/settings');
 
-var settings = undefined;
-var environment = undefined;
-var loadContextDefer = $.Deferred();
-var loadContext = loadContextDefer.promise();
+let settings = undefined;
+let environment = undefined;
+let loadContextDefer = $.Deferred();
+let loadContext = loadContextDefer.promise();
 
 
 function enrichPageArg(page, pageName) {
@@ -159,7 +162,7 @@ App.controller('login', function (page) {
 App.controller('login-with-password', function (page) {
     enrichPageArg(page, 'login-with-password');
     loadContext.then(function (context) {
-        new LoginWithPassword(page, context);
+        new LoginWithPasswordView(page, context);
     });
 });
 
@@ -168,7 +171,7 @@ App.controller('home', function (page, request) {
     enrichPageArg(page, 'home');
     loadContext.then(function (context) {
         if (environment === 'prod')
-            sync.start(context);
+            Sync.start(context);
         new HomeView(page, context, request);
     });
 });

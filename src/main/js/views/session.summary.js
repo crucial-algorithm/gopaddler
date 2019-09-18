@@ -1,8 +1,9 @@
 'use strict';
+import Context from '../context';
+import Sync from '../server/sync';
 
 var utils = require('../utils/utils.js')
     , Api = require('../server/api')
-    , sync = require('../server/sync')
     , template = require('./session.summary.art.html')
     , intervalsTemplate = require('./session.summary.intervals.art.html')
     , zonesTemplate = require('./session.summary.zones.art.html')
@@ -10,151 +11,363 @@ var utils = require('../utils/utils.js')
 ;
 
 
-function SessionSummaryView(page, context, sessionSummaryArguments) {
-    context.render(page, template({isPortraitMode: context.isPortraitMode()}));
+class SessionSummaryView {
 
-    var self           = this,
-        session        = sessionSummaryArguments.session,
-        isPastSession  = sessionSummaryArguments.isPastSession,
-        $page          = $(page),
-        $duration      = $page.find('[data-selector="duration"]'),
-        $distance      = $page.find('[data-selector="distance"]'),
-        $avgSpeed      = $page.find('[data-selector="avg-speed"]'),
-        $avgSPM        = $page.find('[data-selector="avg-spm"]'),
-        $avgEfficiency = $page.find('[data-selector="avg-efficiency"]'),
-        $avgHeartRate  = $page.find('[data-selector="avg-heart-rate"]'),
-        $congrats      = $page.find('#summary-congrats'),
-        $details       = $page.find('#summary-details'),
-        $finish        = $page.find('#summary-finish'),
-        $back          = $page.find('#summary-back');
+    /**
+     *
+     * @param page
+     * @param {Context} context
+     * @param sessionSummaryArguments
+     */
+    constructor(page, context, sessionSummaryArguments) {
+        Context.render(page, template({isPortraitMode: context.isPortraitMode()}));
 
-    // if session summary is loading a past session, change Finish button to Back and change Congrats to Details
-    if (isPastSession === true) {
-        $finish.hide();
-        $congrats.hide();
-        $back.show();
-    } else {
-        if (context.isPortraitMode() === false) {
-            $details.hide();
-        }
-        sync.uploadSessions();
-    }
+        const self = this;
+        /** @type Session */
+        let session = sessionSummaryArguments.session;
 
-    $page.find('#summary-congrats-session').html(moment(session.getSessionStart()).format('MMMM Do YYYY, HH:mm') + 'h');
-    $page.find('#summary-details-session').html(moment(session.getSessionStart()).format('MMMM Do YYYY, HH:mm') + 'h');
+        let isPastSession  = sessionSummaryArguments.isPastSession,
+            $page          = $(page),
+            $duration      = $page.find('[data-selector="duration"]'),
+            $distance      = $page.find('[data-selector="distance"]'),
+            $avgSpeed      = $page.find('[data-selector="avg-speed"]'),
+            $avgSPM        = $page.find('[data-selector="avg-spm"]'),
+            $avgEfficiency = $page.find('[data-selector="avg-efficiency"]'),
+            $avgHeartRate  = $page.find('[data-selector="avg-heart-rate"]'),
+            $congrats      = $page.find('#summary-congrats'),
+            $details       = $page.find('#summary-details'),
+            $finish        = $page.find('#summary-finish'),
+            $back          = $page.find('#summary-back');
 
-    var duration = moment.duration(session.getSessionEnd() - session.getSessionStart());
-    var durationFormatted = utils.lpad(duration.hours(), 2)
-        + ':' + utils.lpad(duration.minutes(), 2) + ":" + utils.lpad(duration.seconds(), 2);
-
-    var distance = context.displayMetric('distance', session.getDistance());
-    var avgSpeed = context.displayMetric('speed', session.getAvgSpeed());
-    var avgSPM = context.displayMetric('spm', session.getAvgSpm());
-    var avgEfficiency = context.displayMetric('efficiency', session.getAvgEfficiency());
-    var heartRate = context.displayMetric('heartRate', session.getAvgHeartRate());
-
-    var now = Date.now();
-    Api.TrainingSessions.live.finished(now);
-
-    Api.TrainingSessions.live.update({
-        spm: avgSPM,
-        timestamp: now,
-        distance: distance,
-        speed: avgSpeed,
-        efficiency: avgEfficiency,
-        duration: duration.asMilliseconds()
-    }, 'finished');
-
-    $duration.html('<b>' + durationFormatted + '</b>');
-    $distance.html('<b>' + distance + '</b>' + context.getUnit('distance_in_session_list'));
-    $avgSpeed.html('<b>' + avgSpeed + '</b>');
-    $avgSPM.html('<b>' + avgSPM + '</b>');
-    $avgEfficiency.html('<b>' + avgEfficiency + '</b>');
-    $avgHeartRate.html('<b>' + heartRate + '</b>');
-
-    $finish.on('tap', function () {
-        App.load('home', undefined, undefined, function () {
-            App.removeFromStack();
-            if (session.getId() === 1 && isPastSession !== true) {
-                context.ui.modal.alert(context.translate('phone_mount_cta_title')
-                    , '<p>' + context.translate('phone_mount_cta_message', ['https://gopaddler.com/waterproof-smartphone-mount/?utm_source=app-notification']) + '</p>'
-                    , context.translate('phone_mount_cta_acknowledge'));
+        // if session summary is loading a past session, change Finish button to Back and change Congrats to Details
+        if (isPastSession === true) {
+            $finish.hide();
+            $congrats.hide();
+            $back.show();
+        } else {
+            if (context.isPortraitMode() === false) {
+                $details.hide();
             }
-        });
-    });
+            Sync.uploadSessions();
+        }
 
-    if (session.getExpression() === null) {
-        $page.find('.summary-layout-intervals').remove();
+        $page.find('#summary-congrats-session').html(moment(session.sessionStart).format('MMMM Do YYYY, HH:mm') + 'h');
+        $page.find('#summary-details-session').html(moment(session.sessionStart).format('MMMM Do YYYY, HH:mm') + 'h');
+
+        let duration = moment.duration(session.sessionEnd - session.sessionStart);
+        let durationFormatted = utils.lpad(duration.hours(), 2)
+            + ':' + utils.lpad(duration.minutes(), 2) + ":" + utils.lpad(duration.seconds(), 2);
+
+        var distance = context.displayMetric('distance', session.distance);
+        var avgSpeed = context.displayMetric('speed', session.avgSpeed);
+        var avgSPM = context.displayMetric('spm', session.avgSpm);
+        var avgEfficiency = context.displayMetric('efficiency', session.avgEfficiency);
+        var heartRate = context.displayMetric('heartRate', session.avgHeartRate);
+
+        var now = Date.now();
+        Api.TrainingSessions.live.finished(now);
+
+        Api.TrainingSessions.live.update({
+            spm: avgSPM,
+            timestamp: now,
+            distance: distance,
+            speed: avgSpeed,
+            efficiency: avgEfficiency,
+            duration: duration.asMilliseconds()
+        }, 'finished');
+
+        $duration.html('<b>' + durationFormatted + '</b>');
+        $distance.html('<b>' + distance + '</b>' + context.getUnit('distance_in_session_list'));
+        $avgSpeed.html('<b>' + avgSpeed + '</b>');
+        $avgSPM.html('<b>' + avgSPM + '</b>');
+        $avgEfficiency.html('<b>' + avgEfficiency + '</b>');
+        $avgHeartRate.html('<b>' + heartRate + '</b>');
+
+        $finish.on('tap', function () {
+            App.load('home', undefined, undefined, function () {
+                App.removeFromStack();
+                if (session.id === 1 && isPastSession !== true) {
+                    context.ui.modal.alert(context.translate('phone_mount_cta_title')
+                        , '<p>' + context.translate('phone_mount_cta_message', ['https://gopaddler.com/waterproof-smartphone-mount/?utm_source=app-notification']) + '</p>'
+                        , context.translate('phone_mount_cta_acknowledge'));
+                }
+            });
+        });
+
+        if (session.expression === null) {
+            $page.find('.summary-layout-intervals').remove();
+        }
+
+
+        $page.on('appShow', function () {
+
+            session.detail().then(function (records) {
+                $('[data-selector="slick"]').slick({
+                    dots: true,
+                    speed: 300,
+                    infinite: false,
+                    arrows: false
+                });
+                self.loadCharts(collapseMetrics(records));
+                var output = calculateIntervals(session, records);
+                var zones = new SessionSummaryZones(session, output.working);
+                zones.render(context, zonesTemplate, $('.summary-layout-zones'));
+
+                if (session.version < 2) return;
+
+                if (!session.expression) return;
+
+                var intervals = new SessionSummaryIntervals(session, output.intervals);
+                intervals.render(context, intervalsTemplate, $('.summary-layout-intervals'));
+            });
+        });
     }
 
+    loadCharts(collapsedMetrics) {
+        var labels = [], speed = [], spm = [], efficiency = [], hr = [];
 
-    $page.on('appShow', function () {
-
-        session.detail().then(function (records) {
-            $('[data-selector="slick"]').slick({
-                dots: true,
-                speed: 300,
-                infinite: false,
-                arrows: false
-            });
-            self.loadCharts(collapseMetrics(records));
-            var output = calculateIntervals(session, records);
-            var zones = new SessionSummaryZones(session, output.working);
-            zones.render(context, zonesTemplate, $('.summary-layout-zones'));
-
-            if (session.getVersion() < 2) return;
-
-            if (!session.getExpression()) return;
-
-            var intervals = new SessionSummaryIntervals(session, output.intervals);
-            intervals.render(context, intervalsTemplate, $('.summary-layout-intervals'));
+        collapsedMetrics.map(function(detail) {
+            labels.push(detail.timestamp);
+            speed.push(detail.speed);
+            spm.push(detail.spm);
+            efficiency.push(detail.efficiency);
+            hr.push(detail.heartRate);
         });
-    });
+
+        var labelFormatter = function(data, places) {
+            return function (value, context) {
+                if (context.dataIndex === 0) return '';
+                if (context.dataIndex === data.length -1 ) return '';
+                if (context.dataIndex % 3 === 0) return utils.round(value, places);
+                return '';
+            }
+        };
+
+        var dataset = function(values) {
+            return {
+                data: values,
+                backgroundbackColor: 'rgba(59, 61, 98, 0)',
+                borderColor: 'rgba(238, 97, 86, 1)',
+                borderWidth: 2,
+                pointRadius: 0
+            }
+        };
+
+        var labelOptions = {
+            weight: 700,
+            size: 10,
+            align: 'start',
+            anchor: 'start',
+            clamp: true
+        };
+
+        new GpChart($('[data-selector="speed-chart"]'), 'line', labels, dataset(speed), labelFormatter(speed, 2), labelOptions, false);
+        new GpChart($('[data-selector="spm-chart"]'), 'line', labels, dataset(spm), labelFormatter(spm, 0), labelOptions, false);
+        new GpChart($('[data-selector="efficiency-chart"]'), 'line', labels, dataset(efficiency), labelFormatter(efficiency, 2), labelOptions, false);
+        new GpChart($('[data-selector="heart-rate-chart"]'), 'line', labels, dataset(hr), labelFormatter(hr, 0), labelOptions, false);
+    }
 }
 
-SessionSummaryView.prototype.loadCharts = function(collapsedMetrics) {
-    var labels = [], speed = [], spm = [], efficiency = [], hr = [];
 
-    collapsedMetrics.map(function(detail) {
-        labels.push(detail.timestamp);
-        speed.push(detail.speed);
-        spm.push(detail.spm);
-        efficiency.push(detail.efficiency);
-        hr.push(detail.heartRate);
-    });
+class SessionSummaryIntervals {
+    constructor(session, intervals) {
+        this.intervals = intervals;
+        this.session = session;
+    }
 
-    var labelFormatter = function(data, places) {
-        return function (value, context) {
-            if (context.dataIndex === 0) return '';
-            if (context.dataIndex === data.length -1 ) return '';
-            if (context.dataIndex % 3 === 0) return utils.round(value, places);
-            return '';
+    render(context, template, $container) {
+        var self = this;
+        var position = 1, intervals = [];
+
+        for (var i = 0; i < this.intervals.length; i++) {
+            var interval = this.intervals[i];
+            if (interval.recovery) continue;
+
+
+            var distance = Math.round((interval.distanceEnd - interval.distanceStart) * 1000);
+            var speed = utils.calculateAverageSpeed(interval.distanceEnd - interval.distanceStart
+                , interval.finishedAt - interval.startedAt);
+            var spm = Math.round(interval.spmTotal / interval.count);
+            var length = utils.calculateStrokeLength(interval.spmTotal / interval.count, speed);
+
+            intervals.push({
+                index: i,
+                first: intervals.length === 0,
+                position: position,
+                duration: utils.duration(interval.finishedAt - interval.startedAt),
+                distance: distance,
+                speed: utils.round2(speed),
+                spm: spm,
+                length: utils.round2(length),
+                hr: Math.round(interval.hrTotal / interval.count)
+            });
+            position++;
         }
-    };
+        Context.render($container, template({isPortraitMode: context.isPortraitMode()
+            , intervals: intervals, session: self.session.expression}));
 
-    var dataset = function(values) {
-        return {
-            data: values,
-            backgroundbackColor: 'rgba(59, 61, 98, 0)',
-            borderColor: 'rgba(238, 97, 86, 1)',
-            borderWidth: 2,
-            pointRadius: 0
+
+        setTimeout(function () {
+            if (!self.intervals || self.intervals.length === 0) {
+                self.loadCharts([]);
+                return;
+            }
+            self.loadCharts(collapseMetrics(self.intervals[0].records, 50));
+            $container.on('click', '[data-selector="interval"]', function () {
+                var $tr = $(this), interval = self.intervals[parseInt($tr.data('interval'))];
+                $container.find('.summary-table-interval-selected').removeClass('summary-table-interval-selected');
+                $tr.addClass('summary-table-interval-selected');
+                self.loadCharts(collapseMetrics(interval.records, 50));
+            });
+
+        }, 0);
+    }
+
+    loadCharts(metrics) {
+        var labels = [], speed = [], spm = [], efficiency = [], hr = [];
+
+        metrics.map(function(detail) {
+            labels.push(detail.timestamp);
+            speed.push(detail.speed);
+            spm.push(detail.spm);
+            efficiency.push(detail.efficiency);
+            hr.push(detail.heartRate);
+        });
+
+        var labelFormatter = function(data, places) {
+            return function (value, context) {
+                if (context.dataIndex === 0) return '';
+                if (context.dataIndex === data.length -1 ) return '';
+                if (context.dataIndex % 5 === 0) return utils.round(value, places);
+                return '';
+            }
+        };
+
+        var dataset = function(values) {
+            return {
+                data: values,
+                backgroundbackColor: 'rgba(59, 61, 98, 0)',
+                borderColor: 'rgba(238, 97, 86, 1)',
+                borderWidth: 2,
+                pointRadius: 0
+            }
+        };
+
+        var labelOptions = {
+            weight: 700,
+            size: 10,
+            align: 'start',
+            anchor: 'start',
+            clamp: true
+        };
+
+        new GpChart($('#speed'), 'line', labels, dataset(speed), labelFormatter(speed, 2), labelOptions, false);
+        new GpChart($('#spm'), 'line', labels, dataset(spm), labelFormatter(spm, 0), labelOptions, false);
+        new GpChart($('#length'), 'line', labels, dataset(efficiency), labelFormatter(efficiency, 2), labelOptions, false);
+        new GpChart($('#hr'), 'line', labels, dataset(hr), labelFormatter(hr, 0), labelOptions, false);
+
+    }
+}
+
+class SessionSummaryZones {
+    /**
+     *
+     * @param {Session} session
+     * @param records
+     */
+    constructor(session, records) {
+        var SPM_ZONE_STEP = Api.User.getProfile().boat === "C" ? 5 : 10
+            , spmZones = [], speedZones = [], heartRateZones = [], spmToSpeedZones = [], level = 0
+            , HIDE_PERCENTAGE_THRESHOLD = 5
+        ;
+
+        for (var i = 0; i < records.length; i++) {
+            var record = records[i];
+            level = Math.floor(record.getSpm() / SPM_ZONE_STEP);
+            if (spmZones[level] === undefined) spmZones[level] = 0;
+            if (spmToSpeedZones[level] === undefined) spmToSpeedZones[level] = [];
+            spmZones[level]++;
+            spmToSpeedZones[level].push(record.getSpeed());
+
+            level = Math.floor(record.getSpeed());
+            if (speedZones[level] === undefined) speedZones[level] = 0;
+            speedZones[level]++;
+
+            level = Math.floor(record.getHeartRate() / 10);
+            if (heartRateZones[level] === undefined) heartRateZones[level] = 0;
+            heartRateZones[level]++;
         }
-    };
 
-    var labelOptions = {
-        weight: 700,
-        size: 10,
-        align: 'start',
-        anchor: 'start',
-        clamp: true
-    };
+        this.speedZones = [];
+        var percentage, max = utils.minMaxAvgStddev(speedZones).max / records.length * 100;
+        var lower = session.avgSpeed - utils.minMaxAvgStddev(records.map(function (rec) {return rec.speed})).stddev;
+        var discarding = false;
+        for (var sz = 0; sz < speedZones.length; sz++) {
+            if (speedZones[sz] === undefined) continue;
+            percentage = Math.round(speedZones[sz] / records.length * 100);
+            if (percentage === 0) continue;
+            if (sz < lower && percentage < HIDE_PERCENTAGE_THRESHOLD) discarding = true;
+            this.speedZones.push({zone: sz, percentage: percentage, bar: percentage * 100/ max, discard: discarding});
+            discarding = false;
+        }
 
-    new GpChart($('[data-selector="speed-chart"]'), 'line', labels, dataset(speed), labelFormatter(speed, 2), labelOptions, false);
-    new GpChart($('[data-selector="spm-chart"]'), 'line', labels, dataset(spm), labelFormatter(spm, 0), labelOptions, false);
-    new GpChart($('[data-selector="efficiency-chart"]'), 'line', labels, dataset(efficiency), labelFormatter(efficiency, 2), labelOptions, false);
-    new GpChart($('[data-selector="heart-rate-chart"]'), 'line', labels, dataset(hr), labelFormatter(hr, 0), labelOptions, false);
-};
+        this.spmZones = [];
+        max = utils.minMaxAvgStddev(spmZones).max / records.length * 100;
+        lower = session.avgSpm - utils.minMaxAvgStddev(records.map(function (rec) {return rec.spm})).stddev;
+        discarding = false;
+        for (var spm = 0; spm < spmZones.length; spm++) {
+            if (spmZones[spm] === undefined) continue;
+            percentage = Math.round(spmZones[spm] / records.length * 100);
+            if (percentage === 0) continue;
+            if (spm * SPM_ZONE_STEP < lower && percentage < HIDE_PERCENTAGE_THRESHOLD) discarding = true;
+            this.spmZones.push({zone: spm * SPM_ZONE_STEP, percentage: percentage, bar: percentage * 100/ max, discard: discarding});
+            discarding = false;
+        }
+
+
+        this.spmToSpeedZones = [];
+        lower = session.avgSpm - utils.minMaxAvgStddev(records.map(function (rec) {return rec.spm})).stddev;
+        for (var ss = 0; ss < spmToSpeedZones.length; ss++) {
+            if (spmToSpeedZones[ss] === undefined || spmToSpeedZones[ss].length === 0) continue;
+            percentage = Math.round(spmToSpeedZones[ss].length / records.length * 100);
+            if (percentage === 0) continue;
+            if (ss * SPM_ZONE_STEP < lower && percentage < HIDE_PERCENTAGE_THRESHOLD) continue;
+            var stats = utils.minMaxAvgStddev(spmToSpeedZones[ss]);
+            this.spmToSpeedZones.push({
+                zone: ss * SPM_ZONE_STEP,
+                avg: utils.round2(stats.avg),
+                min: utils.round2(Math.max(0, stats.avg - stats.stddev)),
+                max: utils.round2(stats.avg + stats.stddev)
+            });
+            discarding = false;
+        }
+
+        this.heartRateZones = [];
+        max = utils.minMaxAvgStddev(heartRateZones).max / records.length * 100;
+        for (var hr = 0; hr < heartRateZones.length; hr++) {
+            if (heartRateZones[hr] === undefined) continue;
+            percentage = Math.round(heartRateZones[hr] / records.length * 100);
+            if (percentage === 0) continue;
+            this.heartRateZones.push({zone: hr * 10, percentage: percentage, bar: percentage * 100/ max});
+        }
+
+    }
+
+    render(context, template, $container) {
+        var self = this;
+
+        Context.render($container, template({isPortraitMode: context.isPortraitMode()
+            , speedZones: self.speedZones
+            , spmZones: self.spmZones
+            , heartRateZones: self.heartRateZones
+            , spmToSpeedZones: self.spmToSpeedZones
+        }));
+
+        setTimeout(function () {
+
+        }, 0);
+    }
+}
 
 function collapseMetrics(details, nbrOfPoints) {
     var step, speed = 0, spm = 0, efficiency = 0, hr = 0, count = 0, result = [], i, l
@@ -229,19 +442,19 @@ function collapseMetrics(details, nbrOfPoints) {
 
 /**
  *
- * @param session
+ * @param {Session} session
  * @param details  Session data records
  */
 function calculateIntervals(session, details) {
 
-    if (session.getVersion() < 2) {
+    if (session.version < 2) {
         return {
             intervals: [],
             working: details
         }
     }
 
-    if (!session.getExpression()) {
+    if (!session.expression) {
         return {
             intervals: [],
             working: details
@@ -249,7 +462,7 @@ function calculateIntervals(session, details) {
     }
 
     var interval = null, previous = null, intervals = [], definition, workingDetails = [];
-    definition = session.getExpressionJson();
+    definition = session.expressionJson;
 
     for (var i = 0, l = details.length; i < l; i++) {
         var record = details[i];
@@ -307,196 +520,4 @@ function calculateIntervals(session, details) {
     }
 }
 
-function SessionSummaryIntervals(session, intervals) {
-    this.intervals = intervals;
-    this.session = session;
-}
-
-SessionSummaryIntervals.prototype.render = function(context, template, $container) {
-    var self = this;
-    var position = 1, intervals = [];
-
-    for (var i = 0; i < this.intervals.length; i++) {
-        var interval = this.intervals[i];
-        if (interval.recovery) continue;
-
-
-        var distance = Math.round((interval.distanceEnd - interval.distanceStart) * 1000);
-        var speed = utils.calculateAverageSpeed(interval.distanceEnd - interval.distanceStart
-            , interval.finishedAt - interval.startedAt);
-        var spm = Math.round(interval.spmTotal / interval.count);
-        var length = utils.calculateStrokeLength(interval.spmTotal / interval.count, speed);
-
-        intervals.push({
-            index: i,
-            first: intervals.length === 0,
-            position: position,
-            duration: utils.duration(interval.finishedAt - interval.startedAt),
-            distance: distance,
-            speed: utils.round2(speed),
-            spm: spm,
-            length: utils.round2(length),
-            hr: Math.round(interval.hrTotal / interval.count)
-        });
-        position++;
-    }
-    context.render($container, template({isPortraitMode: context.isPortraitMode()
-        , intervals: intervals, session: self.session.getExpression()}));
-
-
-    setTimeout(function () {
-        if (!self.intervals || self.intervals.length === 0) {
-            self.loadCharts([]);
-            return;
-        }
-        self.loadCharts(collapseMetrics(self.intervals[0].records, 50));
-        $container.on('click', '[data-selector="interval"]', function () {
-            var $tr = $(this), interval = self.intervals[parseInt($tr.data('interval'))];
-            $container.find('.summary-table-interval-selected').removeClass('summary-table-interval-selected');
-            $tr.addClass('summary-table-interval-selected');
-            self.loadCharts(collapseMetrics(interval.records, 50));
-        });
-
-    }, 0);
-};
-
-SessionSummaryIntervals.prototype.loadCharts = function(metrics) {
-    var labels = [], speed = [], spm = [], efficiency = [], hr = [];
-
-    metrics.map(function(detail) {
-        labels.push(detail.timestamp);
-        speed.push(detail.speed);
-        spm.push(detail.spm);
-        efficiency.push(detail.efficiency);
-        hr.push(detail.heartRate);
-    });
-
-    var labelFormatter = function(data, places) {
-        return function (value, context) {
-            if (context.dataIndex === 0) return '';
-            if (context.dataIndex === data.length -1 ) return '';
-            if (context.dataIndex % 5 === 0) return utils.round(value, places);
-            return '';
-        }
-    };
-
-    var dataset = function(values) {
-        return {
-            data: values,
-            backgroundbackColor: 'rgba(59, 61, 98, 0)',
-            borderColor: 'rgba(238, 97, 86, 1)',
-            borderWidth: 2,
-            pointRadius: 0
-        }
-    };
-
-    var labelOptions = {
-        weight: 700,
-        size: 10,
-        align: 'start',
-        anchor: 'start',
-        clamp: true
-    };
-
-    new GpChart($('#speed'), 'line', labels, dataset(speed), labelFormatter(speed, 2), labelOptions, false);
-    new GpChart($('#spm'), 'line', labels, dataset(spm), labelFormatter(spm, 0), labelOptions, false);
-    new GpChart($('#length'), 'line', labels, dataset(efficiency), labelFormatter(efficiency, 2), labelOptions, false);
-    new GpChart($('#hr'), 'line', labels, dataset(hr), labelFormatter(hr, 0), labelOptions, false);
-
-};
-
-
-function SessionSummaryZones(session, records) {
-    var SPM_ZONE_STEP = Api.User.getProfile().boat === "C" ? 5 : 10
-        , spmZones = [], speedZones = [], heartRateZones = [], spmToSpeedZones = [], level = 0
-        , HIDE_PERCENTAGE_THRESHOLD = 5
-    ;
-
-    for (var i = 0; i < records.length; i++) {
-        var record = records[i];
-        level = Math.floor(record.getSpm() / SPM_ZONE_STEP);
-        if (spmZones[level] === undefined) spmZones[level] = 0;
-        if (spmToSpeedZones[level] === undefined) spmToSpeedZones[level] = [];
-        spmZones[level]++;
-        spmToSpeedZones[level].push(record.getSpeed());
-
-        level = Math.floor(record.getSpeed());
-        if (speedZones[level] === undefined) speedZones[level] = 0;
-        speedZones[level]++;
-
-        level = Math.floor(record.getHeartRate() / 10);
-        if (heartRateZones[level] === undefined) heartRateZones[level] = 0;
-        heartRateZones[level]++;
-    }
-
-    this.speedZones = [];
-    var percentage, max = utils.minMaxAvgStddev(speedZones).max / records.length * 100;
-    var lower = session.getAvgSpeed() - utils.minMaxAvgStddev(records.map(function (rec) {return rec.speed})).stddev;
-    var discarding = false;
-    for (var sz = 0; sz < speedZones.length; sz++) {
-        if (speedZones[sz] === undefined) continue;
-        percentage = Math.round(speedZones[sz] / records.length * 100);
-        if (percentage === 0) continue;
-        if (sz < lower && percentage < HIDE_PERCENTAGE_THRESHOLD) discarding = true;
-        this.speedZones.push({zone: sz, percentage: percentage, bar: percentage * 100/ max, discard: discarding});
-        discarding = false;
-    }
-
-    this.spmZones = [];
-    max = utils.minMaxAvgStddev(spmZones).max / records.length * 100;
-    lower = session.getAvgSpm() - utils.minMaxAvgStddev(records.map(function (rec) {return rec.spm})).stddev;
-    discarding = false;
-    for (var spm = 0; spm < spmZones.length; spm++) {
-        if (spmZones[spm] === undefined) continue;
-        percentage = Math.round(spmZones[spm] / records.length * 100);
-        if (percentage === 0) continue;
-        if (spm * SPM_ZONE_STEP < lower && percentage < HIDE_PERCENTAGE_THRESHOLD) discarding = true;
-        this.spmZones.push({zone: spm * SPM_ZONE_STEP, percentage: percentage, bar: percentage * 100/ max, discard: discarding});
-        discarding = false;
-    }
-
-
-    this.spmToSpeedZones = [];
-    lower = session.getAvgSpm() - utils.minMaxAvgStddev(records.map(function (rec) {return rec.spm})).stddev;
-    for (var ss = 0; ss < spmToSpeedZones.length; ss++) {
-        if (spmToSpeedZones[ss] === undefined || spmToSpeedZones[ss].length === 0) continue;
-        percentage = Math.round(spmToSpeedZones[ss].length / records.length * 100);
-        if (percentage === 0) continue;
-        if (ss * SPM_ZONE_STEP < lower && percentage < HIDE_PERCENTAGE_THRESHOLD) continue;
-        var stats = utils.minMaxAvgStddev(spmToSpeedZones[ss]);
-        this.spmToSpeedZones.push({
-            zone: ss * SPM_ZONE_STEP,
-            avg: utils.round2(stats.avg),
-            min: utils.round2(Math.max(0, stats.avg - stats.stddev)),
-            max: utils.round2(stats.avg + stats.stddev)
-        });
-        discarding = false;
-    }
-
-    this.heartRateZones = [];
-    max = utils.minMaxAvgStddev(heartRateZones).max / records.length * 100;
-    for (var hr = 0; hr < heartRateZones.length; hr++) {
-        if (heartRateZones[hr] === undefined) continue;
-        percentage = Math.round(heartRateZones[hr] / records.length * 100);
-        if (percentage === 0) continue;
-        this.heartRateZones.push({zone: hr * 10, percentage: percentage, bar: percentage * 100/ max});
-    }
-
-}
-
-SessionSummaryZones.prototype.render = function(context, template, $container) {
-    var self = this;
-
-    context.render($container, template({isPortraitMode: context.isPortraitMode()
-        , speedZones: self.speedZones
-        , spmZones: self.spmZones
-        , heartRateZones: self.heartRateZones
-        , spmToSpeedZones: self.spmToSpeedZones
-    }));
-
-    setTimeout(function () {
-
-    }, 0);
-};
-
-exports.SessionSummaryView = SessionSummaryView;
+export default  SessionSummaryView;

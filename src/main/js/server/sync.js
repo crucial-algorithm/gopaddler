@@ -1,108 +1,13 @@
 'use strict';
 
-var IO = require('../utils/io.js').IO;
-var Utils = require('../utils/utils.js');
-var Session = require('../model/session').Session;
-var ScheduledSession = require('../model/scheduled-session').ScheduledSession;
-var Api = require('../server/api');
-var audit = require('../server/audit');
+import ScheduledSession from '../model/scheduled-session';
+import Session from '../model/session';
 
-var processing = {}, debugProcessing = {};
+const IO = require('../utils/io.js').IO;
+const Utils = require('../utils/utils.js');
+const Api = require('../server/api');
 
-function sync() {
-    if (document.PREVENT_SYNC === true) return;
-
-    var isOffline = 'onLine' in navigator && !navigator.onLine;
-
-    if (isOffline)
-        return;
-
-    Session.findAllNotSynced(function (sessions) {
-        if (sessions.length === 0) {
-            Utils.debug(Api.User.getProfile().name, " All sessions are already synced");
-            return;
-        }
-
-        Utils.debug(Api.User.getProfile().name, " Found " + sessions.length + " sessions to sync");
-
-        (function loop(sessions) {
-            if (sessions.length === 0) return;
-
-            var session = sessions.shift();
-
-            // force processing one at the time and not to pick the same session twice
-            if (processing[session.getId()]) {
-                return;
-            }
-
-            processing[session.getId()] = true;
-            uploadSession(session)
-                .then(function () {
-                    processing[session.getId()] = false;
-                    loop(sessions);
-                })
-                .fail(function () {
-                    processing[session.getId()] = false;
-                    loop(sessions);
-                });
-
-        })(sessions);
-
-    });
-}
-
-
-function uploadSession(localSession) {
-
-    var defer = $.Deferred();
-
-    // A synced session may reach this point if debug data wasn't yet uploaded... in that case,
-    // upload debug data only (fire and forget - don't care if it fails)
-    if (localSession.isSynced() && !Api.User.isAppTester()) {
-        Utils.debug(Api.User.getProfile().name, "Session "
-            + moment(new Date(localSession.getSessionStart())).format() + " already synced - going for debug data");
-
-        uploadDebugData(localSession);
-        defer.resolve();
-        return defer.promise();
-    }
-
-    Utils.debug(Api.User.getProfile().name, "Uploading session from "
-        + moment(new Date(localSession.getSessionStart())).format() + "; Sc session #"
-        + localSession.scheduledSessionId);
-
-    localSession.createAPISession().then(function (trainingSession) {
-
-        // don't upload empty sessions (not the best user experience, but let's keep it that way for now)!
-        if (trainingSession.data.length === 0) {
-            Session.synced(null, localSession.getId());
-            Session.debugSyncFinished(localSession.getId(), true);
-            defer.resolve();
-
-            Utils.debug(Api.User.getProfile().name, " Session "
-                + moment(new Date(localSession.getSessionStart())).format() + " is empty! Marking as synced");
-            return defer.promise();
-        }
-
-        Api.TrainingSessions.save(trainingSession).done(function (id) {
-
-            Utils.debug(Api.User.getProfile().name, " Session "
-                + moment(new Date(localSession.getSessionStart())).format() + " upload successfully; Remote #" + id);
-
-            localSession.setRemoteId(id);
-            Session.synced(localSession.getRemoteId(), localSession.getId());
-            defer.resolve();
-
-        })
-            .fail(function (err) {
-            Utils.notify(Api.User.getProfile().name, "Failed to upload session from "
-                + moment(new Date(localSession.getSessionStart())).format() + " with error : " + err.message);
-            defer.reject(err);
-        });
-    });
-
-    return defer.promise();
-}
+let processing = {}, debugProcessing = {};
 
 function loadFile(filename) {
     var defer = $.Deferred();
@@ -112,48 +17,53 @@ function loadFile(filename) {
     return defer.promise();
 }
 
+/**
+ *
+ * @param {Session} session
+ * @return {*}
+ */
 function uploadDebugData(session) {
-
-    var self = this,
-        sensorData = [],
+    const self = this;
+    let sensorData = [],
         record,
         defer = $.Deferred(),
         isDebugEnabled = !!Api.User.getProfile().debug;
 
-    if (debugProcessing[session.getId()]) {
+    if (debugProcessing[session.id]) {
         defer.resolve();
         return defer.promise();
     }
 
-    if (!session.getDebugFile() || !isDebugEnabled) {
-        Session.debugSyncFinished(session.getId(), true);
+    if (!session.debugFile || !isDebugEnabled) {
+        Session.debugSyncFinished(session.id, true);
         defer.resolve();
-        delete debugProcessing[session.getId()];
+        delete debugProcessing[session.id];
         return defer.promise();
     }
 
     if (!Utils.onWifi()) {
         defer.resolve();
-        delete debugProcessing[session.getId()];
+        delete debugProcessing[session.id];
         return defer.promise();
     }
 
     Utils.debug(Api.User.getProfile().name, "Uploading debug session from "
-        + moment(new Date(session.getSessionStart())).format());
+        + moment(new Date(session.sessionStart)).format());
 
-    debugProcessing[session.getId()] = true;
-    loadFile(session.getDebugFile()).then(function (rows) {
+    debugProcessing[session.id] = true;
 
-        var i = 0;
+    loadFile(session.debugFile).then(function (rows) {
 
-        if (session.getDbgSyncedRows() > 0) {
-            i = session.getDbgSyncedRows() - 1;
+        let i = 0;
+
+        if (session.dbgSyncedRows > 0) {
+            i = session.dbgSyncedRows - 1;
         } else {
             // 1st time - register sync start
-            Session.startDebugSync(session.getId(), sensorData.length);
+            Session.startDebugSync(session.id, sensorData.length);
         }
 
-        for (var l = rows.length; i < l; i++) {
+        for (let l = rows.length; i < l; i++) {
             if (!rows[0]) continue;
 
             record = rows[i].split(';');
@@ -166,52 +76,52 @@ function uploadDebugData(session) {
             });
         }
 
-        var SIZE = 1000;
+        let SIZE = 1000;
         (function loopAsync() {
-            var payload = sensorData.splice(0, SIZE);
+            let payload = sensorData.splice(0, SIZE);
 
             if (payload.length === 0) {
-                Session.debugSyncFinished(session.getId(), true);
-                delete debugProcessing[session.getId()];
+                Session.debugSyncFinished(session.id, true);
+                delete debugProcessing[session.id];
                 return;
             }
 
-            Api.DebugSessions.save({trainingSession: session.getRemoteId(), data: payload}).done(function () {
+            Api.DebugSessions.save({trainingSession: session.remoteId, data: payload}).done(function () {
 
-                    Session.debugSynced(session.getId(), SIZE);
+                    Session.debugSynced(session.id, SIZE);
 
                     if (sensorData.length > 0) {
                         loopAsync();
                         return;
                     }
 
-                    console.log('finish uploading session ' + session.getId());
-                    Session.debugSyncFinished(session.getId(), true);
-                    delete debugProcessing[session.getId()];
+                    console.log('finish uploading session ' + session.id);
+                    Session.debugSyncFinished(session.id, true);
+                    delete debugProcessing[session.id];
                     defer.resolve();
                 })
                 .fail(function (e) {
 
                     Utils.notify(Api.User.getProfile().name, "Error saving debug data from session from "
-                        + moment(new Date(session.getSessionStart())).format() + " with error " + e.message);
+                        + moment(new Date(session.sessionStart)).format() + " with error " + e.message);
 
-                    delete debugProcessing[session.getId()];
+                    delete debugProcessing[session.id];
                     
-                    Session.get(session.getId()).then(function (s) {
+                    Session.get(session.id).then(function (s) {
 
-                        if (s.getDebugAttempt() < 3) {
-                            Session.incrementAttempt(session.getId()).then(function () {
+                        if (s.debugAttempt < 3) {
+                            Session.incrementAttempt(session.id).then(function () {
                                 loopAsync();
                             });
                             return;
                         }
 
-                        Session.debugSyncFinished(session.getId(), false);
+                        Session.debugSyncFinished(session.id, false);
                         defer.reject(e);
 
                     }).fail(function () {
 
-                        Session.debugSyncFinished(session.getId(), false);
+                        Session.debugSyncFinished(session.id, false);
                         defer.reject(e);
                     });
                 });
@@ -226,35 +136,122 @@ function syncScheduledSessions () {
     ScheduledSession.sync();
 }
 
-function postAuditData() {
-    if (document.PREVENT_SYNC === true) return;
+let syncStarted = false;
 
-    var exceptions = window.localStorage.getItem('exceptions');
-    if (!exceptions) return;
+class Sync {
 
-    exceptions = JSON.parse(exceptions);
-    while(exceptions.length > 0 ) {
-        audit.postException({exception: exceptions.pop()});
+    static start() {
+        const self = this;
+        if (syncStarted === true) {
+            return;
+        }
+        setTimeout(function () {
+            setInterval(sync.bind(self), 300000);
+            setInterval(syncScheduledSessions.bind(self), 300000);
+            syncScheduledSessions();
+        }, 10000);
+        syncStarted = true;
     }
 
-    window.localStorage.setTime('exceptions', JSON.stringify([]));
+    /**
+     *
+     * @param {Session} session
+     * @return {*}
+     */
+    static uploadSession(session) {
 
+        let defer = $.Deferred();
+
+        // A synced session may reach this point if debug data wasn't yet uploaded... in that case,
+        // upload debug data only (fire and forget - don't care if it fails)
+        if (session.synced && !Api.User.isAppTester()) {
+            Utils.debug(Api.User.getProfile().name, "Session "
+                + moment(new Date(session.sessionStart)).format() + " already synced - going for debug data");
+
+            uploadDebugData(session);
+            defer.resolve();
+            return defer.promise();
+        }
+
+        Utils.debug(Api.User.getProfile().name, "Uploading session from "
+            + moment(new Date(session.sessionStart)).format() + "; Sc session #"
+            + session.scheduledSessionId);
+
+        session.createAPISession().then(function (trainingSession) {
+
+            // don't upload empty sessions (not the best user experience, but let's keep it that way for now)!
+            if (trainingSession.data.length === 0) {
+                Session.synced(null, session.id);
+                Session.debugSyncFinished(session.id, true);
+                defer.resolve();
+
+                Utils.debug(Api.User.getProfile().name, " Session "
+                    + moment(new Date(session.sessionStart)).format() + " is empty! Marking as synced");
+                return defer.promise();
+            }
+
+            Api.TrainingSessions.save(trainingSession).done(function (id) {
+
+                Utils.debug(Api.User.getProfile().name, " Session "
+                    + moment(new Date(session.sessionStart)).format() + " upload successfully; Remote #" + id);
+
+                session.remoteId = id;
+                Session.synced(session.remoteId, session.id);
+                defer.resolve();
+
+            })
+                .fail(function (err) {
+                    Utils.notify(Api.User.getProfile().name, "Failed to upload session from "
+                        + moment(new Date(session.sessionStart)).format() + " with error : " + err.message);
+                    defer.reject(err);
+                });
+        });
+
+        return defer.promise();
+    }
+
+    static uploadSessions() {
+        if (document.PREVENT_SYNC === true) return;
+
+        let isOffline = 'onLine' in navigator && !navigator.onLine;
+
+        if (isOffline)
+            return;
+
+        Session.findAllNotSynced(function (/**@type Session[] */ sessions) {
+            if (sessions.length === 0) {
+                Utils.debug(Api.User.getProfile().name, " All sessions are already synced");
+                return;
+            }
+
+            Utils.debug(Api.User.getProfile().name, " Found " + sessions.length + " sessions to sync");
+
+            (function loop(sessions) {
+                if (sessions.length === 0) return;
+
+                /**@type Session */
+                let session = sessions.shift();
+
+                // force processing one at the time and not to pick the same session twice
+                if (processing[session.id]) {
+                    return;
+                }
+
+                processing[session.id] = true;
+                Sync.uploadSession(session)
+                    .then(function () {
+                        processing[session.id] = false;
+                        loop(sessions);
+                    })
+                    .fail(function () {
+                        processing[session.id] = false;
+                        loop(sessions);
+                    });
+
+            })(sessions);
+
+        });
+    }
 }
 
-var syncStarted = false;
-exports.start = function () {
-    var self = this;
-    if (syncStarted === true) {
-        return;
-    }
-    setTimeout(function () {
-        setInterval(sync.bind(self), 300000);
-        setInterval(syncScheduledSessions.bind(self), 300000);
-//        setInterval(postAuditData.bind(self), 300000);
-        syncScheduledSessions();
-//        postAuditData();
-    }, 10000);
-    syncStarted = true;
-};
-exports.uploadSession = uploadSession;
-exports.uploadSessions = sync;
+export default Sync;

@@ -1,105 +1,122 @@
 var Api = require('../server/api');
 
-function ScheduledSession() {
-    this.date = null;
-    this.expression = null;
-    this.id = null;
-    this.splits = null;
+class ScheduledSession {
 
-}
-
-ScheduledSession.prototype.getDate = function () {
-    return this.date;
-};
-
-ScheduledSession.prototype.getExpression = function () {
-    return this.expression;
-};
-
-ScheduledSession.prototype.getId = function () {
-    return this.id;
-};
-
-ScheduledSession.prototype.getSplits = function () {
-    return this.splits ? this.splits.slice(0) : null;
-};
-
-ScheduledSession.prototype.loadFromServerResponse = function (json) {
-    this.date = json.date;
-    this.expression = json.expression.text;
-    this.id = json.session.id;
-    this.splits = json.session.splits;
-};
-
-ScheduledSession.prototype.fromJson = function (json) {
-    this.date = json.date;
-    this.expression = json.expression;
-    this.id = json.id;
-    this.splits = json.splits;
-};
-
-ScheduledSession.prototype.toJson = function () {
-    return {
-        date: this.date,
-        expression: this.expression,
-        id: this.id,
-        splits: this.splits
-    };
-};
-
-
-
-
-ScheduledSession.save = function (list) {
-    var s, result = [];
-    for (var i = 0; i < list.length; i++) {
-        result.push(list[i].toJson());
+    constructor(date = null, expression = null, id = null, splits = null) {
+        this._date = date;
+        this._expression = expression;
+        this._id = id;
+        this._splits = splits;
     }
 
-    window.localStorage.setItem("scheduled-sessions", JSON.stringify(result));
-};
+    /**
+     *
+     * @param {ScheduledSession[]} list
+     */
+    static save(list) {
+        let result = [];
+        for (let session of list) {
+            result.push(session.toJson());
+        }
 
-ScheduledSession.load = function () {
-    var list = JSON.parse(window.localStorage.getItem("scheduled-sessions"));
-    if (!list)
-        return undefined;
-
-    var result = [], s;
-    for (var i = 0; i < list.length; i++) {
-        s = new ScheduledSession();
-        s.fromJson(list[i]);
-        result.push(s);
+        window.localStorage.setItem("scheduled-sessions", JSON.stringify(result));
     }
 
-    return result;
-};
+    static load() {
+        let list = JSON.parse(window.localStorage.getItem("scheduled-sessions"));
+        if (!list)
+            return undefined;
 
-ScheduledSession.sync = function () {
-    var deferred = $.Deferred();
-
-    if (!Api.User.hasCoach()) {
-        deferred.resolve([]);
-        return deferred.promise();
-    }
-
-    Api.TrainingSessions.scheduled().then(function (sessions) {
-        var s, result = [];
-        for (var i = 0; i < sessions.length; i++) {
+        let result = [], s;
+        for (let json of list) {
             s = new ScheduledSession();
-            s.loadFromServerResponse(sessions[i]);
+            s.fromJson(json);
             result.push(s);
         }
 
-        ScheduledSession.save(result);
-        deferred.resolve(result);
-    }).fail(function (err) {
-        console.log(err);
-        deferred.reject(err);
-    });
+        return result;
+    }
 
-    return deferred.promise();
-};
+    static sync() {
+        let deferred = $.Deferred();
 
+        if (!Api.User.hasCoach()) {
+            deferred.resolve([]);
+            return deferred.promise();
+        }
 
+        Api.TrainingSessions.scheduled().then(function (sessions) {
+            var s, result = [];
+            for (var i = 0; i < sessions.length; i++) {
+                s = new ScheduledSession();
+                s.loadFromServerResponse(sessions[i]);
+                result.push(s);
+            }
 
-exports.ScheduledSession = ScheduledSession;
+            ScheduledSession.save(result);
+            deferred.resolve(result);
+        }).fail(function (err) {
+            console.log(err);
+            deferred.reject(err);
+        });
+
+        return deferred.promise();
+    }
+
+    loadFromServerResponse(json) {
+        this.date = json.date;
+        this.expression = json.expression.text;
+        this.id = json.session.id;
+        this.splits = json.session.splits;
+    }
+
+    fromJson(json) {
+        this.date = json.date;
+        this.expression = json.expression;
+        this.id = json.id;
+        this.splits = json.splits;
+    }
+
+    toJson() {
+        return {
+            date: this.date,
+            expression: this.expression,
+            id: this.id,
+            splits: this.splits
+        };
+    }
+
+    get date() {
+        return this._date;
+    }
+
+    set date(value) {
+        this._date = value;
+    }
+
+    get expression() {
+        return this._expression;
+    }
+
+    set expression(value) {
+        this._expression = value;
+    }
+
+    get id() {
+        return this._id;
+    }
+
+    set id(value) {
+        this._id = value;
+    }
+
+    get splits() {
+        return this._splits;
+    }
+
+    set splits(value) {
+        this._splits = value;
+    }
+}
+
+export default ScheduledSession;

@@ -1,52 +1,54 @@
 'use strict';
 
+import Context from '../context';
+
 var Api = require('../server/api')
     , template = require('./login.view.art.html')
-    , Context = require('../context').Context
 ;
 
-function LoginView(page, context) {
-    screen.orientation.lock('portrait');
+class LoginView {
+    constructor(page, context) {
+        screen.orientation.lock('portrait');
 
-    Context.render(page, template({}));
+        Context.render(page, template({}));
 
-    var $page = $(page), img;
+        var $page = $(page), img;
 
-    if (window.devicePixelRatio == 0.75) {
-        img = 'login-ldpi.png';
-    }
-    else if (window.devicePixelRatio == 1) {
-        img = 'login-mdpi.png';
-    }
-    else if (window.devicePixelRatio == 1.5) {
-        img = 'login-hdpi.png';
-    }
-    else if (window.devicePixelRatio == 2) {
-        img = 'login-xdpi.png';
-    }
+        if (window.devicePixelRatio == 0.75) {
+            img = 'login-ldpi.png';
+        }
+        else if (window.devicePixelRatio == 1) {
+            img = 'login-mdpi.png';
+        }
+        else if (window.devicePixelRatio == 1.5) {
+            img = 'login-hdpi.png';
+        }
+        else if (window.devicePixelRatio == 2) {
+            img = 'login-xdpi.png';
+        }
 
-    $page.find('.app-page').css({"background-image": "images/" + img});
+        $page.find('.app-page').css({"background-image": "images/" + img});
 
-    var $login = $('#facebook', page);
-    var $account = $('#account', page);
+        var $login = $('#facebook', page);
+        var $account = $('#account', page);
 
 
 
-    $login.off('touchstart').on('touchstart', function () {
-        Api.Auth.loginWithFacebook().done(function () {
-            context.navigate('home');
-        }).fail(function (err) {
+        $login.off('touchstart').on('touchstart', function () {
+            Api.Auth.loginWithFacebook().done(function () {
+                context.navigate('home');
+            }).fail(function (err) {
 
-            alert(err);
+                alert(err);
+            });
         });
-    });
 
-    $account.off('touchstart click').on('touchstart click', function () {
-        context.navigate('login-with-password')
-    });
+        $account.off('touchstart click').on('touchstart click', function () {
+            context.navigate('login-with-password')
+        });
 
 
+    }
 }
 
-
-exports.LoginView = LoginView;
+export default LoginView;

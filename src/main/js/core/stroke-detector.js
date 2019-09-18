@@ -29,6 +29,7 @@ function StrokeDetector(calibration, onStrokeDetected, onAccelerationTriggered, 
     self.intervalId = undefined;
     self.magnitudeIntervalId = undefined;
     self.debugAcceleration = [];
+    /**@type Calibration */
     self.calibration = calibration;
     self.accelerations = [];
 
@@ -277,17 +278,17 @@ StrokeDetector.prototype.updateThresholds = function (acceleration, value) {
 StrokeDetector.prototype.filter = function(acceleration) {
     var self = this;
     var factor, adjustment, value;
-    if (self.calibration.getPredominant() === 0) {
-        factor = self.calibration.getFactorX();
-        adjustment = self.calibration.getNoiseX();
+    if (self.calibration.predominant === 0) {
+        factor = self.calibration.factorX;
+        adjustment = self.calibration.noiseX;
         value = acceleration.x;
-    } else if (self.calibration.getPredominant() === 1) {
-        factor = self.calibration.getFactorY();
-        adjustment = self.calibration.getNoiseY();
+    } else if (self.calibration.predominant === 1) {
+        factor = self.calibration.factorY;
+        adjustment = self.calibration.noiseY;
         value = acceleration.y;
     } else {
-        factor = self.calibration.getFactorZ();
-        adjustment = self.calibration.getNoiseZ();
+        factor = self.calibration.factorZ;
+        adjustment = self.calibration.noiseZ;
         value = acceleration.z;
     }
 

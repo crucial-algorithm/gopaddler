@@ -1,134 +1,144 @@
 'use strict';
 
-function Calibration(predominant, angleZ, noiseX, noiseY, noiseZ, factorX, factorY, factorZ, alpha, beta, gamma) {
-    var self = this;
-    self.predominant = predominant;
-    self.angleZ = angleZ;
-    self.noiseX = noiseX;
-    self.noiseY = noiseY;
-    self.noiseZ = noiseZ;
-    self.factorX = factorX;
-    self.factorY = factorY;
-    self.factorZ = factorZ;
-    self.alpha = alpha;
-    self.beta = beta;
-    self.gamma = gamma;
+
+class Calibration {
+    constructor(predominant, angleZ, noiseX, noiseY, noiseZ, factorX, factorY, factorZ, alpha, beta, gamma) {
+        this._predominant = predominant;
+        this._angleZ = angleZ;
+        this._noiseX = noiseX;
+        this._noiseY = noiseY;
+        this._noiseZ = noiseZ;
+        this._factorX = factorX;
+        this._factorY = factorY;
+        this._factorZ = factorZ;
+        this._alpha = alpha;
+        this._beta = beta;
+        this._gamma = gamma;
+    }
+
+    save(isPortraitMode) {
+        window.localStorage.setItem(isPortraitMode ? "calibration.portrait" : "calibration", JSON.stringify({
+            predominant: this.predominant,
+            angleZ: this.angleZ,
+            noiseX: this.noiseX,
+            noiseY: this.noiseY,
+            noiseZ: this.noiseZ,
+            factorX: this.factorX,
+            factorY: this.factorY,
+            factorZ: this.factorZ,
+            alpha: this.alpha,
+            beta: this.beta,
+            gamma: this.gamma
+        }));
+    }
+
+    static load(isPortraitMode) {
+        let obj = JSON.parse(window.localStorage.getItem(isPortraitMode ? "calibration.portrait" : "calibration"));
+        if (!obj) {
+            return;
+        }
+        return new Calibration(obj.predominant, obj.angleZ
+            , obj.noiseX, obj.noiseY, obj.noiseZ, obj.factorX, obj.factorY, obj.factorZ
+            , obj.alpha, obj.beta, obj.gamma);
+    }
+
+    static blank() {
+        return new Calibration(0, 0, 0, 0, 0, 0, 0, 0);
+    }
+
+    static clear() {
+        window.localStorage.removeItem('calibration');
+        window.localStorage.removeItem('calibration.portrait');
+    }
+
+
+    get predominant() {
+        return this._predominant;
+    }
+
+    set predominant(value) {
+        this._predominant = value;
+    }
+
+    get angleZ() {
+        return this._angleZ;
+    }
+
+    set angleZ(value) {
+        this._angleZ = value;
+    }
+
+    get noiseX() {
+        return this._noiseX;
+    }
+
+    set noiseX(value) {
+        this._noiseX = value;
+    }
+
+    get noiseY() {
+        return this._noiseY;
+    }
+
+    set noiseY(value) {
+        this._noiseY = value;
+    }
+
+    get noiseZ() {
+        return this._noiseZ;
+    }
+
+    set noiseZ(value) {
+        this._noiseZ = value;
+    }
+
+    get factorX() {
+        return this._factorX;
+    }
+
+    set factorX(value) {
+        this._factorX = value;
+    }
+
+    get factorY() {
+        return this._factorY;
+    }
+
+    set factorY(value) {
+        this._factorY = value;
+    }
+
+    get factorZ() {
+        return this._factorZ;
+    }
+
+    set factorZ(value) {
+        this._factorZ = value;
+    }
+
+    get alpha() {
+        return this._alpha;
+    }
+
+    set alpha(value) {
+        this._alpha = value;
+    }
+
+    get beta() {
+        return this._beta;
+    }
+
+    set beta(value) {
+        this._beta = value;
+    }
+
+    get gamma() {
+        return this._gamma;
+    }
+
+    set gamma(value) {
+        this._gamma = value;
+    }
 }
 
-Calibration.prototype.getPredominant = function () {
-    return this.predominant;
-};
-
-Calibration.prototype.setPredominant = function (predominant) {
-    this.predominant = predominant;
-};
-
-Calibration.prototype.getAngleZ = function () {
-    return this.angleZ;
-};
-
-Calibration.prototype.setAngleZ = function (angleZ) {
-    this.angleZ = angleZ;
-};
-
-Calibration.prototype.getNoiseX = function () {
-    return this.noiseX;
-};
-
-Calibration.prototype.setNoiseX = function (noiseX) {
-    this.noiseX = noiseX;
-};
-
-Calibration.prototype.getNoiseY = function () {
-    return this.noiseY;
-};
-
-Calibration.prototype.setNoiseY = function (noiseY) {
-    this.noiseY = noiseY;
-};
-
-Calibration.prototype.getNoiseZ = function () {
-    return this.noiseZ;
-};
-
-Calibration.prototype.setNoiseZ = function (noiseZ) {
-    this.noiseZ = noiseZ;
-};
-
-Calibration.prototype.setActive = function (active) {
-    this.active = active;
-};
-
-Calibration.prototype.getFactorX = function () {
-    return this.factorX;
-};
-
-Calibration.prototype.setFactorX = function (factorX) {
-    this.factorX = factorX;
-};
-
-Calibration.prototype.getFactorY = function () {
-    return this.factorY;
-};
-
-Calibration.prototype.setFactorY = function (factorY) {
-    this.factorY = factorY;
-};
-
-Calibration.prototype.getFactorZ = function () {
-    return this.factorZ;
-};
-
-Calibration.prototype.setFactorX = function (factorZ) {
-    this.factorZ = factorZ;
-};
-
-Calibration.prototype.getAlpha = function () {
-    return this.alpha;
-};
-
-Calibration.prototype.getBeta = function () {
-    return this.beta;
-};
-
-Calibration.prototype.getGamma = function () {
-    return this.gamma;
-};
-
-Calibration.prototype.save = function (isPortraitMode) {
-    window.localStorage.setItem(isPortraitMode ? "calibration.portrait" : "calibration", JSON.stringify({
-        predominant: this.predominant,
-        angleZ: this.angleZ,
-        noiseX: this.noiseX,
-        noiseY: this.noiseY,
-        noiseZ: this.noiseZ,
-        factorX: this.factorX,
-        factorY: this.factorY,
-        factorZ: this.factorZ,
-        alpha: this.alpha,
-        beta: this.beta,
-        gamma: this.gamma
-    }));
-};
-
-
-Calibration.load = function (isPortraitMode) {
-    var obj = JSON.parse(window.localStorage.getItem(isPortraitMode ? "calibration.portrait" : "calibration"));
-    if (!obj) {
-        return undefined;
-    }
-    return new Calibration(obj.predominant, obj.angleZ
-        , obj.noiseX, obj.noiseY, obj.noiseZ, obj.factorX, obj.factorY, obj.factorZ
-        , obj.alpha, obj.beta, obj.gamma);
-};
-
-Calibration.blank = function () {
-    return new Calibration(0, 0, 0, 0, 0, 0, 0, 0);
-};
-
-Calibration.clear = function () {
-    window.localStorage.removeItem('calibration');
-    window.localStorage.removeItem('calibration.portrait');
-};
-
-exports.Calibration = Calibration;
+export default Calibration;

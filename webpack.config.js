@@ -85,7 +85,19 @@ module.exports = {
                     // art-template options (if necessary)
                     // @see https://github.com/aui/art-template
                 }
+            }, {
+                test: /\.m?js$/,
+                exclude: /(node_modules|bower_components)/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ['@babel/preset-env']
+                    }
+                }
             }
         ]
+    },
+    stats: {
+        colors: true
     }
 };

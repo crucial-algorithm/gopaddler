@@ -45,10 +45,10 @@ MotionSensor.prototype.read = function () {
 
     if (this.isPortraitMode) {
         frontToBack = compute(this.beta, this.calibration.getBeta());
-        leftToRight = compute(this.gamma, this.calibration.getGamma());
+        leftToRight = compute(this.gamma, 0);
     } else {
         frontToBack = compute(this.gamma, this.calibration.getGamma());
-        leftToRight = compute(this.alpha, this.calibration.getAlpha());
+        leftToRight = compute(this.alpha, 0);
     }
 
     this.alpha = [];
@@ -63,7 +63,7 @@ MotionSensor.prototype.read = function () {
  */
 MotionSensor.prototype.handleListeners = function () {
     var measures = this.isPortraitMode ? this.gamma : this.alpha, length = measures.length;
-    var adjustment = this.isPortraitMode ? this.calibration.gamma : this.calibration.alpha;
+    var adjustment = 0;
 
     if (length < 2) return;
 

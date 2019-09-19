@@ -1,10 +1,11 @@
 'use strict';
 
 import Utils from '../utils/utils';
-import {createClass} from 'asteroid';
-import {loginWithFacebook} from '../asteroid/facebook';
 
-let Asteroid = createClass([loginWithFacebook]);
+const createClass = require('asteroid').createClass;
+const facebook = require('../asteroid/facebook');
+const Asteroid = createClass([facebook]);
+
 let connected = false, loggedIn = false, retries = 0;
 let lastUserAddedMsg = null;
 let onCoachRequest = function(){};

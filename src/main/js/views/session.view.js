@@ -20,9 +20,9 @@ import Unlock from '../utils/widgets/unlock';
 import StrokeDetector from '../core/stroke-detector';
 import Sound from '../utils/sound';
 import Api from '../server/api';
+import SessionDetail from '../model/session-detail';
 
 const utils = require('../utils/utils');
-const SessionDetail = require('../model/session-detail').SessionDetail;
 const Splits = require('splits-handler').Splits;
 
 

@@ -1,7 +1,8 @@
 'use strict';
 
+import SessionDetail from './session-detail';
+
 var db = require('../db.js');
-var SessionDetail = require('./session-detail').SessionDetail;
 var utils = require('../utils/utils.js');
 var VERSION_WITH_RECOVERY_IN_DATA = 2;
 

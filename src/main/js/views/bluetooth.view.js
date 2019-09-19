@@ -4,10 +4,8 @@ import Context from '../context';
 import Device from '../model/device';
 import Bluetooth from '../device/bluetooth';
 import List from '../utils/widgets/list';
-
-const template = require('./bluetooth.art.html')
-    , rowTemplate = require('./bluetooth.row.art.html')
-;
+import template from './bluetooth.art.html';
+import rowTemplate from './bluetooth.row.art.html';
 
 class BluetoothView {
     constructor(page, context, request) {

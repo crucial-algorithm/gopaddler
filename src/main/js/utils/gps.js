@@ -1,9 +1,7 @@
 'use strict';
 
 import Context from '../context';
-
-var LatLon = require('geodesy/latlon-vincenty');
-
+import LatLon from 'geodesy/latlon-vincenty';
 
 class GPS {
 

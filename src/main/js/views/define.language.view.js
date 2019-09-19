@@ -1,6 +1,5 @@
 import Context from '../context';
-
-var template = require('./define.language.art.html');
+import template from './define.language.art.html';
 
 class DefineLanguageView {
     constructor(page, context) {

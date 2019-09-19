@@ -1,7 +1,6 @@
 import Context from '../context';
-
-var api = require('../server/api');
-var template = require('./choose.boat.art.html');
+import Api from '../server/api';
+import template from './choose.boat.art.html';
 
 class ChooseBoatView {
     constructor(page, context) {
@@ -19,7 +18,7 @@ class ChooseBoatView {
 
             selected = option;
 
-            api.User.saveBoat(selected).then(function () {
+            Api.User.saveBoat(selected).then(function () {
                 App.load('home');
             }).fail(function () {
                 var title = context.translate('choose_boat_failed_title');

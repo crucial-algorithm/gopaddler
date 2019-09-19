@@ -1,5 +1,5 @@
 'use strict';
-const KalmanFilter = require('kalmanjs').default;
+import KalmanFilter from 'kalmanjs';
 
 class Speed {
     constructor(context) {

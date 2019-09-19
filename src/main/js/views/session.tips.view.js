@@ -1,7 +1,6 @@
 'use strict';
 import Context from '../context';
-
-var template = require('./session.tips.art.html');
+import template from './session.tips.art.html';
 
 class SessionTipsView {
     constructor(page, context) {

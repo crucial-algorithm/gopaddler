@@ -1,6 +1,6 @@
 'use strict';
 import Context from '../context';
-var template = require('./calibration.help.art.html');
+import template from './calibration.help.art.html';
 
 class CalibrationHelpView {
     constructor(page, context, request) {

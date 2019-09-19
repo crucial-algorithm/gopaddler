@@ -3,9 +3,8 @@
 import Context from '../context';
 import Calibration from '../model/calibration';
 import Api from '../server/api';
-
-var Settings = require('../model/settings');
-var template = require('./settings.art.html');
+import Settings from '../model/settings';
+import template from './settings.art.html';
 
 
 class SettingsView {
@@ -31,7 +30,7 @@ class SettingsView {
             $boat.prop('checked', true)
         }
 
-        if (settings.getUnits() === Settings.CONSTANTS.MI) {
+        if (settings.getUnits() === Settings.CONSTANTS().MI) {
             $units.prop('checked', true);
         }
 
@@ -113,7 +112,7 @@ class SettingsView {
 
         $page.on('appBeforeBack', function (e) {
 
-            var units = $units.is(':checked') ? Settings.CONSTANTS.MI : Settings.CONSTANTS.KM;
+            var units = $units.is(':checked') ? Settings.CONSTANTS().MI : Settings.CONSTANTS().KM;
             var blackAndWhite = $blackAndWhite.is(':checked') ;
             var layout = $layout.is(':checked');
             var isPortraitMode = $portraitMode.is(':checked');

@@ -2,14 +2,13 @@
 
 import Api from '../server/api';
 import Utils from '../utils/utils';
-
-const db = require('../db');
+import Database from '../db';
 
 
 class SessionDetail {
     constructor(session, timestamp, distance, speed, spm, efficiency, latitude, longitude, heartRate, split
         , strokes, magnitude, isRecovery, motion) {
-        this.connection = db.getConnection();
+        this.connection = Database.getConnection();
         this.session = session;
         this.timestamp = timestamp;
         this.distance = Utils.round(distance || 0, 4);
@@ -131,7 +130,7 @@ class SessionDetail {
     }
 
     static get(sessionId, callback) {
-        let connection = db.getConnection();
+        let connection = Database.getConnection();
         connection.executeSql("SELECT * " +
             "FROM session_data WHERE session = ? ORDER BY id ASC",[sessionId], function (res) {
             let rows = [], data;
@@ -166,7 +165,7 @@ class SessionDetail {
      * @param {function} callback
      */
     static getDetailedMetrics(sessionId, splits, callback) {
-        let connection = db.getConnection();
+        let connection = Database.getConnection();
         let SQL = [
             'SELECT split,',
             '       Max(distance)                   maxDistance,',

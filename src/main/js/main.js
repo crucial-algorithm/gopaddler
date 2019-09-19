@@ -26,6 +26,8 @@ import Sync from './server/sync';
 import Api from './server/api';
 import Utils from './utils/utils';
 import Analytics from './utils/analytics.js';
+import Database  from './db.js';
+import Settings from './model/settings';
 
 
 var LANGUAGE = localStorage.getItem('language') || 'en';
@@ -77,9 +79,6 @@ App.load = function (target) {
     var args = Array.prototype.slice.call(arguments);
     originalAppLoad.apply(this, args);
 };
-
-const db = require('./db.js');
-const Settings = require('./model/settings');
 
 let settings = undefined;
 let environment = undefined;
@@ -344,7 +343,7 @@ if (environment === 'prod') {
 }
 
 function loadDb() {
-    return db.init();
+    return Database.init();
 }
 
 function loadUi() {

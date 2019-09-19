@@ -1,18 +1,19 @@
-import Context from '../context';
+'use strict';
 
-var settings = require('../model/settings');
-var template = require('./define.gps.update.rate.art.html');
+import Context from '../context';
+import Settings from '../model/settings';
+import template from './define.gps.update.rate.art.html';
 
 class DefineGPSSpeedView {
     constructor(page, context) {
         Context.render(page, template({isPortraitMode: context.isPortraitMode()}));
-        var current = context.getGpsRefreshRate();
+        let current = context.getGpsRefreshRate();
 
-        var $page = $(page);
-        var selected = current;
+        let $page = $(page);
+        let selected = current;
         $page.on('click', 'li', function (e) {
-            var $target = $(e.target);
-            var option = $target.data('option');
+            let $target = $(e.target);
+            let option = $target.data('option');
 
             $('li').removeClass('selected');
             $target.addClass('selected');
@@ -21,7 +22,7 @@ class DefineGPSSpeedView {
         });
 
         $page.on('appBeforeBack', function () {
-            settings.updateGpsRefreshRate(selected);
+            Settings.updateGpsRefreshRate(selected);
             context.setGpsRefreshRate(selected);
         });
 

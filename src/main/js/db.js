@@ -1,9 +1,7 @@
 'use strict';
 
-var connection;
-
 // Array with DDL to be applied to each version of database; Each position corresponds to a version number
-var ddl = [
+const ddl = [
     [
         ["CREATE TABLE IF NOT EXISTS settings (",
             "version INTEGER NOT NULL,",
@@ -144,42 +142,17 @@ var ddl = [
 ];
 
 
-var success = function () {
+const success = function () {
     console.log('table created successfully')
 };
-var error = function (e) {
+const error = function (e) {
     console.log('error creating table', e);
 };
 
 
-/**
- * This method should apply all changes in ddl
- */
-function init() {
-    var defer = $.Deferred();
-    connection = window.sqlitePlugin.openDatabase({name: "sessions.db", "location": 2});
-
-    determineDbVersion().then(function (version) {
-        connection.transaction(function (tx) {
-            var sql;
-            for (var d = version; d < ddl.length; d++) {
-
-                for (var i = 0; i < ddl[d].length; i++) {
-                    sql = ddl[d][i].join('');
-                    tx.executeSql(sql, [], success, error);
-                }
-            }
-
-            defer.resolve();
-        });
-    });
-
-    return defer.promise();
-}
-
 
 function determineDbVersion() {
-    var defer = $.Deferred();
+    let defer = $.Deferred();
     connection.executeSql("select version from settings", [], function success(res) {
         defer.resolve(res.rows.item(0).version);
     }, function error(err) {
@@ -189,7 +162,36 @@ function determineDbVersion() {
 }
 
 
-exports.init = init;
-exports.getConnection = function () {
-    return connection;
-};
+let connection;
+
+class Database {
+
+    static init() {
+
+        const defer = $.Deferred();
+        connection = window.sqlitePlugin.openDatabase({name: "sessions.db", "location": 2});
+
+        determineDbVersion().then(function (version) {
+            connection.transaction(function (tx) {
+                let sql;
+                for (let d = version; d < ddl.length; d++) {
+
+                    for (let i = 0; i < ddl[d].length; i++) {
+                        sql = ddl[d][i].join('');
+                        tx.executeSql(sql, [], success, error);
+                    }
+                }
+
+                defer.resolve();
+            });
+        });
+
+        return defer.promise();
+    }
+
+    static getConnection() {
+        return connection;
+    }
+}
+
+export default Database;

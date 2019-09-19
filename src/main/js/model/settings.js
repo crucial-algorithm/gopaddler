@@ -1,222 +1,223 @@
 'use strict';
 
-var db = require('../db.js');
+import Database from '../db';
 
-var CONSTANTS  = {
+const CONSTANTS  = {
     KM: 'K',
     MI: 'M'
 };
 
-function Settings(version, units, syncOnlyOnWifi, restoreLayout, showTouchGestures
-    , showCalibrationTips, default_session_filter, default_start_date, default_end_date
-    , showBlackAndWhite, portraitMode, gpsRate, restingHeartRate, maxHeartRate, serverClockGap) {
-    this._version = version;
-    this._units = units;
-    this._restoreLayout = restoreLayout;
-    this._showTouchGestures = showTouchGestures === undefined ? true : showTouchGestures;
-    this._showCalibrationTips = showCalibrationTips === undefined ? true : showCalibrationTips;
-    this._defaultSessionFilter = default_session_filter;
-    this._defaultStartDate = default_start_date;
-    this._defaultEndDate = default_end_date;
-    this._showBlackAndWhite = showBlackAndWhite;
-    this._portraitMode = portraitMode;
-    this._gpsRefreshRate = gpsRate;
-    this._restingHeartRate = restingHeartRate;
-    this._maxHeartRate = maxHeartRate;
-    this._serverClockGap = serverClockGap;
-}
+class Settings {
 
-Settings.prototype.getVersion = function() {
-    return this._version;
-};
-
-Settings.prototype.setVersion = function(version) {
-    this._version = version;
-};
-
-Settings.prototype.getUnits = function() {
-    return this._units;
-};
-
-Settings.prototype.setUnits = function(units) {
-    this._units = units;
-};
-
-Settings.prototype.isImperial = function(){
-    return this._units === CONSTANTS.MI;
-};
-
-Settings.prototype.isRestoreLayout = function() {
-    return this._restoreLayout;
-};
-
-Settings.prototype.setRestoreLayout = function(restoreLayout) {
-    this._restoreLayout = restoreLayout;
-};
-
-Settings.prototype.isShowTouchGestures = function () {
-    return this._showTouchGestures;
-};
-
-Settings.prototype.setShowTouchGestures = function (showTouchGestures) {
-    this._showTouchGestures = showTouchGestures;
-};
-
-Settings.prototype.isShowCalibrationTips = function () {
-    return this._showCalibrationTips;
-};
-
-Settings.prototype.setShowCalibrationTips = function (showCalibrationTips) {
-    this._showCalibrationTips = showCalibrationTips;
-};
-
-Settings.prototype.getDefaultSessionFilter = function() {
-    return this._defaultSessionFilter;
-};
-
-Settings.prototype.setDefaultSessionFilter = function(defaultSessionFilter) {
-    this._defaultSessionFilter = defaultSessionFilter;
-};
-
-Settings.prototype.getDefaultStartDate = function() {
-    return this._defaultStartDate;
-};
-
-Settings.prototype.setDefaultStartDate = function(defaultStartDate) {
-    this._defaultStartDate = defaultStartDate;
-};
-
-Settings.prototype.getDefaultEndDate = function() {
-    return this._defaultEndDate;
-};
-
-Settings.prototype.setDefaultEndDate = function(defaultEndDate) {
-    this._defaultEndDate = defaultEndDate;
-};
-
-Settings.prototype.isShowBlackAndWhite = function() {
-    return this._showBlackAndWhite;
-};
-
-Settings.prototype.setShowBlackAndWhite = function(showBlackAndWhite) {
-    this._showBlackAndWhite = showBlackAndWhite;
-};
-
-Settings.prototype.isPortraitMode = function() {
-    return this._portraitMode === true;
-};
-
-Settings.prototype.setPortraitMode = function(isPortraitMode) {
-    this._portraitMode = isPortraitMode;
-};
-
-Settings.prototype.getGpsRefreshRate = function() {
-    return this._gpsRefreshRate;
-};
-
-Settings.prototype.setGpsRefreshRate = function(rate) {
-    this._gpsRefreshRate = rate;
-};
-
-Settings.prototype.getRestingHeartRate = function () {
-    return this._restingHeartRate;
-};
-
-Settings.prototype.setRestingHeartRate = function (rate) {
-    this._restingHeartRate = rate;
-};
-
-Settings.prototype.getMaxHeartRate = function() {
-    return this._maxHeartRate;
-};
-
-Settings.prototype.setMaxHeartRate = function(rate) {
-    this._maxHeartRate = rate;
-};
-
-Settings.prototype.getServerClockGap = function() {
-    return this._serverClockGap ;
-};
-
-Settings.prototype.setServerClockGap = function(gap) {
-    if (gap === undefined ) {
-        console.log('invalid gap');
-        return;
+    constructor(version, units, syncOnlyOnWifi, restoreLayout, showTouchGestures
+        , showCalibrationTips, default_session_filter, default_start_date, default_end_date
+        , showBlackAndWhite, portraitMode, gpsRate, restingHeartRate, maxHeartRate, serverClockGap) {
+        this._version = version;
+        this._units = units;
+        this._restoreLayout = restoreLayout;
+        this._showTouchGestures = showTouchGestures === undefined ? true : showTouchGestures;
+        this._showCalibrationTips = showCalibrationTips === undefined ? true : showCalibrationTips;
+        this._defaultSessionFilter = default_session_filter;
+        this._defaultStartDate = default_start_date;
+        this._defaultEndDate = default_end_date;
+        this._showBlackAndWhite = showBlackAndWhite;
+        this._portraitMode = portraitMode;
+        this._gpsRefreshRate = gpsRate;
+        this._restingHeartRate = restingHeartRate;
+        this._maxHeartRate = maxHeartRate;
+        this._serverClockGap = serverClockGap;
     }
-    this._serverClockGap = gap;
-};
 
+    getVersion() {
+        return this._version;
+    }
 
-Settings.prototype.touchGesturesShown = function () {
-    var connection = db.getConnection();
-    connection.executeSql("update settings set show_touch_events_tips = ?", [0]);
-    this.setShowTouchGestures(false);
-};
+    setVersion(version) {
+        this._version = version;
+    }
 
-Settings.prototype.calibrationTipsShown = function () {
-    var connection = db.getConnection();
-    connection.executeSql("update settings set show_calibration_tips = ?", [0]);
-    this.setShowCalibrationTips(false);
-};
+    getUnits() {
+        return this._units;
+    }
 
+    setUnits(units) {
+        this._units = units;
+    }
 
-function loadSettings() {
-    var defer = $.Deferred();
-    var connection = db.getConnection();
+    isImperial() {
+        return this._units === CONSTANTS.MI;
+    }
 
-    connection.executeSql("SELECT * FROM settings", [], function success(res) {
-        var row = res.rows.item(0);
-        defer.resolve(
-            new Settings(
-                row.version,
-                row.units,
-                row.sync_wifi,
-                row.restore_layout,
-                row.show_touch_events_tips === 1,
-                row.show_calibration_tips === 1,
-                row.default_session_filter,
-                row.default_start_date,
-                row.default_end_date,
-                row.black_and_white,
-                row.portrait_mode === 1,
-                row.gps_rate,
-                row.resting_heart_rate,
-                row.max_heart_rate,
-                row.server_clock_gap
-            ));
-    }, function error(e) {
-        console.log('error loding settings... defaulting');
-        defer.reject(err, new Settings(-1, CONSTANTS.KM, true, true));
-    });
+    isRestoreLayout() {
+        return this._restoreLayout;
+    }
 
-    return defer.promise();
+    setRestoreLayout(restoreLayout) {
+        this._restoreLayout = restoreLayout;
+    }
+
+    isShowTouchGestures() {
+        return this._showTouchGestures;
+    }
+
+    setShowTouchGestures(showTouchGestures) {
+        this._showTouchGestures = showTouchGestures;
+    }
+
+    isShowCalibrationTips() {
+        return this._showCalibrationTips;
+    }
+
+    setShowCalibrationTips(showCalibrationTips) {
+        this._showCalibrationTips = showCalibrationTips;
+    }
+
+    getDefaultSessionFilter() {
+        return this._defaultSessionFilter;
+    }
+
+    setDefaultSessionFilter(defaultSessionFilter) {
+        this._defaultSessionFilter = defaultSessionFilter;
+    }
+
+    getDefaultStartDate() {
+        return this._defaultStartDate;
+    }
+
+    setDefaultStartDate(defaultStartDate) {
+        this._defaultStartDate = defaultStartDate;
+    }
+
+    getDefaultEndDate() {
+        return this._defaultEndDate;
+    }
+
+    setDefaultEndDate(defaultEndDate) {
+        this._defaultEndDate = defaultEndDate;
+    }
+
+    isShowBlackAndWhite() {
+        return this._showBlackAndWhite;
+    }
+
+    setShowBlackAndWhite(showBlackAndWhite) {
+        this._showBlackAndWhite = showBlackAndWhite;
+    }
+
+    isPortraitMode() {
+        return this._portraitMode === true;
+    }
+
+    setPortraitMode(isPortraitMode) {
+        this._portraitMode = isPortraitMode;
+    }
+
+    getGpsRefreshRate() {
+        return this._gpsRefreshRate;
+    }
+
+    setGpsRefreshRate(rate) {
+        this._gpsRefreshRate = rate;
+    }
+
+    getRestingHeartRate() {
+        return this._restingHeartRate;
+    }
+
+    setRestingHeartRate(rate) {
+        this._restingHeartRate = rate;
+    }
+
+    getMaxHeartRate() {
+        return this._maxHeartRate;
+    }
+
+    setMaxHeartRate(rate) {
+        this._maxHeartRate = rate;
+    }
+
+    getServerClockGap() {
+        return this._serverClockGap;
+    }
+
+    setServerClockGap(gap) {
+        if (gap === undefined) {
+            console.log('invalid gap');
+            return;
+        }
+        this._serverClockGap = gap;
+    }
+
+    touchGesturesShown() {
+        let connection = Database.getConnection();
+        connection.executeSql("update settings set show_touch_events_tips = ?", [0]);
+        this.setShowTouchGestures(false);
+    }
+
+    calibrationTipsShown() {
+        let connection = Database.getConnection();
+        connection.executeSql("update settings set show_calibration_tips = ?", [0]);
+        this.setShowCalibrationTips(false);
+    }
+    
+    
+    static loadSettings() {
+        let defer = $.Deferred();
+        let connection = Database.getConnection();
+
+        connection.executeSql("SELECT * FROM settings", [], function success(res) {
+            let row = res.rows.item(0);
+            defer.resolve(
+                new Settings(
+                    row.version,
+                    row.units,
+                    row.sync_wifi,
+                    row.restore_layout,
+                    row.show_touch_events_tips === 1,
+                    row.show_calibration_tips === 1,
+                    row.default_session_filter,
+                    row.default_start_date,
+                    row.default_end_date,
+                    row.black_and_white,
+                    row.portrait_mode === 1,
+                    row.gps_rate,
+                    row.resting_heart_rate,
+                    row.max_heart_rate,
+                    row.server_clock_gap
+                ));
+        }, function error(e) {
+            console.log('error loding settings... defaulting');
+            defer.reject(err, new Settings(-1, CONSTANTS.KM, true, true));
+        });
+
+        return defer.promise();
+    }
+
+    static saveSettings(units, showBlackAndWhite, restoreLayout, portraitMode) {
+        let connection = Database.getConnection();
+        connection.executeSql("update settings set units = ?, black_and_white = ?, restore_layout = ?, portrait_mode = ?"
+            , [units, showBlackAndWhite ? 1 : 0, restoreLayout ? 1 : 0, portraitMode ? 1 : 0]);
+    }
+
+    static updateHeartRate(resting, max) {
+        let connection = Database.getConnection();
+        connection.executeSql("update settings set resting_heart_rate = ?, max_heart_rate = ?", [resting, max]);
+    }
+
+    static updateGpsRefreshRate(rate) {
+        let connection = Database.getConnection();
+        connection.executeSql("update settings set gps_rate = ?", [rate]);
+    }
+
+    static updateServerClockGap(gap) {
+        let connection = Database.getConnection();
+        connection.executeSql("update settings set server_clock_gap = ?", [gap]);
+    }
+
+    static CONSTANTS() {
+        return CONSTANTS;
+    }
 }
 
-function saveSettings(units, showBlackAndWhite, restoreLayout, portraitMode) {
-    var connection = db.getConnection();
-    connection.executeSql("update settings set units = ?, black_and_white = ?, restore_layout = ?, portrait_mode = ?"
-        , [units, showBlackAndWhite ? 1 : 0, restoreLayout ? 1 : 0, portraitMode ? 1 : 0]);
-}
 
-function updateHeartRate(resting, max) {
-    var connection = db.getConnection();
-    connection.executeSql("update settings set resting_heart_rate = ?, max_heart_rate = ?", [resting, max]);
-}
-
-function updateGpsRefreshRate(rate) {
-    var connection = db.getConnection();
-    connection.executeSql("update settings set gps_rate = ?", [rate]);
-}
-
-function updateServerClockGap(gap) {
-    var connection = db.getConnection();
-    connection.executeSql("update settings set server_clock_gap = ?", [gap]);
-}
-
-exports.loadSettings = loadSettings;
-exports.saveSettings = saveSettings;
-exports.updateHeartRate = updateHeartRate;
-exports.Settings = Settings;
-exports.updateGpsRefreshRate = updateGpsRefreshRate;
-exports.updateServerClockGap = updateServerClockGap;
-exports.CONSTANTS = CONSTANTS;
+export default Settings;

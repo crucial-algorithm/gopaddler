@@ -94,6 +94,13 @@ const units = {
 
 class Context {
 
+    /**
+     *
+     * @param {Settings} settings
+     * @param environment
+     * @param translateFn
+     * @param language
+     */
     constructor(settings, environment, translateFn, language) {
         this._settings = settings;
         this._environment = environment;

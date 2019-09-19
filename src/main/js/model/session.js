@@ -2,9 +2,9 @@
 
 import SessionDetail from './session-detail';
 import Utils from '../utils/utils';
+import Database from '../db';
 
-var db = require('../db.js');
-var VERSION_WITH_RECOVERY_IN_DATA = 2;
+const VERSION_WITH_RECOVERY_IN_DATA = 2;
 
 
 class Session {
@@ -12,7 +12,7 @@ class Session {
     constructor(sessionStart, angleZ, noiseX, noiseZ, factorX, factorZ, axis, distance, avgSpm, topSpm
         , avgSpeed, topSpeed, avgEfficiency, topEfficiency, sessionEnd) {
 
-        this.connection = db.getConnection();
+        this.connection = Database.getConnection();
         this._id = null;
         this._remoteId = null;
         this._sessionStart = sessionStart;
@@ -214,7 +214,7 @@ class Session {
     }
 
     static delete(id) {
-        const connection = db.getConnection();
+        const connection = Database.getConnection();
         const defer = $.Deferred();
         connection.transaction(function (tx) {
             tx.executeSql("DELETE FROM session_data where session = ?", [id], function () {
@@ -238,7 +238,7 @@ class Session {
      * @return {*}
      */
     static synced(remoteId, id) {
-        const connection = db.getConnection();
+        const connection = Database.getConnection();
         const defer = $.Deferred();
         connection.executeSql("update session set synced = 1, synced_at = ?, remote_id = ? where id = ?", [Date.now(), remoteId, id], function success() {
             defer.resolve();
@@ -249,7 +249,7 @@ class Session {
     }
 
     static startDebugSync(id, total) {
-        const connection = db.getConnection();
+        const connection = Database.getConnection();
         const defer = $.Deferred();
         connection.executeSql("update session set dbg_attempt = if(dbg_attempt is null, 1, dbg_attempt + 1), dbg_tot_rows = ? where id = ?", [total, id], function success() {
             defer.resolve();
@@ -260,7 +260,7 @@ class Session {
     }
 
     static debugSynced(id, rows) {
-        const connection = db.getConnection();
+        const connection = Database.getConnection();
         const defer = $.Deferred();
         connection.executeSql("update session set dbg_sync_rows = dbg_sync_rows + ? where id = ?", [rows, id], function success() {
             defer.resolve();
@@ -271,7 +271,7 @@ class Session {
     }
 
     static debugSyncFinished(id, success) {
-        const connection = db.getConnection();
+        const connection = Database.getConnection();
         const defer = $.Deferred();
         connection.executeSql("update session set dbg_synced = ?, dbg_synced_at = ? where id = ?", [success ? 1 : 0, new Date().getTime(), id], function success() {
             defer.resolve();
@@ -282,7 +282,7 @@ class Session {
     }
 
     static incrementAttempt(id) {
-        const connection = db.getConnection();
+        const connection = Database.getConnection();
         const defer = $.Deferred();
         connection.executeSql("update session set dbg_attempt = dbg_attempt + 1 where id = ?", [id], function success() {
             defer.resolve();
@@ -293,7 +293,7 @@ class Session {
     }
 
     static sessionsSummary() {
-        const connection = db.getConnection();
+        const connection = Database.getConnection();
         const defer = $.Deferred();
         connection.executeSql("SELECT sum(distance) distance, max(top_speed) speed, sum(session_end - session_start) duration FROM session", [], function (res) {
             var record = res.rows.item(0);
@@ -309,7 +309,7 @@ class Session {
     }
 
     static findAllNotSynced(callback) {
-        const connection = db.getConnection();
+        const connection = Database.getConnection();
         connection.executeSql("SELECT * FROM session WHERE synced <> 1 OR (dbg_synced = 0 AND (strftime('%s', 'now') - session_start/1000) < (86400 * 5))", [], function (res) {
             var rows = [];
             for (var i = 0; i < res.rows.length; i++) {
@@ -323,7 +323,7 @@ class Session {
 
     static all(callback) {
         const self = this;
-        const connection = db.getConnection();
+        const connection = Database.getConnection();
         connection.executeSql("SELECT * FROM session order by id desc", [], function (res) {
             let rows = [];
             for (let i = 0; i < res.rows.length; i++) {
@@ -336,7 +336,7 @@ class Session {
     }
 
     static last() {
-        const connection = db.getConnection();
+        const connection = Database.getConnection();
         const defer = $.Deferred();
         connection.executeSql("SELECT * FROM session order by id desc limit 1", [], function (res) {
 
@@ -353,7 +353,7 @@ class Session {
     }
 
     static getFromDate(date, callback) {
-        const connection = db.getConnection();
+        const connection = Database.getConnection();
 
         connection.executeSql('SELECT * FROM session WHERE session_end >= ? order by id desc', [date], function (res) {
             var rows = [];
@@ -367,7 +367,7 @@ class Session {
     }
 
     static getForDates(startDate, endDate, callback) {
-        const connection = db.getConnection();
+        const connection = Database.getConnection();
 
         connection.executeSql('SELECT * FROM session WHERE session_end >= ? AND session_end <= ? order by id desc', [startDate, endDate], function (res) {
             var rows = [];
@@ -381,7 +381,7 @@ class Session {
     }
 
     static get(id) {
-        const connection = db.getConnection();
+        const connection = Database.getConnection();
         const defer = $.Deferred();
         connection.executeSql("SELECT * FROM session where id = ?", [id], function (res) {
 

@@ -7,8 +7,8 @@ import Api from '../server/api';
 import landscape from './home.art.html';
 import portrait from './home.portrait.art.html';
 import Utils from '../utils/utils';
+import Settings from '../model/settings';
 
-const Settings = require('../model/settings');
 const GpChart = require('../utils/widgets/chart').GpChart;
 require('chartjs-plugin-datalabels');
 

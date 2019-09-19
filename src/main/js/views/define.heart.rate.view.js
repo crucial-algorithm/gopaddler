@@ -2,9 +2,8 @@
 
 import Context from '../context';
 import Api from '../server/api';
-
-var Settings = require('../model/settings');
-var template = require('./define.heart.rate.art.html');
+import Settings from '../model/settings';
+import template from './define.heart.rate.art.html';
 
 class DefineHeartRateView {
     constructor(page, context) {

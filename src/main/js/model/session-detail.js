@@ -1,7 +1,9 @@
 'use strict';
+
+import Api from '../server/api';
+
 var db = require('../db');
 var Utils = require('../utils/utils');
-var Api = require('../server/api');
 
 function SessionDetail(session, timestamp, distance, speed, spm, efficiency, latitude, longitude, heartRate, split
                        , strokes, magnitude, isRecovery, motion) {

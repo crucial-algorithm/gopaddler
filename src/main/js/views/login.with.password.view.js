@@ -1,12 +1,11 @@
 'use strict';
 
 import Context from '../context';
+import Api from '../server/api';
+import template from './signup.art.html';
 
-var Api = require('../server/api')
-    , template = require('./signup.art.html')
-;
 
-var $login, $create, $forgot;
+let $login, $create, $forgot;
 
 class LoginWithPasswordView {
     constructor(page, context) {

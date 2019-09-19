@@ -1,6 +1,7 @@
+import StrokeDetector from '../../main/js/core/stroke-detector';
+
 var assert = require('assert');
 var data = require('./data');
-var StrokeDetector = require('../../main/js/core/stroke-detector').StrokeDetector;
 var Calibration = require('../../main/js/model/calibration').Calibration;
 
 function loop(records, strokeDetector) {

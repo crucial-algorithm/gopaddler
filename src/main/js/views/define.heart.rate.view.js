@@ -1,8 +1,10 @@
+'use strict';
+
 import Context from '../context';
+import Api from '../server/api';
 
 var Settings = require('../model/settings');
 var template = require('./define.heart.rate.art.html');
-var Api = require('../server/api');
 
 class DefineHeartRateView {
     constructor(page, context) {

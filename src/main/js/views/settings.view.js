@@ -1,9 +1,10 @@
 'use strict';
+
 import Context from '../context';
 import Calibration from '../model/calibration';
+import Api from '../server/api';
 
 var Settings = require('../model/settings');
-var Api = require('../server/api');
 var template = require('./settings.art.html');
 
 

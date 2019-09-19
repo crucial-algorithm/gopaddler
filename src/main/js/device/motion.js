@@ -36,7 +36,7 @@ class MotionSensor {
     }
 
     handler(event) {
-        var now = Date.now() - this.offset;
+        let now = Date.now() - this.offset;
         // alpha: rotation around z-axis
         this.alpha.push({time: now, value: event.alpha});
         // gamma: rotation around y axis
@@ -48,7 +48,7 @@ class MotionSensor {
     }
 
     read() {
-        var rotation = [] // discarding rotation for now, until we find a way to use it properly
+        let rotation = [] // discarding rotation for now, until we find a way to use it properly
             , frontToBack, leftToRight;
 
         if (this.isPortraitMode) {
@@ -63,16 +63,18 @@ class MotionSensor {
         this.gamma = [];
         this.beta = [];
 
+        console.log(leftToRight.join(';') + '|' + frontToBack.join(';') + '|' + rotation.join(';'));
+
         return leftToRight.join(';') + '|' + frontToBack.join(';') + '|' + rotation.join(';');
     }
 
     handleListeners() {
-        var measures = this.isPortraitMode ? this.gamma : this.alpha, length = measures.length;
-        var adjustment = 0;
+        let measures = this.isPortraitMode ? this.gamma : this.alpha, length = measures.length;
+        let adjustment = 0;
 
         if (length < 2) return;
 
-        var previous = measures[length - 2], current = measures[length - 1];
+        let previous = measures[length - 2], current = measures[length - 1];
         if ((previous.value - adjustment < 0 && current.value - adjustment < 0)
             || (previous.value - adjustment >= 0 && current.value - adjustment >= 0)) return;
 
@@ -94,10 +96,10 @@ class MotionSensor {
     }
 
     getCalibration() {
-        var avg = function (list) {
-            var total = 0, length = list.length;
+        let avg = function (list) {
+            let total = 0, length = list.length;
             if (length === 0) return null;
-            for (var i = 0; i < length; i++) {
+            for (let i = 0; i < length; i++) {
                 total += list[i].value;
             }
             return total / length;
@@ -119,10 +121,10 @@ class MotionSensor {
  * @return {*}
  */
 function compute(measures, adjustment) {
-    var max = 0, position = null, previousBellowZero = measures[0] < 0, compute = [];
-    for (var i = 0, l = measures.length; i < l; i++) {
-        var when = measures[i].time;
-        var value = measures[i].value - adjustment;
+    let max = 0, position = null, previousBellowZero = measures[0] < 0, compute = [];
+    for (let i = 0, l = measures.length; i < l; i++) {
+        let when = measures[i].time;
+        let value = measures[i].value - adjustment;
         if (Math.abs(value) > Math.abs(max)) {
             position = when;
             max = value;

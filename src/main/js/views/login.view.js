@@ -1,10 +1,9 @@
 'use strict';
 
 import Context from '../context';
+import Api from '../server/api';
+import template from './login.view.art.html';
 
-var Api = require('../server/api')
-    , template = require('./login.view.art.html')
-;
 
 class LoginView {
     constructor(page, context) {

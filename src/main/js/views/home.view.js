@@ -3,14 +3,14 @@
 import Context from '../context';
 import Calibration from '../model/calibration';
 import Session from '../model/session';
+import Api from '../server/api';
+import landscape from './home.art.html';
+import portrait from './home.portrait.art.html';
 
-var Api = require('../server/api');
-var landscape = require('./home.art.html');
-var portrait = require('./home.portrait.art.html');
-var Chart = require('chart.js');
-var Utils = require('../utils/utils');
-var Settings = require('../model/settings');
-var GpChart = require('../utils/widgets/chart').GpChart;
+const Chart = require('chart.js');
+const Utils = require('../utils/utils');
+const Settings = require('../model/settings');
+const GpChart = require('../utils/widgets/chart').GpChart;
 require('chartjs-plugin-datalabels');
 
 

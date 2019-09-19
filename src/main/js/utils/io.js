@@ -1,8 +1,9 @@
 'use strict';
 
-exports.IO = {
-    open: function(filename) {
-        var self = this, defer = $.Deferred();
+
+class IO {
+    static open(filename) {
+        const defer = $.Deferred();
 
         if (!filename) {
             defer.reject();
@@ -11,7 +12,7 @@ exports.IO = {
 
         console.debug('open ', filename);
 
-        var success = function (dir) {
+        const success = function (dir) {
             dir.getFile(filename, {create: true}, function (file) {
                 defer.resolve(file)
             });
@@ -23,35 +24,38 @@ exports.IO = {
             });
 
         return defer.promise();
-    },
+    }
 
-    write: function (file, content) {
-        if(!file) return;
+    static write(file, content) {
+        if (!file) return;
 
         file.createWriter(function (fileWriter) {
 
             fileWriter.seek(fileWriter.length);
-            var blob = new Blob([content], {type: 'text/plain'});
+            const blob = new Blob([content], {type: 'text/plain'});
             fileWriter.write(blob);
 
         }, function fail() {
             console.log("write to log failed");
         });
-    },
+    }
 
-    read: function(file) {
-        var defer = $.Deferred();
-        file.file(function(file) {
-            var reader = new FileReader();
+    static read(file) {
+        const defer = $.Deferred();
+        file.file(function (file) {
+            const reader = new FileReader();
 
-            reader.onloadend = function(e) {
+            reader.onloadend = function (e) {
                 console.log("reading from: ", this);
                 defer.resolve(this.result);
-            }
+            };
 
             reader.readAsText(file);
         });
 
         return defer.promise();
     }
-};
+}
+
+
+export default IO;

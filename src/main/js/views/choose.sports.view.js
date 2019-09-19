@@ -1,8 +1,11 @@
+'use strict';
+
 import Context from '../context';
+import Api from '../server/api';
 
 var template = require('./choose.sports.art.html');
 var Utils = require('../utils/utils');
-var Api = require('../server/api');
+
 
 
 class ChooseSportsView {

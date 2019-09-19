@@ -1,4 +1,6 @@
-var Api = require('../server/api');
+'use strict';
+
+import Api from '../server/api';
 
 class ScheduledSession {
 

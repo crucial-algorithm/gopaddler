@@ -1,137 +1,138 @@
 'use strict';
-var template = require('./dialog.art.html');
-var Utils = require('../utils');
 
-var $modal = undefined;
-var modal = undefined;
+import template from './dialog.art.html';
 
-function render(isPortraitMode, undecorated, title, message, primary, secondary, center) {
-    var id = Utils.guid();
-    $('body').append(template({
-        id: id,
-        isPortraitMode: isPortraitMode,
-        undecorated: undecorated === true,
-        title: title,
-        content: message,
-        primary: primary ? primary.text: null,
-        hasSecondary: secondary !== null,
-        secondary: secondary ? secondary.text : null
-    }));
+let Utils = require('../utils');
 
-    var $modal = $('#' + id);
+let $modal = undefined;
+let modal = undefined;
 
-    if (center === true) {
-        setTimeout(function () {
-            $modal.find('.info-modal-body').center();
-        }, 0);
-    }
+class Dialog {
+    
+    static _render(isPortraitMode, undecorated, title, message, primary, secondary, center) {
+        let id = Utils.guid();
+        $('body').append(template({
+            id: id,
+            isPortraitMode: isPortraitMode,
+            undecorated: undecorated === true,
+            title: title,
+            content: message,
+            primary: primary ? primary.text: null,
+            hasSecondary: secondary !== null,
+            secondary: secondary ? secondary.text : null
+        }));
 
-    var $primary = $modal.find('[data-selector="modal-primary"]');
-    var $secondary = $modal.find('[data-selector="modal-secondary"]');
+        let $modal = $('#' + id);
 
-    $primary.off('tap click').on('tap click', function (e) {
-        e.stopPropagation();
-        e.preventDefault();
-        if (!primary)
-            return;
-
-        primary.callback = primary.callback || function(){};
-        primary.callback.apply({},[]);
-    });
-
-    $secondary.off('tap click').on('tap click', function (e) {
-        e.stopPropagation();
-        e.preventDefault();
-
-        if (!secondary)
-            return;
-
-        secondary.callback = secondary.callback || function(){};
-        secondary.callback.apply({},[]);
-    });
-
-    return {
-        $modal: $modal,
-        hide: function () {
-            $modal.remove();
-        },
-
-        on: function (event, context, callback) {
-            $modal.on(event, context, callback)
-
+        if (center === true) {
+            setTimeout(function () {
+                $modal.find('.info-modal-body').center();
+            }, 0);
         }
-    }
-}
 
-function hideModal() {
-    if (!$modal) return;
-    $modal.remove();
-    $modal = undefined;
-}
+        let $primary = $modal.find('[data-selector="modal-primary"]');
+        let $secondary = $modal.find('[data-selector="modal-secondary"]');
 
-function undecorated(isPortraitMode, $content) {
-    var modal = render(isPortraitMode, true, null, $content, null, null, false);
-    $modal = modal.$modal;
-    return modal;
-}
+        $primary.off('tap click').on('tap click', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            if (!primary)
+                return;
 
-function hide() {
-    if (!modal) return;
-    modal.hide();
-}
+            primary.callback = primary.callback || function(){};
+            primary.callback.apply({},[]);
+        });
 
-function alert(isPortraitMode, title, message, primary) {
-    var btn = primary;
-    if (typeof primary === "string") {
-        btn = {
-            text: primary,
-            callback: function(){}
-        }
-    }
+        $secondary.off('tap click').on('tap click', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
 
-    var btnPrimary = {
-        text: btn.text,
-        callback: function () {
-            var result = true;
-            if (btn.callback)
-                result = btn.callback.apply({});
+            if (!secondary)
+                return;
 
-            if (result !== false && modal) {
-                modal.hide()
+            secondary.callback = secondary.callback || function(){};
+            secondary.callback.apply({},[]);
+        });
+
+        return {
+            $modal: $modal,
+            hide: function () {
+                $modal.remove();
+            },
+
+            on: function (event, context, callback) {
+                $modal.on(event, context, callback)
+
             }
         }
-    };
-
-    modal = render(isPortraitMode, false, title, message, btnPrimary, null, true);
-    return modal;
-}
-
-function confirm(isPortraitMode, title, message, primary, secondary) {
-    var btnPrimary = {
-        text: primary.text,
-        callback: function () {
-            var result = primary.callback.apply({});
-            if (result !== false && modal) {
-                modal.hide()
+    }
+    
+    static hideModal() {
+        if (!$modal) return;
+        $modal.remove();
+        $modal = undefined;
+    }
+    
+    static alert(isPortraitMode, title, message, primary) {
+        let btn = primary;
+        if (typeof primary === "string") {
+            btn = {
+                text: primary,
+                callback: function(){}
             }
         }
-    };
 
-    var btnSecondary = {
-        text: secondary.text,
-        callback: function () {
-            var result = secondary.callback.apply({});
-            if (result !== false && modal) {
-                modal.hide()
+        let btnPrimary = {
+            text: btn.text,
+            callback: function () {
+                let result = true;
+                if (btn.callback)
+                    result = btn.callback.apply({});
+
+                if (result !== false && modal) {
+                    modal.hide()
+                }
             }
-        }
-    };
-    modal = render(isPortraitMode, false, title, message, btnPrimary, btnSecondary, true);
-    return modal;
+        };
+
+        modal = Dialog._render(isPortraitMode, false, title, message, btnPrimary, null, true);
+        return modal;
+    }
+    
+    static confirm(isPortraitMode, title, message, primary, secondary) {
+        let btnPrimary = {
+            text: primary.text,
+            callback: function () {
+                let result = primary.callback.apply({});
+                if (result !== false && modal) {
+                    modal.hide()
+                }
+            }
+        };
+
+        let btnSecondary = {
+            text: secondary.text,
+            callback: function () {
+                let result = secondary.callback.apply({});
+                if (result !== false && modal) {
+                    modal.hide()
+                }
+            }
+        };
+        modal = Dialog._render(isPortraitMode, false, title, message, btnPrimary, btnSecondary, true);
+        return modal;
+    }
+    
+    static undecorated(isPortraitMode, $content) {
+        let modal = Dialog._render(isPortraitMode, true, null, $content, null, null, false);
+        $modal = modal.$modal;
+        return modal;
+    }
+    
+    static hide() {
+        if (!modal) return;
+        modal.hide();
+    }
 }
 
-exports.hideModal = hideModal;
-exports.alert = alert;
-exports.confirm = confirm;
-exports.undecorated = undecorated;
-exports.hide = hide;
+export default Dialog;

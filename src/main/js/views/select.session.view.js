@@ -1,8 +1,9 @@
 'use strict';
+
 import Context from '../context';
 import ScheduledSession from '../model/scheduled-session';
+import Api from '../server/api';
 
-var Api = require('../server/api');
 var Utils = require('../utils/utils');
 var template = require('./select.session.art.html');
 var List = require('../utils/widgets/list').List;

@@ -1,8 +1,10 @@
+'use strict';
+
 import Context from '../context';
+import Api from '../server/api';
 
 var template = require('./manage.coach.art.html')
     , rowTemplate = require('./manage.coach.row.art.html')
-    , Api = require('../server/api')
     , List = require('../utils/widgets/list').List;
 
 

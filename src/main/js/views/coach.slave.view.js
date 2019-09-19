@@ -1,11 +1,11 @@
 'use static';
 
 import Context from '../context';
+import Unlock from '../utils/widgets/unlock';
+import Api from '../server/api';
 
 var template = require('./coach.slave.art.html');
 var Utils = require('../utils/utils');
-var Api = require('../server/api');
-var Unlock = require('../utils/widgets/unlock').Unlock;
 
 class CoachSlaveView {
 

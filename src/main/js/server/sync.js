@@ -2,10 +2,11 @@
 
 import ScheduledSession from '../model/scheduled-session';
 import Session from '../model/session';
+import IO from '../utils/io.js';
+import Api from '../server/api';
 
-const IO = require('../utils/io.js').IO;
+
 const Utils = require('../utils/utils.js');
-const Api = require('../server/api');
 
 let processing = {}, debugProcessing = {};
 

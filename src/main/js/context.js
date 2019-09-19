@@ -1,8 +1,10 @@
 'use strict';
 
+import Dialog from './utils/widgets/dialog';
+import Api from './server/api';
+
 var utils = require('./utils/utils');
-var Api = require('./server/api');
-var Dialog = require('./utils/widgets/dialog');
+
 
 
 const units = {

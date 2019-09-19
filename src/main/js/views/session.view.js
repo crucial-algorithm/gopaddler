@@ -12,18 +12,18 @@ import Timer from '../measures/timer';
 import Field from '../measures/field';
 import Calibration from '../model/calibration';
 import Session from '../model/session';
+import DistanceProgressBar from '../utils/widgets/distance-progress-bar';
+import IO from '../utils/io.js';
+import Dialog from '../utils/widgets/dialog';
+import template from './session.view.art.html';
+import Unlock from '../utils/widgets/unlock';
+import StrokeDetector from '../core/stroke-detector';
+import Sound from '../utils/sound';
+import Api from '../server/api';
 
-const IO = require('../utils/io.js').IO;
-const Dialog = require('../utils/widgets/dialog');
 const utils = require('../utils/utils');
 const SessionDetail = require('../model/session-detail').SessionDetail;
-const Api = require('../server/api');
-const StrokeDetector = require('../core/stroke-detector').StrokeDetector;
 const Splits = require('splits-handler').Splits;
-const template = require('./session.view.art.html');
-const Unlock = require('../utils/widgets/unlock').Unlock;
-const DistanceProgressBar = require('../utils/widgets/distance-progress-bar').DistanceProgressBar;
-const Sound = require('../utils/sound').Sound;
 
 
 const DEFAULT_POSITIONS = {
@@ -70,6 +70,7 @@ class SessionView {
         let /**@type Session */ session = self.createSession(calibration);
         let gps = new GPS(context);
         let heartRateSensor = new HeartRateSensor();
+        /**@type MotionSensor */
         self.motionSensor = new MotionSensor(calibration, context.isPortraitMode());
         /**@type Distance */
         const distance = new Distance(context);

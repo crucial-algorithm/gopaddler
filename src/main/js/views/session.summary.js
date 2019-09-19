@@ -1,9 +1,10 @@
 'use strict';
+
 import Context from '../context';
 import Sync from '../server/sync';
+import Api from '../server/api';
 
 var utils = require('../utils/utils.js')
-    , Api = require('../server/api')
     , template = require('./session.summary.art.html')
     , intervalsTemplate = require('./session.summary.intervals.art.html')
     , zonesTemplate = require('./session.summary.zones.art.html')

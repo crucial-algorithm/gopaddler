@@ -1,6 +1,6 @@
-var playStartCountDown, playFinishCountDown, playFinish;
+'use strict';
 
-var START_COUNTDOWN_FILE = "start.m4a"
+const START_COUNTDOWN_FILE = "start.m4a"
     , FINISH_COUNTDOWN_FILE = "finish.m4a"
     , FINISH_FILE = "finish-immediately.m4a";
 
@@ -13,7 +13,7 @@ function buildPath(filename) {
 
 function loadAudioFile(filename) {
 
-    var NativeAudio = {preloadSimple: function(){}};
+    let NativeAudio = {preloadSimple: function(){}};
     if (window.plugins && window.plugins.NativeAudio) {
         NativeAudio = window.plugins.NativeAudio;
     }
@@ -34,24 +34,25 @@ function loadAudioFile(filename) {
     }
 }
 
+class Sound {
+    constructor() {
+        this.start = loadAudioFile(START_COUNTDOWN_FILE);
+        this.finish = loadAudioFile(FINISH_COUNTDOWN_FILE);
+        this.finishIm = loadAudioFile(FINISH_FILE);
+    }
 
-function Sound() {
-    this.start = loadAudioFile(START_COUNTDOWN_FILE);
-    this.finish = loadAudioFile(FINISH_COUNTDOWN_FILE);
-    this.finishIm = loadAudioFile(FINISH_FILE);
+    playStartCountDown() {
+        this.start.play();
+    }
+
+    playFinishCountDown() {
+        this.finish.play();
+    }
+
+    playFinish() {
+        this.finishIm.play();
+    }
 }
 
-Sound.prototype.playStartCountDown = function () {
-    this.start.play();
-};
 
-Sound.prototype.playFinishCountDown = function () {
-    this.finish.play();
-};
-
-Sound.prototype.playFinish = function () {
-    this.finishIm.play();
-};
-
-
-exports.Sound = Sound;
+export default Sound;

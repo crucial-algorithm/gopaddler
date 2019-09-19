@@ -1,15 +1,15 @@
-var Utils = require('../utils/utils.js');
-var createClass = require('asteroid').createClass;
-var facebook = require('../asteroid/facebook');
-var Asteroid = createClass([facebook]);
-var connected = false, loggedIn = false, retries = 0;
-var lastUserAddedMsg = null;
-var onCoachRequest = function(){};
+let Utils = require('../utils/utils.js');
+let createClass = require('asteroid').createClass;
+let facebook = require('../asteroid/facebook');
+let Asteroid = createClass([facebook]);
+let connected = false, loggedIn = false, retries = 0;
+let lastUserAddedMsg = null;
+let onCoachRequest = function(){};
 
-var asteroid = {};
+let asteroid = {};
 
-var serverAvailable = function (d) {
-    var defer = d || $.Deferred();
+let serverAvailable = function (d) {
+    let defer = d || $.Deferred();
 
     if (retries >= 3) {
         defer.reject();
@@ -42,7 +42,7 @@ var serverAvailable = function (d) {
  */
 function _localLogin() {
 
-    var defer = $.Deferred(),
+    let defer = $.Deferred(),
         serializedUser = localStorage.getItem('user'),
         user;
 
@@ -77,7 +77,7 @@ function _localLogin() {
  */
 function _remoteLogin() {
 
-    var defer = $.Deferred();
+    let defer = $.Deferred();
 
     if (!Utils.isNetworkConnected()) {
         defer.reject();
@@ -105,7 +105,7 @@ function _remoteLogin() {
 }
 
 function _loginWithFacebook() {
-    var defer = $.Deferred();
+    let defer = $.Deferred();
     try {
         asteroid.loginWithFacebook().then(function (user) {
             _finishLogin(defer, user, 'facebook');
@@ -179,23 +179,23 @@ function _storeUser(user) {
 }
 
 function _clearCoachRequests() {
-    var serializedUser = localStorage.getItem('user');
+    let serializedUser = localStorage.getItem('user');
     if (!serializedUser) {
         return;
     }
 
-    var user = JSON.parse(serializedUser);
+    let user = JSON.parse(serializedUser);
     user.pendingCoachRequests = [];
     _storeUser(user);
 }
 
 function _acceptCoachRequest() {
-    var serializedUser = localStorage.getItem('user');
+    let serializedUser = localStorage.getItem('user');
     if (!serializedUser) {
         return;
     }
 
-    var user = JSON.parse(serializedUser);
+    let user = JSON.parse(serializedUser);
     user.pendingCoachRequests = [];
     user.hasCoach = true;
     _storeUser(user);
@@ -207,7 +207,7 @@ function _acceptCoachRequest() {
  */
 function _call() {
 
-    var defer = $.Deferred();
+    let defer = $.Deferred();
 
     if (!Utils.isNetworkConnected()) {
         setTimeout(function () {
@@ -245,7 +245,7 @@ function _call() {
 
 function _callWithoutTimeout() {
 
-    var defer = $.Deferred();
+    let defer = $.Deferred();
 
     if (!Utils.isNetworkConnected()) {
         setTimeout(function () {
@@ -270,11 +270,11 @@ function _callWithoutTimeout() {
 /**
  * Authentication methods.
  */
-var Auth = {
+let Auth = {
 
     login: function () {
 
-        var defer = $.Deferred();
+        let defer = $.Deferred();
 
         serverAvailable().done(function serverIsAvailable() {
 
@@ -291,7 +291,7 @@ var Auth = {
     loginWithFacebook: _loginWithFacebook,
 
     loginWithPassword: function (email, password) {
-        var defer = $.Deferred();
+        let defer = $.Deferred();
 
         if (!Utils.isNetworkConnected()) {
             defer.reject();
@@ -300,7 +300,7 @@ var Auth = {
 
         asteroid.loginWithPassword({email: email, password: password}).then(function (id) {
 
-            var user;
+            let user;
             if (lastUserAddedMsg && id === lastUserAddedMsg.id) {
                 user = {
                     "_id": id,
@@ -338,7 +338,7 @@ var Auth = {
 
     logout: function () {
 
-        var defer = $.Deferred();
+        let defer = $.Deferred();
 
         asteroid.logout().then(function () {
 
@@ -395,10 +395,10 @@ function _setLoginMethod(method) {
 function isLiveUpdate() {
     return asteroid.user.profile.liveUpdateEvery > 0 && Utils.isNetworkConnected();
 }
-var User = {
+let User = {
 
     accessed: function() {
-        var nbr = parseInt(localStorage.getItem('accesses'));
+        let nbr = parseInt(localStorage.getItem('accesses'));
         if (isNaN(nbr)) {
             nbr = 1;
         } else {
@@ -409,7 +409,7 @@ var User = {
     },
 
     accesses: function() {
-        var nbr = parseInt(localStorage.getItem('accesses'));
+        let nbr = parseInt(localStorage.getItem('accesses'));
         if (isNaN(nbr)) {
             localStorage.setItem('accesses', "1");
             return 1;
@@ -502,11 +502,11 @@ var User = {
     }
 };
 
-var liveListeners, commandListenerID, lastPingAt = null, internalLiveListeners = {};
+let liveListeners, commandListenerID, lastPingAt = null, internalLiveListeners = {};
 
-var resetListeners = function () {
-    var syncClockListeners = (liveListeners || {}).syncClock ;
-    var clockSyncedListeners = (liveListeners || {}).clockSynced ;
+let resetListeners = function () {
+    let syncClockListeners = (liveListeners || {}).syncClock ;
+    let clockSyncedListeners = (liveListeners || {}).clockSynced ;
     liveListeners = {
         ping: [],
         start: [],
@@ -530,7 +530,7 @@ var resetListeners = function () {
 
 };
 
-var LiveEvents = {
+let LiveEvents = {
     PING: "ping",
     START: "start",
     PAUSE: "pause",
@@ -547,7 +547,7 @@ var LiveEvents = {
 
 resetListeners();
 
-var lastClockSyncedAt = 0
+let lastClockSyncedAt = 0
     , syncClockCommandId = null, syncClockPayload = {}
     , liveSessionDefer = null, liveSessionCreated = null
     ;
@@ -563,7 +563,7 @@ function isClockSynced() {
 /**
  * Training Session methods.
  */
-var TrainingSessions = {
+let TrainingSessions = {
 
     save: function (trainingSession) {
 
@@ -608,7 +608,7 @@ var TrainingSessions = {
                 return reject();
             console.log(['[ ', asteroid.user.profile.name, ' ]', ' Called deviceStarted @', new Date().toISOString()].join(''));
 
-            var defer = $.Deferred();
+            let defer = $.Deferred();
             _call('deviceStarted', startedAt, expression).then(function (id) {
                 liveSessionDefer.resolve();
                 defer.resolve(id);
@@ -643,7 +643,7 @@ var TrainingSessions = {
 
             console.log(['[ ', asteroid.user.profile.name, ' ]', ' calling sync clock ', id, ' @', new Date().toISOString()].join(''));
 
-            var defer = $.Deferred();
+            let defer = $.Deferred();
 
             if (isClockSynced()) {
                 console.log(['[ ', asteroid.user.profile.name, ' ]', ' last clock update is still recent ', id, ' @', new Date().toISOString()].join(''));
@@ -732,7 +732,7 @@ var TrainingSessions = {
                 return;
 
             if (commandListenerID) return;
-            var sub = asteroid.subscribe('coachRemoteCommands');
+            let sub = asteroid.subscribe('coachRemoteCommands');
             commandListenerID = sub.id;
         },
 
@@ -776,7 +776,7 @@ var TrainingSessions = {
 /**
  * Debug Session methods.
  */
-var DebugSessions = {
+let DebugSessions = {
 
     save: function (debugSession) {
 
@@ -784,7 +784,7 @@ var DebugSessions = {
     }
 };
 
-var Server = {
+let Server = {
 
     connect: function () {
         console.debug('connect to server');
@@ -829,7 +829,7 @@ var Server = {
         });
 
         // listener for commands
-        var commands = [];
+        let commands = [];
         asteroid.ddp.on("added", function (msg) {
             if (msg.collection !== 'liveCommands')
                 return;
@@ -841,13 +841,13 @@ var Server = {
                 console.error('msg cannot be null in callCommandListeners');
                 return;
             }
-            var record = msg.fields;
-            var listeners = liveListeners[record.command] || [];
+            let record = msg.fields;
+            let listeners = liveListeners[record.command] || [];
 
             if (internalLiveListeners[record.command]) internalLiveListeners[record.command]
                 .apply({}, [msg.id, record.payload]);
 
-            for (var lst = 0, lstLen = listeners.length; lst < lstLen; lst++) {
+            for (let lst = 0, lstLen = listeners.length; lst < lstLen; lst++) {
                 listeners[lst].apply({}, [msg.id, record.payload]);
             }
         }
@@ -867,8 +867,8 @@ var Server = {
             console.log(['[ ', asteroid.user.profile.name, ' ]', ' done with clear ping'].join(''));
 
             // handle push expressions
-            var pushExpressions = clearCommandsOfType(commands, LiveEvents.PUSH_EXPRESSION);
-            for (var p = 0; p < pushExpressions.length; p++) {
+            let pushExpressions = clearCommandsOfType(commands, LiveEvents.PUSH_EXPRESSION);
+            for (let p = 0; p < pushExpressions.length; p++) {
                 callCommandListeners(pushExpressions[p]);
             }
             console.log(['[ ', asteroid.user.profile.name, ' ]', ' clear PUSH_EXPRESSION'].join(''));
@@ -878,7 +878,7 @@ var Server = {
             // check if there is a finish expression... if there is, clear any commands between start and finish
             commands = clearCommandsBeforeFinish(commands);
 
-            for (var i = 0; i < commands.length; i++) {
+            for (let i = 0; i < commands.length; i++) {
                 callCommandListeners(commands[i]);
             }
             commands = [];
@@ -891,8 +891,8 @@ var Server = {
                 return;
             }
 
-            var requesterId = msg.fields.requesterId;
-            var requestId = msg.id;
+            let requesterId = msg.fields.requesterId;
+            let requestId = msg.id;
 
             _call('getUserName', requesterId).then(function (name) {
                 onCoachRequest({requestID: requestId, coach: name});
@@ -903,7 +903,7 @@ var Server = {
 };
 
 function clearCommandsOfType(messages, type) {
-    var discarded = [], message, position = 0, total = messages.length, counter = 0;
+    let discarded = [], message, position = 0, total = messages.length, counter = 0;
     while (counter < total) {
         counter++;
 
@@ -919,8 +919,8 @@ function clearCommandsOfType(messages, type) {
 }
 
 function clearCommandsBeforeFinish(messages) {
-    for (var i = messages.length - 1; i >= 0; i--) {
-        var message = messages[i].fields;
+    for (let i = messages.length - 1; i >= 0; i--) {
+        let message = messages[i].fields;
         if (message.command === LiveEvents.FINISH) {
             console.log(['[ ', asteroid.user.profile.name, ' ]', ' clear all commands of already finished session!'].join(''));
             messages = messages.splice(i + 1);
@@ -938,21 +938,19 @@ function acknowledge(messages) {
         return;
     }
 
-    for (var i = 0; i < messages.length; i++) {
+    for (let i = 0; i < messages.length; i++) {
         TrainingSessions.live.commandSynced(messages[i].id);
     }
 }
 
 function reject() {
-    var defer = $.Deferred();
+    let defer = $.Deferred();
     defer.reject();
     return defer.promise();
 }
 
+const Api = {
+    Auth, User, LiveEvents, TrainingSessions, DebugSessions, Server
+};
 
-exports.Auth = Auth;
-exports.User = User;
-exports.LiveEvents = LiveEvents;
-exports.TrainingSessions = TrainingSessions;
-exports.DebugSessions = DebugSessions;
-exports.Server = Server;
+export default Api;

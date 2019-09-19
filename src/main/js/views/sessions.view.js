@@ -1,10 +1,11 @@
 'use strict';
+
 import Context from '../context';
 import Sync from '../server/sync';
 import Session from '../model/session';
+import Api from '../server/api';
 
 var Utils = require('../utils/utils.js');
-var Api = require('../server/api');
 var template = require('./sessions.art.html');
 var List = require('../utils/widgets/list').List;
 

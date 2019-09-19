@@ -23,6 +23,7 @@ import CoachSlaveView from './views/coach.slave.view';
 import Context from './context';
 import global from './global';
 import Sync from './server/sync';
+import Api from './server/api';
 
 
 var LANGUAGE = localStorage.getItem('language') || 'en';
@@ -75,7 +76,6 @@ App.load = function (target) {
     originalAppLoad.apply(this, args);
 };
 
-const Api = require('./server/api');
 const utils = require('./utils/utils.js');
 const db = require('./db.js');
 const analytics = require('./utils/analytics.js');

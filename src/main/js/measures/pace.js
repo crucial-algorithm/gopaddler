@@ -1,5 +1,6 @@
 'use strict';
-const utils = require('../utils/utils');
+
+import Utils from '../utils/utils';
 
 class Pace {
     constructor(convertToImperial) {
@@ -8,7 +9,7 @@ class Pace {
     }
 
     calculate(speed) {
-        let value = utils.speedToPace(speed);
+        let value = Utils.speedToPace(speed, this.convertToImperial);
         if (value === null) {
             return 0;
         }

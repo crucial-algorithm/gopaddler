@@ -24,6 +24,8 @@ import Context from './context';
 import global from './global';
 import Sync from './server/sync';
 import Api from './server/api';
+import Utils from './utils/utils';
+import Analytics from './utils/analytics.js';
 
 
 var LANGUAGE = localStorage.getItem('language') || 'en';
@@ -76,9 +78,7 @@ App.load = function (target) {
     originalAppLoad.apply(this, args);
 };
 
-const utils = require('./utils/utils.js');
 const db = require('./db.js');
-const analytics = require('./utils/analytics.js');
 const Settings = require('./model/settings');
 
 let settings = undefined;
@@ -94,7 +94,7 @@ function enrichPageArg(page, pageName) {
     var destroyed = false;
 
     $page.on('appShow', function() {
-        analytics.setView(pageName);
+        Analytics.setView(pageName);
     });
 
     $page.off('appReady').on('appReady', function() {
@@ -167,7 +167,7 @@ App.controller('login-with-password', function (page) {
 });
 
 App.controller('home', function (page, request) {
-    analytics.setUser(Api.User.get());
+    Analytics.setUser(Api.User.get());
     enrichPageArg(page, 'home');
     loadContext.then(function (context) {
         if (environment === 'prod')
@@ -318,7 +318,7 @@ App.controller('coach-slave', function (page, request) {
 function onDeviceReady() {
     document.pd_device_ready = true;
 
-    utils.mapBrowserToNative();
+    Utils.mapBrowserToNative();
 
     loadDb().then(function () {
         loadUi();
@@ -349,7 +349,7 @@ function loadDb() {
 
 function loadUi() {
 
-    analytics.init();
+    Analytics.init();
 
     // hack - for some reason, when not connected, screen orientation may not be properly set
     checkOrientationHack();
@@ -376,7 +376,7 @@ function loadUi() {
 
 
 function checkOrientationHack() {
-    if (!utils.isNetworkConnected()) {
+    if (!Utils.isNetworkConnected()) {
 
         var reloaded = JSON.parse(localStorage.getItem('forced-reload'));
         if ( !reloaded || (new Date().getTime() - reloaded) > 5000) {

@@ -1,5 +1,4 @@
 'use strict';
-const utils = require('../utils/utils');
 
 class StrokeEfficiency {
     constructor() {

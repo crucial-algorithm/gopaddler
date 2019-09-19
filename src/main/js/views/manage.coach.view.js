@@ -2,10 +2,9 @@
 
 import Context from '../context';
 import Api from '../server/api';
-
-var template = require('./manage.coach.art.html')
-    , rowTemplate = require('./manage.coach.row.art.html')
-    , List = require('../utils/widgets/list').List;
+import List from '../utils/widgets/list';
+import template from './manage.coach.art.html';
+import rowTemplate from './manage.coach.row.art.html';
 
 
 class ManageCoachView {

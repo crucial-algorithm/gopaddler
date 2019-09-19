@@ -3,10 +3,9 @@
 import Context from '../context';
 import ScheduledSession from '../model/scheduled-session';
 import Api from '../server/api';
-
-var Utils = require('../utils/utils');
-var template = require('./select.session.art.html');
-var List = require('../utils/widgets/list').List;
+import Utils from '../utils/utils';
+import List from '../utils/widgets/list';
+import template from './select.session.art.html';
 
 
 var mockupSessions = [

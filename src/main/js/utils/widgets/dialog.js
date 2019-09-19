@@ -1,8 +1,7 @@
 'use strict';
 
+import Utils from '../utils';
 import template from './dialog.art.html';
-
-let Utils = require('../utils');
 
 let $modal = undefined;
 let modal = undefined;

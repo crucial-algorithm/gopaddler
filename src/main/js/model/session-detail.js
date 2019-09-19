@@ -1,9 +1,9 @@
 'use strict';
 
 import Api from '../server/api';
+import Utils from '../utils/utils';
 
 const db = require('../db');
-const Utils = require('../utils/utils');
 
 
 class SessionDetail {
@@ -82,7 +82,7 @@ class SessionDetail {
         this.heartRate = heartRate;
     }
 
-    getLatitudefunction () {
+    getLatitude () {
         return this.latitude;
     }
 

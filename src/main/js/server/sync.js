@@ -4,9 +4,7 @@ import ScheduledSession from '../model/scheduled-session';
 import Session from '../model/session';
 import IO from '../utils/io.js';
 import Api from '../server/api';
-
-
-const Utils = require('../utils/utils.js');
+import Utils from '../utils/utils';
 
 let processing = {}, debugProcessing = {};
 

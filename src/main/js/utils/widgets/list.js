@@ -1,11 +1,12 @@
-var utils = require("../utils");
-var GPPullToRefresh = require('../widgets/pull-to-refresh').GPPullToRefresh;
+'use strict';
+import Utils from '../utils';
+import GPPullToRefresh from '../widgets/pull-to-refresh';
 
 
 
 function List(page, options, context) {
-    var self = this;
-    self.id = "s" + utils.guid().split('-')[4];
+    let self = this;
+    self.id = "s" + Utils.guid().split('-')[4];
     this.$elem = options.$elem;
     options.ptr = options.ptr || {};
     this.$elem.css("overflow", "scroll");
@@ -39,7 +40,7 @@ function List(page, options, context) {
 }
 
 List.prototype.rows = function($rows) {
-    var self = this;
+    let self = this;
     self.$ul.empty();
     self.$ul.append($rows);
 
@@ -49,13 +50,13 @@ List.prototype.rows = function($rows) {
 };
 
 List.prototype._startPullToRefresh = function () {
-    var self = this;
+    let self = this;
     this.pullToRefreshInstance = new GPPullToRefresh({
         selector: "#" + self.id,
         ptr: self.options.ptr,
         isBlock: function () {
             if (self.options.ptr.disabled === true) return true;
-            var $li = self.$ul.children().first();
+            let $li = self.$ul.children().first();
             if (!$li) {
                 return true;
             }
@@ -65,7 +66,7 @@ List.prototype._startPullToRefresh = function () {
 };
 
 List.prototype.refresh = function () {
-    var self = this;
+    let self = this;
     this.iScroll = new IScroll(this.$scrollWrapper[0], {
         scrollbars: false
     });
@@ -147,14 +148,14 @@ List.prototype.delete = function ($button, id, callback) {
 };
 
 List.prototype._animateAction = function ($button, id, callback) {
-    var self = this;
+    let self = this;
     self.lock[id] = true;
 
     // add progress in order to wait for delete
-    var $parent = $button.closest('li');
-    var $li = $parent.next();
-    var $progress = $li.find('div');
-    var actionId = utils.guid();
+    let $parent = $button.closest('li');
+    let $li = $parent.next();
+    let $progress = $li.find('div');
+    let actionId = Utils.guid();
 
     self.progress[id] = {$dom: $progress, $li: $li, start: new Date().getTime(), id: actionId, text: $button.text()};
 
@@ -172,15 +173,15 @@ List.prototype._animateAction = function ($button, id, callback) {
     }, {
         duration: 5000,
         step: function () {
-            var _percent = Math.round(this.property);
+            let _percent = Math.round(this.property);
             $progress.css("width", _percent + "%");
         },
         complete: function () {
             if (self.lock[id] !== true || self.progress[id].id !== actionId) return;
             $li.hide();
             $parent.removeClass('cancel');
-            var result = callback.apply(self, [/* row = */ $parent, /* progress = */ $li, /*spacer = */ $li.next()]);
-            var defer = $.Deferred();
+            let result = callback.apply(self, [/* row = */ $parent, /* progress = */ $li, /*spacer = */ $li.next()]);
+            let defer = $.Deferred();
             defer.then(function (success) {
                 if (success !== true) return;
 
@@ -209,7 +210,7 @@ List.prototype._animateAction = function ($button, id, callback) {
 };
 
 List.prototype._cancelAction = function($button, id) {
-    var self = this, progress = self.progress[id];
+    let self = this, progress = self.progress[id];
     $button.removeClass('cancel');
     $button.closest('li').removeClass('cancel');
     $button.text(progress.text);
@@ -230,4 +231,5 @@ function destroySwiped(swipedGroup) {
     }
 }
 
-exports.List = List;
+
+export default List;

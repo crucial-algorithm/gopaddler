@@ -1,6 +1,6 @@
 'use strict';
 
-var utils = require('./utils/utils');
+import Utils from './utils/utils';
 
 // override functions when in testing (deviceready not triggered)
 // --------------------------------------------------------------
@@ -177,7 +177,7 @@ function emulateCordova () {
         },
         subscribe: function (callback) {
             setTimeout(function () {
-                callback.apply({}, [{value: utils.getRandomInt(100, 200)}])
+                callback.apply({}, [{value: Utils.getRandomInt(100, 200)}])
             }, 0);
         },
         unsubscribe: function (callback) {
@@ -261,7 +261,7 @@ function generateHistorySessions() {
             continue;
         }
 
-        session = new MockSessionGenerator(randomSessions[utils.getRandomInt(0, randomSessions.length - 1)], sessionStart);
+        session = new MockSessionGenerator(randomSessions[Utils.getRandomInt(0, randomSessions.length - 1)], sessionStart);
         sessions.push(session.generate());
         sessionStart -= 86400000;
         i++;
@@ -280,7 +280,7 @@ class MockSessionGenerator {
 
         this.data = [];
         this.position = 0;
-        this.id =  utils.guid();
+        this.id =  Utils.guid();
         this.startedAt = startedAt;
         this.distance = 0;
         this.output = null;
@@ -396,7 +396,7 @@ class MockSessionGenerator {
         });
 
         var dt = this.data[this.data.length - 1].distance;
-        var ef = utils.minMaxAvgStddev(work.map(function(rec){return rec.efficiency})).avg;
+        var ef = Utils.minMaxAvgStddev(work.map(function(rec){return rec.efficiency})).avg;
 
 
         this.output = {
@@ -407,9 +407,9 @@ class MockSessionGenerator {
             session_end: new Date(this.data[this.data.length - 1].timestamp),
             anglez: 1, noisex: 1, noisez: 1, factorx: 1, factorz: 1, axis: 1,
             distance: dt,
-            avg_spm: utils.minMaxAvgStddev(work.map(function(rec){return rec.spm})).avg,
+            avg_spm: Utils.minMaxAvgStddev(work.map(function(rec){return rec.spm})).avg,
             top_spm: 65 + Math.round(Math.random() * 3),
-            avg_speed: utils.calculateAverageSpeed(dt, this.data[this.data.length - 1].timestamp - this.startedAt),
+            avg_speed: Utils.calculateAverageSpeed(dt, this.data[this.data.length - 1].timestamp - this.startedAt),
             top_speed: 13 + Math.random(),
             avg_efficiency: ef,
             top_efficiency: ef + Math.random(),

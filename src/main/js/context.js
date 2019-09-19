@@ -2,10 +2,7 @@
 
 import Dialog from './utils/widgets/dialog';
 import Api from './server/api';
-
-var utils = require('./utils/utils');
-
-
+import Utils from './utils/utils';
 
 const units = {
     metric: {
@@ -147,7 +144,7 @@ class Context {
         if (isNaN(value)) return 0;
 
         if (this.round(type))
-            return utils.round(value, this.getUnitDecimalPlaces(type));
+            return Utils.round(value, this.getUnitDecimalPlaces(type));
         return value;
     }
 

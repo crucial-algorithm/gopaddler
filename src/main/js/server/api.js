@@ -1,4 +1,7 @@
-let Utils = require('../utils/utils.js');
+'use strict';
+
+import Utils from '../utils/utils';
+
 let createClass = require('asteroid').createClass;
 let facebook = require('../asteroid/facebook');
 let Asteroid = createClass([facebook]);

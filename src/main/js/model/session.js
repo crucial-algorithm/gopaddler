@@ -1,9 +1,9 @@
 'use strict';
 
 import SessionDetail from './session-detail';
+import Utils from '../utils/utils';
 
 var db = require('../db.js');
-var utils = require('../utils/utils.js');
 var VERSION_WITH_RECOVERY_IN_DATA = 2;
 
 
@@ -94,10 +94,10 @@ class Session {
 
                 dataPoints.push({
                     timestamp: row.getTimestamp(),
-                    distance: utils.round(row.getDistance(), 4),
-                    speed: utils.round2(row.getSpeed()),
+                    distance: Utils.round(row.getDistance(), 4),
+                    speed: Utils.round2(row.getSpeed()),
                     spm: row.getSpm(),
-                    spmEfficiency: utils.round2(row.getEfficiency()),
+                    spmEfficiency: Utils.round2(row.getEfficiency()),
                     latitude: row.getLatitude(),
                     longitude: row.getLongitude(),
                     heartRate: row.getHeartRate(),

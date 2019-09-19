@@ -2,8 +2,7 @@
 
 import MotionSensor from '../device/motion';
 import Calibration from '../model/calibration';
-
-const utils = require('../utils/utils');
+import Utils from '../utils/utils';
 
 class Calibrate {
 
@@ -84,13 +83,13 @@ class Calibrate {
             angleZ = Math.asin(1);
         }
 
-        if (angleZ < utils.toRadians(45)) {
+        if (angleZ < Utils.toRadians(45)) {
             predominantAxis = 2;
         } else {
             predominantAxis = 0;
         }
 
-        var factorX = utils.toRadians(90) - angleZ;
+        var factorX = Utils.toRadians(90) - angleZ;
         factorX = factorX ? factorX : 1;
 
         var factorZ = Math.cos(angleZ);
@@ -113,13 +112,13 @@ class Calibrate {
             angleZ = Math.asin(1);
         }
 
-        if (angleZ < utils.toRadians(45)) {
+        if (angleZ < Utils.toRadians(45)) {
             predominantAxis = 2;
         } else {
             predominantAxis = 1;
         }
 
-        var factorY = utils.toRadians(90) - angleZ;
+        var factorY = Utils.toRadians(90) - angleZ;
         factorY = factorY ? factorY : 1;
 
         var factorZ = Math.cos(angleZ);

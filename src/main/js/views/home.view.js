@@ -6,15 +6,15 @@ import Session from '../model/session';
 import Api from '../server/api';
 import landscape from './home.art.html';
 import portrait from './home.portrait.art.html';
+import Utils from '../utils/utils';
 
-const Chart = require('chart.js');
-const Utils = require('../utils/utils');
 const Settings = require('../model/settings');
 const GpChart = require('../utils/widgets/chart').GpChart;
 require('chartjs-plugin-datalabels');
 
 
 class HomeView {
+
     constructor(page, context, request) {
         request = request || {};
 

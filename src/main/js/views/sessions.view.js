@@ -4,19 +4,16 @@ import Context from '../context';
 import Sync from '../server/sync';
 import Session from '../model/session';
 import Api from '../server/api';
+import Utils from '../utils/utils';
+import template from './sessions.art.html';
+import List from '../utils/widgets/list';
 
-var Utils = require('../utils/utils.js');
-var template = require('./sessions.art.html');
-var List = require('../utils/widgets/list').List;
-
-var LAST_30_DAYS_PERIOD_FILTER = 'last-30-days',
+let LAST_30_DAYS_PERIOD_FILTER = 'last-30-days',
     LAST_MONTH_PERIOD_FILTER = 'last-month',
     START_FROM_PERIOD_FILTER = 'start-from',
     CUSTOM_PERIOD_FILTER = 'custom',
 
     sessionsDict = {},
-
-    utils = require('../utils/utils.js'),
 
     appContext,
     $page,
@@ -66,11 +63,11 @@ function addSessionsToSessionList(sessions, context) {
             $main = $('<div class="session-row-data-wrapper"></div>'),
             sessionAt = moment(new Date(session.sessionStart)),
             duration = moment.duration(session.sessionEnd - session.sessionStart),
-            dDisplay = utils.lpad(duration.hours(), 2) + ':' + utils.lpad(duration.minutes(), 2),
+            dDisplay = Utils.lpad(duration.hours(), 2) + ':' + Utils.lpad(duration.minutes(), 2),
             distance = session.distance;
 
         if (appContext.preferences().isImperial()) {
-            distance = utils.kmToMiles(distance);
+            distance = Utils.kmToMiles(distance);
         }
 
         sessionsDict[session.id] = session;
@@ -113,7 +110,7 @@ function addSessionsToSessionList(sessions, context) {
                 .replace('{intervaled}'
                     , Api.User.hasCoach() && session.expression === null ? context.translate('sessions_free') : '&nbsp;')
                 .replace('{duration}', dDisplay)
-                .replace('{distance}', utils.round2(distance || 0) + ' ' + appContext.getUnit('distance_in_session_list'))
+                .replace('{distance}', Utils.round2(distance || 0) + ' ' + appContext.getUnit('distance_in_session_list'))
                 .replace('{synced}', session.synced ? context.translate('sessions_synced') : context.translate('sessions_not_synced'))
         ).appendTo($main);
 
@@ -148,10 +145,10 @@ function updateGlobalStats(sessions, context) {
         totalLength += (duration * session.avgEfficiency);
     });
 
-    $summaryDistance.text(utils.round2(totalDistance));
-    $summarySpeed.text(utils.round2(totalDistance / (totalDuration / 3600000)));
+    $summaryDistance.text(Utils.round2(totalDistance));
+    $summarySpeed.text(Utils.round2(totalDistance / (totalDuration / 3600000)));
     $summarySPM.text(totalDuration ? Math.round(totalSPM / totalDuration) : 0);
-    $summaryLength.text(utils.round2(totalLength / totalDuration));
+    $summaryLength.text(Utils.round2(totalLength / totalDuration));
 }
 
 /**

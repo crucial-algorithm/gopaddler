@@ -2,9 +2,8 @@
 
 import Context from '../context';
 import Api from '../server/api';
-
-var template = require('./choose.sports.art.html');
-var Utils = require('../utils/utils');
+import Utils from '../utils/utils';
+import template from './choose.sports.art.html';
 
 
 

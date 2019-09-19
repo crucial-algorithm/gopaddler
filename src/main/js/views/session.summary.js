@@ -3,13 +3,12 @@
 import Context from '../context';
 import Sync from '../server/sync';
 import Api from '../server/api';
+import Utils from '../utils/utils';
+import template from './session.summary.art.html';
+import intervalsTemplate from './session.summary.intervals.art.html';
+import zonesTemplate from './session.summary.zones.art.html';
 
-var utils = require('../utils/utils.js')
-    , template = require('./session.summary.art.html')
-    , intervalsTemplate = require('./session.summary.intervals.art.html')
-    , zonesTemplate = require('./session.summary.zones.art.html')
-    , GpChart = require('../utils/widgets/chart').GpChart
-;
+const GpChart = require('../utils/widgets/chart').GpChart;
 
 
 class SessionSummaryView {
@@ -56,8 +55,8 @@ class SessionSummaryView {
         $page.find('#summary-details-session').html(moment(session.sessionStart).format('MMMM Do YYYY, HH:mm') + 'h');
 
         let duration = moment.duration(session.sessionEnd - session.sessionStart);
-        let durationFormatted = utils.lpad(duration.hours(), 2)
-            + ':' + utils.lpad(duration.minutes(), 2) + ":" + utils.lpad(duration.seconds(), 2);
+        let durationFormatted = Utils.lpad(duration.hours(), 2)
+            + ':' + Utils.lpad(duration.minutes(), 2) + ":" + Utils.lpad(duration.seconds(), 2);
 
         var distance = context.displayMetric('distance', session.distance);
         var avgSpeed = context.displayMetric('speed', session.avgSpeed);
@@ -139,7 +138,7 @@ class SessionSummaryView {
             return function (value, context) {
                 if (context.dataIndex === 0) return '';
                 if (context.dataIndex === data.length -1 ) return '';
-                if (context.dataIndex % 3 === 0) return utils.round(value, places);
+                if (context.dataIndex % 3 === 0) return Utils.round(value, places);
                 return '';
             }
         };
@@ -186,20 +185,20 @@ class SessionSummaryIntervals {
 
 
             var distance = Math.round((interval.distanceEnd - interval.distanceStart) * 1000);
-            var speed = utils.calculateAverageSpeed(interval.distanceEnd - interval.distanceStart
+            var speed = Utils.calculateAverageSpeed(interval.distanceEnd - interval.distanceStart
                 , interval.finishedAt - interval.startedAt);
             var spm = Math.round(interval.spmTotal / interval.count);
-            var length = utils.calculateStrokeLength(interval.spmTotal / interval.count, speed);
+            var length = Utils.calculateStrokeLength(interval.spmTotal / interval.count, speed);
 
             intervals.push({
                 index: i,
                 first: intervals.length === 0,
                 position: position,
-                duration: utils.duration(interval.finishedAt - interval.startedAt),
+                duration: Utils.duration(interval.finishedAt - interval.startedAt),
                 distance: distance,
-                speed: utils.round2(speed),
+                speed: Utils.round2(speed),
                 spm: spm,
-                length: utils.round2(length),
+                length: Utils.round2(length),
                 hr: Math.round(interval.hrTotal / interval.count)
             });
             position++;
@@ -239,7 +238,7 @@ class SessionSummaryIntervals {
             return function (value, context) {
                 if (context.dataIndex === 0) return '';
                 if (context.dataIndex === data.length -1 ) return '';
-                if (context.dataIndex % 5 === 0) return utils.round(value, places);
+                if (context.dataIndex % 5 === 0) return Utils.round(value, places);
                 return '';
             }
         };
@@ -300,8 +299,8 @@ class SessionSummaryZones {
         }
 
         this.speedZones = [];
-        var percentage, max = utils.minMaxAvgStddev(speedZones).max / records.length * 100;
-        var lower = session.avgSpeed - utils.minMaxAvgStddev(records.map(function (rec) {return rec.speed})).stddev;
+        var percentage, max = Utils.minMaxAvgStddev(speedZones).max / records.length * 100;
+        var lower = session.avgSpeed - Utils.minMaxAvgStddev(records.map(function (rec) {return rec.speed})).stddev;
         var discarding = false;
         for (var sz = 0; sz < speedZones.length; sz++) {
             if (speedZones[sz] === undefined) continue;
@@ -313,8 +312,8 @@ class SessionSummaryZones {
         }
 
         this.spmZones = [];
-        max = utils.minMaxAvgStddev(spmZones).max / records.length * 100;
-        lower = session.avgSpm - utils.minMaxAvgStddev(records.map(function (rec) {return rec.spm})).stddev;
+        max = Utils.minMaxAvgStddev(spmZones).max / records.length * 100;
+        lower = session.avgSpm - Utils.minMaxAvgStddev(records.map(function (rec) {return rec.spm})).stddev;
         discarding = false;
         for (var spm = 0; spm < spmZones.length; spm++) {
             if (spmZones[spm] === undefined) continue;
@@ -327,24 +326,24 @@ class SessionSummaryZones {
 
 
         this.spmToSpeedZones = [];
-        lower = session.avgSpm - utils.minMaxAvgStddev(records.map(function (rec) {return rec.spm})).stddev;
+        lower = session.avgSpm - Utils.minMaxAvgStddev(records.map(function (rec) {return rec.spm})).stddev;
         for (var ss = 0; ss < spmToSpeedZones.length; ss++) {
             if (spmToSpeedZones[ss] === undefined || spmToSpeedZones[ss].length === 0) continue;
             percentage = Math.round(spmToSpeedZones[ss].length / records.length * 100);
             if (percentage === 0) continue;
             if (ss * SPM_ZONE_STEP < lower && percentage < HIDE_PERCENTAGE_THRESHOLD) continue;
-            var stats = utils.minMaxAvgStddev(spmToSpeedZones[ss]);
+            var stats = Utils.minMaxAvgStddev(spmToSpeedZones[ss]);
             this.spmToSpeedZones.push({
                 zone: ss * SPM_ZONE_STEP,
-                avg: utils.round2(stats.avg),
-                min: utils.round2(Math.max(0, stats.avg - stats.stddev)),
-                max: utils.round2(stats.avg + stats.stddev)
+                avg: Utils.round2(stats.avg),
+                min: Utils.round2(Math.max(0, stats.avg - stats.stddev)),
+                max: Utils.round2(stats.avg + stats.stddev)
             });
             discarding = false;
         }
 
         this.heartRateZones = [];
-        max = utils.minMaxAvgStddev(heartRateZones).max / records.length * 100;
+        max = Utils.minMaxAvgStddev(heartRateZones).max / records.length * 100;
         for (var hr = 0; hr < heartRateZones.length; hr++) {
             if (heartRateZones[hr] === undefined) continue;
             percentage = Math.round(heartRateZones[hr] / records.length * 100);

@@ -1,25 +1,26 @@
-var Utils = require('./utils');
+import Utils from './utils';
 
-var init = function () {
-//    window.analytics.startTrackerWithId('UA-73212702-1');
-};
-var userName = "John Doe";
 
-var view = function (viewName) {
-//    window.analytics.trackView(name);
-    Utils.usage(userName, 'navigated to ' + viewName);
-};
+let userName = "John Doe";
+class Analytics {
 
-var user = function (user) {
-//    window.analytics.setUserId(id);
-    try {
-        userName = user.profile.name;
-    } catch(err) {
-
+    static init() {
+        //    window.analytics.startTrackerWithId('UA-73212702-1');
     }
-};
 
+    static setView(viewName) {
+        //    window.analytics.trackView(name);
+        Utils.usage(userName, 'navigated to ' + viewName);
+    }
 
-exports.init = init;
-exports.setView = view;
-exports.setUser = user;
+    static setUser(user) {
+//    window.analytics.setUserId(id);
+        try {
+            userName = user.profile.name;
+        } catch(err) {
+
+        }
+    }
+}
+
+export default Analytics;

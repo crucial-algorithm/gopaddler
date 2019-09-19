@@ -2,8 +2,7 @@
 
 import Device from '../model/device';
 import Bluetooth from './bluetooth';
-
-const utils = require('../utils/utils');
+import Utils from '../utils/utils';
 
 class HeartRateSensor {
     constructor() {
@@ -40,7 +39,7 @@ class HeartRateSensor {
             .initialize()
             .then(function () {
 
-                utils.loopAsync(self.devices, function (iterator) {
+                Utils.loopAsync(self.devices, function (iterator) {
                     /**@type Device */
                     const device = iterator.current();
                     let updated = false;

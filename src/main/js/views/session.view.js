@@ -21,8 +21,8 @@ import StrokeDetector from '../core/stroke-detector';
 import Sound from '../utils/sound';
 import Api from '../server/api';
 import SessionDetail from '../model/session-detail';
+import Utils from '../utils/utils';
 
-const utils = require('../utils/utils');
 const Splits = require('splits-handler').Splits;
 
 
@@ -65,6 +65,8 @@ class SessionView {
         self.isDebugEnabled = !!Api.User.getProfile().debug;
         self.sessionFinished = false;
 
+        const isImperial =  context.preferences().isImperial();
+
         let $page = $(page);
         let calibration = Calibration.load(context.isPortraitMode()) || Calibration.blank();
         let /**@type Session */ session = self.createSession(calibration);
@@ -75,7 +77,7 @@ class SessionView {
         /**@type Distance */
         const distance = new Distance(context);
         const speed = new Speed(context);
-        let pace = new Pace(context.preferences().isImperial());
+        let pace = new Pace(isImperial);
         let splits;
         let strokeDetector;
         let timer = new Timer(options.startedAt);
@@ -180,7 +182,7 @@ class SessionView {
 
         // prepare iterator for live update
         var frequency = Api.User.getProfile().liveUpdateEvery;
-        var iterator = new utils.EndlessIterator(1, frequency);
+        var iterator = new Utils.EndlessIterator(1, frequency);
 
         // heart rate monitor
         var heartRate = 0;
@@ -275,7 +277,7 @@ class SessionView {
             splits.reCalculate();
 
             if (context.isDev()) {
-                heartRate = utils.getRandomInt(178, 182);
+                heartRate = Utils.getRandomInt(178, 182);
             }
 
             top.setValue("timer", value);
@@ -313,7 +315,7 @@ class SessionView {
                     spm: spm.value,
                     timestamp: timestamp,
                     distance: location.distance,
-                    speed: utils.round2(location.speed),
+                    speed: Utils.round2(location.speed),
                     efficiency: location.efficiency,
                     duration: timer.getDuration(),
                     hr: heartRate,
@@ -419,7 +421,7 @@ class SessionView {
             if (paused) return;
 
             if (context.isDev()) {
-                value = utils.getRandomInt(80, 84);
+                value = Utils.getRandomInt(80, 84);
                 interval = 60 / value * 1000;
             }
 
@@ -463,7 +465,7 @@ class SessionView {
                 values.strokes = Math.round(100 / (latest.efficiency / latest.counter));
                 values.heartRate = latest.heartRate / latest.counter;
                 values.speed = (latest.distance / latest.duration) * 3600;
-                values.pace = (pace = utils.speedToPace(values.speed)) === null ? 0 : pace;
+                values.pace = (pace = Utils.speedToPace(values.speed, isImperial)) === null ? 0 : pace;
 
                 // set summary after interval finished in splits field
                 if (lastFinishedSplit && lastFinishedSplit.isDistanceBased === true)

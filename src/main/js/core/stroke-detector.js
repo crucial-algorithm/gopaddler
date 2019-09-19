@@ -1,6 +1,6 @@
 'use strict';
 
-const utils = require('../utils/utils');
+import Utils from '../utils/utils';
 
 let SPM_STROKE_COUNT = 8;
 
@@ -151,7 +151,7 @@ class StrokeDetector {
         if (self.checkpoint === undefined)
             self.checkpoint = acceleration.timestamp;
 
-        value = utils.round2(value);
+        value = Utils.round2(value);
 
         self.updateThresholds(acceleration, value);
 
@@ -259,8 +259,8 @@ class StrokeDetector {
         self.min = 0;
 
         if (self.positiveMaxs.length === 3) {
-            self.positiveThreshold =  utils.round2(self.positiveMaxs.avg() * .5);
-            self.negativeThreshold = utils.round2(self.negativeMaxs.avg() * .5);
+            self.positiveThreshold =  Utils.round2(self.positiveMaxs.avg() * .5);
+            self.negativeThreshold = Utils.round2(self.negativeMaxs.avg() * .5);
             self.onThresholdChangedListener.apply({}, [acceleration.timestamp
                 , self.positiveThreshold, self.negativeThreshold]);
         }

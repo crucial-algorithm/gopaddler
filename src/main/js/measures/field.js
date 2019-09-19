@@ -1,8 +1,7 @@
 'use strict';
 
 import Measure from './measure';
-
-const utils = require('../utils/utils');
+import Utils from '../utils/utils';
 
 class Field {
 
@@ -153,15 +152,15 @@ class Field {
 
         if (self.convertToImperial) {
             if (type === 'speed')
-                value = utils.kmToMiles(value);
+                value = Utils.kmToMiles(value);
             if (type === 'distance')
-                value = utils.kmToMiles(value);
+                value = Utils.kmToMiles(value);
             if (type === 'efficiency')
-                value = utils.meterToFeet(value);
+                value = Utils.meterToFeet(value);
         }
 
         if (self.context.round(type))
-            value = utils.round(value, self.context.getUnitDecimalPlaces(type));
+            value = Utils.round(value, self.context.getUnitDecimalPlaces(type));
 
 
         return value;

@@ -3,9 +3,8 @@
 import Context from '../context';
 import Unlock from '../utils/widgets/unlock';
 import Api from '../server/api';
-
-var template = require('./coach.slave.art.html');
-var Utils = require('../utils/utils');
+import Utils from '../utils/utils';
+import template from './coach.slave.art.html';
 
 class CoachSlaveView {
 

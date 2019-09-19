@@ -30,11 +30,11 @@ import Database  from './db.js';
 import Settings from './model/settings';
 
 
-var LANGUAGE = localStorage.getItem('language') || 'en';
+let LANGUAGE = localStorage.getItem('language') || 'en';
 
 // Start handle i18 stuff -------
-const PT = require('../../../res/i18n/pt');
-const EN = require('../../../res/i18n/en');
+import PT from '../../../res/i18n/pt';
+import EN from '../../../res/i18n/en';
 
 const i18n = {
     en: EN,
@@ -42,22 +42,22 @@ const i18n = {
 };
 
 function translate(key, placeholders) {
-    var text = i18n[LANGUAGE].translations[key] || "";
+    let text = i18n[LANGUAGE].translations[key] || "";
     placeholders = placeholders || [];
-    var i = 1;
-    for (var p = 0, l = placeholders.length; p < l; p++) {
-        var placeholder = placeholders[p];
+    let i = 1;
+    for (let p = 0, l = placeholders.length; p < l; p++) {
+        let placeholder = placeholders[p];
         text = text.replace(new RegExp("\\$" + i, "g"), placeholder);
         i++;
     }
     return text;
 }
 
-var artTemplateRuntime = require('art-template/lib/runtime');
+import artTemplateRuntime from 'art-template/lib/runtime';
 artTemplateRuntime.translate = translate;
 artTemplateRuntime.isLandscapeMode = function () {
     console.log('global isLadscapeMode');
-    var isLandscape = false;
+    let isLandscape = false;
     loadContext.then(function (context) {
         isLandscape = context.isPortraitMode() === false;
     });
@@ -70,13 +70,13 @@ moment.locale(LANGUAGE);
 
 
 //hack: override App.load
-var originalAppLoad = App.load.bind(App);
+let originalAppLoad = App.load.bind(App);
 App.load = function (target) {
     if (target === App.current()) {
         console.debug('prevented duplicate navigation');
         return;
     }
-    var args = Array.prototype.slice.call(arguments);
+    let args = Array.prototype.slice.call(arguments);
     originalAppLoad.apply(this, args);
 };
 
@@ -87,10 +87,10 @@ let loadContext = loadContextDefer.promise();
 
 
 function enrichPageArg(page, pageName) {
-    var $page = $(page);
-    var destroy = [], ready = [], androidBackButton = [];
-    var appReady = false;
-    var destroyed = false;
+    let $page = $(page);
+    let destroy = [], ready = [], androidBackButton = [];
+    let appReady = false;
+    let destroyed = false;
 
     $page.on('appShow', function() {
         Analytics.setView(pageName);
@@ -98,14 +98,14 @@ function enrichPageArg(page, pageName) {
 
     $page.off('appReady').on('appReady', function() {
         appReady = true;
-        for (var i = 0; i < ready.length; i++) {
+        for (let i = 0; i < ready.length; i++) {
             ready[i].apply({}, [])
         }
     });
 
     $page.off('appDestroy').on('appDestroy', function() {
         if (destroyed === true) debugger;
-        for (var i = 0; i < destroy.length; i++) {
+        for (let i = 0; i < destroy.length; i++) {
             destroy[i].apply({}, [])
         }
 
@@ -118,7 +118,7 @@ function enrichPageArg(page, pageName) {
     });
 
     $page.off('androidBackButton').on('androidBackButton', function () {
-        for (var i = 0; i < androidBackButton.length; i++) {
+        for (let i = 0; i < androidBackButton.length; i++) {
             androidBackButton[i].apply({}, [])
         }
     });
@@ -377,7 +377,7 @@ function loadUi() {
 function checkOrientationHack() {
     if (!Utils.isNetworkConnected()) {
 
-        var reloaded = JSON.parse(localStorage.getItem('forced-reload'));
+        let reloaded = JSON.parse(localStorage.getItem('forced-reload'));
         if ( !reloaded || (new Date().getTime() - reloaded) > 5000) {
 
             localStorage.setItem('forced-reload', JSON.stringify(new Date().getTime()));
@@ -387,7 +387,7 @@ function checkOrientationHack() {
 }
 
 // add class when user selects an input
-var $body = $('body');
+let $body = $('body');
 $body.on('focus', 'input', function() {
     console.log('input focus detected');
     $('.app-page').addClass('keyboard-open');

@@ -1,4 +1,4 @@
-module.exports = {
+const PT = {
     translations: { void: ""
         , home_menu_salute: "Olá"
         , home_menu_start_session: "Iniciar Sessão"
@@ -327,3 +327,5 @@ module.exports = {
 
     }
 };
+
+export default PT;

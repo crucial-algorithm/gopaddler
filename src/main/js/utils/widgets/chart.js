@@ -1,82 +1,85 @@
 'use strict';
 
 
-var labelColor = 'rgba(255, 255, 255, 0.5)';
-var initialized = false;
+const labelColor = 'rgba(255, 255, 255, 0.5)';
+let initialized = false;
 
-function GpChart(canvas, type, labels, dataset, formatter, labelOptions, displayAverage) {
+class GpChart {
+    
+    constructor(canvas, type, labels, dataset, formatter, labelOptions, displayAverage) {
 
-    if (initialized === false) {
-        extend();
-        initialized = true;
-    }
-    var datasets = [dataset];
-
-    if (displayAverage === true) {
-        var averageSet = {
-            type: 'line',
-            name: 'gen-avg',
-            backgroundbackColor: dataset.backgroundbackColor,
-            borderColor: dataset.borderColor,
-            borderWidth: 1,
-            pointRadius: dataset.pointRadius,
-            borderDash: [5, 15]
-        };
-
-        var total = 0, average = [];
-        for (var i = 0, l = dataset.data.length; i < l; i++) {
-            total += dataset.data[i];
-            average.push(0);
+        if (initialized === false) {
+            extend();
+            initialized = true;
         }
-        var avg = total / l;
-        average = average.map(function (value) {
-            return avg
-        });
+        let datasets = [dataset];
 
-        averageSet.data = average;
-        datasets.push(averageSet);
-    }
+        if (displayAverage === true) {
+            let averageSet = {
+                type: 'line',
+                name: 'gen-avg',
+                backgroundbackColor: dataset.backgroundbackColor,
+                borderColor: dataset.borderColor,
+                borderWidth: 1,
+                pointRadius: dataset.pointRadius,
+                borderDash: [5, 15]
+            };
+
+            let total = 0, average = [];
+            for (let i = 0, l = dataset.data.length; i < l; i++) {
+                total += dataset.data[i];
+                average.push(0);
+            }
+            let avg = total / l;
+            average = average.map(function (value) {
+                return avg
+            });
+
+            averageSet.data = average;
+            datasets.push(averageSet);
+        }
 
 
-    new Chart(canvas, {
-        type: type,
-        data: {
-            labels: labels,
-            datasets: datasets
-        },
-        options: {
-            cornerRadius: 12,
-            legend: {
-                display: false
+        new Chart(canvas, {
+            type: type,
+            data: {
+                labels: labels,
+                datasets: datasets
             },
-            tooltips: {
-                enabled: false
-            },
-            scales: {
-                yAxes: [{
+            options: {
+                cornerRadius: 12,
+                legend: {
                     display: false
-                }],
-                xAxes: [{
-                    display: false
-                }]
-            },
-            plugins: {
-                datalabels: {
-                    display: true,
-                    align: labelOptions.align || 'end',
-                    anchor: labelOptions.anchor || 'end',
-                    clamp: labelOptions.clamp === true,
-                    offset: typeof labelOptions.offset === 'number' ? labelOptions.offset : undefined,
-                    formatter: formatter || Math.round,
-                    color: labelOptions.color || labelColor,
-                    font: {
-                        weight: labelOptions.weight || undefined,
-                        size: labelOptions.size || undefined
+                },
+                tooltips: {
+                    enabled: false
+                },
+                scales: {
+                    yAxes: [{
+                        display: false
+                    }],
+                    xAxes: [{
+                        display: false
+                    }]
+                },
+                plugins: {
+                    datalabels: {
+                        display: true,
+                        align: labelOptions.align || 'end',
+                        anchor: labelOptions.anchor || 'end',
+                        clamp: labelOptions.clamp === true,
+                        offset: typeof labelOptions.offset === 'number' ? labelOptions.offset : undefined,
+                        formatter: formatter || Math.round,
+                        color: labelOptions.color || labelColor,
+                        font: {
+                            weight: labelOptions.weight || undefined,
+                            size: labelOptions.size || undefined
+                        }
                     }
                 }
             }
-        }
-    });
+        });
+    }
 }
 
 function extend() {
@@ -91,14 +94,14 @@ function extend() {
     */
     Chart.elements.Rectangle.prototype.draw = function () {
 
-        var ctx = this._chart.ctx;
-        var vm = this._view;
-        var left, right, top, bottom, signX, signY, borderSkipped, radius;
-        var borderWidth = vm.borderWidth;
+        let ctx = this._chart.ctx;
+        let vm = this._view;
+        let left, right, top, bottom, signX, signY, borderSkipped, radius;
+        let borderWidth = vm.borderWidth;
 
         // If radius is less than 0 or is large enough to cause drawing errors a max
         //      radius is imposed. If cornerRadius is not defined set it to 0.
-        var cornerRadius = this._chart.config.options.cornerRadius;
+        let cornerRadius = this._chart.config.options.cornerRadius;
         if (cornerRadius < 0) {
             cornerRadius = 0;
         }
@@ -130,14 +133,14 @@ function extend() {
         // adjust the sizes to fit if we're setting a stroke on the line
         if (borderWidth) {
             // borderWidth shold be less than bar width and bar height.
-            var barSize = Math.min(Math.abs(left - right), Math.abs(top - bottom));
+            let barSize = Math.min(Math.abs(left - right), Math.abs(top - bottom));
             borderWidth = borderWidth > barSize ? barSize : borderWidth;
-            var halfStroke = borderWidth / 2;
+            let halfStroke = borderWidth / 2;
             // Adjust borderWidth when bar top position is near vm.base(zero).
-            var borderLeft = left + (borderSkipped !== 'left' ? halfStroke * signX : 0);
-            var borderRight = right + (borderSkipped !== 'right' ? -halfStroke * signX : 0);
-            var borderTop = top + (borderSkipped !== 'top' ? halfStroke * signY : 0);
-            var borderBottom = bottom + (borderSkipped !== 'bottom' ? -halfStroke * signY : 0);
+            let borderLeft = left + (borderSkipped !== 'left' ? halfStroke * signX : 0);
+            let borderRight = right + (borderSkipped !== 'right' ? -halfStroke * signX : 0);
+            let borderTop = top + (borderSkipped !== 'top' ? halfStroke * signY : 0);
+            let borderBottom = bottom + (borderSkipped !== 'bottom' ? -halfStroke * signY : 0);
             // not become a vertical line?
             if (borderLeft !== borderRight) {
                 top = borderTop;
@@ -158,7 +161,7 @@ function extend() {
         // Corner points, from bottom-left to bottom-right clockwise
         // | 1 2 |
         // | 0 3 |
-        var corners = [
+        let corners = [
             [left, bottom],
             [left, top],
             [right, top],
@@ -166,8 +169,8 @@ function extend() {
         ];
 
         // Find first (starting) corner with fallback to 'bottom'
-        var borders = ['bottom', 'left', 'top', 'right'];
-        var startCorner = borders.indexOf(borderSkipped, 0);
+        let borders = ['bottom', 'left', 'top', 'right'];
+        let startCorner = borders.indexOf(borderSkipped, 0);
         if (startCorner === -1) {
             startCorner = 0;
         }
@@ -177,22 +180,22 @@ function extend() {
         }
 
         // Draw rectangle from 'startCorner'
-        var corner = cornerAt(0);
+        let corner = cornerAt(0);
         ctx.moveTo(corner[0], corner[1]);
 
-        for (var i = 1; i < 4; i++) {
+        for (let i = 1; i < 4; i++) {
             corner = cornerAt(i);
-            var nextCornerId = i + 1;
+            let nextCornerId = i + 1;
             if (nextCornerId === 4) {
                 nextCornerId = 0
             }
 
-            var nextCorner = cornerAt(nextCornerId);
+            let nextCorner = cornerAt(nextCornerId);
 
-            var width = corners[2][0] - corners[1][0];
-            var height = corners[0][1] - corners[1][1];
-            var x = corners[1][0];
-            var y = corners[1][1];
+            let width = corners[2][0] - corners[1][0];
+            let height = corners[0][1] - corners[1][1];
+            let x = corners[1][0];
+            let y = corners[1][1];
 
             radius = cornerRadius;
             // Fix radius being too large
@@ -205,15 +208,15 @@ function extend() {
 
             if (height < 0) {
                 // Negative values in a standard bar chart
-                var x_tl = x;
-                var x_tr = x + width;
-                var y_tl = y + height;
-                var y_tr = y + height;
+                let x_tl = x;
+                let x_tr = x + width;
+                let y_tl = y + height;
+                let y_tr = y + height;
 
-                var x_bl = x;
-                var x_br = x + width;
-                var y_bl = y;
-                var y_br = y;
+                let x_bl = x;
+                let x_br = x + width;
+                let y_bl = y;
+                let y_br = y;
 
                 // Draw
                 ctx.moveTo(x_bl + radius, y_bl);
@@ -228,15 +231,15 @@ function extend() {
 
             } else if (width < 0) {
                 // Negative values in a horizontal bar chart
-                x_tl = x + width;
-                x_tr = x;
-                y_tl = y;
-                y_tr = y;
+                let x_tl = x + width;
+                let x_tr = x;
+                let y_tl = y;
+                let y_tr = y;
 
-                x_bl = x + width;
-                x_br = x;
-                y_bl = y + height;
-                y_br = y + height;
+                let x_bl = x + width;
+                let x_br = x;
+                let y_bl = y + height;
+                let y_br = y + height;
 
                 // Draw
                 ctx.moveTo(x_bl + radius, y_bl);
@@ -272,5 +275,4 @@ function extend() {
     };
 }
 
-
-exports.GpChart = GpChart;
+export default GpChart;

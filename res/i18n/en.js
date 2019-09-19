@@ -1,4 +1,4 @@
-module.exports = {
+const EN = {
     translations: {void: ""
         , home_menu_salute: "hi"
         , home_menu_start_session: "start session"
@@ -326,3 +326,5 @@ module.exports = {
 
     }
 };
+
+export default EN;

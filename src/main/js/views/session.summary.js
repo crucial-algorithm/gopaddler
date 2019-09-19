@@ -7,8 +7,7 @@ import Utils from '../utils/utils';
 import template from './session.summary.art.html';
 import intervalsTemplate from './session.summary.intervals.art.html';
 import zonesTemplate from './session.summary.zones.art.html';
-
-const GpChart = require('../utils/widgets/chart').GpChart;
+import GpChart from '../utils/widgets/chart';
 
 
 class SessionSummaryView {

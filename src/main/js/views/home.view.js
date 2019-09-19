@@ -8,9 +8,8 @@ import landscape from './home.art.html';
 import portrait from './home.portrait.art.html';
 import Utils from '../utils/utils';
 import Settings from '../model/settings';
-
-const GpChart = require('../utils/widgets/chart').GpChart;
-require('chartjs-plugin-datalabels');
+import GpChart from '../utils/widgets/chart';
+import 'chartjs-plugin-datalabels';
 
 
 class HomeView {
@@ -18,13 +17,13 @@ class HomeView {
     constructor(page, context, request) {
         request = request || {};
 
-        var name = Api.User.getProfile().name ? Api.User.getProfile().name
+        let name = Api.User.getProfile().name ? Api.User.getProfile().name
             : Api.User.getProfile().email;
 
         Api.TrainingSessions.live.startListening();
 
         Api.TrainingSessions.live.checkApiVersion().then(function (version) {
-            var appVersion = __API_VERSION__;
+            let appVersion = __API_VERSION__;
             if (!appVersion || version > appVersion) {
                 showUpdateAvailableModal(context);
             }
@@ -38,7 +37,7 @@ class HomeView {
 
         screen.orientation.lock(context.isPortraitMode() ? 'portrait' : 'landscape-secondary');
 
-        var $page = $(page)
+        let $page = $(page)
             , self = this
             , $sessions = $page.find('#btn-sessions')
             , $session = $page.find('#btn-session')
@@ -128,7 +127,7 @@ class HomeView {
         }, true);
 
 
-        var hardResetFrom = localStorage.getItem('hard_reset');
+        let hardResetFrom = localStorage.getItem('hard_reset');
         if (hardResetFrom) {
             localStorage.removeItem('hard_reset');
             hardResetFrom = new Date(hardResetFrom);
@@ -151,7 +150,7 @@ class HomeView {
     }
 
     updateLastSessionDate() {
-        var self = this;
+        let self = this;
         Session.last().then(function (session) {
             if (session === undefined) {
                 self.$homeLastRecord.html('No sessions yet');
@@ -162,16 +161,16 @@ class HomeView {
     }
 
     loadChart() {
-        var $ctx = $("#home-chart-metrics");
+        let $ctx = $("#home-chart-metrics");
 
         Session.getFromDate(moment().add(-15, 'days').toDate().getTime(), function(sessions) {
-            var data = [],
+            let data = [],
                 labels = [],
                 day, total = 0;
 
-            var indexed = indexSessionsByDay(sessions);
+            let indexed = indexSessionsByDay(sessions);
             eachDayInLastXDays(8, function(cal) {
-                var distance;
+                let distance;
                 if (indexed[cal.day]) {
                     distance = sumSessions(indexed[cal.day]);
                 } else {
@@ -183,7 +182,7 @@ class HomeView {
                 labels.push(day);
             });
 
-            var formatter = function (value, context) {
+            let formatter = function (value, context) {
                 if (value === 0) {
                     return '';
                 }
@@ -210,7 +209,7 @@ class HomeView {
 
 
 function showNoCalibrationModal(context) {
-    var message = [
+    let message = [
         '<p>' + context.translate('no_calibration_found_alert_message_line1') + '</p>',
         '<p>' + context.translate('no_calibration_found_alert_message_line2') + '</p>'
     ].join('');
@@ -249,7 +248,7 @@ function showFirstCalibrationCompletedModal(context) {
 function showCoachRequestConfirmationModal(context, request) {
     if (!request) return;
 
-    var message = [
+    let message = [
         '<p>' + context.translate('coach_request_message_line1') + '</p>',
         '<p class="small">' + context.translate('coach_request_message_warning_start') +' ', request.coach ,' ' + context.translate('coach_request_message_warning_finish') + '<p>'
     ].join('');
@@ -269,8 +268,8 @@ function showCoachRequestConfirmationModal(context, request) {
 }
 
 function eachDayInLastXDays(x, callback) {
-    var now = moment().add(-x, 'days');
-    for (var i = 0; i <= x; i++) {
+    let now = moment().add(-x, 'days');
+    for (let i = 0; i <= x; i++) {
         callback.apply({}, [{
             date: now.toDate(),
             day: now.format('YYYY-MM-DD')
@@ -284,8 +283,8 @@ function eachDayInLastXDays(x, callback) {
  * @param {Session[]} sessions
  */
 function indexSessionsByDay(sessions) {
-    var session, index = {}, day;
-    for (var i = 0, l = sessions.length; i < l; i++) {
+    let session, index = {}, day;
+    for (let i = 0, l = sessions.length; i < l; i++) {
         session = sessions[i];
         day = moment(session.sessionStart).format('YYYY-MM-DD');
         if (!index[day]) {
@@ -305,8 +304,8 @@ function sumSessions(sessions) {
     if (sessions.length === 1)
         return sessions[0].distance;
 
-    var sum = 0;
-    for (var i = 0, l = sessions.length; i < l; i++) {
+    let sum = 0;
+    for (let i = 0, l = sessions.length; i < l; i++) {
         sum += sessions[i].distance;
     }
 

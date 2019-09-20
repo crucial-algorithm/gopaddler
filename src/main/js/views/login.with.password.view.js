@@ -8,7 +8,14 @@ import template from './signup.art.html';
 let $login, $create, $forgot;
 
 class LoginWithPasswordView {
+
+    /**
+     *
+     * @param page
+     * @param {Context} context
+     */
     constructor(page, context) {
+
         screen.orientation.lock('portrait');
 
         Context.render(page, template({}));

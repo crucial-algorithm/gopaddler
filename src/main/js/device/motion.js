@@ -1,5 +1,11 @@
 'use strict';
 
+
+/**
+ * Detect device orientation based on https://developer.mozilla.org/en-US/docs/Web/API/Detecting_device_orientation
+ * For documentation on the orientation frame (on which this implementation was based, reference this doc:
+ *  https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Orientation_and_motion_data_explained
+ */
 class MotionSensor {
 
     /**
@@ -23,6 +29,11 @@ class MotionSensor {
 
     }
 
+    /**
+     * Start listening
+     * @param {number} offset   Session start timestamp, in order to get the precise moment actual data points were
+     *                          caught
+     */
     start(offset) {
         if (!this.hasSupport) return;
         this.offset = offset;
@@ -30,11 +41,21 @@ class MotionSensor {
         window.addEventListener("deviceorientation", this.eventHandler , true);
     }
 
+    /**
+     * Stop listening
+     * @public
+     */
     stop() {
         if (!this.hasSupport) return;
         window.removeEventListener("deviceorientation", this.eventHandler, true);
     }
 
+    /**
+     * Handle devices' orientation events
+     *
+     * @private
+     * @param {DeviceOrientationEvent} event
+     */
     handler(event) {
         let now = Date.now() - this.offset;
         // alpha: rotation around z-axis
@@ -47,40 +68,56 @@ class MotionSensor {
         this.handleListeners();
     }
 
+    /**
+     * Method used during session, to retrieve the actual values that are going to be store in session data
+     *
+     * @public
+     * @return {string}
+     */
     read() {
         let rotation = [] // discarding rotation for now, until we find a way to use it properly
             , frontToBack, leftToRight;
 
         if (this.isPortraitMode) {
-            frontToBack = compute(this.beta, this.calibration.beta);
-            leftToRight = compute(this.gamma, 0);
+            frontToBack = this.processEvents(this.beta, this.calibration.beta);
+            leftToRight = this.processEvents(this.gamma, 0);
         } else {
-            frontToBack = compute(this.gamma, this.calibration.gamma);
-            leftToRight = compute(this.alpha, 0);
+            frontToBack = this.processEvents(this.gamma, this.calibration.gamma);
+            leftToRight = this.processEvents(this.alpha, this.calibration.alpha);
+            // in landscape mode, values are negative to the right and positive to the left: lets revert that;
+            leftToRight = leftToRight.map((rec) => {return rec.value * -1});
+
+            const self = this;
+            console.log(this.alpha.map((rec) => { return rec.value - self.calibration.alpha }).join(','));
         }
 
         this.alpha = [];
         this.gamma = [];
         this.beta = [];
 
-        console.log(leftToRight.join(';') + '|' + frontToBack.join(';') + '|' + rotation.join(';'));
-
         return leftToRight.join(';') + '|' + frontToBack.join(';') + '|' + rotation.join(';');
     }
 
+    /**
+     * @private
+     */
     handleListeners() {
         let measures = this.isPortraitMode ? this.gamma : this.alpha, length = measures.length;
-        let adjustment = 0;
+        let adjustment = this.isPortraitMode ? 0 : this.calibration.alpha;
+        let direction = this.isPortraitMode ? 1 : -1;
 
         if (length < 2) return;
 
-        let previous = measures[length - 2], current = measures[length - 1];
-        if ((previous.value - adjustment < 0 && current.value - adjustment < 0)
-            || (previous.value - adjustment >= 0 && current.value - adjustment >= 0)) return;
+        let previous = measures[length - 2], current = measures[length - 1]
+            , previousValue = (previous.value - adjustment) * direction
+            , currentValue = (current.value - adjustment) * direction;
 
-        if (current.value - adjustment < 0) {
+        if ((previousValue < 0 && currentValue < 0)
+            || (previousValue >= 0 && currentValue >= 0)) return;
+
+        if (currentValue < 0) {
             this.leftToRightListener.apply({}, [{left: true, right: false}]);
-        } else if (current.value - adjustment > 0) {
+        } else if (currentValue > 0) {
             this.leftToRightListener.apply({}, [{left: false, right: true}]);
         } else {
             this.leftToRightListener.apply({}, [{left: false, right: false}]);
@@ -95,6 +132,11 @@ class MotionSensor {
         this.leftToRightListener = callback;
     }
 
+    /**
+     * Used during calibration, to get the relative position of the device
+     * @public
+     * @return {{alpha: *, beta: *, gamma: *}}
+     */
     getCalibration() {
         let avg = function (list) {
             let total = 0, length = list.length;
@@ -111,40 +153,43 @@ class MotionSensor {
             gamma: avg(this.gamma)
         }
     }
-}
 
+    /**
+     * Calculate positive and negative max with data array (used for left/right and front-back)
+     *
+     * @param {{time: number, value: number}[]} measures
+     * @param {number} adjustment
+     *
+     * @private
+     * @return {String[]}
+     */
+    processEvents(measures, adjustment) {
 
-/**
- * Calculate positive and negative max with data array (used for left/right and front-back)
- * @param {{time: number, value: number}[]} measures
- * @param {number} adjustment
- * @return {*}
- */
-function compute(measures, adjustment) {
-    let max = 0, position = null, previousBellowZero = measures[0] < 0, compute = [];
-    for (let i = 0, l = measures.length; i < l; i++) {
-        let when = measures[i].time;
-        let value = measures[i].value - adjustment;
-        if (Math.abs(value) > Math.abs(max)) {
-            position = when;
-            max = value;
+        let max = 0, position = null, previousBellowZero = measures[0] < 0, compute = [];
+        for (let i = 0, l = measures.length; i < l; i++) {
+            let when = measures[i].time;
+            let value = measures[i].value - adjustment;
+            if (Math.abs(value) > Math.abs(max)) {
+                position = when;
+                max = value;
+            }
+
+            if (value >= 0 && previousBellowZero === true || value < 0 && previousBellowZero === false) {
+                compute.push({time: position, value: max});
+                max = 0;
+            }
+
+            previousBellowZero = value < 0;
         }
 
-        if (value >= 0 && previousBellowZero === true || value < 0 && previousBellowZero === false) {
+        if (compute.length > 0 && compute[compute.length - 1].position < measures.length - 1) {
             compute.push({time: position, value: max});
-            max = 0;
         }
 
-        previousBellowZero = value < 0;
+        return compute.map(function (record) {
+            return [record.time, Math.floor(record.value)].join('&')
+        });
     }
-
-    if (compute.length > 0 && compute[compute.length - 1].position < measures.length - 1) {
-        compute.push({time: position, value: max});
-    }
-
-    return compute.map(function (record) {
-        return [record.time, Math.floor(record.value)].join('&')
-    });
 }
 
 export default MotionSensor;

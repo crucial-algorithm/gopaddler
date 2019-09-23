@@ -53,7 +53,7 @@ class Calibrate {
             var options = { frequency: 40 };
             try {
                 self.watchId = navigator.accelerometer.watchAcceleration(onSuccess, onError, options);
-                self.motionSensor.start();
+                self.motionSensor.start(Date.now());
             } catch (e) {
                 console.log('hmmm... browser?');
             }

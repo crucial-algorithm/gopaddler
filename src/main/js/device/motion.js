@@ -19,8 +19,11 @@ class MotionSensor {
         this.calibration = calibration;
         this.isPortraitMode = !!isPortraitMode;
 
+        /** @type {Array.<{time: number, value: number}>} */
         this.alpha = [];
+        /** @type {Array.<{time: number, value: number}>} */
         this.gamma = [];
+        /** @type {Array.<{time: number, value: number}>} */
         this.beta = [];
 
         this.leftToRightListener = function(){};
@@ -83,12 +86,9 @@ class MotionSensor {
             leftToRight = this.processEvents(this.gamma, 0);
         } else {
             frontToBack = this.processEvents(this.gamma, this.calibration.gamma);
-            leftToRight = this.processEvents(this.alpha, this.calibration.alpha);
+            leftToRight = this.processEvents(this.beta, this.calibration.beta);
             // in landscape mode, values are negative to the right and positive to the left: lets revert that;
             leftToRight = leftToRight.map((rec) => {return rec.value * -1});
-
-            const self = this;
-            console.log(this.alpha.map((rec) => { return rec.value - self.calibration.alpha }).join(','));
         }
 
         this.alpha = [];
@@ -102,8 +102,9 @@ class MotionSensor {
      * @private
      */
     handleListeners() {
-        let measures = this.isPortraitMode ? this.gamma : this.alpha, length = measures.length;
-        let adjustment = this.isPortraitMode ? 0 : this.calibration.alpha;
+        if (!this.calibration) return; // we are actually doing calibration
+        let measures = this.isPortraitMode ? this.gamma : this.beta, length = measures.length;
+        let adjustment = this.isPortraitMode ? 0 : this.calibration.beta;
         let direction = this.isPortraitMode ? 1 : -1;
 
         if (length < 2) return;
@@ -157,7 +158,7 @@ class MotionSensor {
     /**
      * Calculate positive and negative max with data array (used for left/right and front-back)
      *
-     * @param {{time: number, value: number}[]} measures
+     * @param {Array.<{time: number, value: number}>} measures
      * @param {number} adjustment
      *
      * @private

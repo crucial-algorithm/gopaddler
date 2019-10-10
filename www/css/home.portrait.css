@@ -66,6 +66,10 @@
     background-position: left
 }
 
+.portrait-home-actions-menu.portrait-home-actions-menu-short {
+    width: calc(100% - 80px)
+}
+
 .portrait-exit-button {
     position: fixed;
     bottom: 0;

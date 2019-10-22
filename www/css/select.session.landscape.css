@@ -25,14 +25,12 @@
 }
 
 .select-session-play > .select-session-free-session-toggle {
-    display: table;
     font-size: 4vh;
     width: 50vw;
     height: 10vh;
     min-height: 10vh;
-    position: absolute;
-    bottom: 1vh;
     line-height: 10vh;
+    display: table;
 }
 
 .select-session-available-sessions-wrapper, .select-session-play {
@@ -44,5 +42,11 @@
     width: 30vh;
     height: 30vh;
     border-radius: 50%;
-    margin: 16vh auto 0 auto;
+    margin: 16vh auto 10vh auto;
+    align-content: center;
+    justify-content: center;
+}
+
+.select-session-start-play {
+    margin-left: 0;
 }

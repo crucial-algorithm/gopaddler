@@ -68,21 +68,17 @@ canvas.summary-value {
     text-align: right;
     font-size: 50px;
     font-weight: 700;
-    float: left;
-    width: 70%;
     padding-right: 10px;
     box-sizing: border-box;
 }
 
 .summary-distance {
-    float: right;
-    width: 28%;
     background-color: #fff;
     text-align: center;
     box-sizing: border-box;
     border-radius: 10px;
     padding: 10px;
-    font-size: 16px;
+    font-size: 20px;
     font-weight: 700;
     margin-right: 2%;
     color: #ed6156;
@@ -93,6 +89,7 @@ canvas.summary-value {
     margin: auto;
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 
 .summary-stats > h2 {

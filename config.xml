@@ -36,7 +36,7 @@
         <icon density="xxhdpi" src="res/android/ic_launcher-xxhdpi.png" />
         <icon density="xxxhdpi" src="res/android/ic_launcher-xxxhdpi.png" />
         <preference name="android-minSdkVersion" value="19" />
-        <preference name="android-targetSdkVersion" value="26" />
+        <preference name="android-targetSdkVersion" value="29" />
     </platform>
     <platform name="ios">
         <icon height="100" src="res/ios/icon-100.png" width="100" />

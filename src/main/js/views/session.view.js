@@ -22,7 +22,7 @@ import Sound from '../utils/sound';
 import Api from '../server/api';
 import SessionDetail from '../model/session-detail';
 import Utils from '../utils/utils';
-import {Splits} from 'splits-handler';
+import Splits from '../core/splits-handler';
 
 
 const DEFAULT_POSITIONS = {

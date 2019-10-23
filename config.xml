@@ -101,10 +101,4 @@
     <plugin name="cordova-plugin-nativeaudio" spec="^3.0.9" />
     <plugin name="cordova-plugin-background-mode-bluetooth-central" spec="^1.0.0" />
     <plugin name="cordova-plugin-bluetoothle" spec="^4.4.3" />
-    <plugin name="cordova-plugin-facebook4" spec="4.2.1">
-        <variable name="APP_ID" value="529853143847598" />
-        <variable name="APP_NAME" value="gopaddler" />
-        <variable name="FACEBOOK_HYBRID_APP_EVENTS" value="false" />
-        <variable name="FACEBOOK_ANDROID_SDK_VERSION" value="4.40.0" />
-    </plugin>
 </widget>

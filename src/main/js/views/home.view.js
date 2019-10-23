@@ -91,6 +91,16 @@ class HomeView {
             });
 
             Api.TrainingSessions.live.updateStatus(Context.LiveStatus().OFFLINE, null);
+
+            $('#exit').on('tap', function (e) {
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                try {
+                    navigator.app.exitApp();
+                } catch(err) {
+                    console.error(err);
+                }
+            });
         });
 
         // store device information
@@ -137,16 +147,6 @@ class HomeView {
                 }, 2000);
             }
         }
-
-        $('#exit').on('tap', function (e) {
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-            try {
-                navigator.app.exitApp();
-            } catch(err) {
-                console.error(err);
-            }
-        });
     }
 
     updateLastSessionDate() {

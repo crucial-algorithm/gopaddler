@@ -99,10 +99,13 @@ const EN = {
         , calibrate_step_3_go_line1: "Once done, you are ready to go!"
         , calibrate_step_3_got_it: "Got it"
 
-        , calibrate_step_4_mount_phone: "Now, mount your phone in the boat and hit start"
-        , calibrate_step_4_start: "start"
-
-        , calibrating: "Calibrating..."
+        , calibrating_screen_title: "Calibration"
+        , calibrating: "Powerful sorcery happening..."
+        , calibration_preset_calc: "start"
+        , calibration_preset_calc_tip: "Device is fixed to the boat and the boat is leveled and stable"
+        , calibration_preset_flat: "I Don't need to calibrate"
+        , calibration_preset_flat_tip: "Device is going to be flat, only for my coach to follow"
+        , calibration_done: "Done!"
 
         , select_session_title: "Choose your session"
         , select_session_free_session: "Free Session"

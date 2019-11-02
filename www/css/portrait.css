@@ -41,3 +41,16 @@
     font-weight: 600;
     font-size: 6vw;
 }
+
+.portrait-app-content .calibrate-action-bar {
+    flex-direction: column;
+}
+
+
+.portrait-app-content .calibrate-action-start {
+    height: 70vh;
+}
+
+.portrait-app-content .calibrate-action-preset-flat {
+    height: 20vh;
+}

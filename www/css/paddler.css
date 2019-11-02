@@ -412,13 +412,6 @@ body {
     color: #666666
 }
 
-.calibrate-running {
-    height: 100%;
-    line-height: 100%;
-    vertical-align: middle;
-    text-align: center
-}
-
 .calibrate {
     border-radius:4px;
     -webkit-border-radius:4px;
@@ -428,14 +421,82 @@ body {
 }
 
 
+.calibrate.waiting {
+    height: calc(90vh - 80px);
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    margin: 0;
+    flex-direction: column;
+}
+
 .calibrate.listening {
-    background-color:#333333;
-    display:block;
+    height: 100vh;
+    background-color: #333333;
+    display: none;
+    align-items: center;
+    justify-content: center;
 }
 
 .calibrate.finished {
+    height: 100vh;
     background-color: #4B946A;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
+
+.calibrate-action-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    text-transform: uppercase;
+    color: white;
+    font-weight: 600;
+}
+
+.calibrate-action-bar > div {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.calibrate-action-bar small {
+    padding: 20px;
+    text-align: center;
+}
+
+.calibrate-action-start {
+    height: 90vh;
+    background-color: #71B57B;
+}
+
+.calibrate-action-preset-flat {
+    height: 90vh;
+    background-color: #3B3D62;
+}
+
+.app-topbar.calibrate-running {
+    display: none;
+}
+
+.app-content.calibrate-running .calibrate-action-bar,
+.app-content.calibrate-running .calibrate.waiting {
+    display: none;
+}
+
+.app-content.calibrate-running {
+    height: 100vh;
+}
+
+.app-content.calibrate-running .calibrate.listening {
+    display: flex
+}
+
 
 .dialog-overlay {
     position: fixed;

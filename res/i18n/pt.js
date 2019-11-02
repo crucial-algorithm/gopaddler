@@ -99,10 +99,14 @@ const PT = {
         , calibrate_step_3_go_line1: "Assim que termine a calibração, está pronto para usar e reutilizar"
         , calibrate_step_3_got_it: "Compreendi"
 
-        , calibrate_step_4_mount_phone: "Coloca o telemóvel no barco e pressiona Iniciar"
-        , calibrate_step_4_start: "Iniciar"
+        , calibrating_screen_title: "Calibração"
+        , calibrating: "a fazer computação avançada..."
+        , calibration_preset_calc: "Iniciar"
+        , calibration_preset_calc_tip: "O TELEMÓVEL ESTÁ NO SUPORTE, COLOCADO NO BARCO E O BARCO ESTÁ IMÓVEL E EM LOCAL PLANO"
+        , calibration_preset_flat: "NÃO PRECISO DE CALIBRAR"
+        , calibration_preset_flat_tip: "Telemóvel irá ser usado deitado, apenas para o treinador acompanhar"
+        , calibration_done: "Terminou"
 
-        , calibrating: "a calibrar..."
 
         , select_session_title: "Escolha uma sessão"
         , select_session_free_session: "Sessão Livre"

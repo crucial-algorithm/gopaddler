@@ -145,6 +145,47 @@ class Calibrate {
             , calibration.alpha, calibration.beta, calibration.gamma
         ).save(this.isPortraitMode);
     }
+
+    static setPredefinedPosition(isPortraitMode) {
+        const LANDSCAPE = {
+            "predominant": 0,
+            "angleZ": 1.5669203045085698,
+            "noiseX": -0.5077782408396403,
+            "noiseY": 0.1528099237382412,
+            "noiseZ": 9.80992630958557,
+            "factorX": 0.0038760222863268,
+            "factorY": 0,
+            "factorZ": 0.0038760125810658,
+            "alpha": 24.70277764108222,
+            "beta": 0.8901227280018521,
+            "gamma": 2.962443835853038
+        }, PORTRAIT = {
+            "predominant": 1,
+            "angleZ": 1.5406171550650363,
+            "noiseX": -0.491182447274526,
+            "noiseY": 0.0909796645243963,
+            "noiseZ": 9.80553295135498,
+            "factorX": 0,
+            "factorY": 0.0301791717298603,
+            "factorZ": 0.0301745908287008,
+            "alpha": 29.006709645901157,
+            "beta": 0.5296730485699206,
+            "gamma": 2.869757183000827
+        };
+
+        let data = null;
+        if (isPortraitMode) {
+            data = PORTRAIT;
+        } else {
+            data = LANDSCAPE;
+        }
+
+        new Calibration(data.predominant, data.angleZ
+            , data.noiseX, data.noiseY, data.noiseZ
+            , data.factorX, data.factorY, data.factorZ
+            , data.alpha, data.beta, data.gamma
+        ).save(isPortraitMode);
+    }
 }
 
 export default Calibrate;

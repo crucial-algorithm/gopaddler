@@ -217,7 +217,7 @@ function showNoCalibrationModal(context) {
     context.ui.modal.confirm(context.translate('no_calibration_found_alert_title'), message
         , {
             text: context.translate('no_calibration_found_alert_option_calibrate'), callback: function calibrate() {
-                context.navigate('calibration', true, {from: "start-session"});
+                context.navigate('calibration', false, {from: "start-session"});
             }
         }
         , {

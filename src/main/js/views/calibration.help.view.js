@@ -7,18 +7,10 @@ class CalibrationHelpView {
         request = request || {};
         Context.render(page, template({isPortraitMode: context.isPortraitMode()}));
 
-        var $page = $(page)
+        let $page = $(page)
             , $content = $page.find('[data-selector="slick"]')
             , $gotIt
             , isStartSession = !!(request.from === 'start-session');
-
-
-        // adjust slideshow for when the user reaches it from start session or from help
-        if (isStartSession) {
-            $page.find('[data-step="3"]').find('.got-it').remove();
-        } else {
-            $page.find('[data-step="4"]').remove();
-        }
 
         $gotIt = $page.find('.got-it');
 

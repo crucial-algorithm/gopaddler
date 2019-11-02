@@ -1,3 +1,20 @@
-<div class="app-content calibrate-running" data-no-scroll="true">
+<link rel="stylesheet" href="css/portrait.css">
+
+<div class="{{if isPortraitMode}}portrait-paddler-topbar{{/if}} app-topbar paddler-topbar">
+        <button class="{{if isPortraitMode}}portrait-back-button{{/if}}
+        app-button left paddler-back" alt="back" data-back></button>
+    <div class="paddler-title">
+        <div class="paddler-title-text">{{"calibrating_screen_title" | translate}}</div>
+    </div>
+</div>
+<div class="app-content {{if isPortraitMode}}portrait-app-content{{/if}}" data-no-scroll="true">
     <div class="calibrate listening blink">{{"calibrating" | translate}}</div>
+    <div class="calibrate-action-bar">
+        <div class="calibrate-action-start">{{"calibration_preset_calc" | translate}}
+            <small>{{"calibration_preset_calc_tip" | translate}}</small>
+        </div>
+        <div class="calibrate-action-preset-flat">{{"calibration_preset_flat" | translate}}
+            <small>{{"calibration_preset_flat_tip" | translate}}</small>
+        </div>
+    </div>
 </div>

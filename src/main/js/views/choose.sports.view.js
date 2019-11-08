@@ -18,18 +18,21 @@ class ChooseSportsView {
 
         page.onReady.then(function () {
             $(".choose-sports-list").on('click', 'li', function (e) {
-                var $li = $(e.target)
+                const $li = $(e.target)
+                    , isSupported = $li.data('supported') === "true"
                     , message = $li.data('message');
-                var profile = Api.User.getProfile();
-                Utils.notify(profile.name + "(" + profile.email + ")"
-                    , "Discipline: " + $li.text());
+                const profile = Api.User.getProfile();
+                setTimeout(function () {
+                    Utils.notify(profile.name + "(" + profile.email + ")"
+                        , "Discipline: " + $li.text());
+                }, 2000);
 
-                if (!message) {
+                if (isSupported) {
                     context.navigate("choose-boat", true, undefined);
                     return;
                 }
 
-                var modal = context.ui.modal.alert(context.translate("choose_sport_picked_not_supported_title"),
+                context.ui.modal.alert(context.translate("choose_sport_picked_not_supported_title"),
                     '<p class="choose-sport-not-supported-dialog-text">'
                     + context.translate(message)
                     + '</p>'

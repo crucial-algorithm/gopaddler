@@ -399,6 +399,8 @@ function _setLoginMethod(method) {
 function isLiveUpdate() {
     return asteroid.user.profile.liveUpdateEvery > 0 && Utils.isNetworkConnected();
 }
+
+const coachAcceptedTeamRequest = [];
 let User = {
 
     accessed: function() {
@@ -503,6 +505,15 @@ let User = {
         if (typeof callback === 'function') {
             onCoachRequest = callback;
         }
+    },
+
+    onCoachAcceptedTeamRequest: function (callback) {
+        coachAcceptedTeamRequest.push(callback);
+    },
+
+    setHasCoach: function () {
+        asteroid.user.hasCoach = true;
+        _storeUser(asteroid.user);
     }
 };
 
@@ -546,10 +557,15 @@ let LiveEvents = {
     SYNC_CLOCK: "syncClock",
     CLOCK_SYNCED: 'clockSynced',
     FINISH_WARMUP: 'finishWarmup',
-    HARD_RESET: 'hardReset'
+    HARD_RESET: 'hardReset',
+    COACH_ACCEPTED_TEAM_REQUEST: "coachAcceptedTeamRequest"
 };
 
 resetListeners();
+
+internalLiveListeners[LiveEvents.COACH_ACCEPTED_TEAM_REQUEST] = function () {
+    User.setHasCoach();
+};
 
 let lastClockSyncedAt = 0
     , syncClockCommandId = null, syncClockPayload = {}
@@ -846,7 +862,7 @@ let Server = {
                 return;
             }
             let record = msg.fields;
-            let listeners = liveListeners[record.command] || [];
+            let listeners = record.command === LiveEvents.COACH_ACCEPTED_TEAM_REQUEST ? coachAcceptedTeamRequest : liveListeners[record.command] || [];
 
             if (internalLiveListeners[record.command]) internalLiveListeners[record.command]
                 .apply({}, [msg.id, record.payload]);
@@ -927,7 +943,7 @@ function clearCommandsBeforeFinish(messages) {
         let message = messages[i].fields;
         if (message.command === LiveEvents.FINISH) {
             console.log(['[ ', asteroid.user.profile.name, ' ]', ' clear all commands of already finished session!'].join(''));
-            messages = messages.splice(i + 1);
+            messages = messages.splice(i);
             break;
         }
     }

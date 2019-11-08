@@ -9,103 +9,129 @@ import rowTemplate from './manage.coach.row.art.html';
 
 class ManageCoachView {
 
+    /**
+     *
+     * @param page
+     * @param {Context} context
+     */
     constructor(page, context) {
-        var self = this;
+        const self = this;
         /**@type Context */
         self.appContext = context;
         self.page = page;
         self.usedCoachCodes = {};
         Context.render(page, template({isPortraitMode: context.isPortraitMode()}));
-        var listCoaches = Api.User.listCoaches();
 
+        const listCoaches = Api.User.listCoaches();
         page.onReady.then(function () {
-            self.$listHeader = $('#coach-list-header');
-            self.$list = $('#coach-list');
-            self.$actions = $('#coach-actions');
-            self.$code = $('#code');
-            self.$button = $('#button');
-            self.$loading = $('#coach-loading');
-            self.$fullWindowMessage = $('.coach-before-server-response');
+            self.onDomReady(listCoaches);
+        });
 
-            self.$list.on('touchstart', '.manage-coach-list-device-forget', function (e) {
-                var $button = $(e.target), coachId = $button.data('coach');
-
-                self.list.delete($button, coachId, function () {
-                    Api.User.leaveCoachTeam(coachId).then(function (coaches) {
-                        if (coaches !== null) {
-                            self.render(coaches);
-                        }
-                    });
-                    return false;
-                });
-            });
-
-
-            self.$button.hide();
-            self.$code.off('keyup').on('keyup', function () {
-
-                if (self.$code.val().length === 6) {
-                    // valid
-                    self.setCodeValid();
-                    self.$button.css("display", "flex");
-
-                } else {
-                    // invalid
-                    self.setCodeInvalid();
-                    self.$button.hide();
-                }
-            });
-
-            var newCoachRequest = function () {
-                var code = parseInt(self.$code.val());
-                if (isNaN(code)) {
-                    context.ui.modal.alert(context.translate('manage_coach_request_unknown_code')
-                        , "<p>" + context.translate('manage_coach_request_unknown_code_message') + "</p>"
-                        , context.translate('manage_coach_request_unknown_code_acknowledge'));
-                    return;
-                }
-
-                if (self.usedCoachCodes[code] !== undefined) {
-                    context.ui.modal.alert(context.translate('manage_coach_request_already_a_coach')
-                        , "<p>" + context.translate('manage_coach_request_already_a_coach_message', [self.usedCoachCodes[code].name]) + "</p>"
-                        , context.translate('manage_coach_request_already_a_coach_acknowledge'));
-                    return;
-                }
-
-                Api.User.getCoachInfo(code).then(function (info) {
-                    if (info === null) {
-                        context.ui.modal.alert(context.translate('manage_coach_request_unknown_code')
-                            , "<p>" + context.translate('manage_coach_request_unknown_code_message') + "</p>"
-                            , context.translate('manage_coach_request_unknown_code_acknowledge'));
-                    } else {
-                        self.showConnectToCoachWarning(info.name, info.id)
-                    }
-                });
-            };
-
-            self.$button.off('touchstart').on('touchstart', newCoachRequest.bind(self));
-            $('form').off('submit').on('submit', newCoachRequest.bind(self));
-
-            listCoaches.then(function (coaches) {
+        context.listenToCoachAcceptedRequest(() => {
+            Api.User.listCoaches().then(function (coaches) {
                 self.render(coaches);
-            }).fail(function (err) {
-                self.$fullWindowMessage.text(context.translate("manage_coach_unexpected_error"));
-
-                if (err && err.error === 504) {
-                    self.$fullWindowMessage.text(context.translate("manage_coach_no_internet"));
-                }
-
-                if (err && err.error === 502) {
-                    self.$fullWindowMessage.text(context.translate("manage_coach_no_server_found"));
-                }
-
-                self.$loading.hide();
             });
         });
     }
 
+    /**
+     *
+     * @param {Promise} listCoaches
+     */
+    onDomReady(listCoaches) {
+        const self = this;
+
+        self.$listHeader = $('#coach-list-header');
+        self.$list = $('#coach-list');
+        self.$actions = $('#coach-actions');
+        self.$code = $('#code');
+        self.$button = $('#button');
+        self.$loading = $('#coach-loading');
+        self.$fullWindowMessage = $('.coach-before-server-response');
+
+        self.$list.on('touchstart', '.manage-coach-list-device-forget', function (e) {
+            var $button = $(e.target), coachId = $button.data('coach');
+
+            self.list.delete($button, coachId, function () {
+                Api.User.leaveCoachTeam(coachId).then(function (coaches) {
+                    if (coaches !== null) {
+                        self.render(coaches);
+                    }
+                });
+                return false;
+            });
+        });
+
+
+        self.$button.hide();
+        self.$code.off('keyup').on('keyup', function () {
+
+            if (self.$code.val().length === 6) {
+                // valid
+                self.setCodeValid();
+                self.$button.css("display", "flex");
+
+            } else {
+                // invalid
+                self.setCodeInvalid();
+                self.$button.hide();
+            }
+        });
+
+        const newCoachRequest = function () {
+            var code = parseInt(self.$code.val());
+            if (isNaN(code)) {
+                self.appContext.ui.modal.alert(self.appContext.translate('manage_coach_request_unknown_code')
+                    , "<p>" + self.appContext.translate('manage_coach_request_unknown_code_message') + "</p>"
+                    , self.appContext.translate('manage_coach_request_unknown_code_acknowledge'));
+                return;
+            }
+
+            if (self.usedCoachCodes[code] !== undefined) {
+                self.appContext.ui.modal.alert(self.appContext.translate('manage_coach_request_already_a_coach')
+                    , "<p>" + self.appContext.translate('manage_coach_request_already_a_coach_message', [self.usedCoachCodes[code].name]) + "</p>"
+                    , self.appContext.translate('manage_coach_request_already_a_coach_acknowledge'));
+                return;
+            }
+
+            Api.User.getCoachInfo(code).then(function (info) {
+                if (info === null) {
+                    self.appContext.ui.modal.alert(self.appContext.translate('manage_coach_request_unknown_code')
+                        , "<p>" + self.appContext.translate('manage_coach_request_unknown_code_message') + "</p>"
+                        , self.appContext.translate('manage_coach_request_unknown_code_acknowledge'));
+                } else {
+                    self.showConnectToCoachWarning(info.name, info.id)
+                }
+            });
+        };
+
+        self.$button.off('touchstart').on('touchstart', newCoachRequest.bind(self));
+        $('form').off('submit').on('submit', newCoachRequest.bind(self));
+
+        listCoaches.then(function (coaches) {
+            self.render(coaches);
+        }).fail(function (err) {
+            self.$fullWindowMessage.text(self.appContext.translate("manage_coach_unexpected_error"));
+
+            if (err && err.error === 504) {
+                self.$fullWindowMessage.text(self.appContext.translate("manage_coach_no_internet"));
+            }
+
+            if (err && err.error === 502) {
+                self.$fullWindowMessage.text(self.appContext.translate("manage_coach_no_server_found"));
+            }
+
+            self.$loading.hide();
+        });
+
+    }
+
+    /**
+     * Render coach list
+     * @param coaches
+     */
     render(coaches) {
-        var self = this;
+        const self = this;
 
         if (self.list) {
             try {
@@ -143,9 +169,8 @@ class ManageCoachView {
         self.list.clear();
 
         self.usedCoachCodes = {};
-        for (var i = 0, l = coaches.length; i < l; i++) {
-            var coach = coaches[i];
-            var $row = $(rowTemplate({
+        for (let coach of coaches) {
+            const $row = $(rowTemplate({
                 coach: coach.name,
                 id: coach.id,
                 since: moment(new Date()).format('YYYY-MM-DD'),

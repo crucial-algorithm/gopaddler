@@ -110,6 +110,8 @@ class Context {
         this._language = language;
 
         this._ui = Context.UI(this);
+
+        this._coachAcceptedRequestListeners = [];
     }
 
     preferences() {
@@ -171,6 +173,16 @@ class Context {
             if (clear === true)
                 App.removeFromStack();
         });
+    }
+
+    triggerCoachAcceptedRequest(payload) {
+        for (let callback of this._coachAcceptedRequestListeners) {
+            callback.apply({}, [payload])
+        }
+    }
+
+    listenToCoachAcceptedRequest(callback) {
+        this._coachAcceptedRequestListeners.push(callback);
     }
 
     isShowTouchGestures() {

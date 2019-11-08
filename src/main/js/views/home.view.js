@@ -14,6 +14,12 @@ import 'chartjs-plugin-datalabels';
 
 class HomeView {
 
+    /**
+     *
+     * @param page
+     * @param {Context} context
+     * @param request
+     */
     constructor(page, context, request) {
         request = request || {};
 
@@ -135,6 +141,11 @@ class HomeView {
             context.setServerClockGap(payload.serverClock);
             Api.TrainingSessions.live.commandSynced(id)
         }, true);
+
+        Api.User.onCoachAcceptedTeamRequest(function (id, payload) {
+            Api.TrainingSessions.live.commandSynced(id);
+            context.triggerCoachAcceptedRequest(payload);
+        });
 
 
         let hardResetFrom = localStorage.getItem('hard_reset');

@@ -310,6 +310,14 @@ const PT = {
         , choose_sport_picked_not_supported_title: "We are sorry!"
         , choose_sport_picked_not_supported_acknowledge: "OK"
 
+        , coach_redirect_online_you_are_in_the_wrong_place: "As funcionalidades de treinador estão disponíveis online, não na aplicação"
+        , coach_redirect_online_you_are_in_the_wrong_place_secondary: "Treinador, a aplicação destina-se ao uso dos atletas, para recolha de métricas! Como treinador não necessita da aplicação e deve aceder ao serviço pelo síto web"
+        , coach_redirect_online_how_it_works: "Forme a sua equipa"
+        , coach_redirect_online_how_it_works_secondary: "Isto irá permitir o acesso às métricas dos atletas (durante e depois da sessão) e à preparação do seu plano de treino"
+        , coach_redirect_online_action: "Para criar uma conta como treinador, aceda a <span class=\"small\"> https://coach.gopaddler.com</span>"
+        , coach_redirect_online_action_secondary: "<a class=\"paddler-link\" href=\"https://coach.gopaddler.com/join?utm_source=app\">Abrir o GoPaddler Coach</a>"
+        , coach_redirect_online_action_proceed: "Sou atleta"
+
         , phone_mount_cta_title: "Precisas de um suporte?"
         , phone_mount_cta_message: 'Visita o nosso <a class="paddler-link" href="$1">website</a> e encomanda o nosso suporte para usares o teu telemóvel com toda a segurança!'
         , phone_mount_cta_acknowledge: "OK"

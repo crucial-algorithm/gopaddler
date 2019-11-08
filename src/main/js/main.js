@@ -10,7 +10,6 @@ import SessionsView from './views/sessions.view';
 import CalibrationView from './views/calibration.view';
 import CalibrationHelpView from './views/calibration.help.view';
 import BluetoothView from './views/bluetooth.view';
-import SessionTipsView from './views/session.tips.view';
 import SelectSessionView from './views/select.session.view';
 import LoginWithPasswordView from './views/login.with.password.view';
 import ChooseBoatView from './views/choose.boat.view';
@@ -20,6 +19,7 @@ import DefineLanguageView from './views/define.language.view';
 import ManageCoachView from './views/manage.coach.view';
 import ChooseSportsView from './views/choose.sports.view';
 import CoachSlaveView from './views/coach.slave.view';
+import CoachRedirectOnline from "./views/coach.redirect.online";
 import Context from './context';
 import global from './global';
 import Sync from './server/sync';
@@ -54,6 +54,7 @@ function translate(key, placeholders) {
 }
 
 import artTemplateRuntime from 'art-template/lib/runtime';
+
 artTemplateRuntime.translate = translate;
 artTemplateRuntime.isLandscapeMode = function () {
     console.log('global isLadscapeMode');
@@ -229,16 +230,6 @@ App.controller('calibration', function (page, request) {
 });
 
 /**
- * Pause and swipe session tutorial page.
- */
-App.controller('session-basic-touch-tutorial', function (page) {
-    enrichPageArg(page, 'session-touch-tips-tutorial');
-    loadContext.then(function (context) {
-        new SessionTipsView(page, context);
-    });
-});
-
-/**
  * Calibration tutorial
  */
 App.controller('calibration-help', function (page, request) {
@@ -304,6 +295,14 @@ App.controller('choose-sport', function (page, request) {
     enrichPageArg(page, 'choose-sport');
     loadContext.then(function (context) {
         new ChooseSportsView(page, context);
+    });
+});
+
+
+App.controller('redirect-coach', function (page, request) {
+    enrichPageArg(page, 'redirect-coach');
+    loadContext.then(function (context) {
+        new CoachRedirectOnline(page, context);
     });
 });
 

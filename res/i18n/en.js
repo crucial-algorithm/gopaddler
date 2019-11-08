@@ -308,6 +308,15 @@ const EN = {
         , choose_sport_picked_not_supported_title: "We are sorry!"
         , choose_sport_picked_not_supported_acknowledge: "OK"
 
+
+        , coach_redirect_online_you_are_in_the_wrong_place: "Coach features are available online, not in this app"
+        , coach_redirect_online_you_are_in_the_wrong_place_secondary: "This app is for your athletes to use on the boat, to collect all the metrics! Has a coach, you don't need the app, just access our website instead"
+        , coach_redirect_online_how_it_works: "Manage your team"
+        , coach_redirect_online_how_it_works_secondary: "Allow athletes to join your team to allow you to access their metrics (during and after session) and to plan their sessions"
+        , coach_redirect_online_action: "To start an account has a coach open <span class=\"small\"> https://coach.gopaddler.com</span>"
+        , coach_redirect_online_action_secondary: "<a class=\"paddler-link\" href=\"https://coach.gopaddler.com/join?utm_source=app\">Open GoPaddler Coach</a>"
+        , coach_redirect_online_action_proceed: "I'm an athlete"
+
         , phone_mount_cta_title: "In Need of a Phone mount?"
         , phone_mount_cta_message: 'Checkout our phone mount at our <a class="paddler-link" href="$1">website</a> for a easy to use solution (buy it or build your own - it\'s up to you)'
         , phone_mount_cta_acknowledge: "OK"

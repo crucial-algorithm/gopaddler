@@ -32,6 +32,11 @@ class ChooseSportsView {
                     return;
                 }
 
+                if (message === "choose_sport_picked_coach") {
+                    context.navigate('redirect-coach');
+                    return;
+                }
+
                 context.ui.modal.alert(context.translate("choose_sport_picked_not_supported_title"),
                     '<p class="choose-sport-not-supported-dialog-text">'
                     + context.translate(message)

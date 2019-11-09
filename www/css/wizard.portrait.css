@@ -42,14 +42,14 @@
 
 .got-it {
     position: fixed;
-    bottom: 2vw;
-    right: 2vw;
+    top: 40px;
+    right: 40px;
     background-color: #EE6156;
-    height: 60px;
-    width: 130px;
     text-transform: uppercase;
-    text-align: center;
-    vertical-align: middle;
-    line-height: 10vh;
     font-weight: bold;
+    padding: 1em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
 }

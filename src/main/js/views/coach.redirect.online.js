@@ -15,13 +15,13 @@ class CoachRedirectOnline {
         let $page = $(page)
             , $content = $page.find('[data-selector="slick"]')
             , $msgAction = $page.find('[data-selector="action"]')
-            , $msgActionSecondary = $page.find('[data-selector="action-secondary"]')
-            , $gotIt;
+            , $redirectOnline = $page.find('[data-selector="action-secondary"]')
+            , $continueAsAthlete;
 
-        $gotIt = $page.find('.got-it');
+        $continueAsAthlete = $page.find('.btn-secondary');
 
         $msgAction.html(context.translate('coach_redirect_online_action'));
-        $msgActionSecondary.html(context.translate('coach_redirect_online_action_secondary'));
+        $redirectOnline.html(context.translate('coach_redirect_online_action_redirect'));
 
         setTimeout(function () {
             $content.slick({
@@ -32,8 +32,18 @@ class CoachRedirectOnline {
             });
         }, 0);
 
-        $gotIt.on('tap', function () {
+        $continueAsAthlete.on('tap', function () {
             context.navigate('choose-boat', true);
+        });
+
+        $redirectOnline.on('tap', function () {
+            window.open('https://coach.gopaddler.com/join?utm_source=app', '_system');
+            // TODO: close app
+            try {
+                navigator.app.exitApp();
+            } catch(err){
+                console.log('in app, should close browser now')
+            }
         });
     }
 }

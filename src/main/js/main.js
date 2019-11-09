@@ -53,9 +53,19 @@ function translate(key, placeholders) {
     return text;
 }
 
+let environment = undefined;
+
+function pathFor(img) {
+    if (environment !== 'dev') {
+        return '../www/images/' + img;
+    }
+    return '/images/' + img;
+}
+
 import artTemplateRuntime from 'art-template/lib/runtime';
 
 artTemplateRuntime.translate = translate;
+artTemplateRuntime.pathFor = pathFor;
 artTemplateRuntime.isLandscapeMode = function () {
     console.log('global isLadscapeMode');
     let isLandscape = false;
@@ -82,7 +92,6 @@ App.load = function (target) {
 };
 
 let settings = undefined;
-let environment = undefined;
 let loadContextDefer = $.Deferred();
 let loadContext = loadContextDefer.promise();
 
@@ -356,7 +365,12 @@ function loadUi() {
 
     Settings.loadSettings().then(function (s) {
         settings = s;
-        loadContextDefer.resolve(new Context(settings, environment, translate, LANGUAGE));
+        const context = new Context(settings, environment, translate, LANGUAGE);
+        if (context.isPortraitMode()) {
+            $('body').addClass('app-gp-portrait')
+        }
+
+        loadContextDefer.resolve(context);
     }).fail(function (error, defaultSettings) {
         settings = defaultSettings;
         loadContextDefer.resolve(new Context(settings, environment, translate, LANGUAGE));

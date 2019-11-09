@@ -964,3 +964,30 @@ ul.list-widget > li:nth-child(even) {
     text-align: center;
     color: #e6e6e6;
 }
+
+.coach-redirect-continue-as-athlete {
+    margin-top: 40px;
+}
+
+.btn-primary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5em;
+    min-height: 40px;
+    min-width: 100px;
+    background-color: #71B57B;
+    color: #ffffff;
+    text-transform: uppercase;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.btn-secondary {
+    color: #999999;
+    text-decoration: underline;
+}
+
+.app-gp-portrait .btn-primary {
+    padding: 1em;
+}

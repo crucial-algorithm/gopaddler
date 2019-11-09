@@ -1,64 +1,78 @@
-.wizard-image {
-    width: 50%;
-    height: 65vh;
-    margin-top: 20vh;
-    float:left;
-}
-
-.wizard-text {
-    width: 50%;
-    height: 60vh;
-    float: right;
-    line-height: 100%;
-    font-size: 38px;
-}
-
-.got-it {
-    position: fixed;
-    top: 83vh;
-    right: 2%;
-    background-color: #EE6156;
-    height: 12vh;
-    width: 18vw;
-    text-transform: uppercase;
-    text-align: center;
-    vertical-align: middle;
-    line-height: 12vh;
-    font-weight: bold;
-}
-
 .wizard {
     background-color: #3b3d62;
     color: #ffffff;
     width: 100%;
 }
 
+.wizard-step {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wizard-image {
+    width: 50vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wizard-image > img {
+    width: 40vw;
+}
+
+.wizard-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    text-align: center;
+}
+
 .wizard-text h1 {
     font-size: 34px;
-    line-height: 38px;
+}
+
+.wizard-text h1 span.small {
+    font-size: 22px;
 }
 
 .wizard-text p {
     font-size: 20px;
-    line-height: 30px;
-    padding: 2% 2%;
     color: rgba(255,255,255,0.7);
+    text-align: center;
 }
 
-.calibration-help-step-1 {
-    background: #3b3d62 url(../images/cal_step_1.png) no-repeat center center;
-    background-size: contain;
-    width: 50vw;
+.wizard-actions {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 60px;
+    display: flex;
 }
 
-.calibration-help-step-2 {
-    background: #3b3d62 url(../images/cal_step_2.png) no-repeat center center;
-    background-size: contain;
-    width: 50vw;
+.wizard-action-primary {
+    background-color: #71B57B;
 }
 
-.calibration-help-step-3 {
-    background: #3b3d62 url(../images/cal_step_2.png) no-repeat center center;
-    background-size: contain;
-    width: 50vw;
+.wizard-action-secondary {
+    background-color: #EF6155;
+}
+
+.got-it {
+    position: fixed;
+    bottom: 5vh;
+    right: 5vh;
+    background-color: #EE6156;
+    height: 60px;
+    width: 130px;
+    text-transform: uppercase;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 60px;
+    font-weight: bold;
 }

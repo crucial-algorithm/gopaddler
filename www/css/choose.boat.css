@@ -1,21 +1,18 @@
 .app-content.choose-boat {
     text-transform: uppercase;
-    color: #fff;
+    color: #ccc;
+    background-color: #fff;
 }
 
 .choose-boat-k {
-    background-color: #3b3d62;
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
 .choose-boat-c {
-    background-color: #ef6156;
+    background-color: rgba(0, 0, 0, 0.4);
 }
 
-.choose-boat-k.selected {
-    color: #ef6156;
-}
-
-.choose-boat-c.selected {
+.choose-boat-k.selected , .choose-boat-c.selected {
     color: #3b3d62
 }
 
@@ -94,4 +91,16 @@
 
 .choose-boat-actions.enabled {
     background-color: #4B946A;
+}
+
+.choose-boat-progress.progress-line {
+    background-color: #EE6156;
+    height: 6px;
+    display: none;
+    position: fixed;
+    bottom: 0;
+}
+
+.choose-boat-progress.running-progress.progress-line {
+    display: flex;
 }

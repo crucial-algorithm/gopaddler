@@ -6,23 +6,30 @@ class ChooseBoatView {
     constructor(page, context) {
         Context.render(page, template({isPortraitMode: context.isPortraitMode()}));
 
-        var $page = $(page);
-        var selected = null;
+        let $page = $(page), selected = null, running = false;
         $page.on('click', function (e) {
-            var $target = $(e.target);
-            var option = $target.data('option');
+            if (running) return;
+            running = true;
+            let $target = $(e.target);
+            let option = $target.data('option');
             if (!option) return;
 
             $('[data-option]').removeClass('selected');
             $target.addClass('selected');
 
+            $('.choose-boat-progress').addClass('running-progress');
+
             selected = option;
 
             Api.User.saveBoat(selected).then(function () {
+                running = false;
                 App.load('home');
+                $('.choose-boat-progress').removeClass('running-progress');
             }).fail(function () {
-                var title = context.translate('choose_boat_failed_title');
-                var text = '<p>' + context.translate('choose_boat_failed_retry') + '</p><h6 style="text-align: center">' + context.translate('choose_boat_failed_check_internet') + '</h6>';
+                running = false;
+                $('.choose-boat-progress').removeClass('running-progress');
+                let title = context.translate('choose_boat_failed_title');
+                let text = '<p>' + context.translate('choose_boat_failed_retry') + '</p><h6 style="text-align: center">' + context.translate('choose_boat_failed_check_internet') + '</h6>';
                 context.ui.modal.alert(title, text, {text: context.translate('choose_boat_failed_acknowledge')})
             })
         });

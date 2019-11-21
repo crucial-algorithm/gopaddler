@@ -461,6 +461,7 @@ let User = {
 
     saveBoat: function (choice) {
         asteroid.user.profile.boat = choice;
+        asteroid.user.boat = choice;
         return _call('saveUserBoat', choice);
     },
 

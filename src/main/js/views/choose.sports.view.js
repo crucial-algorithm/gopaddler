@@ -19,7 +19,7 @@ class ChooseSportsView {
         page.onReady.then(function () {
             $(".choose-sports-list").on('click', 'li', function (e) {
                 const $li = $(e.target)
-                    , isSupported = $li.data('supported') === "true"
+                    , isSupported = $li.data('supported') === true
                     , message = $li.data('message');
                 const profile = Api.User.getProfile();
                 setTimeout(function () {

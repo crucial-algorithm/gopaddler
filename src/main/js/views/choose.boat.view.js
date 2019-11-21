@@ -23,7 +23,7 @@ class ChooseBoatView {
 
             Api.User.saveBoat(selected).then(function () {
                 running = false;
-                App.load('home');
+                context.navigate('home', true);
                 $('.choose-boat-progress').removeClass('running-progress');
             }).fail(function () {
                 running = false;

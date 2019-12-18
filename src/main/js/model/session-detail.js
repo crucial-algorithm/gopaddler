@@ -77,8 +77,8 @@ class SessionDetail {
         this.heartRate = heartRate;
     }
 
-    getHeartRate(heartRate) {
-        this.heartRate = heartRate;
+    getHeartRate() {
+        return this.heartRate;
     }
 
     getLatitude () {

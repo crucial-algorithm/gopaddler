@@ -106,6 +106,13 @@ p.manage-coach-confirm-coach-name {
     width: 84vw;
     margin: auto;
     text-align: center;
+    flex-direction: column;
+}
+
+.manage-coach-list > h1 > a {
+    text-decoration: none;
+    color: #EE6156;
+    line-height: 30px;
 }
 
 .manage-coach-list > li {

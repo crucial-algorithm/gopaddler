@@ -49,7 +49,7 @@ const EN = {
         , settings_menu_version: "Version"
 
         , manage_coach_title: "Coach management"
-        , manage_coach_no_coach_found: "You are not part of a team! Ask your coach for his code for you to join his team."
+        , manage_coach_no_coach_found: "You are not part of a team! Ask your coach to create a coach account at <a href=\"https://coach.gopaddler.com/join\" target=\"_blank\">https://coach.gopaddler.com/join</a> and share his team code with you"
         , manage_coach_action_remove: "Leave"
         , manage_coach_add_code_placeholder: "code"
         , manage_coach_confirm_statement: "Your are joining the team coached by:"
@@ -64,7 +64,7 @@ const EN = {
         , manage_coach_request_already_a_coach_acknowledge: "OK"
         , manage_coach_list_header: "You belong to the following teams:"
         , manage_coach_connect_button: "Connect"
-        , manage_coach_add_another_coach: "Add new coach?"
+        , manage_coach_add_another_coach: "Join another team?"
         , manage_coach_pending: "Pending coach acceptance"
         , manage_coach_no_internet: "Internet connection failed. Connected to the internet and try again."
         , manage_coach_no_server_found: "Failed to connect to server. Please try again later."

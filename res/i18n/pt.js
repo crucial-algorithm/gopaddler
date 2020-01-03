@@ -6,32 +6,6 @@ const PT = {
         , home_menu_settings: "Definições"
         , home_menu_last_record: "Último registo"
 
-        , login_continue_with: "Login com"
-        , login_with_facebook: "Facebook"
-        , login_signup_signin: "Registar / Autenticar"
-
-        , login_with_pass_failed: "Autenticação falhou"
-        , login_with_pass_forgot_password: "Esqueceu-se da password"
-        , login_with_pass_button: "Autenticar"
-        , login_with_pass_not_registered: "Não tem registo"
-        , login_with_pass_create_account: "Criar conta"
-        , login_with_pass_user_facebook: "Usar o facebook"
-        , login_with_pass_go_back: "Voltar"
-
-        , create_user_field_email: "e-mail"
-        , create_user_field_name: "nome"
-        , create_user_field_password: "password"
-        , create_user_create_account_button: "Criar conta"
-        , create_user_already_registered: "Já tem conta"
-        , create_user_already_registered_login: "Autenticar"
-
-        , forgot_password_field_email: "e-mail"
-        , forgot_password_error: "Verifique o seu e-mail"
-        , forgot_password_back: "Voltar"
-        , forgot_password_submit_button: "Redefinir password"
-        , forgot_password_not_registered: "Não tem registo"
-        , forgot_password_create_account: "Criar conta"
-
         , settings_title: "Definições"
         , settings_menu_coach: "Treinadores"
         , settings_menu_language: "Idioma"
@@ -336,6 +310,11 @@ const PT = {
         , coach_slave_retry: "Tentar novamente"
         , coach_slave_cancel: "Cancelar"
         , coach_slave_leave: "Sair"
+
+        , profile_title: "A minha conta"
+        , profile_name_placeholder: "nome"
+        , profile_email_placeholder: "e-mail"
+        , profile_update_action: "Actualizar"
 
     }
 };

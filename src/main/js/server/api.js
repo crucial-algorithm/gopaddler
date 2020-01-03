@@ -94,10 +94,22 @@ function _remoteLogin() {
     }
 
     if (_getLoginMethod() === 'password') {
-        checkLoginStatus().then(function () {
-            _localLogin().then(defer.resolve).fail(defer.reject);
+        checkLoginStatus().then(function (user) {
+            if (user.swapped !== true) return _finishLogin(defer, user, 'password');
+            localStorage.setItem('token', user.token);
+            Auth.logout().then(function () {
+                Auth.loginWithPassword(user.profile.email, user.token).then(function () {
+                    delete user.swapped;
+                    delete user.token;
+                    _finishLogin(defer, user, 'password');
+                }).catch(function (err) {
+                    defer.reject(err);
+                    console.err(err);
+                });
+            });
         }).fail(function (err) {
             defer.reject(err);
+            console.log(err);
         });
         return defer.promise();
     }
@@ -302,7 +314,7 @@ let Auth = {
             return defer.promise();
         }
 
-        asteroid.loginWithPassword({email: email, password: password}).then(function (id) {
+        asteroid.loginWithPassword({username: email, password: password}).then(function (id) {
 
             let user;
             if (lastUserAddedMsg && id === lastUserAddedMsg.id) {
@@ -364,14 +376,17 @@ let Auth = {
         return defer.promise();
     },
 
-    createAccount: function (email, password, name) {
-        return _call("gpCreateUser", {
-            email: email,
-            password: password,
-            profile: {
-                name: name
-            }
-        })
+    createAccount: function () {
+        let defer = $.Deferred();
+        _call("gpCreateImplicitUser").then(function (response) {
+            localStorage.setItem('token', response.token);
+            Auth.loginWithPassword(response.id, response.token).then(function () {
+                defer.resolve();
+            }).catch(function (err) {
+                console.err(err)
+            });
+        });
+        return defer.promise();
     },
 
     forgotPassword: function (email) {
@@ -515,7 +530,19 @@ let User = {
     setHasCoach: function () {
         asteroid.user.hasCoach = true;
         _storeUser(asteroid.user);
-    }
+    },
+
+    updateUserProfile(name, email) {
+        const defer = $.Deferred();
+        _call("updateUserProfile", name, email).then(function (updates) {
+            if (updates === 1) {
+                asteroid.user.profile.email = email;
+                asteroid.user.profile.name = name;
+            }
+            defer.resolve(true)
+        }).fail(defer.reject);
+        return defer.promise();
+    },
 };
 
 let liveListeners, commandListenerID, lastPingAt = null, internalLiveListeners = {};

@@ -5,13 +5,11 @@ import HomeView from './views/home.view';
 import SessionView from './views/session.view';
 import SessionSummaryView from './views/session.summary';
 import SettingsView from './views/settings.view';
-import LoginView from './views/login.view';
 import SessionsView from './views/sessions.view';
 import CalibrationView from './views/calibration.view';
 import CalibrationHelpView from './views/calibration.help.view';
 import BluetoothView from './views/bluetooth.view';
 import SelectSessionView from './views/select.session.view';
-import LoginWithPasswordView from './views/login.with.password.view';
 import ChooseBoatView from './views/choose.boat.view';
 import DefineGPSSpeedView from './views/define.gps.update.rate.view';
 import DefineHeartRateView from './views/define.heart.rate.view';
@@ -63,6 +61,7 @@ function pathFor(img) {
 }
 
 import artTemplateRuntime from 'art-template/lib/runtime';
+import ProfileView from "./views/profile.view";
 
 artTemplateRuntime.translate = translate;
 artTemplateRuntime.pathFor = pathFor;
@@ -157,23 +156,6 @@ function enrichPageArg(page, pageName) {
     }
 
 }
-
-/**
- * Splash screen / login page.
- */
-App.controller('login', function (page) {
-    enrichPageArg(page, 'login');
-    loadContext.then(function (context) {
-        new LoginView(page, context);
-    });
-});
-
-App.controller('login-with-password', function (page) {
-    enrichPageArg(page, 'login-with-password');
-    loadContext.then(function (context) {
-        new LoginWithPasswordView(page, context);
-    });
-});
 
 App.controller('home', function (page, request) {
     Analytics.setUser(Api.User.get());
@@ -322,6 +304,13 @@ App.controller('coach-slave', function (page, request) {
     });
 });
 
+App.controller('profile', function (page) {
+    enrichPageArg(page, 'profile');
+    loadContext.then(function (context) {
+        new ProfileView(page, context);
+    });
+});
+
 function onDeviceReady() {
     document.pd_device_ready = true;
 
@@ -382,7 +371,11 @@ function loadUi() {
             context.navigate('home');
         });
     }).fail(function () {
-        App.load('login');
+        Api.Auth.createAccount().then(function () {
+            loadContext.then(function (context) {
+                context.navigate('home');
+            });
+        });
     });
 }
 

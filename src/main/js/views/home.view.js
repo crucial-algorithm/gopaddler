@@ -36,7 +36,7 @@ class HomeView {
         });
 
         if (context.isPortraitMode()) {
-            Context.render(page, portrait({name: name, isAndroid: context.isAndroid()}));
+            Context.render(page, portrait({isAndroid: context.isAndroid()}));
         } else {
             Context.render(page, landscape({isAndroid: context.isAndroid()}));
         }
@@ -72,8 +72,6 @@ class HomeView {
         $settings.on('tap', function () {
             App.load('settings');
         });
-
-        $page.find('.home-username-bold').html(name);
 
         self.updateLastSessionDate();
 

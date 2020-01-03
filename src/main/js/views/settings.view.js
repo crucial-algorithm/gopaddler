@@ -13,7 +13,7 @@ class SettingsView {
         var $calibration = $('#calibration', page)
             , $bluetooth = $('#bluetooth', page)
             , $back = $('.back-button', page)
-            , $logout = $('#logout', page)
+            , $profile = $('#profile', page)
             , $page = $(page)
             , $units = $('#pick-units', page)
             , $boat = $('#pick-boat', page)
@@ -74,10 +74,8 @@ class SettingsView {
             App.load('manage-coach');
         });
 
-        $logout.on('tap', function () {
-            Api.Auth.logout().done(function () {
-                App.load('login');
-            });
+        $profile.on('tap', function () {
+            App.load('profile');
         });
 
         $(page).on('appDestroy', function () {

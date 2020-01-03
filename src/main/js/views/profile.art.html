@@ -1,0 +1,27 @@
+{{if isPortraitMode}}
+    <link rel="stylesheet" href="css/portrait.css">
+{{else}}
+    <link rel="stylesheet" href="css/manage.coach.landscape.css">
+{{/if}}
+
+<div class="{{if isPortraitMode}} portrait-paddler-topbar {{/if}} app-topbar paddler-topbar">
+   <button alt="back" data-back
+        class="{{if isPortraitMode}} portrait-back-button {{/if}} app-button left paddler-back"></button>
+    <div class="paddler-title">
+        <div class="paddler-title-text">{{"profile_title" | translate}}</div>
+    </div>
+</div>
+
+<div class="app-content manage-coach {{if isPortraitMode}} portrait-app-content portrait {{else}} landscape {{/if}}">
+    <div class="login-form">
+        <div class="form">
+            <form>
+                <input id="email" type="email" placeholder="{{"profile_email_placeholder" | translate}}" name="email" value="{{email}}"/>
+                <input id="name" type="text" placeholder="{{"profile_name_placeholder" | translate}}" name="name" value="{{name}}"/>
+                <p class="message auth-error">{{"login_with_pass_failed" | translate}} <a id="login-invalid">{{"login_with_pass_forgot_password" | translate}}?</a></p>
+                <button class="button" id="update">{{"profile_update_action" | translate}}</button>
+                <div class="progress-btn hidden"></div>
+            </form>
+        </div>
+    </div>
+</div>

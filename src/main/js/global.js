@@ -320,7 +320,7 @@ class MockSessionGenerator {
             }
             position++;
 
-            for (var i = 0; i < measures; i++) {
+            for (let i = 0; i < measures; i++) {
                 this.data.push(this.generateDataRecord(interval._recovery === true, position, overrideSpeed));
             }
         }

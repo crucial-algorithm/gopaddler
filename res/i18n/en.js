@@ -6,32 +6,6 @@ const EN = {
         , home_menu_settings: "settings"
         , home_menu_last_record: "Last record"
 
-        , login_continue_with: "Continue with"
-        , login_with_facebook: "Facebook"
-        , login_signup_signin: "Sign Up / Sign In"
-
-        , login_with_pass_failed: "Login failed"
-        , login_with_pass_forgot_password: "Forgot Password"
-        , login_with_pass_button: "Login"
-        , login_with_pass_not_registered: "Not registered"
-        , login_with_pass_create_account: "Create an account"
-        , login_with_pass_user_facebook: "Use facebook"
-        , login_with_pass_go_back: "Go back"
-
-        , create_user_field_email: "e-mail"
-        , create_user_field_name: "name"
-        , create_user_field_password: "password"
-        , create_user_create_account_button: "Create account"
-        , create_user_already_registered: "Already registered"
-        , create_user_already_registered_login: "Login"
-
-        , forgot_password_field_email: "e-mail"
-        , forgot_password_error: "Check your e-mail for details"
-        , forgot_password_back: "Back to login"
-        , forgot_password_submit_button: "Reset password"
-        , forgot_password_not_registered: "Not registered"
-        , forgot_password_create_account: "Create an account"
-
         , settings_title: "Settings"
         , settings_menu_coach: "Coach"
         , settings_menu_language: "Language"
@@ -45,7 +19,7 @@ const EN = {
         , settings_menu_heart_rate: "Heart Rate"
         , settings_menu_calibrate: "Calibrate"
         , settings_menu_calibrate_how_to: "Learn how"
-        , settings_menu_logout: "Logout"
+        , settings_menu_profile: "Profile"
         , settings_menu_version: "Version"
 
         , manage_coach_title: "Coach management"
@@ -335,6 +309,11 @@ const EN = {
         , coach_slave_retry: "Retry"
         , coach_slave_cancel: "Cancel"
         , coach_slave_leave: "Leave"
+
+        , profile_title: "Profile"
+        , profile_name_placeholder: "name"
+        , profile_email_placeholder: "e-mail"
+        , profile_update_action: "update"
 
     }
 };

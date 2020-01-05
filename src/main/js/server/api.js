@@ -80,14 +80,12 @@ function _localLogin() {
  * @private
  */
 function _remoteLogin() {
-
     let defer = $.Deferred();
 
     if (!Utils.isNetworkConnected()) {
         defer.reject();
         return defer.promise();
     }
-
     if (_isFirstTime()) {
         defer.reject();
         return defer.promise();
@@ -114,8 +112,21 @@ function _remoteLogin() {
         return defer.promise();
     }
 
-    // facebook login
-    _loginWithFacebook().then(defer.resolve).fail(defer.reject);
+    const userId = asteroid.userId;
+    if (!userId) {
+        return _loginWithFacebook().then(defer.resolve).fail(defer.reject);
+    }
+
+    migrateFacebookUser().then((token) => {
+        localStorage.setItem('token', token);
+        Auth.loginWithPassword(userId, token).then(function (user) {
+            _finishLogin(defer, user, 'password');
+        }).catch(function (err) {
+            // try to login with facebook...
+            _loginWithFacebook().then(defer.resolve).fail(defer.reject);
+            console.err(err);
+        });
+    });
 
     return defer.promise();
 }
@@ -138,6 +149,10 @@ function _loginWithFacebook() {
 
 function checkLoginStatus() {
     return _call('loginStatus')
+}
+
+function migrateFacebookUser() {
+    return _call('migrateFacebookUser');
 }
 
 /**

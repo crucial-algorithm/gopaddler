@@ -19,6 +19,7 @@ const PT = {
         , settings_menu_heart_rate: "Freq. Cardíaca"
         , settings_menu_calibrate: "Calibração"
         , settings_menu_calibrate_how_to: "Instruções"
+        , settings_menu_profile: "A minha conta"
         , settings_menu_logout: "Sair"
         , settings_menu_version: "Versão"
 

@@ -1,6 +1,7 @@
 'use strict';
 
 import Utils from '../utils/utils';
+import Database from '../db';
 
 const createClass = require('asteroid').createClass;
 const facebook = require('../asteroid/facebook');
@@ -94,7 +95,7 @@ function _remoteLogin() {
     if (_getLoginMethod() === 'password') {
         checkLoginStatus().then(function (user) {
             if (user.swapped !== true) return _finishLogin(defer, user, 'password');
-            localStorage.setItem('token', user.token);
+            Database.updateToken(user.token);
             Auth.logout().then(function () {
                 Auth.loginWithPassword(user.profile.email, user.token).then(function () {
                     delete user.swapped;
@@ -118,7 +119,7 @@ function _remoteLogin() {
     }
 
     migrateFacebookUser().then((token) => {
-        localStorage.setItem('token', token);
+        Database.updateToken(token);
         Auth.loginWithPassword(userId, token).then(function (user) {
             _finishLogin(defer, user, 'password');
         }).catch(function (err) {
@@ -394,7 +395,7 @@ let Auth = {
     createAccount: function () {
         let defer = $.Deferred();
         _call("gpCreateImplicitUser").then(function (response) {
-            localStorage.setItem('token', response.token);
+            Database.updateToken(response.token);
             Auth.loginWithPassword(response.id, response.token).then(function () {
                 defer.resolve();
             }).catch(function (err) {
@@ -992,8 +993,6 @@ function clearCommandsBeforeFinish(messages) {
     }
     return messages;
 }
-
-
 
 function acknowledge(messages) {
     if (!$.isArray(messages)) {

@@ -137,6 +137,12 @@ const ddl = [
         ["ALTER TABLE settings add column resting_heart_rate INTEGER default 60"],
         ["ALTER TABLE session_data add column motion TEXT"],
         ["UPDATE settings SET version = 13"]
+    ],
+
+    // v.1.4.2
+    [
+        ["ALTER TABLE settings add column token TEXT"],
+        ["UPDATE settings SET version = 14"]
     ]
 
 ];
@@ -191,6 +197,12 @@ class Database {
 
     static getConnection() {
         return connection;
+    }
+
+    static updateToken(token) {
+        connection.executeSql("UPDATE settings SET token = ?", [token], function success() {
+            console.log('token updated');
+        });
     }
 }
 

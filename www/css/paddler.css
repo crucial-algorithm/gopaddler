@@ -690,6 +690,7 @@ div[aria-live="polite"],  div[aria-live="polite"] > .slick-track{
     padding: 45px;
     text-align: center;
 }
+
 .form input {
     font-family: "Roboto", sans-serif;
     outline: 0;
@@ -701,6 +702,16 @@ div[aria-live="polite"],  div[aria-live="polite"] > .slick-track{
     box-sizing: border-box;
     font-size: 14px;
 }
+
+.form input.error {
+    background: #EE6156;
+    color: white;
+}
+
+.form input.error::placeholder {
+    color: white;
+}
+
 .form button {
     font-family: "Roboto", sans-serif;
     text-transform: uppercase;

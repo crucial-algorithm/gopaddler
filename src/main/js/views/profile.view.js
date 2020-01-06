@@ -28,13 +28,17 @@ export default class ProfileView {
      * @param {Context} context
      */
     render($page, context) {
-        const $name = $page.find('#name'), $email = $page.find('#email');
+        const self = this;
+        this.$name = $page.find('#name');
+        this.$email = $page.find('#email');
         let name = Api.User.getName() || null;
         let email = Api.User.getProfile().email || null;
+        this.$update = $page.find('#update');
 
-        $page.find('#update').off('tap').on('tap', function (e) {
+        this.$update.off('tap').on('tap', function (e) {
             e.preventDefault();
             e.stopImmediatePropagation();
+            if (!self.isFormValid()) return;
 
             let isNameChanged = name !== Api.User.getName();
             let isEmailChanged = email !== Api.User.getProfile().email;
@@ -44,18 +48,56 @@ export default class ProfileView {
             }
 
             Api.User.updateUserProfile(name, email).then(function (x) {
+                console.log('profile updated');
                 App.back();
             }).fail(function (err) {
                 console.error(err);
             });
         });
 
-        $name.on('change', function () {
-            name = $name.val()
+        this.$name.on('change', function () {
+            name = self.$name.val();
+            self.isFormValid();
         });
 
-        $email.on('change', function () {
-            email = $email.val()
+        this.$email.on('change', function () {
+            email = self.$email.val();
+            self.isFormValid()
         });
+
+        $page.find('form').submit(function (e) {
+            e.preventDefault();
+        });
+    }
+
+    isFormValid() {
+        let name = this.$name.val();
+        let email = this.$email.val();
+        let valid = [];
+        if (!name) {
+            this.$name.addClass('error');
+            valid.push(0);
+        } else {
+            valid.push(1);
+            this.$name.removeClass('error')
+        }
+
+        if (!email || !/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email)) {
+            this.$email.addClass('error');
+            valid.push(0);
+        } else {
+            this.$email.removeClass('error');
+            valid.push(1);
+        }
+
+        let isFormValid = valid.join('') === '11';
+
+        if (isFormValid) {
+            this.$update.removeClass('disabled');
+        } else {
+            this.$update.addClass('disabled');
+        }
+
+        return isFormValid;
     }
 }

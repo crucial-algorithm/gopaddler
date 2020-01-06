@@ -2,7 +2,7 @@
     <div class="home-start-session-btn" id="btn-session">
         <div class="home-row-wrapper">
             <div class="home-icon start-icon">&nbsp;</div>
-            <div class="home-username">{{"home_menu_salute" | translate}}, <span class="home-username-bold"></span>!</div>
+            {{if hasName}}<div class="home-username">{{"home_menu_salute" | translate}}, <span class="home-username-bold">{{name}}</span>!</div>{{/if}}
             <div class="home-row-title " style="font-weight: bold">start session</div>
         </div>
     </div>

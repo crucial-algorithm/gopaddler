@@ -23,8 +23,7 @@ class HomeView {
     constructor(page, context, request) {
         request = request || {};
 
-        let name = Api.User.getProfile().name ? Api.User.getProfile().name
-            : Api.User.getProfile().email;
+        let name = Api.User.getName();
 
         Api.TrainingSessions.live.startListening();
 
@@ -36,9 +35,9 @@ class HomeView {
         });
 
         if (context.isPortraitMode()) {
-            Context.render(page, portrait({isAndroid: context.isAndroid()}));
+            Context.render(page, portrait({hasName: !!name, name: name, isAndroid: context.isAndroid()}));
         } else {
-            Context.render(page, landscape({isAndroid: context.isAndroid()}));
+            Context.render(page, landscape({hasName: !!name, name: name,isAndroid: context.isAndroid()}));
         }
 
         screen.orientation.lock(context.isPortraitMode() ? 'portrait' : 'landscape-secondary');

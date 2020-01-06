@@ -173,7 +173,8 @@ body {
 .info-modal-body {
     background-color: #3b3d62;
     color: #ffffff;
-    width: 80%;
+    width: 100vw;
+    height: 100vh;
     margin: auto;
 }
 
@@ -181,13 +182,22 @@ body {
     text-align: center;
     vertical-align: middle;
     font-weight: bold;
-    height: 10vh;
-    line-height: 10vh;
+    height: 15vh;
+    line-height: 15vh;
 }
+
 .info-modal-content {
     padding: 2% 2% 0 2%;
-    height: 26vh;
+}
 
+.info-modal-body.modal-portrait > .info-modal-title {
+    height: 10vh;
+
+}
+
+.info-modal-body.modal-portrait > .info-modal-controls {
+    height: 15vh;
+    line-height: 15vh;
 }
 
 .info-modal-content > p {
@@ -205,8 +215,10 @@ body {
 .info-modal-controls {
     display: table;
     width: 100%;
-    height: 15vh;
-    line-height: 15vh;
+    height: 20vh;
+    line-height: 20vh;
+    position: absolute;
+    bottom: 0;
 }
 
 .info-modal-secondary-action {

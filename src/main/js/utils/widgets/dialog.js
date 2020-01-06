@@ -94,7 +94,7 @@ class Dialog {
             }
         };
 
-        modal = Dialog._render(isPortraitMode, false, title, message, btnPrimary, null, true);
+        modal = Dialog._render(isPortraitMode, false, title, message, btnPrimary, null, false);
         return modal;
     }
     
@@ -118,7 +118,7 @@ class Dialog {
                 }
             }
         };
-        modal = Dialog._render(isPortraitMode, false, title, message, btnPrimary, btnSecondary, true);
+        modal = Dialog._render(isPortraitMode, false, title, message, btnPrimary, btnSecondary, false);
         return modal;
     }
     

@@ -79,6 +79,9 @@ class ManageCoachView {
         });
 
         const newCoachRequest = function () {
+            if (!Api.User.getName()) {
+                return self.showYouDontHaveAnAccountWarning();
+            }
             var code = parseInt(self.$code.val());
             if (isNaN(code)) {
                 self.appContext.ui.modal.alert(self.appContext.translate('manage_coach_request_unknown_code')
@@ -188,8 +191,8 @@ class ManageCoachView {
     }
 
     showConnectToCoachWarning(coach, id) {
-        var self = this;
-        var message = [
+        const self = this;
+        const message = [
             '<p class="manage-coach {landscape}">' + self.appContext.translate('manage_coach_confirm_statement') + '</p>',
             '<p class="manage-coach-confirm-coach-name {landscape}">' + coach + '</p>',
             '<p class="manage-coach {landscape}">' + self.appContext.translate('manage_coach_confirm_question') + '</p>'
@@ -210,6 +213,28 @@ class ManageCoachView {
             }
             , {
                 text: self.appContext.translate('manage_coach_confirm_cancel'), callback: function skip() {
+                    // intentionally left blank
+                }
+            }
+        );
+    }
+
+    showYouDontHaveAnAccountWarning() {
+        const self = this;
+        const message = [
+            '<p class="manage-coach {landscape}">' + self.appContext.translate('manage_coach_no_account_found_you_need_an_account') + '</p>',
+            '<p>&nbsp</p>',
+            '<p class="manage-coach-confirm-coach-name {landscape}">' + self.appContext.translate('manage_coach_no_account_found_action') + '</p>',
+        ].join('').replace(new RegExp('{landscape}', 'g'), this.appContext.isPortraitMode() ? '' : 'landscape');
+
+        self.appContext.ui.modal.confirm('', message
+            , {
+                text: self.appContext.translate('manage_coach_no_account_found_create'), callback: function calibrate() {
+                    self.appContext.navigate('profile');
+                }
+            }
+            , {
+                text: self.appContext.translate('manage_coach_no_account_found_skip'), callback: function skip() {
                     // intentionally left blank
                 }
             }

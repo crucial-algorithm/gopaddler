@@ -496,6 +496,10 @@ let User = {
         return _call('saveUserBoat', choice);
     },
 
+    boat: function () {
+        return asteroid.user.boat;
+    },
+
     saveHeartRate: function (resting, max) {
         return _call('saveHeartRate', resting, max);
     },

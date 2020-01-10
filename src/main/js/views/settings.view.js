@@ -26,7 +26,7 @@ class SettingsView {
             , $layout = $('#layout', page)
             , $portraitMode = $('#portrait-mode', page);
 
-        if (Api.User.getProfile().boat === "C") {
+        if (Api.User.boat() === "C") {
             $boat.prop('checked', true)
         }
 

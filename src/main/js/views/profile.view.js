@@ -31,14 +31,14 @@ export default class ProfileView {
         const self = this;
         this.$name = $page.find('#name');
         this.$email = $page.find('#email');
-        let name = Api.User.getName() || null;
-        let email = Api.User.getProfile().email || null;
         this.$update = $page.find('#update');
 
         this.$update.off('tap').on('tap', function (e) {
             e.preventDefault();
             e.stopImmediatePropagation();
             if (!self.isFormValid()) return;
+            let name = self.$name.val();
+            let email = self.$email.val();
 
             let isNameChanged = name !== Api.User.getName();
             let isEmailChanged = email !== Api.User.getProfile().email;
@@ -56,12 +56,10 @@ export default class ProfileView {
         });
 
         this.$name.on('change', function () {
-            name = self.$name.val();
             self.isFormValid();
         });
 
         this.$email.on('change', function () {
-            email = self.$email.val();
             self.isFormValid()
         });
 

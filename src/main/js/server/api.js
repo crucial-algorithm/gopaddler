@@ -417,7 +417,12 @@ function _getLoginMethod() {
 }
 
 function _isFirstTime() {
-    return localStorage.getItem("login_method") === null
+    let version = localStorage.getItem("version");
+    if (version === __VERSION__) {
+        return false
+    }
+    localStorage.setItem("version", __VERSION__);
+    return true;
 }
 
 function _setLoginMethod(method) {

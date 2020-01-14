@@ -309,9 +309,9 @@ let Auth = {
         let defer = $.Deferred();
 
         serverAvailable().done(function serverIsAvailable() {
-
-            _remoteLogin().done(defer.resolve).fail(defer.reject);
-
+            _remoteLogin().done(defer.resolve).fail(() => {
+                _localLogin().done(defer.resolve).fail(defer.reject);
+            });
         }).fail(function () {
             _localLogin().done(defer.resolve).fail(defer.reject);
 

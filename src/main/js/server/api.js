@@ -83,11 +83,11 @@ function _localLogin() {
 function _remoteLogin() {
     let defer = $.Deferred();
 
-    if (!Utils.isNetworkConnected()) {
+    if (Utils.isNetworkConnected() === false) {
         defer.reject();
         return defer.promise();
     }
-    if (_isFirstTime()) {
+    if (_areWeLoggedIn() === false) {
         defer.reject();
         return defer.promise();
     }
@@ -416,13 +416,13 @@ function _getLoginMethod() {
     return JSON.parse(localStorage.getItem("login_method")) === 'password' ? 'password' : 'facebook';
 }
 
-function _isFirstTime() {
-    let version = localStorage.getItem("version");
-    if (version === __VERSION__) {
-        return false
+function _areWeLoggedIn() {
+    try {
+        let user = JSON.parse(localStorage.getItem("user"));
+        return user !== null;
+    } catch (err) {
+        return false;
     }
-    localStorage.setItem("version", __VERSION__);
-    return true;
 }
 
 function _setLoginMethod(method) {

@@ -570,6 +570,10 @@ let User = {
         }).fail(defer.reject);
         return defer.promise();
     },
+
+    acceptCoachInvite(userId, token) {
+        return _call('acceptCoachInvite', userId, token);
+    }
 };
 
 let liveListeners, commandListenerID, lastPingAt = null, internalLiveListeners = {};

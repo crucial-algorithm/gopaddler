@@ -16,6 +16,7 @@
     "cordova-plugin-background-mode-bluetooth-central": "^1.0.0",
     "cordova-plugin-bluetoothle": "^4.4.3",
     "cordova-plugin-compat": "^1.2.0",
+    "cordova-plugin-deeplinks": "^1.1.1",
     "cordova-plugin-device": "^1.1.7",
     "cordova-plugin-device-motion": "^1.2.5",
     "cordova-plugin-dialogs": "^1.3.4",
@@ -99,7 +100,8 @@
         "APP_NAME": "gopaddler",
         "FACEBOOK_HYBRID_APP_EVENTS": "false",
         "FACEBOOK_ANDROID_SDK_VERSION": "5.5.2"
-      }
+      },
+      "cordova-plugin-deeplinks": {}
     }
   }
 }

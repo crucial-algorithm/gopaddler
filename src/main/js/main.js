@@ -313,11 +313,20 @@ App.controller('profile', function (page) {
 
 function onDeviceReady() {
     document.pd_device_ready = true;
+    let token = null;
+    let universalLinkDefer = $.Deferred();
+    window['universalLinks'].subscribe('ulJoinCoach', function (eventData) {
+
+        const url = eventData.url || "";
+        const parts = url.split("/");
+        token = parts[parts.length - 1];
+        universalLinkDefer.resolve(token);
+    });
 
     Utils.mapBrowserToNative();
 
     loadDb().then(function () {
-        loadUi();
+        loadUi(universalLinkDefer.promise());
     });
 }
 
@@ -335,16 +344,17 @@ if (environment === 'prod') {
 
     // in browser (development mode!)
     global.emulateCordova();
+    let universalLinkDefer = $.Deferred();
+//    setTimeout(function () {universalLinkDefer.resolve(/* Token = */'nv69Mc4tTLnakQgjH');}, 1000);
     loadDb();
-    loadUi();
+    loadUi(universalLinkDefer.promise());
 }
 
 function loadDb() {
     return Database.init();
 }
 
-function loadUi() {
-
+function loadUi(universalLinkPromise = null) {
     Analytics.init();
 
     // hack - for some reason, when not connected, screen orientation may not be properly set
@@ -365,14 +375,15 @@ function loadUi() {
         loadContextDefer.resolve(new Context(settings, environment, translate, LANGUAGE));
     });
 
-
     Api.Auth.login().done(function () {
         loadContext.then(function (context) {
+            context.coachInviteTokenResolver = universalLinkPromise;
             context.navigate('home');
         });
     }).fail(function () {
         Api.Auth.createAccount().then(function () {
             loadContext.then(function (context) {
+                context.coachInviteTokenResolver = universalLinkPromise;
                 context.navigate('home');
             });
         });

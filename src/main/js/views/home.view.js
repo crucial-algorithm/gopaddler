@@ -104,6 +104,22 @@ class HomeView {
                     console.error(err);
                 }
             });
+
+            if (context.coachInviteTokenResolver) {
+                context.coachInviteTokenResolver.then((token) => {
+                    Api.User.acceptCoachInvite(Api.User.getId(), token).then((info) => {
+                        context.ui.modal.alert(context.translate('universal_link_join_team_title')
+                            , '<p>' + context.translate('universal_link_join_team_success', [info.coachName]) + '</p>'
+                            , {text: context.translate('universal_link_join_team_acknowledge')}
+                        );
+                    }).fail((err) => {
+                        context.ui.modal.alert(context.translate('universal_link_join_team_title')
+                            , '<p>' + context.translate('universal_link_join_team_error') + '</p>'
+                            , {text: context.translate('universal_link_join_team_acknowledge')}
+                        );
+                    });
+                })
+            }
         });
 
         // store device information

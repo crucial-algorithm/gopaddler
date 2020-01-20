@@ -321,6 +321,11 @@ const PT = {
         , profile_email_placeholder: "e-mail"
         , profile_update_action: "Actualizar"
 
+        , universal_link_join_team_title: "Equipa"
+        , universal_link_join_team_success: "Foste adicionado à equipa de $1. <br/></br/>Para gerires quem são os teus treinadores, vai a Definições > Treinadores"
+        , universal_link_join_team_error: "No foi possível processar o convite. Tenta novamente e, se falhar, envia um convite ao treinador manualmente (vai a Definições > Treinadores)"
+        , universal_link_join_team_acknowledge: "OK"
+
     }
 };
 

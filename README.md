@@ -100,4 +100,7 @@ Note: requires brew install ImageMagic
 
 cordova-splash --splash=./res/splash.png
 
-
+### Troubleshooting
+#### App hanging before creating database schema
+Probably missing plugin:
+cordova plugin add cordova-sqlite-storage

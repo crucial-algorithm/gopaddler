@@ -112,6 +112,8 @@ class Context {
         this._ui = Context.UI(this);
 
         this._coachAcceptedRequestListeners = [];
+
+        this._coachInviteTokenResolver = null;
     }
 
     preferences() {
@@ -248,6 +250,14 @@ class Context {
 
     get ui() {
         return this._ui;
+    }
+
+    get coachInviteTokenResolver() {
+        return this._coachInviteTokenResolver;
+    }
+
+    set coachInviteTokenResolver(value) {
+        this._coachInviteTokenResolver = value;
     }
 
     static render(page, template) {

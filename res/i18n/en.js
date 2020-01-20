@@ -320,7 +320,7 @@ const EN = {
         , profile_update_action: "update"
 
         , universal_link_join_team_title: "Team"
-        , universal_link_join_team_success: "You have been added to <i><b>$1</b></i> team. <br/>Manage your teams by going to Settings > Coach"
+        , universal_link_join_team_success: "You have been added to <i><b>$1</b></i> team. <br/>All your session data will be shared with him. <br/><br/><br/>If you do not want to be a part of his team, go to SETTINGS > COACH and leave."
         , universal_link_join_team_error: "We have failed to process the invite link. Try again and, if it fails, go to Settings > Coach and request to join the team manually"
         , universal_link_join_team_acknowledge: "OK"
     }

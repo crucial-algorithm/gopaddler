@@ -168,6 +168,10 @@ class SessionView {
             fields = DEFAULT_POSITIONS;
         }
 
+        if (Context.userHasCoach() === false && self.hasSplitsDefined === true) {
+            fields.top = 'splits';
+        }
+
         let top = new Field($('.session-small-measure.yellow', page), fields.top, SMALL, context, self.hasSplitsDefined);
         let middle = new Field($('.session-small-measure.blue', page), fields.middle, SMALL, context, self.hasSplitsDefined);
         let bottom = new Field($('.session-small-measure.red', page), fields.bottom, SMALL, context, self.hasSplitsDefined);
@@ -609,10 +613,9 @@ class SessionView {
             unlock.show();
         });
 
-        if (context.isShowTouchGestures()) {
+        if (this.isShowTouchGestures()) {
             large.animateTransition();
             unlock.show(10000);
-            context.preferences().touchGesturesShown();
         }
 
 
@@ -862,6 +865,13 @@ class SessionView {
             if (event.right === true) $right.addClass('active');
             if (event.right === false) $right.removeClass('active');
         })
+    }
+
+    isShowTouchGestures() {
+        let launches = localStorage.getItem("session_view_launches") || 0;
+        launches++;
+        localStorage.setItem("session_view_launches", launches);
+        return launches <= 5
     }
 }
 

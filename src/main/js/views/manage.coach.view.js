@@ -14,7 +14,7 @@ class ManageCoachView {
      * @param page
      * @param {Context} context
      */
-    constructor(page, context) {
+    constructor(page, context, options) {
         const self = this;
         /**@type Context */
         self.appContext = context;
@@ -32,6 +32,8 @@ class ManageCoachView {
                 self.render(coaches);
             });
         });
+
+        self.focusByDefault = options.focus === true
     }
 
     /**
@@ -48,6 +50,7 @@ class ManageCoachView {
         self.$button = $('#button');
         self.$loading = $('#coach-loading');
         self.$fullWindowMessage = $('.coach-before-server-response');
+        const $invitationCodeHelper = $('.manage-coach-helper-invitation-code');
 
         self.$list.on('touchstart', '.manage-coach-list-device-forget', function (e) {
             var $button = $(e.target), coachId = $button.data('coach');
@@ -66,6 +69,17 @@ class ManageCoachView {
         self.$button.hide();
         self.$code.off('keyup').on('keyup', function () {
 
+            if ($invitationCodeHelper.hasClass('email')) {
+                if (/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(self.$code.val())) {
+                    self.setCodeValid();
+                    self.$button.css("display", "flex");
+                } else {
+                    self.setCodeInvalid();
+                    self.$button.hide();
+                }
+                return;
+            }
+
             if (self.$code.val().length === 6) {
                 // valid
                 self.setCodeValid();
@@ -82,8 +96,8 @@ class ManageCoachView {
             if (!Api.User.getName()) {
                 return self.showYouDontHaveAnAccountWarning();
             }
-            var code = parseInt(self.$code.val());
-            if (isNaN(code)) {
+            let code = self.$code.val();
+            if ($invitationCodeHelper.hasClass('email') && isNaN(parseInt(code))) {
                 self.appContext.ui.modal.alert(self.appContext.translate('manage_coach_request_unknown_code')
                     , "<p>" + self.appContext.translate('manage_coach_request_unknown_code_message') + "</p>"
                     , self.appContext.translate('manage_coach_request_unknown_code_acknowledge'));
@@ -127,6 +141,27 @@ class ManageCoachView {
             self.$loading.hide();
         });
 
+        $invitationCodeHelper.off('touchstart').on('touchstart', () => {
+            $invitationCodeHelper.toggleClass("email");
+            let text = 'manage_coach_i_have_an_email_address';
+            let placeholder = 'manage_coach_add_code_placeholder';
+            if ($invitationCodeHelper.hasClass('email')) {
+                text = 'manage_coach_i_have_an_invitation_code';
+                placeholder = 'manage_coach_add_email_placeholder';
+                self.$code.css('letter-spacing', '0');
+            } else {
+                self.$code.css('letter-spacing', 6);
+            }
+            self.$code.attr('placeholder', self.appContext.translate(placeholder)).val('').trigger('touchstart');
+            $invitationCodeHelper.text(self.appContext.translate(text));
+            self.resetInputState();
+        });
+
+
+        setTimeout(() => {
+            if (self.focusByDefault !== true) return;
+            self.$code.focus();
+        }, 500);
     }
 
     /**
@@ -151,7 +186,7 @@ class ManageCoachView {
         self.$listHeader.hide();
 
         if (!coaches || coaches.length === 0 ) {
-            self.$list.append("<h1>" + self.appContext.translate("manage_coach_no_coach_found") + "</h1>");
+            self.$list.append("<p class=\"manage-coach-body-title\">" + self.appContext.translate("manage_coach_no_coach_found") + "</p>");
             self.$list.show();
             return;
         }
@@ -247,6 +282,10 @@ class ManageCoachView {
 
     setCodeInvalid() {
         this.$code.css('border', "3px solid #EF6155");
+    }
+
+    resetInputState() {
+        this.$code.css('border', 0);
     }
 
     setCodeToInitialState() {

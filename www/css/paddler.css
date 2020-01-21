@@ -16,8 +16,9 @@ body {
     background-color: #3B3D62;
 }
 
-.paddler-link {
+.paddler-link, a {
     color: #ef6156;
+    text-decoration: none;
 }
 
 .paddler-topbar, .app-android .app-topbar.paddler-topbar {

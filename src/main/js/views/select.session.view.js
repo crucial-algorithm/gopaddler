@@ -7,22 +7,6 @@ import Utils from '../utils/utils';
 import List from '../utils/widgets/list';
 import template from './select.session.art.html';
 
-
-var mockupSessions = [
-    {
-        expression: "20''/10'' + 20''/10''",
-        id: 1,
-        splits: [{_duration: 20, _recovery: false, _unit: 'seconds'}, {_duration: 10, _recovery: true, _unit: 'seconds'},{_duration: 20, _recovery: false, _unit: 'seconds'}],
-        date: moment().add(-3, 'd')
-    },
-    {
-        expression: "50m/10'' + 50m/10'",
-        id: 1,
-        splits: [{_duration: 100, _recovery: false, _unit: 'meters'}, {_duration: 20, _recovery: true, _unit: 'seconds'},{_duration: 100, _recovery: false, _unit: 'meters'}],
-        date: moment().add(-2, 'd')
-    }
-];
-
 class SelectSessionView {
     constructor(page, context) {
         Context.render(page, template({isPortraitMode: context.isPortraitMode()
@@ -35,7 +19,7 @@ class SelectSessionView {
     }
 
     render(page, context) {
-        var self = this
+        let self = this
             , $page = $(page)
             , $back = $page.find('.app-button[data-back]')
             , $selectedSession = $page.find('.selected-session')
@@ -75,12 +59,11 @@ class SelectSessionView {
 
         let slave = false;
         $list.on('tap', 'li', function selectSessionHandler(e) {
-            $list.find('li').removeClass('selected');
-            var $li = $(this);
-            var idx = parseInt($li.attr('data-session-idx'));
-            $li.addClass('selected');
+            const $li = $(this);
+            let idx = parseInt($li.attr('data-session-idx'));
             slave = false;
-            var value = context.translate("select_session_free_session");
+
+            let value = context.translate("select_session_free_session");
             if (idx === -1) {
                 session = null;
                 slave = false;
@@ -88,6 +71,17 @@ class SelectSessionView {
                 session = null;
                 value = context.translate("select_session_slave_mode_description");
                 slave = true;
+            } else if (idx === -3) {
+                context.ui.modal.confirm(context.translate('select_session_coach_teaser_dialog_title')
+                    , context.translate('select_session_coach_teaser_dialog_message'), {
+                        text: context.translate('select_session_coach_teaser_dialog_invite'), callback: function () {
+                            context.navigate('manage-coach', false, {focus: true});
+                        },
+                    }, {
+                        text: context.translate('select_session_coach_teaser_dialog_later')
+                    }
+                );
+                return;
             } else {
                 session = sessions[idx];
                 slave = false;
@@ -96,7 +90,10 @@ class SelectSessionView {
             if (session)
                 value = sessions[idx].expression;
 
+            $list.find('li').removeClass('selected');
+            $li.addClass('selected');
             $selectedSession.text(value);
+
             Utils.forceSafariToReflow($('.select-session-play')[0]);
         });
 
@@ -118,20 +115,7 @@ class SelectSessionView {
             Utils.forceSafariToReflow($('.select-session-play')[0]);
         });
 
-        if (context.isDev()) {
-            setTimeout(function () {
-                var sessions = [], session;
-                for (var i = 0; i < mockupSessions.length; i++) {
-                    session = new ScheduledSession();
-                    session.fromJson(mockupSessions[i]);
-                    sessions.push(session);
-                }
-                renderSessions(sessions);
-            }, 0);
-        } else {
-            renderSessions(ScheduledSession.load() || []);
-        }
-
+        renderSessions(ScheduledSession.load(context.isDev()) || []);
 
         /**
          *
@@ -196,14 +180,24 @@ class SelectSessionView {
                 ].join(''));
             }
 
-            // add coach slave
-            elements = elements.add(['<li class="select-session-row " data-session-idx="-2">',
-                '    <div class="select-session-row-wrapper">',
-                '        <div><label class="select-session-date-label">' + moment().format('dddd') + '</label>' + moment().format('MMM DD') + '</div>',
-                '        <div><label class="select-session-date-label"></label><span class="session-row-expression">' + context.translate("select_session_slave_mode") + '</span></div>',
-                '    </div>',
-                '</li>'
-            ].join(''));
+            if (Context.userHasCoach()) {
+                // add coach slave
+                elements = elements.add(['<li class="select-session-row " data-session-idx="-2">',
+                    '    <div class="select-session-row-wrapper">',
+                    '        <div><label class="select-session-date-label">' + moment().format('dddd') + '</label>' + moment().format('MMM DD') + '</div>',
+                    '        <div><label class="select-session-date-label"></label><span class="session-row-expression">' + context.translate("select_session_slave_mode") + '</span></div>',
+                    '    </div>',
+                    '</li>'
+                ].join(''));
+            } else {
+                elements = elements.add(['<li class="select-session-row " data-session-idx="-3">',
+                    '    <div class="select-session-row-wrapper">',
+                    '        <div><label class="select-session-date-label">' + moment().format('dddd') + '</label>' + moment().format('MMM DD') + '</div>',
+                    '        <div><label class="select-session-date-label"></label><span class="session-row-expression">' + context.translate("select_session_coach_teaser") + '</span></div>',
+                    '    </div>',
+                    '</li>'
+                ].join(''));
+            }
 
             listWidget.rows(elements);
             setTimeout(function () {

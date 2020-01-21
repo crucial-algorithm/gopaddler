@@ -278,7 +278,7 @@ App.controller('define-language', function (page, request) {
 App.controller('manage-coach', function (page, request) {
     enrichPageArg(page, 'manage-coach');
     loadContext.then(function (context) {
-        new ManageCoachView(page, context);
+        new ManageCoachView(page, context, request);
     });
 });
 

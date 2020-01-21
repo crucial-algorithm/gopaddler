@@ -24,7 +24,13 @@ class ScheduledSession {
         window.localStorage.setItem("scheduled-sessions", JSON.stringify(result));
     }
 
-    static load() {
+    static load(isDev = false) {
+        if (isDev === true) {
+            return [...DEV_EXPRESSIONS];
+        }
+        if (Api.User.hasCoach() === false) {
+            return [...SAMPLE_EXPRESSIONS];
+        }
         let list = JSON.parse(window.localStorage.getItem("scheduled-sessions"));
         if (!list)
             return undefined;
@@ -43,7 +49,7 @@ class ScheduledSession {
         let deferred = $.Deferred();
 
         if (!Api.User.hasCoach()) {
-            deferred.resolve([]);
+            deferred.resolve([...SAMPLE_EXPRESSIONS]);
             return deferred.promise();
         }
 
@@ -120,5 +126,51 @@ class ScheduledSession {
         this._splits = value;
     }
 }
+
+// expressions for PROD
+const SAMPLE_EXPRESSIONS = [
+    {
+        id: "Hiyc4CZTX4ZGWLsFh",
+        expression: "5 x (6’/1’ + 2’)/4’",
+        splits: [
+            {_duration: 6, _recovery: false, _unit: 'minutes'}, {_duration: 1, _recovery: true, _unit: 'minutes'},
+            {_duration: 2, _recovery: false, _unit: 'minutes'}, {_duration: 4, _recovery: true, _unit: 'minutes'},
+            {_duration: 6, _recovery: false, _unit: 'minutes'}, {_duration: 1, _recovery: true, _unit: 'minutes'},
+            {_duration: 2, _recovery: false, _unit: 'minutes'}, {_duration: 4, _recovery: true, _unit: 'minutes'},
+            {_duration: 6, _recovery: false, _unit: 'minutes'}, {_duration: 1, _recovery: true, _unit: 'minutes'},
+            {_duration: 2, _recovery: false, _unit: 'minutes'}, {_duration: 4, _recovery: true, _unit: 'minutes'},
+            {_duration: 6, _recovery: false, _unit: 'minutes'}, {_duration: 1, _recovery: true, _unit: 'minutes'},
+            {_duration: 2, _recovery: false, _unit: 'minutes'}, {_duration: 4, _recovery: true, _unit: 'minutes'},
+            {_duration: 6, _recovery: false, _unit: 'minutes'}, {_duration: 1, _recovery: true, _unit: 'minutes'},
+            {_duration: 2, _recovery: false, _unit: 'minutes'}]
+    },
+
+    {
+        id: "DCdaSuSEtji6Emivf",
+        expression: "2 x 1000m/8’ + 2 x 750m/8’",
+        splits: [
+            {_duration: 1000, _recovery: false, _unit: 'meters'}, {_duration: 8, _recovery: true, _unit: 'minutes'},
+            {_duration: 1000, _recovery: false, _unit: 'meters'}, {_duration: 8, _recovery: true, _unit: 'minutes'},
+            {_duration: 750, _recovery: false, _unit: 'meters'}, {_duration: 8, _recovery: true, _unit: 'minutes'},
+            {_duration: 750, _recovery: false, _unit: 'meters'}, {_duration: 8, _recovery: true, _unit: 'minutes'}
+        ]
+    }
+];
+
+const DEV_EXPRESSIONS = [
+    {
+        expression: "20''/10'' + 20''/10''",
+        id: 1,
+        splits: [{_duration: 20, _recovery: false, _unit: 'seconds'}, {_duration: 10, _recovery: true, _unit: 'seconds'},{_duration: 20, _recovery: false, _unit: 'seconds'}],
+        date: moment().add(-3, 'd')
+    },
+    {
+        expression: "50m/10'' + 50m/10'",
+        id: 1,
+        splits: [{_duration: 100, _recovery: false, _unit: 'meters'}, {_duration: 20, _recovery: true, _unit: 'seconds'},{_duration: 100, _recovery: false, _unit: 'meters'}],
+        date: moment().add(-2, 'd')
+    }
+];
+
 
 export default ScheduledSession;

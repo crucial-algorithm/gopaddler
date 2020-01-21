@@ -112,7 +112,7 @@ class Dialog {
         let btnSecondary = {
             text: secondary.text,
             callback: function () {
-                let result = secondary.callback.apply({});
+                let result = (secondary.callback || function(){}).apply({});
                 if (result !== false && modal) {
                     modal.hide()
                 }

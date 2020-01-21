@@ -62,10 +62,7 @@ class HomeView {
                 showNoCalibrationModal(context);
                 return false;
             }
-            if (Context.userHasCoach())
-                context.navigate('select-session', false, undefined);
-            else
-                context.navigate('session', false, undefined);
+            context.navigate('select-session', false, undefined);
         });
 
         $settings.on('tap', function () {

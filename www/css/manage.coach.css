@@ -24,18 +24,16 @@ p.manage-coach-confirm-coach-name {
 
 .add-coach {
     width: 86vw;
-    margin: 0 auto 40px auto;
+    margin: 0 auto 10px auto;
     height: 60px;
     font-family: 'Roboto', Helvetica;
-    font-size: 26px;
+    font-size: 22px;
     font-weight: 700;
     border: 0;
     border-radius: 30px;
     padding: 5px;
     text-align: center;
     color: #A7A7A7;
-    text-transform: uppercase;
-    letter-spacing: 6px;
 }
 
 .keyboard-open .add-coach {
@@ -68,7 +66,7 @@ p.manage-coach-confirm-coach-name {
 }
 
 .manage-coach-actions {
-    height: 40vh;
+    height: 50vh;
     display: none;
     flex-direction: column;
 }
@@ -228,4 +226,36 @@ li.manage-coach-list-coach {
     width: 80vw;
     margin: auto;
     font-size: 20px;
+}
+
+.manage-coach-body-title {
+    text-transform: uppercase;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+    font-size: 22px;
+    text-align: center;
+}
+
+.manage-coach-no-coach-send-email-helper {
+    text-align: center;
+    margin: 0 auto 40px auto;
+    width: 86vw;
+    font-size: 14px;
+}
+
+.manage-coach-helper-link, .manage-coach-helper-invitation-code, .manage-coach-helper-email-address {
+    text-decoration: underline;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.manage-coach-helper-email-address {
+    display: none;
+}
+
+.keyboard-open .manage-coach-no-coach-send-email-helper, .keyboard-open .manage-coach-helper-link, .keyboard-open .manage-coach-helper-invitation-code {
+    display: none;
 }

@@ -183,6 +183,8 @@ const EN = {
         , sessions_force_sync: "sync"
         , sessions_delete: "delete"
         , sessions_free: "free"
+        , sessions_summary_modal_sample_session_primary: "sample session"
+        , sessions_summary_modal_sample_session_secondary: "For better user experience, we present you how a report of a real session would look like"
 
         , session_summary_title: "Summary"
         , session_summary_finish_button: "Finish"

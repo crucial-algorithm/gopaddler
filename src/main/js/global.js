@@ -304,24 +304,31 @@ class MockSessionGenerator {
     }
 
     generateIntervals() {
-        var interval = null, position = -1, intervals = this.definition.splits.slice(), measures, overrideSpeed;
+        let interval = null, position = -1, intervals = this.definition.splits.slice(), measures
+            , increaseSpeed, increaseSpm;
         while(intervals.length > 0) {
             interval = intervals.shift();
+            increaseSpeed = false;
+            increaseSpm = false;
 
             if (interval._unit === "seconds") {
                 measures = interval._duration;
-                overrideSpeed = null;
+                increaseSpm = increaseSpeed = interval._duration <= 2 && interval._recovery === false;
             } else if (interval._unit === 'meters') {
-                var speed = 18;
+                let speed = 18;
                 measures = Math.floor(interval._duration / (speed * 1000 / 3600));
-                overrideSpeed = interval._recovery === true ? null : speed;
+                increaseSpm = increaseSpeed = interval._recovery === true ? false : speed;
+            } else if (interval._unit === 'minutes') {
+                measures = interval._duration * 60;
+                increaseSpm = increaseSpeed = interval._duration <= 2 && interval._recovery === false;
             } else {
                 throw 'Only seconds supported';
             }
             position++;
 
             for (let i = 0; i < measures; i++) {
-                this.data.push(this.generateDataRecord(interval._recovery === true, position, overrideSpeed));
+                this.data.push(this.generateDataRecord(interval._recovery === true, position
+                    , increaseSpeed, increaseSpm));
             }
         }
     }
@@ -332,7 +339,7 @@ class MockSessionGenerator {
      */
     generateFreeSection(duration) {
         for (var i = 0; i < duration; i++) {
-            this.data.push(this.generateDataRecord(true, -1, null));
+            this.data.push(this.generateDataRecord(true, -1));
         }
     }
 
@@ -341,11 +348,12 @@ class MockSessionGenerator {
      *
      * @param isRecovery
      * @param split
-     * @param overrideSpeed
+     * @param increaseSpeed
+     * @param increaseSpm
      * @returns {{spm: number, efficiency: number, split: number, distance: number, session: (number|*), latitude: number, heart_rate: number, id: number, speed: number, timestamp: *, longitude: number}}
      */
-    generateDataRecord(isRecovery, split, overrideSpeed) {
-        var speedVariation = Math.random() * (Math.random() >= 0.5 ? -1 : 1)
+    generateDataRecord(isRecovery, split, increaseSpeed = false, increaseSpm = false) {
+        let speedVariation = Math.random() * (Math.random() >= 0.5 ? -1 : 1)
             , speed = isRecovery ? 10 + speedVariation : 13 + speedVariation
             , spmVariation = Math.round(Math.random() * 3) * (Math.random() >= 0.5 ? -1 : 1)
             , spm = isRecovery ? 60 + spmVariation : 75 + spmVariation
@@ -353,10 +361,15 @@ class MockSessionGenerator {
             , hr = isRecovery ? 140 + hrVariation : 160 + hrVariation
         ;
 
-        if (overrideSpeed !== null)
-            speed = overrideSpeed;
+        if (increaseSpm) {
+            spm += 10;
+        }
 
-        var record = {
+        if (increaseSpeed) {
+            speed += 1.5;
+        }
+
+        let record = {
             id: this.position++,
             session: this.id,
             timestamp: this.startedAt + this.position * 1000,
@@ -547,6 +560,7 @@ const randomSessions = [null,
 ];
 
 
-export default {
-    emulateCordova
+export {
+    emulateCordova,
+    MockSessionGenerator
 };

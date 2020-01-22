@@ -8,6 +8,9 @@ import template from './session.summary.art.html';
 import intervalsTemplate from './session.summary.intervals.art.html';
 import zonesTemplate from './session.summary.zones.art.html';
 import GpChart from '../utils/widgets/chart';
+import {MockSessionGenerator} from "../global";
+import ScheduledSession from "../model/scheduled-session";
+import Session from "../model/session";
 
 
 class SessionSummaryView {
@@ -37,6 +40,32 @@ class SessionSummaryView {
             $details       = $page.find('#summary-details'),
             $finish        = $page.find('#summary-finish'),
             $back          = $page.find('#summary-back');
+
+        if (session.id === 1 && isPastSession !== true) {
+            const modal = context.ui.modal.undecorated([
+                '<div class="sessions-summary-sample-model">',
+                '   <div class="sessions-summary-sample-model-primary">' + context.translate('sessions_summary_modal_sample_session_primary') + '</div>',
+                '   <div class="sessions-summary-sample-model-secondary">' + context.translate('sessions_summary_modal_sample_session_secondary') + '</div>',
+                '</div>',
+            ].join(''));
+
+            const sessionDefinition = ScheduledSession.load(false)[0];
+            const generator = new MockSessionGenerator(sessionDefinition, Date.now());
+            const json = generator.generate();
+
+            session = new Session(json.session_start, json.anglez, json.noisex, json.noisez, json.factorx, json.factorz, json.axis
+                , json.distance, json.avg_spm, json.top_spm, json.avg_speed, json.top_speed
+                , json.avg_efficiency, json.top_efficiency, json.session_end, json.data);
+
+            session.avgHeartRate = json.avg_heart_rate;
+            session.expression = sessionDefinition.expression;
+            session.expressionJson = sessionDefinition.splits;
+
+
+            setTimeout(() => {
+                modal.hide();
+            }, 5000);
+        }
 
         // if session summary is loading a past session, change Finish button to Back and change Congrats to Details
         if (isPastSession === true) {
@@ -85,11 +114,6 @@ class SessionSummaryView {
         $finish.on('tap', function () {
             App.load('home', undefined, undefined, function () {
                 App.removeFromStack();
-                if (session.id === 1 && isPastSession !== true) {
-                    context.ui.modal.alert(context.translate('phone_mount_cta_title')
-                        , '<p>' + context.translate('phone_mount_cta_message', ['https://gopaddler.com/waterproof-smartphone-mount/?utm_source=app-notification']) + '</p>'
-                        , context.translate('phone_mount_cta_acknowledge'));
-                }
             });
         });
 
@@ -123,7 +147,7 @@ class SessionSummaryView {
     }
 
     loadCharts(collapsedMetrics) {
-        var labels = [], speed = [], spm = [], efficiency = [], hr = [];
+        let labels = [], speed = [], spm = [], efficiency = [], hr = [];
 
         collapsedMetrics.map(function(detail) {
             labels.push(detail.timestamp);
@@ -133,7 +157,7 @@ class SessionSummaryView {
             hr.push(detail.heartRate);
         });
 
-        var labelFormatter = function(data, places) {
+        let labelFormatter = function(data, places) {
             return function (value, context) {
                 if (context.dataIndex === 0) return '';
                 if (context.dataIndex === data.length -1 ) return '';

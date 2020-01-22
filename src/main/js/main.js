@@ -19,7 +19,7 @@ import ChooseSportsView from './views/choose.sports.view';
 import CoachSlaveView from './views/coach.slave.view';
 import CoachRedirectOnline from "./views/coach.redirect.online";
 import Context from './context';
-import global from './global';
+import {emulateCordova} from './global';
 import Sync from './server/sync';
 import Api from './server/api';
 import Utils from './utils/utils';
@@ -343,7 +343,7 @@ if (environment === 'prod') {
 } else {
 
     // in browser (development mode!)
-    global.emulateCordova();
+    emulateCordova();
     let universalLinkDefer = $.Deferred();
 //    setTimeout(function () {universalLinkDefer.resolve(/* Token = */'nv69Mc4tTLnakQgjH');}, 1000);
     loadDb();

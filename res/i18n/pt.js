@@ -185,6 +185,8 @@ const PT = {
         , sessions_force_sync: "Sinc."
         , sessions_delete: "Apagar"
         , sessions_free: "Livre"
+        , sessions_summary_modal_sample_session_primary: "exemplo de sessão"
+        , sessions_summary_modal_sample_session_secondary: "Para uma melhor experiência apresentamos um exemplo de uma sessão real"
 
         , session_summary_title: "Sumário"
         , session_summary_finish_button: "Terminar"

@@ -10,7 +10,7 @@ const VERSION_WITH_RECOVERY_IN_DATA = 2;
 class Session {
 
     constructor(sessionStart, angleZ, noiseX, noiseZ, factorX, factorZ, axis, distance, avgSpm, topSpm
-        , avgSpeed, topSpeed, avgEfficiency, topEfficiency, sessionEnd) {
+        , avgSpeed, topSpeed, avgEfficiency, topEfficiency, sessionEnd, data = null) {
 
         this.connection = Database.getConnection();
         this._id = null;
@@ -45,6 +45,14 @@ class Session {
 
         this._version = VERSION_WITH_RECOVERY_IN_DATA;
         this._expressionJson = null;
+        this._data = null;
+        if (data) {
+            this._data = [];
+            for (let d of data) {
+                this._data.push(new SessionDetail(this._id, d.timestamp, d.distance, d.speed, d.spm, d.efficiency
+                    , d.latitude, d.longitude, d.heart_rate, d.split, null, null, d.recovery, null));
+            }
+        }
     }
 
     handleMotionString(string) {
@@ -186,6 +194,13 @@ class Session {
     detail() {
         const self = this,
             defer = $.Deferred();
+
+        if (this._data) {
+            setTimeout(() => {
+                defer.resolve(this._data);
+            }, 0);
+            return defer.promise();
+        }
 
         SessionDetail.get(self.id, function (rows) {
             defer.resolve(rows);

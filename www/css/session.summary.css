@@ -296,3 +296,22 @@ canvas.summary-value {
 .summary-zones-table-bar.summary-zones-table-bar-discarded {
 /*    background-color: #71B57B; */
 }
+
+.sessions-summary-sample-model {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    background: rgba(0, 0, 0, 0.50);
+    flex-direction: column;
+    text-align: center;
+}
+
+.sessions-summary-sample-model-primary {
+    text-transform: uppercase;
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 60px;
+}

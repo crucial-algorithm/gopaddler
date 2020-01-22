@@ -28,6 +28,13 @@
     margin-bottom: 20px;
 }
 
+.keyboard-open .manage-coach-actions > .add-coach {
+    position: absolute;
+    top: 10px;
+    left: 10vw;
+    width: 80vw;
+}
+
 .landscape .manage-coach-actions-button-connect {
     width: 42vw;
     border-radius: 21vw;
@@ -54,3 +61,10 @@ p.manage-coach.landscape {
     line-height: 30px;
 }
 
+.landscape .manage-coach-no-coach-send-email-helper {
+    width: 46vw;
+}
+
+.landscape .manage-coach-helper-link, .landscape .manage-coach-helper-invitation-code, .landscape .manage-coach-helper-email-address {
+    margin-bottom: 24px;
+}

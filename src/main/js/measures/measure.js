@@ -36,7 +36,12 @@ class SmallMeasure {
             this.fontSizeChanged = false;
         }
 
-        this.$value.text(value);
+        if (typeof value === "string") {
+            this.$value.html(value);
+        } else {
+            this.$value.text(value);
+        }
+
         this.resetHint();
     }
 

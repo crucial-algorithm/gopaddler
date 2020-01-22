@@ -57,3 +57,11 @@
     color: #000000;
     border-bottom: 1px solid;
 }
+
+.small-measure-hint-secondary {
+    position: absolute;
+    top: 26px;
+    width: 100%;
+    text-align: center;
+    font-size: 14px;
+}

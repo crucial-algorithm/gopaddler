@@ -149,8 +149,10 @@ class ManageCoachView {
                 text = 'manage_coach_i_have_an_invitation_code';
                 placeholder = 'manage_coach_add_email_placeholder';
                 self.$code.css('letter-spacing', '0');
+                self.$code.attr('type', 'email');
             } else {
                 self.$code.css('letter-spacing', 6);
+                self.$code.attr('type', 'tel');
             }
             self.$code.attr('placeholder', self.appContext.translate(placeholder)).val('').trigger('touchstart');
             $invitationCodeHelper.text(self.appContext.translate(text));

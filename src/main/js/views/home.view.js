@@ -58,7 +58,7 @@ class HomeView {
 
         $session.off('tap click').on('tap click', function () {
             let calibration = Calibration.load(context.isPortraitMode());
-            if (!calibration) {
+            if (!calibration && JSON.parse(localStorage.getItem("first_experiment_done")) === true) {
                 showNoCalibrationModal(context);
                 return false;
             }
@@ -232,7 +232,7 @@ class HomeView {
 function showNoCalibrationModal(context) {
     let message = [
         '<p>' + context.translate('no_calibration_found_alert_message_line1') + '</p>',
-        '<p>' + context.translate('no_calibration_found_alert_message_line2') + '</p>'
+        '<p style="margin-top: 40px">' + context.translate('no_calibration_found_alert_message_line2') + '</p>'
     ].join('');
 
     context.ui.modal.confirm(context.translate('no_calibration_found_alert_title'), message
@@ -243,10 +243,7 @@ function showNoCalibrationModal(context) {
         }
         , {
             text: context.translate('no_calibration_found_alert_option_try_it'), callback: function skip() {
-                if (Context.userHasCoach())
-                    context.navigate('select-session', false, undefined);
-                else
-                    context.navigate('session', false, undefined);
+                context.navigate('select-session', false, undefined);
             }
         }
     );

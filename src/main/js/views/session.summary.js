@@ -41,7 +41,7 @@ class SessionSummaryView {
             $finish        = $page.find('#summary-finish'),
             $back          = $page.find('#summary-back');
 
-        if (session.id === 1 && isPastSession !== true) {
+        if (session.id === 1 && isPastSession !== true || 1 === 1) {
             const modal = context.ui.modal.undecorated([
                 '<div class="sessions-summary-sample-model">',
                 '   <div class="sessions-summary-sample-model-primary">' + context.translate('sessions_summary_modal_sample_session_primary') + '</div>',
@@ -61,6 +61,7 @@ class SessionSummaryView {
             session.expression = sessionDefinition.expression;
             session.expressionJson = sessionDefinition.splits;
 
+            localStorage.setItem('first_experiment_done', JSON.stringify(true));
 
             setTimeout(() => {
                 modal.hide();

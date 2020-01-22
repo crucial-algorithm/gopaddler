@@ -237,7 +237,7 @@ const EN = {
         , choose_language_restart_app_acknowledge: "Ok"
 
         , no_calibration_found_alert_title: "No calibration found"
-        , no_calibration_found_alert_message_line1: "Before you start, we need to adjust to your mount system!"
+        , no_calibration_found_alert_message_line1: "For accurate calculation of the stroke rate, we need to determine the angle in which your smartphone is going to be used."
         , no_calibration_found_alert_message_line2: "Don't worry - it will only take a few seconds..."
         , no_calibration_found_alert_option_calibrate: "Calibrate"
         , no_calibration_found_alert_option_try_it: "Try it"

@@ -332,6 +332,12 @@ const PT = {
         , profile_name_placeholder: "nome"
         , profile_email_placeholder: "e-mail"
         , profile_update_action: "Actualizar"
+        , profile_update_error_coach_exists_title: "Conta duplicada"
+        , profile_update_error_coach_exists_message: "Já existe uma conta de treinador com esse email. <br/> <br/> Por favor utilize outro email para criar uma conta de atleta"
+        , profile_update_error_coach_exists_acknowledge: "OK"
+        , profile_update_error_generic_title: "Erro a criar conta"
+        , profile_update_error_generic_message: "Erro a processar o seu pedido. <br/> O problema será investigado. <br/></br>Por favor tente mais tarde."
+        , profile_update_error_generic_acknowledge: "OK"
 
         , universal_link_join_team_title: "Equipa"
         , universal_link_join_team_success: "Foste adicionado à equipa de $1. <br/></br/>Para gerires quem são os teus treinadores, vai a Definições > Treinadores"

@@ -3,6 +3,7 @@
 import Context from '../context';
 import Api from '../server/api';
 import template from './profile.art.html';
+import Utils from "../utils/utils";
 
 export default class ProfileView {
     /**
@@ -51,7 +52,20 @@ export default class ProfileView {
                 console.log('profile updated');
                 App.back();
             }).fail(function (err) {
-                console.error(err);
+
+                let title = 'profile_update_error_generic_title'
+                    , message = 'profile_update_error_generic_message'
+                    , button = 'profile_update_error_generic_acknowledge';
+
+                if (err.error === "coach_account_exists") {
+                    title = 'profile_update_error_coach_exists_title';
+                    message = 'profile_update_error_coach_exists_message';
+                    button = 'profile_update_error_coach_exists_acknowledge';
+                } else {
+                    Utils.notify(Api.User.getId(), `Failed to update user profile with email ${email}: ${err.reason}`);
+                }
+                context.ui.modal.alert(context.translate(title), '<p>' + context.translate(message) + '</p>'
+                    , {text: context.translate(button)});
             });
         });
 

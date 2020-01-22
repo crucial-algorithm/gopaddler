@@ -330,6 +330,12 @@ const EN = {
         , profile_name_placeholder: "name"
         , profile_email_placeholder: "e-mail"
         , profile_update_action: "update"
+        , profile_update_error_coach_exists_title: "Duplicate account"
+        , profile_update_error_coach_exists_message: "There is a coach account with that email address. <br/><br/>Please use other email address to create an athlete account"
+        , profile_update_error_coach_exists_acknowledge: "OK"
+        , profile_update_error_generic_title: "Error creating account"
+        , profile_update_error_generic_message: "We could not process your request. <br/> This error has been reported and we will look into it.<br/><br/>Try again later."
+        , profile_update_error_generic_acknowledge: "OK"
 
         , universal_link_join_team_title: "Team"
         , universal_link_join_team_success: "You have been added to <i><b>$1</b></i> team. <br/>All your session data will be shared with him. <br/><br/><br/>If you do not want to be a part of his team, go to SETTINGS > COACH and leave."

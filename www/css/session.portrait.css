@@ -58,9 +58,16 @@
     border-bottom: 1px solid;
 }
 
+.small-measure-hint-primary {
+    position: absolute;
+    top: -10px;
+    width: 100%;
+    text-align: center;
+}
+
 .small-measure-hint-secondary {
     position: absolute;
-    top: 26px;
+    top: 16px;
     width: 100%;
     text-align: center;
     font-size: 14px;

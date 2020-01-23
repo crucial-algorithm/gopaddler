@@ -3,6 +3,14 @@
 import Measure from './measure';
 import Utils from '../utils/utils';
 
+/**
+ * @typedef {object} Slider
+ *
+ * @property {function} next
+ * @property {function} previous
+ */
+
+
 class Field {
 
     constructor(element, type, size, context, enableSplits) {
@@ -86,6 +94,8 @@ class Field {
             self.positions[i] = {position: i, type: type, $dom: $dom, instance: instance};
             self.options[type] = options;
         });
+        let deferred = $.Deferred();
+        self.initialized = deferred.promise();
 
         // -- init slick and handle slick events
         setTimeout(function (position, initialType) {
@@ -95,6 +105,18 @@ class Field {
                     arrows: false,
                     initialSlide: position,
                     speed: self.speed
+                });
+                deferred.resolve({
+                    next: function (speed = 2000) {
+                        self.$measures.slick('slickSetOption', 'speed', speed);
+                        self.$measures.slick('slickNext');
+                        self.$measures.slick('slickSetOption', 'speed', self.speed);
+                    },
+                    previous: function (speed = 2000) {
+                        self.$measures.slick('slickSetOption', 'speed', speed);
+                        self.$measures.slick('slickPrev');
+                        self.$measures.slick('slickSetOption', 'speed', self.speed);
+                    }
                 });
             }
         }(position, initialType), 0);
@@ -121,7 +143,7 @@ class Field {
     }
 
     animateTransition() {
-        var self = this;
+        const self = this;
         setTimeout(function () {
             var $active = self.$element.find('.slick-active');
             $active.animate({marginLeft: $active.width() / 1.7 * -1}, 1000, undefined, function () {
@@ -129,6 +151,24 @@ class Field {
             });
         }, 2000);
 
+    }
+
+    animateSwipeRight() {
+        this.initialized.then(/**@param {Slider} slider */( slider) => {
+            slider.next(2000);
+            setTimeout(() => {
+                slider.previous(1500);
+            }, 2300);
+        });
+    }
+
+    animateSwipeLeft() {
+        this.initialized.then(/**@param {Slider} slider */( slider) => {
+            slider.previous(2000);
+            setTimeout(() => {
+                slider.next(1500);
+            }, 2500);
+        });
     }
 
     _set(p) {

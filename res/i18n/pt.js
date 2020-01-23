@@ -109,7 +109,7 @@ const PT = {
 
         , session_duration: "Duração"
         , session_splits: "Intervalos"
-        , session_splits_before_start: "<p class='small-measure-hint-primary'>Em Aquecimento</p><p class='small-measure-hint-secondary'>Desbloqueia para iniciar o treino</p>"
+        , session_splits_before_start: "<p class='small-measure-hint-primary'>Em Aquecimento</p><p class='small-measure-hint-secondary'>Desbloqueia para iniciar as séries</p>"
         , session_speed: "Velocidade"
         , session_distance: "Distância"
         , session_spm: "Cadência de Remada"

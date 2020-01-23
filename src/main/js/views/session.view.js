@@ -605,7 +605,7 @@ class SessionView {
             }
         });
 
-        var unlock = new Unlock(context);
+        let unlock = new Unlock(context);
         unlock.onUnlocked(function () {
             confirmBeforeExit();
         });
@@ -614,7 +614,9 @@ class SessionView {
         });
 
         if (this.isShowTouchGestures()) {
-            large.animateTransition();
+            setTimeout(() => {
+                top.animateSwipeLeft();
+            }, 1000);
             unlock.show(10000);
         }
 
@@ -871,7 +873,7 @@ class SessionView {
         let launches = localStorage.getItem("session_view_launches") || 0;
         launches++;
         localStorage.setItem("session_view_launches", launches);
-        return launches <= 5
+        return launches <= 3
     }
 }
 

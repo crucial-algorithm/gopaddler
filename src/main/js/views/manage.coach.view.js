@@ -242,8 +242,7 @@ class ManageCoachView {
                         if (coaches === null) {
                             // handle error
                         } else {
-                            self.render(coaches);
-                            self.setCodeToInitialState();
+                            self.showInviteSentDialog();
                         }
                     });
                 }
@@ -251,6 +250,18 @@ class ManageCoachView {
             , {
                 text: self.appContext.translate('manage_coach_confirm_cancel'), callback: function skip() {
                     // intentionally left blank
+                }
+            }
+        );
+    }
+
+    showInviteSentDialog() {
+        const self = this;
+        self.appContext.ui.modal.alert(self.appContext.translate('manage_coach_invite_sent_title')
+            , self.appContext.translate('manage_coach_invite_sent_message')
+            , {
+                text: self.appContext.translate('manage_coach_invite_sent_acknowledge'), callback: function () {
+                    App.back();
                 }
             }
         );

@@ -25,7 +25,6 @@ const PT = {
 
         , manage_coach_title: "Gestão de Treinadores"
         , manage_coach_no_coach_found: "Junta-te à equipa do teu treinador"
-        , manage_coach_no_coach_send_email_helper: "Se o teu treinador ainda não tiver conta, irá receber um e-mail para criar conta no GoPaddler."
         , manage_coach_helper_link: "Como funciona?"
         , manage_coach_i_have_an_invitation_code: "Tenho o código do treinador"
         , manage_coach_i_have_an_email_address: "Tenho o endereço de e-mail"
@@ -54,6 +53,9 @@ const PT = {
         , manage_coach_no_server_found: "Falhou a comunicação com o servidor. Por favor tenta mais tarde."
         , manage_coach_unexpected_error: "Ocorreu um erro imprevisto. Por favor tenta mais tarde."
         , manage_coach_loading: "A carregar informação do servidor..."
+        , manage_coach_invite_sent_title: "Pedido enviado"
+        , manage_coach_invite_sent_message: "O teu pedido foi enviado. Agora tens de esperar que o teu treinador te aceite na equipa dele."
+        , manage_coach_invite_sent_acknowledge: "ok"
 
         , blt_screen_title: "Bandas Freq. Cardíaca"
         , blt_searching: "Pesquisar dispositivos Bluetooth"

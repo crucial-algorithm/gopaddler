@@ -71,6 +71,10 @@ p.manage-coach-confirm-coach-name {
     flex-direction: column;
 }
 
+.manage-coach-actions-when-has-coaches.manage-coach-actions {
+    height: 40vh;
+}
+
 .manage-coach-actions > label {
     display: none;
 }
@@ -249,7 +253,11 @@ li.manage-coach-list-coach {
 .manage-coach-helper-link, .manage-coach-helper-invitation-code, .manage-coach-helper-email-address {
     text-decoration: underline;
     text-align: center;
-    margin-bottom: 40px;
+    margin: 20px 0;
+}
+
+.manage-coach-helper-invitation-code {
+    margin: 0
 }
 
 .manage-coach-helper-email-address {

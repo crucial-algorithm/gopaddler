@@ -24,7 +24,6 @@ const EN = {
 
         , manage_coach_title: "Coach management"
         , manage_coach_no_coach_found: "join your coach team"
-        , manage_coach_no_coach_send_email_helper: "Not sure if your coach has an account? Don’t worry, we will send an invite for him to create an account in GoPaddler"
         , manage_coach_helper_link: "How does it work?"
         , manage_coach_i_have_an_invitation_code: "I have my coach invitation code"
         , manage_coach_i_have_an_email_address: "I have my coach e-mail"
@@ -53,6 +52,9 @@ const EN = {
         , manage_coach_no_server_found: "Failed to connect to server. Please try again later."
         , manage_coach_unexpected_error: "Unexpected error occurred. Please try again later."
         , manage_coach_loading: "loading coach data from server..."
+        , manage_coach_invite_sent_title: "Request sent"
+        , manage_coach_invite_sent_message: "Your request has been sent to your coach. Now you need to wait for him to accept you in his team"
+        , manage_coach_invite_sent_acknowledge: "OK"
 
         , blt_screen_title: "Heart Rate Monitors"
         , blt_searching: "Searching for Bluetooth devices"

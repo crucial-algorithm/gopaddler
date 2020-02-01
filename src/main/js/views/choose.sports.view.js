@@ -23,8 +23,10 @@ class ChooseSportsView {
                     , message = $li.data('message');
                 const profile = Api.User.getProfile();
                 setTimeout(function () {
-                    Utils.notify(profile.name + "(" + profile.email + ")"
-                        , "Discipline: " + $li.text());
+                    try {
+                        Api.User.saveSport($li.text());
+                    } catch (err) {
+                    }
                 }, 2000);
 
                 if (isSupported) {

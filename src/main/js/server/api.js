@@ -474,7 +474,6 @@ let User = {
         return asteroid.userId;
     },
 
-
     getProfile: function () {
         return asteroid.user.profile;
     },
@@ -501,6 +500,10 @@ let User = {
             asteroid.user.boat = choice;
             _storeUser(asteroid.user);
         })
+    },
+
+    saveSport: function (choice) {
+        return _call('saveUserSport', choice)
     },
 
     boat: function () {

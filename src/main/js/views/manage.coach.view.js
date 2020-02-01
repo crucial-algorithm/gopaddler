@@ -56,10 +56,8 @@ class ManageCoachView {
             var $button = $(e.target), coachId = $button.data('coach');
 
             self.list.delete($button, coachId, function () {
-                Api.User.leaveCoachTeam(coachId).then(function (coaches) {
-                    if (coaches !== null) {
-                        self.render(coaches);
-                    }
+                Api.User.leaveCoachTeam(coachId).then(function () {
+                    App.back();
                 });
                 return false;
             });
@@ -97,7 +95,7 @@ class ManageCoachView {
                 return self.showYouDontHaveAnAccountWarning();
             }
             let code = self.$code.val();
-            if ($invitationCodeHelper.hasClass('email') && isNaN(parseInt(code))) {
+            if ($invitationCodeHelper.hasClass('email') === false && isNaN(parseInt(code))) {
                 self.appContext.ui.modal.alert(self.appContext.translate('manage_coach_request_unknown_code')
                     , "<p>" + self.appContext.translate('manage_coach_request_unknown_code_message') + "</p>"
                     , self.appContext.translate('manage_coach_request_unknown_code_acknowledge'));

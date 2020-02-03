@@ -31,7 +31,11 @@ class GPPullToRefresh {
             return;
         }
 
+        try {
         self.instance.destroy();
+        } catch (err) {
+            console.error('not good... destroy of instance failed somehow', this.id);
+        }
         self.destroyed = true;
         self.instance = {
             destroy: function () {

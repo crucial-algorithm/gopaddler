@@ -316,6 +316,46 @@ class Utils {
             stddev: stddev
         }
     }
+
+
+    /**
+     * @typedef {object} Slider
+     *
+     * @property {function} next
+     * @property {function} previous
+     * @property {function} shake
+     */
+
+    /**
+     *
+     * @param $dom
+     * @param defaultSpeed
+     * @return Slider
+     */
+    static enrichSlickWithActionsForGestureTips($dom, defaultSpeed) {
+        return {
+            next: function (speed = 2000, reset = null) {
+                $dom.slick('slickSetOption', 'speed', speed);
+                $dom.slick('slickNext');
+                $dom.slick('slickSetOption', 'speed', reset !== null ? reset : defaultSpeed);
+            },
+            previous: function (speed = 2000, reset = null) {
+                $dom.slick('slickSetOption', 'speed', speed);
+                $dom.slick('slickPrev');
+                $dom.slick('slickSetOption', 'speed', reset !== null ? reset : defaultSpeed);
+            },
+            shake: function (forward = 800, wait = 400, back = 800) {
+                let $active = $dom.find('.slick-active');
+                $active.animate({marginLeft: $active.width() / 1.7 * -1}, forward, undefined, function () {
+                    setTimeout(function () {
+                        $active.animate({marginLeft: 0}, back);
+                    }, wait);
+                });
+            }
+        }
+
+    }
+
 }
 
 export default Utils

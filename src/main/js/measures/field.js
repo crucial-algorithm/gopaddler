@@ -3,14 +3,6 @@
 import Measure from './measure';
 import Utils from '../utils/utils';
 
-/**
- * @typedef {object} Slider
- *
- * @property {function} next
- * @property {function} previous
- */
-
-
 class Field {
 
     constructor(element, type, size, context, enableSplits) {
@@ -106,18 +98,8 @@ class Field {
                     initialSlide: position,
                     speed: self.speed
                 });
-                deferred.resolve({
-                    next: function (speed = 2000) {
-                        self.$measures.slick('slickSetOption', 'speed', speed);
-                        self.$measures.slick('slickNext');
-                        self.$measures.slick('slickSetOption', 'speed', self.speed);
-                    },
-                    previous: function (speed = 2000) {
-                        self.$measures.slick('slickSetOption', 'speed', speed);
-                        self.$measures.slick('slickPrev');
-                        self.$measures.slick('slickSetOption', 'speed', self.speed);
-                    }
-                });
+
+                deferred.resolve(Utils.enrichSlickWithActionsForGestureTips(self.$measures, self.speed));
             }
         }(position, initialType), 0);
 

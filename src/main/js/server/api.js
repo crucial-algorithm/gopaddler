@@ -7,6 +7,46 @@ const createClass = require('asteroid').createClass;
 const facebook = require('../asteroid/facebook');
 const Asteroid = createClass([facebook]);
 
+Asteroid.prototype.loginWithGoPaddler = function (user) {
+
+    let self = this;
+    let deferred = $.Deferred();
+
+    if (!user && 1 === 2) {
+        deferred.reject();
+        return deferred.promise();
+    }
+
+    const done = function (err, res) {
+        if (err) {
+            delete self.userId;
+            delete self.loggedIn;
+            localStorage.removeItem(self._host + "__" + self._instanceId + "__login_token__");
+            deferred.reject(err);
+            self.trigger("loginError", err);
+        } else {
+            self.userId = res.userId;
+            self.loggedIn = true;
+            localStorage.setItem(self.endpoint + "__login_token__", res.token);
+            self.trigger("login", res.user);
+            self.trigger("loggedIn", res.user);
+            deferred.resolve(res.user);
+        }
+    };
+
+    (function login(data) {
+        self.call('Asteroid.loginWithGoPaddler', data).then(function (res) {
+            done(null, res);
+        }, function (err) {
+            done(new Error(err.reason))
+        });
+    })(user);
+
+
+    return deferred.promise();
+};
+
+
 let connected = false, loggedIn = false, retries = 0;
 let lastUserAddedMsg = null;
 let onCoachRequest = function(){};
@@ -107,8 +147,12 @@ function _remoteLogin() {
                 });
             });
         }).fail(function (err) {
-            defer.reject(err);
-            console.log(err);
+            if (err.error !== 'not-authorized') {
+                defer.reject(err);
+                return console.log(err);
+            }
+            console.log('damn, we have been logged out');
+            Auth.restoreLogin(defer);
         });
         return defer.promise();
     }
@@ -208,6 +252,12 @@ function _finishLogin(defer, user, method) {
 function _storeUser(user) {
     asteroid.user = user;
     localStorage.setItem('user', JSON.stringify(user));
+}
+
+function _storePreviousKnownUser() {
+    const user = localStorage.getItem('user');
+    if (!user) return;
+    localStorage.setItem('last.known.user', JSON.stringify(user));
 }
 
 function _clearCoachRequests() {
@@ -374,6 +424,8 @@ let Auth = {
 
         asteroid.logout().then(function () {
 
+            _storePreviousKnownUser();
+
             // remove from local storage
             localStorage.removeItem('user');
             localStorage.removeItem('login_method');
@@ -409,6 +461,22 @@ let Auth = {
         return _call("gpRecoverPassword", {
             email: email
         })
+    },
+
+    restoreLogin: function (defer) {
+        let serializedUser = localStorage.getItem('user')
+            , lastKnownSerializedUser = localStorage.getItem('last.known.user');
+        if (!serializedUser && !lastKnownSerializedUser) {
+            defer.reject();
+        }
+        const user = JSON.parse(serializedUser || lastKnownSerializedUser);
+        asteroid.loginWithGoPaddler(user).then(function (user) {
+            console.log('logged back in');
+            _finishLogin(defer, user);
+        }).fail(function (err) {
+            console.log('failed to get logged back in', err);
+            defer.reject(err);
+        });
     }
 };
 

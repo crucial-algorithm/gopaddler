@@ -114,6 +114,17 @@ function _localLogin() {
 }
 
 /**
+ *
+ * @return {null|any}
+ * @private
+ */
+function _loadUserFromLocalStorage() {
+    const serializedUser = localStorage.getItem('user'), isUserSet = !!serializedUser;
+    if (isUserSet === false) return null;
+    return JSON.parse(serializedUser);
+}
+
+/**
  * Authenticate the user remotely.
  *
  * @returns {*}
@@ -141,7 +152,7 @@ function _remoteLogin() {
                     delete user.swapped;
                     delete user.token;
                     _finishLogin(defer, user, 'password');
-                }).catch(function (err) {
+                }).fail(function (err) {
                     defer.reject(err);
                     console.err(err);
                 });
@@ -157,20 +168,30 @@ function _remoteLogin() {
         return defer.promise();
     }
 
-    const userId = asteroid.userId;
-    if (!userId) {
+    let user = _loadUserFromLocalStorage();
+    if (!user) {
+        console.log('ok... we don\'t have a stored user... let try facebook login as a fallback');
         return _loginWithFacebook().then(defer.resolve).fail(defer.reject);
     }
 
+    const userId = user._id;
+    console.log(`going for migration`);
     migrateFacebookUser().then((token) => {
+        const profile = user.profile, username = profile.email ? profile.email : userId + "@dummy.com";
         Database.updateToken(token);
-        Auth.loginWithPassword(userId, token).then(function (user) {
+        console.log(`login with = ${username} / ${token}`);
+        Auth.loginWithPassword(username, token).then(function (user) {
+            console.log(`login success`);
             _finishLogin(defer, user, 'password');
-        }).catch(function (err) {
+        }).fail(function (err) {
             // try to login with facebook...
             _loginWithFacebook().then(defer.resolve).fail(defer.reject);
             console.err(err);
         });
+    }).fail((err) => {
+        _loginWithFacebook().then(defer.resolve).fail(defer.reject);
+        console.log('migration failed');
+        console.dir(err);
     });
 
     return defer.promise();
@@ -414,7 +435,7 @@ let Auth = {
         });
 
         return defer.promise();
-        
+
     },
 
 
@@ -700,7 +721,7 @@ internalLiveListeners[LiveEvents.COACH_ACCEPTED_TEAM_REQUEST] = function () {
 let lastClockSyncedAt = 0
     , syncClockCommandId = null, syncClockPayload = {}
     , liveSessionDefer = null, liveSessionCreated = null
-    ;
+;
 
 /**
  *
@@ -839,7 +860,7 @@ let TrainingSessions = {
 
             // Check if coach is watching
             if (lastPingAt !== null && new Date().getTime() - lastPingAt > 6 * 60 * 1000
-            // disable this optimization meanwhile, while live sessions are still unstable
+                // disable this optimization meanwhile, while live sessions are still unstable
                 && 1 !== 1) {
                 return;
             }

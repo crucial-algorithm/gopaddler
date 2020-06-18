@@ -112,6 +112,7 @@ class Context {
         this._ui = Context.UI(this);
 
         this._coachAcceptedRequestListeners = [];
+        this._userConnectedToStrava = [];
 
         this._coachInviteTokenResolver = null;
     }
@@ -186,6 +187,17 @@ class Context {
     listenToCoachAcceptedRequest(callback) {
         this._coachAcceptedRequestListeners.push(callback);
     }
+
+    triggerUserConnectedToStrava(payload) {
+        for (let callback of this._userConnectedToStrava) {
+            callback.apply({}, [payload])
+        }
+    }
+
+    listenToUserConnectingToStrava(callback) {
+        this._userConnectedToStrava.push(callback);
+    }
+
 
     isShowTouchGestures() {
         return this._settings.isShowTouchGestures();

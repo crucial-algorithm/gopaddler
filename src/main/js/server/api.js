@@ -254,6 +254,8 @@ function _finishLogin(defer, user, method) {
         user.speedZones = info.speedZones;
         user.strokeRateZones = info.strokeRateZones;
         user.roles = info.roles;
+        user.hasStrava = info.hasStrava;
+        user.stravaAthleteName = info.stravaAthleteName;
         _storeUser(user);
     }).fail(function (err) {
         console.log(err);
@@ -438,7 +440,6 @@ let Auth = {
 
     },
 
-
     logout: function () {
 
         let defer = $.Deferred();
@@ -498,6 +499,14 @@ let Auth = {
             console.log('failed to get logged back in', err);
             defer.reject(err);
         });
+    },
+
+    createAppAuthToken: function () {
+        return _call('createAppAuthToken');
+    },
+
+    stravaDisconnect: function () {
+        return _call('strava.disconnect');
     }
 };
 
@@ -526,6 +535,7 @@ function isLiveUpdate() {
 }
 
 const coachAcceptedTeamRequest = [];
+const userConnectedToStrava = [];
 let User = {
 
     accessed: function() {
@@ -646,8 +656,24 @@ let User = {
         coachAcceptedTeamRequest.push(callback);
     },
 
+    onUserConnectedToStrava: function (callback) {
+        userConnectedToStrava.push(callback);
+    },
+
     setHasCoach: function () {
         asteroid.user.hasCoach = true;
+        _storeUser(asteroid.user);
+    },
+
+    setHasStrava: function (name) {
+        asteroid.user.hasStrava = true;
+        asteroid.user.stravaAthleteName = name;
+        _storeUser(asteroid.user);
+    },
+
+    setStravaDisconnected: function () {
+        asteroid.user.hasStrava = false;
+        asteroid.user.stravaAthleteName = null;
         _storeUser(asteroid.user);
     },
 
@@ -665,6 +691,14 @@ let User = {
 
     acceptCoachInvite(userId, token) {
         return _call('acceptCoachInvite', userId, token);
+    },
+
+    hasStrava() {
+        return asteroid.user.hasStrava === true
+    },
+
+    stravaAthleteName() {
+        return asteroid.user.stravaAthleteName
     }
 };
 
@@ -709,13 +743,18 @@ let LiveEvents = {
     CLOCK_SYNCED: 'clockSynced',
     FINISH_WARMUP: 'finishWarmup',
     HARD_RESET: 'hardReset',
-    COACH_ACCEPTED_TEAM_REQUEST: "coachAcceptedTeamRequest"
+    COACH_ACCEPTED_TEAM_REQUEST: "coachAcceptedTeamRequest",
+    USER_CONNECTED_TO_STRAVA: "userConnectedToStrava"
 };
 
 resetListeners();
 
 internalLiveListeners[LiveEvents.COACH_ACCEPTED_TEAM_REQUEST] = function () {
     User.setHasCoach();
+};
+
+internalLiveListeners[LiveEvents.USER_CONNECTED_TO_STRAVA] = function (id, payload) {
+    User.setHasStrava(payload.name)
 };
 
 let lastClockSyncedAt = 0
@@ -1012,8 +1051,15 @@ let Server = {
                 console.error('msg cannot be null in callCommandListeners');
                 return;
             }
-            let record = msg.fields;
-            let listeners = record.command === LiveEvents.COACH_ACCEPTED_TEAM_REQUEST ? coachAcceptedTeamRequest : liveListeners[record.command] || [];
+
+            let record = msg.fields, listeners;
+            if (record.command === LiveEvents.COACH_ACCEPTED_TEAM_REQUEST) {
+                listeners = coachAcceptedTeamRequest;
+            } else if (record.command === LiveEvents.USER_CONNECTED_TO_STRAVA) {
+                listeners = userConnectedToStrava;
+            } else {
+                listeners = liveListeners[record.command] || [];
+            }
 
             if (internalLiveListeners[record.command]) internalLiveListeners[record.command]
                 .apply({}, [msg.id, record.payload]);

@@ -16,6 +16,22 @@ body {
     background-color: #3B3D62;
 }
 
+.button-primary {
+    cursor: pointer;
+    height: 60px;
+    margin: 0 auto;
+    border-radius: 20px;
+    font-size: 20px;
+    color: white;
+    background-color: #71B57B;
+    text-transform: uppercase;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+}
+
 .paddler-link, a {
     color: #ef6156;
     text-decoration: none;
@@ -348,7 +364,7 @@ body {
     align-items: center;
 }
 
-.settings-current-gps-rate, .settings-current-max-heart-rate, .settings-current-language {
+.settings-current-value, .settings-current-gps-rate, .settings-current-max-heart-rate, .settings-current-language {
     vertical-align: middle;
     width: 35%;
     text-align: right;

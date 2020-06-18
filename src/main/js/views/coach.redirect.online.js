@@ -37,8 +37,8 @@ class CoachRedirectOnline {
         });
 
         $redirectOnline.on('tap', function () {
-            window.open('https://coach.gopaddler.com/join?utm_source=app', '_system');
-            // TODO: close app
+            let web = __WEB_URL__;
+            window.open(`${web}/join?utm_source=app`, '_system');
             try {
                 navigator.app.exitApp();
             } catch(err){

@@ -17,6 +17,7 @@ import DefineLanguageView from './views/define.language.view';
 import ManageCoachView from './views/manage.coach.view';
 import ChooseSportsView from './views/choose.sports.view';
 import CoachSlaveView from './views/coach.slave.view';
+import StravaView from './views/strava.view';
 import CoachRedirectOnline from "./views/coach.redirect.online";
 import Context from './context';
 import {emulateCordova} from './global';
@@ -237,6 +238,16 @@ App.controller('bluetooth', function (page, request) {
     enrichPageArg(page, 'bluetooth');
     loadContext.then(function (context) {
         new BluetoothView(page, context, request);
+    });
+});
+
+/**
+ * Bluetooth devices paring
+ */
+App.controller('strava', function (page, request) {
+    enrichPageArg(page, 'strava');
+    loadContext.then(function (context) {
+        new StravaView(page, context);
     });
 });
 

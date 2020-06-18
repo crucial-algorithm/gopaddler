@@ -23,6 +23,7 @@ class SettingsView {
             , $language = $('#language', page)
             , $coach = $('#coach', page)
             , $maxHeartRate = $('#max-heart-rate', page)
+            , $strava = $('#strava', page)
             , $layout = $('#layout', page)
             , $portraitMode = $('#portrait-mode', page);
 
@@ -76,6 +77,10 @@ class SettingsView {
 
         $profile.on('tap', function () {
             App.load('profile');
+        });
+
+        $strava.on('tap', function () {
+            App.load('strava');
         });
 
         $(page).on('appDestroy', function () {
@@ -175,6 +180,8 @@ class SettingsView {
             $('.settings-current-gps-rate').text(rate === 0 ? 'Auto' : rate + " sec");
             $('.settings-current-max-heart-rate').text(context.getRestingHeartRate() + " / " + context.getMaxHeartRate());
             $('.settings-current-language').text(context.getLanguage());
+            if (Api.User.hasStrava())
+                $('[data-selector="strava-current"]').text(Api.User.stravaAthleteName());
         })
     }
 }

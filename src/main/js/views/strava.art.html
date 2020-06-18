@@ -1,0 +1,21 @@
+<link rel="stylesheet" href="css/portrait.css">
+<link rel="stylesheet" href="css/strava.css">
+
+{{if isLandscapeMode}}
+<link rel="stylesheet" href="css/strava.landscape.css">
+{{/if}}
+
+<div class="{{if isPortraitMode}}portrait-paddler-topbar{{/if}} app-topbar paddler-topbar">
+        <button class="{{if isPortraitMode}}portrait-back-button{{/if}}
+        app-button left paddler-back" alt="back" data-back></button>
+    <div class="paddler-title">
+        <div class="paddler-title-text">{{"strava_title" | translate}}</div>
+    </div>
+</div>
+<div class="app-content white" data-no-scroll="true">
+    <div class="strava-full-window {{if isConnected}} strava-connected {{/if}}">
+        <img src="{{"strava_003.png" | pathFor}}" width="80%">
+        <div class="button-primary strava-button strava-button-connect">Connect</div>
+        <div class="button-primary strava-button strava-button-disconnect">Disconnect</div>
+    </div>
+</div>

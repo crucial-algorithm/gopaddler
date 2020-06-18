@@ -17,10 +17,10 @@ const PT = {
         , settings_menu_gps_refresh_rate: "Velocidade GPS"
         , settings_menu_heart_rate_sensor: "Bandas Freq. Cardíaca"
         , settings_menu_heart_rate: "Freq. Cardíaca"
+        , settings_menu_strava: "Strava"
         , settings_menu_calibrate: "Calibração"
         , settings_menu_calibrate_how_to: "Instruções"
         , settings_menu_profile: "A minha conta"
-        , settings_menu_logout: "Sair"
         , settings_menu_version: "Versão"
 
         , manage_coach_title: "Gestão de Treinadores"
@@ -92,7 +92,6 @@ const PT = {
         , calibration_preset_flat: "NÃO PRECISO DE CALIBRAR"
         , calibration_preset_flat_tip: "Telemóvel irá ser usado deitado, apenas para o treinador acompanhar"
         , calibration_done: "Terminou"
-
 
         , select_session_title: "Escolha uma sessão"
         , select_session_free_session: "Sessão Livre"
@@ -341,11 +340,12 @@ const PT = {
         , profile_update_error_generic_message: "Erro a processar o seu pedido. <br/> O problema será investigado. <br/></br>Por favor tente mais tarde."
         , profile_update_error_generic_acknowledge: "OK"
 
+        , strava_title: "Strava"
+
         , universal_link_join_team_title: "Equipa"
         , universal_link_join_team_success: "Foste adicionado à equipa de $1. <br/></br/>Para gerires quem são os teus treinadores, vai a Definições > Treinadores"
         , universal_link_join_team_error: "No foi possível processar o convite. Tenta novamente e, se falhar, envia um convite ao treinador manualmente (vai a Definições > Treinadores)"
         , universal_link_join_team_acknowledge: "OK"
-
     }
 };
 

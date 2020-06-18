@@ -157,6 +157,11 @@ class HomeView {
             context.triggerCoachAcceptedRequest(payload);
         });
 
+        Api.User.onUserConnectedToStrava(function (id, payload) {
+            Api.TrainingSessions.live.commandSynced(id);
+            context.triggerUserConnectedToStrava(payload)
+        });
+
 
         let hardResetFrom = localStorage.getItem('hard_reset');
         if (hardResetFrom) {

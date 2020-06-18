@@ -17,6 +17,7 @@ const EN = {
         , settings_menu_gps_refresh_rate: "GPS refresh rate"
         , settings_menu_heart_rate_sensor: "Heart Rate Sensor"
         , settings_menu_heart_rate: "Heart Rate"
+        , settings_menu_strava: "Strava"
         , settings_menu_calibrate: "Calibrate"
         , settings_menu_calibrate_how_to: "Learn how"
         , settings_menu_profile: "Profile"
@@ -338,6 +339,8 @@ const EN = {
         , profile_update_error_generic_title: "Error creating account"
         , profile_update_error_generic_message: "We could not process your request. <br/> This error has been reported and we will look into it.<br/><br/>Try again later."
         , profile_update_error_generic_acknowledge: "OK"
+
+        , strava_title: "Strava"
 
         , universal_link_join_team_title: "Team"
         , universal_link_join_team_success: "You have been added to <i><b>$1</b></i> team. <br/>All your session data will be shared with him. <br/><br/><br/>If you do not want to be a part of his team, go to SETTINGS > COACH and leave."

@@ -27,10 +27,18 @@
     display: none;
 }
 
+.strava-full-window .strava-user-connected {
+    display: none;
+}
+
 .strava-full-window.strava-connected .strava-button-connect {
     display: none;
 }
 
 .strava-full-window.strava-connected .strava-button-disconnect {
     display: flex;
+}
+
+.strava-full-window.strava-connected .strava-user-connected {
+    display: block;
 }

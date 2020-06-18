@@ -341,6 +341,7 @@ const EN = {
         , profile_update_error_generic_acknowledge: "OK"
 
         , strava_title: "Strava"
+        , strava_connected_has: "Strava User: $1"
 
         , universal_link_join_team_title: "Team"
         , universal_link_join_team_success: "You have been added to <i><b>$1</b></i> team. <br/>All your session data will be shared with him. <br/><br/><br/>If you do not want to be a part of his team, go to SETTINGS > COACH and leave."

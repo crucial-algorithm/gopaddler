@@ -341,6 +341,7 @@ const PT = {
         , profile_update_error_generic_acknowledge: "OK"
 
         , strava_title: "Strava"
+        , strava_connected_has: "Utilizador Strava: $1"
 
         , universal_link_join_team_title: "Equipa"
         , universal_link_join_team_success: "Foste adicionado à equipa de $1. <br/></br/>Para gerires quem são os teus treinadores, vai a Definições > Treinadores"

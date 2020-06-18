@@ -16,7 +16,7 @@ class StravaView {
         Context.render(page, template({isPortraitMode: context.isPortraitMode()
             , isLandscapeMode: !context.isPortraitMode()
             , isConnected: Api.User.hasStrava()
-            , athleteName: Api.User.stravaAthleteName()
+            , connectedTo: context.translate('strava_connected_has', [Api.User.stravaAthleteName()])
         }));
         const self = this;
         page.onReady.then(function () {

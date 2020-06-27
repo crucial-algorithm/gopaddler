@@ -86,6 +86,12 @@ module.exports = {
                         if (stderr) process.stderr.write(stderr);
                         if (!stdout && !stderr) console.log('... hot swap js in android platform');
                     });
+
+                    exec('cp -f www/css/* www/dist/app.js.map platforms/android/app/src/main/assets/www/css/', (err, stdout, stderr) => {
+                        if (stdout) process.stdout.write(stdout);
+                        if (stderr) process.stderr.write(stderr);
+                        if (!stdout && !stderr) console.log('... hot swap js in android platform');
+                    });
                 });
             }
         },

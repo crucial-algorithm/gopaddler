@@ -32,15 +32,14 @@ class SessionSummaryView {
             $page            = $(page),
             $duration        = $page.find('[data-selector="duration"]'),
             $distance        = $page.find('[data-selector="distance"]'),
+            $paused          = $page.find('[data-selector="paused"]'),
             $avgSpeed        = $page.find('[data-selector="avg-speed"]'),
             $avgSPM          = $page.find('[data-selector="avg-spm"]'),
             $avgEfficiency   = $page.find('[data-selector="avg-efficiency"]'),
             $avgHeartRate    = $page.find('[data-selector="avg-heart-rate"]'),
-            $congrats        = $page.find('#summary-congrats'),
             $details         = $page.find('#summary-details'),
             $finish          = $page.find('#summary-finish'),
-            $back            = $page.find('#summary-back'),
-            slickInitialized = $.Deferred()
+            $back            = $page.find('#summary-back')
         ;
 
         if (session.id === 1 && isPastSession !== true) {
@@ -68,23 +67,12 @@ class SessionSummaryView {
             setTimeout(() => {
                 // hide "show demo stats" modal
                 modal.hide();
-                // add gestures tip to prevent users from thinking it only has one screen
-                gesturesTips();
             }, 5000);
-
-            let gesturesTips = function () {
-                setTimeout(() => {
-                    slickInitialized.then(/**@param {Slider} slider */(slider) => {
-                        slider.shake();
-                    })
-                }, 500);
-            };
         }
 
         // if session summary is loading a past session, change Finish button to Back and change Congrats to Details
         if (isPastSession === true) {
             $finish.hide();
-            $congrats.hide();
             $back.show();
         } else {
             if (context.isPortraitMode() === false) {
@@ -93,7 +81,6 @@ class SessionSummaryView {
             Sync.uploadSessions();
         }
 
-        $page.find('#summary-congrats-session').html(moment(session.sessionStart).format('MMMM Do YYYY, HH:mm') + 'h');
         $page.find('#summary-details-session').html(moment(session.sessionStart).format('MMMM Do YYYY, HH:mm') + 'h');
 
         let duration = moment.duration(session.sessionEnd - session.sessionStart);
@@ -107,19 +94,24 @@ class SessionSummaryView {
         let heartRate = context.displayMetric('heartRate', session.avgHeartRate);
 
         let now = Date.now();
-        Api.TrainingSessions.live.finished(now);
+        if (isPastSession === false) {
+            Api.TrainingSessions.live.finished(now);
 
-        Api.TrainingSessions.live.update({
-            spm: avgSPM,
-            timestamp: now,
-            distance: distance,
-            speed: avgSpeed,
-            efficiency: avgEfficiency,
-            duration: duration.asMilliseconds()
-        }, 'finished');
+            Api.TrainingSessions.live.update({
+                spm: avgSPM,
+                timestamp: now,
+                distance: distance,
+                speed: avgSpeed,
+                efficiency: avgEfficiency,
+                duration: duration.asMilliseconds()
+            }, 'finished');
+        }
 
         $duration.html('<b>' + durationFormatted + '</b>');
         $distance.html('<b>' + distance + '</b>' + context.getUnit('distance_in_session_list'));
+        if (session.pausedDuration > 0) {
+            $paused.html(' / ' + Utils.duration(session.pausedDuration));
+        }
         $avgSpeed.html('<b>' + avgSpeed + '</b>');
         $avgSPM.html('<b>' + avgSPM + '</b>');
         $avgEfficiency.html('<b>' + avgEfficiency + '</b>');
@@ -139,13 +131,6 @@ class SessionSummaryView {
         $page.on('appShow', function () {
 
             session.detail().then(function (records) {
-                let $slick = $('[data-selector="slick"]');
-                $slick.slick({
-                    dots: true,
-                    speed: 300,
-                    infinite: false,
-                    arrows: false
-                });
                 self.loadCharts(collapseMetrics(records));
                 let output = calculateIntervals(session, records);
                 let zones = new SessionSummaryZones(session, output.working);
@@ -157,9 +142,6 @@ class SessionSummaryView {
 
                 let intervals = new SessionSummaryIntervals(session, output.intervals);
                 intervals.render(context, intervalsTemplate, $('.summary-layout-intervals'));
-                setTimeout(function () {
-                    slickInitialized.resolve(Utils.enrichSlickWithActionsForGestureTips($slick, 300))
-                }, 0);
             });
         });
     }

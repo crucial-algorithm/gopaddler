@@ -191,9 +191,6 @@ const EN = {
 
         , session_summary_title: "Summary"
         , session_summary_finish_button: "Finish"
-        , session_summary_congrats: "Congrats!"
-        , session_summary_session_finished: "Session Finished"
-        , session_summary_session_details: "Session Details"
         , session_summary_metrics_title: "Average Metrics"
         , session_summary_metrics_speed: "Km/h"
         , session_summary_metrics_spm: "SPM"

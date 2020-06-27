@@ -191,9 +191,6 @@ const PT = {
 
         , session_summary_title: "Sumário"
         , session_summary_finish_button: "Terminar"
-        , session_summary_congrats: "Parabéns"
-        , session_summary_session_finished: "Sessão terminada"
-        , session_summary_session_details: "Detalhes da Sessão"
         , session_summary_metrics_title: "Métricas (médias)"
         , session_summary_metrics_speed: "Km/h"
         , session_summary_metrics_spm: "RPM"

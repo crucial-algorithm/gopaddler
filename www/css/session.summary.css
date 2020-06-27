@@ -72,6 +72,12 @@ canvas.summary-value {
     box-sizing: border-box;
 }
 
+.summary-paused {
+    color: #fff;
+    font-weight: 700;
+    font-size: 10px;
+}
+
 .summary-distance {
     background-color: #fff;
     text-align: center;
@@ -85,8 +91,6 @@ canvas.summary-value {
 }
 
 .summary-highlight {
-    width: 80%;
-    margin: auto;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -103,24 +107,14 @@ canvas.summary-value {
 
 /* Summary Intervals */
 /* ----------------- */
-.summary-layout-intervals, .summary-layout-zones {
-    height: 90vh;
-    overflow: hidden;
-}
-.summary-intervals-container {
-    height: 90vh;
-    overflow: hidden;
-}
-
-.summary-intervals-charts {
-    width: 90vw;
+.summary-layout-intervals, .summary-layout-zones, .summary-layout-general {
     margin: 0 auto;
 }
 
 .summary-intervals-header {
     height: 60px;
-    background-color: #EE6156;
-    color: #FFFFFF;
+    background-color: #FFFFFF;
+    color: #3B3D62;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -238,19 +232,18 @@ canvas.summary-value {
 /* ------*/
 .summary-zones-header {
     height: 60px;
-    background-color: #EE6156;
-    color: #FFFFFF;
+    background-color: #FFFFFF;
+    color: #3B3D62;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     font-weight: 600;
     text-transform: uppercase;
+    margin: 40px 0;
 }
 
 .summary-zones-zone-container {
-    height: calc(90vh - 64px);
-    overflow: auto;
     width: 90vw;
     margin: 0 auto;
 }

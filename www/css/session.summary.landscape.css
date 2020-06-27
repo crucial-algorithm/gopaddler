@@ -1,6 +1,7 @@
 .summary-layout {
     display: flex;
     height: 82vh;
+    flex-direction: column;
 }
 
 .summary-layout-general {
@@ -8,10 +9,13 @@
 }
 
 .summary-session-details {
-    width: 50vw;
-    height: 82vh;
-    overflow: hidden;
-    float: left;
+    height: 90px;
+    width: 100%;
+    background-color: #EE6156;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 #summary-congrats {
@@ -24,7 +28,7 @@
 
 
 .summary-stats {
-    width: 50vw;
+    width: 100vw;
     background-color: #3b3d62;
     vertical-align: top;
     text-align: center;
@@ -57,7 +61,6 @@
 .summary-current-session {
     color: rgba(255,255,255,0.9);
     text-align: center;
-    margin-top: 5%;
     font-size: 3vw;
 }
 

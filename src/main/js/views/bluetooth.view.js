@@ -9,13 +9,13 @@ import rowTemplate from './bluetooth.row.art.html';
 
 class BluetoothView {
     constructor(page, context, request) {
-        var self = this;
+        const self = this;
 
         self.devices = {};
 
         Context.render(page, template({isPortraitMode: context.isPortraitMode()}));
 
-        var $page = $(page);
+        let $page = $(page);
         this.bluetooth = new Bluetooth();
         this.scanning = false;
         self.context = context;
@@ -71,7 +71,7 @@ class BluetoothView {
     }
 
     initialize() {
-        var self = this;
+        const self = this;
         if (self.list)  {
             self.devices = {};
             self.list.clear();
@@ -97,13 +97,11 @@ class BluetoothView {
 
         self.scanning = true;
         this.bluetooth
-            .startScan(function found(device) {
+            .startScan(/**@param {Device} device*/ function found(device) {
                 if (devices[device.address]) return;
 
-                const now = Date.now();
-                const d = new Device(device.name, device.address, now, now);
-                Device.add(d);
-                self.addDevice(d);
+                Device.add(device);
+                self.addDevice(device);
 
                 self.list.refresh();
             }, function failed(err) {
@@ -173,7 +171,7 @@ class BluetoothView {
 
         self.prepareDeviceList();
 
-        var $row = $(rowTemplate({
+        let $row = $(rowTemplate({
             device: device.name,
             address: device.address,
             addedAt: moment(device.addedAt).format('YYYY-MM-DD')

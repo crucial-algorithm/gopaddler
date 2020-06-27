@@ -151,6 +151,12 @@ class Session {
         return this;
     }
 
+    /**
+     *
+     * @param splits
+     * @param expression
+     * @return {*}
+     */
     finish(splits, expression) {
         const self = this, defer = $.Deferred();
 
@@ -177,14 +183,14 @@ class Session {
                     , self.scheduledSessionId, self.scheduledSessionStart
                     , self.expression, JSON.stringify(self.expressionJson), self.id]
                 , function (a) {
-                    defer.resolve(this);
+                    defer.resolve(self);
                 }, function (a) {
                     console.log('error', a);
-                    defer.reject(this);
+                    defer.reject(self);
                 });
         });
 
-        return defer;
+        return defer.promise();
     }
 
     /**
@@ -220,6 +226,7 @@ class Session {
                 relevantSplits.push(i);
             }
         }
+
 
         SessionDetail.getDetailedMetrics(self.id, relevantSplits, function (/**@type SessionDetailMetrics */metrics) {
             defer.resolve(metrics);

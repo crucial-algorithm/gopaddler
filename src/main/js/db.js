@@ -143,6 +143,12 @@ const ddl = [
     [
         ["ALTER TABLE settings add column token TEXT"],
         ["UPDATE settings SET version = 14"]
+    ],
+
+    // v.1.7.0
+    [
+        ["ALTER TABLE session_data add column altitude REAL"],
+        ["UPDATE settings SET version = 15"]
     ]
 
 ];

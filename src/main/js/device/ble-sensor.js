@@ -4,15 +4,16 @@ import Device from '../model/device';
 import Bluetooth from './bluetooth';
 import Utils from '../utils/utils';
 
-class HeartRateSensor {
-    constructor() {
+export default class BleSensor {
+    static TYPES() {
+        return Bluetooth.TYPES();
+    }
+    constructor(type) {
 
         /** @type Device[] */
-        this.devices = Device.latest();
-        this.bluetooth = new Bluetooth();
+        this.devices = Device.latest(type);
+        this.bluetooth = new Bluetooth(type);
 
-        this.heartRate = 0;
-        this.lastEventAt = null;
         this.retryTimer = null;
         this.unresponsiveTimer = null;
         this.connectedDeviceAddress = null;
@@ -27,36 +28,39 @@ class HeartRateSensor {
             return;
         }
 
-        self.lastEventAt = new Date().getTime();
+        console.log('start listening to ble, sends callback(0)');
+        callback(0);
 
-        self.unresponsiveTimer = setInterval(function () {
-            if (new Date().getTime() - self.lastEventAt > 15000) {
-                callback(0)
-            }
-        }, 5000);
-
+        self.lastEventAt = Date.now();
         self.bluetooth
             .initialize()
             .then(function () {
-
                 Utils.loopAsync(self.devices, function (iterator) {
                     /**@type Device */
                     const device = iterator.current();
                     let updated = false;
 
-                    self.bluetooth.listen(device.address, function (hr) {
+                    self.bluetooth.listen(device.address, function (serviceUUID, value) {
                         iterator.finish();
                         self.connectedDeviceAddress = device.address;
 
                         if (updated === false) {
                             Device.updateLastSeen(device.address);
                             updated = true;
+
+                            self.unresponsiveTimer = setInterval(function () {
+                                let diff = Date.now() - self.lastEventAt;
+                                if (diff > 15000) {
+                                    console.log('unresponsiveTimer', diff > 15000, diff, new Date(self.lastEventAt));
+                                    callback(0);
+                                }
+                            }, 5000);
                         }
 
                         self.lastEventAt = Date.now();
-                        callback(hr);
+                        callback(value);
                     }, function onError() {
-
+                        console.log('failed', device.address);
                         self.bluetooth.disconnect(device.address);
 
                         if (iterator.isFinished()) {
@@ -70,9 +74,8 @@ class HeartRateSensor {
                         }
 
                         iterator.next();
-                    }, /* don't retry = */ true);
+                    }, /* retry 3 times = */ 3);
                 });
-
             })
             .catch(function (err) {
                 if (err.reason !== 'disabled') {
@@ -92,5 +95,3 @@ class HeartRateSensor {
         clearInterval(self.retryTimer);
     }
 }
-
-export default HeartRateSensor;

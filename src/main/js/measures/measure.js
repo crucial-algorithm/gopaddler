@@ -97,7 +97,7 @@ class LargeMeasure {
             this.$value.css({"font-size": this.isPortraitMode ? "30vh" : "30vw"});
             this.fontSizeChanged = true;
         } else if (value < 100 && this.fontSizeChanged) {
-            this.$value.css({"font-size": null});
+            this.$value.css({"font-size": ""});
             this.fontSizeChanged = false;
         }
 

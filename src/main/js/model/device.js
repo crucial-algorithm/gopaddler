@@ -4,11 +4,12 @@ const STORAGE_KEY = "devices";
 
 class Device {
 
-    constructor(name, address, addedAt = null, lastSeenAt = null) {
+    constructor(name, address, type, addedAt = null, lastSeenAt = null) {
         this._name = name;
         this._address = address;
         this._addedAt = addedAt;
         this._lastSeenAt = lastSeenAt;
+        this._type = type;
     }
 
     static count() {
@@ -19,15 +20,16 @@ class Device {
      *
      * @return {Device[]}
      */
-    static all() {
+    static all(type = null) {
         let result = [];
         let devices = JSON.parse(window.localStorage.getItem(STORAGE_KEY));
         if (!devices) {
             return result;
         }
 
-        for (let device of devices) {
-            result.push(new Device(device.name, device.address, device.addedAt, device.lastSeenAt));
+        for (/**@type {Device} */ let device of devices) {
+            if (type === null || device.type === type)
+                result.push(new Device(device.name, device.address, device.type, device.addedAt, device.lastSeenAt));
         }
 
         return result;
@@ -37,8 +39,8 @@ class Device {
      *
      * @return {Device[]}
      */
-    static latest() {
-        const devices = Device.all();
+    static latest(type = "HR") {
+        const devices = Device.all(type);
         return devices.sort(function (a, b) {
             if (a.lastSeenAt > b.lastSeenAt) {
                 return 1;
@@ -118,6 +120,14 @@ class Device {
         this._lastSeenAt = value;
     }
 
+    get type() {
+        return this._type;
+    }
+
+    set type(value) {
+        this._type = value;
+    }
+
     /**
      * method for JSON.stringify
      * @return {{lastSeenAt: *, addedAt: *, address: *, name: *}}
@@ -126,6 +136,7 @@ class Device {
         return {
             name: this.name,
             address: this.address,
+            type: this.type,
             addedAt: this.addedAt,
             lastSeenAt: this.lastSeenAt
         }

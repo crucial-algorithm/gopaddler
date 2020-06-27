@@ -6,7 +6,7 @@ import Database from '../db';
 
 
 class SessionDetail {
-    constructor(session, timestamp, distance, speed, spm, efficiency, latitude, longitude, heartRate, split
+    constructor(session, timestamp, distance, speed, spm, efficiency, latitude, longitude, altitude, heartRate, split
         , strokes, magnitude, isRecovery, motion) {
         this.connection = Database.getConnection();
         this.session = session;
@@ -17,6 +17,7 @@ class SessionDetail {
         this.efficiency = Utils.round2(efficiency || 0);
         this.latitude = latitude;
         this.longitude = longitude;
+        this.altitude = altitude;
         this.heartRate = heartRate;
         this.split = split;
         this.strokes = strokes === undefined ? null : strokes;
@@ -97,6 +98,14 @@ class SessionDetail {
         this.longitude = longitude;
     }
 
+    getAltitude() {
+        return this.altitude;
+    }
+
+    setAltitude(value) {
+        this.altitude = value;
+    }
+
     getSplit() {
         return this.split;
     }
@@ -119,9 +128,9 @@ class SessionDetail {
 
     save() {
         this.connection.executeSql("INSERT INTO session_data (session, timestamp, distance, speed, spm, efficiency" +
-            ", latitude, longitude, heart_rate, split, strokes, accel_magnitude, recovery, motion) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            ", latitude, longitude, altitude, heart_rate, split, strokes, accel_magnitude, recovery, motion) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             [this.session, this.timestamp, this.distance, this.speed, this.spm, this.efficiency
-                , this.latitude, this.longitude, this.heartRate, this.split, this.strokes
+                , this.latitude, this.longitude, this.altitude, this.heartRate, this.split, this.strokes
                 , this.accelerationMagnitude, this.recovery === true ? 1 : 0, this.motion], function (res) {
                 // intentionally left blank
             }, function (error) {
@@ -143,6 +152,7 @@ class SessionDetail {
                         // the following lines will fail if in equador!
                         , data.latitude ? parseFloat(data.latitude) : undefined
                         , data.longitude ? parseFloat(data.longitude) : undefined
+                        , data.altitude ? parseFloat(data.altitude) : undefined
                         , data.heart_rate ? data.heart_rate : 0
                         , data.split, data.strokes, data.accel_magnitude, data.recovery === 1
                         , data.motion

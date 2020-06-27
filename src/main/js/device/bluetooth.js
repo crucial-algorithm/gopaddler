@@ -2,28 +2,78 @@
 
 import Device from '../model/device';
 
+
+/**
+ * @typedef {Object} BleCharacteristic
+ * @property {String} uuid
+ */
+
+/**
+ * @typedef {Object} BleService
+ * @property {String} uuid
+ * @property {Array<BleCharacteristic>} characteristics
+ */
+
+/**
+ * @typedef {Object} CrankRevolutionData
+ * @property {Number} cumulativeCrankRevolutions
+ * @property {Number} lastCrankEventTime
+ * @property {Number} crankTimeDiff
+ * @property {Number} crankDiff
+ * @property {Number} cadence
+ * @property {Number} recordedAt
+ */
+
 const ERROR = {
     UNKNOWN_DEVICE_TYPE: 1
 };
 
+
+
+const BLE_PROFILES = {
+    CYCLING_CADENCE: {
+        SERVICE_UUID: "1816",
+        CHARACTERISTIC_UUID: "2A5B",
+        METRIC_POSITION: 2
+    },
+
+    HR: {
+        SERVICE_UUID: "180D",
+        CHARACTERISTIC_UUID: "2A37",
+        METRIC_POSITION: 1
+    }
+};
+
+const SERVICES = [BLE_PROFILES.HR.SERVICE_UUID, BLE_PROFILES.CYCLING_CADENCE.SERVICE_UUID];
+const CHARACTERISTICS = [BLE_PROFILES.HR.CHARACTERISTIC_UUID, BLE_PROFILES.CYCLING_CADENCE.CHARACTERISTIC_UUID];
+
+const UINT16_MAX = 65536;  // 2^16
+
 class Bluetooth {
-    constructor() {
-        var self = this;
-        self.foundDevices = [];
-        self.uuids = {};
-        self.address = null;
-        self.characteristic = "2A37";
-        self.service = "180D";
+
+    static TYPES() {
+        return {HR: 'HR', CYCLING_CADENCE: 'CYCLING_CADENCE'};
+    }
+
+    constructor(type = 'HR') {
+        this.foundDevices = [];
+        this.uuids = {};
+        this.address = null;
+        const profile = BLE_PROFILES[type];
+        this.service = profile.SERVICE_UUID;
+        this.characteristic = profile.CHARACTERISTIC_UUID;
+        /**@type CyclingCadenceMetricCalculator */
+        this._cyclingCandenceCalculator = null;
     }
 
     /**
      * @return {Promise} Resolve if the bluetooth sucessfully enabled, reject otherwise
      */
     initialize() {
-        var params = {
+        let params = {
             "request": true,
             "statusReceiver": true,
-            "restoreKey" : "gopaddler-app"
+            "restoreKey": "gopaddler-app"
         };
 
         return new Promise(function (resolve, reject) {
@@ -37,12 +87,12 @@ class Bluetooth {
     }
 
     retrieveConnected() {
-        var self = this;
+        let self = this;
 
         return new Promise(function (resolve, reject) {
             bluetoothle.retrieveConnected(function (result) {
-                var devices = [];
-                for (var i = 0; i < result.length; i++) {
+                let devices = [];
+                for (let i = 0; i < result.length; i++) {
                     devices.push({name: result[i].name, mac: result[i].address});
                 }
                 resolve(devices);
@@ -56,6 +106,7 @@ class Bluetooth {
         let self = this;
         let addresss = {};
         bluetoothle.startScan(function (device) {
+
             if (device.status === 'scanStarted') {
                 console.log('scanStarted');
                 return;
@@ -73,15 +124,17 @@ class Bluetooth {
 
             console.log('new device found', device.name, device.address);
 
-            self.listen(device.address, function success(value) {
+            self.listen(device.address, function success(serviceUUID, value) {
                 self.disconnect(device.address);
-                onFind(new Device(device.name, device.address));
+                const now = Date.now();
+                const type = serviceUUID === BLE_PROFILES.CYCLING_CADENCE.SERVICE_UUID ? "CYCLING_CADENCE" : "HR";
+                onFind(new Device(device.name, device.address, type, now, now));
             }, function error(err) {
                 console.log('listen failed', err)
-            }, true);
+            }, 1);
         }, function (error) {
             onError(error);
-        }, {services: []});
+        }, {services: SERVICES});
     }
 
     pair(address) {
@@ -117,23 +170,20 @@ class Bluetooth {
     unpair(address) {
         this.address = address;
         return new Promise(function (resolve, reject) {
-
-
             bluetoothle.unbond(function success(result) {
                 if (result.status === 'bonded')
                     resolve();
             }, function (error) {
                 reject(error)
             }, {address: address});
-
         });
     }
 
-    listen(address, callback, onError, singleTry) {
+    listen(address, callback, onError, attemptsLimit = 1) {
         const self = this;
         let connected = false;
 
-        onError = onError || function(){};
+        onError = onError || function () {};
 
         let errorHandler = function (context) {
             return function (err) {
@@ -157,83 +207,135 @@ class Bluetooth {
                 connected = true;
                 bluetoothle.discover(function success(discovered) {
 
-                    let serviceFound = false;
-                    discovered.services.forEach(function (service) {
-                        if (service.uuid !== self.service) {
-                            return;
-                        }
+                    let service = self.scanServices(discovered.services);
+                    // noinspection JSIncompatibleTypesComparison
+                    if (service === null) return onDiscoverError({type: ERROR.UNKNOWN_DEVICE_TYPE});
 
-                        serviceFound = true;
+                    let characteristic = self.scanCharacteristics(service.characteristics);
+                    // noinspection JSIncompatibleTypesComparison
+                    if (characteristic === null) return onDiscoverError({type: ERROR.UNKNOWN_DEVICE_TYPE});
 
-                        let characteristicFound = false;
-                        service.characteristics.forEach(function (characteristic) {
-                            let characteristicUuid = characteristic.uuid;
-
-                            if (characteristicUuid !== self.characteristic) {
-                                return;
-                            }
-
-                            characteristicFound = true;
-                            bluetoothle.subscribe(function (result) {
-                                if (!result.value) return;
-                                callback(bluetoothle.encodedStringToBytes(result.value)[1]);
-                            }, onSubscribeError, {
-                                address: address,
-                                service: service.uuid,
-                                characteristic: characteristicUuid
-                            })
-                        });
-
-                        if (!characteristicFound) {
-                            onDiscoverError({type: ERROR.UNKNOWN_DEVICE_TYPE});
-                        }
+                    bluetoothle.subscribe(function (result) {
+                        if (!result.value) return;
+                        callback(service.uuid, self.decode(service.uuid, result.value));
+                    }, onSubscribeError, {
+                        address: address,
+                        service: service.uuid,
+                        characteristic: characteristic.uuid
                     });
 
-                    if (!serviceFound) {
-                        onDiscoverError({type: ERROR.UNKNOWN_DEVICE_TYPE})
-                    }
                     if (navigator.userAgent !== 'gp-dev-ck')
                         console.log("discover finished");
-                }, onDiscoverError, params);
+
+                }, (err) => {
+                    if (err.error === "neverConnected") {
+                        // try to recconnect
+                        self.listen(address, callback, onError, attemptsLimit);
+                    } else {
+                        console.error(err);
+                    }
+                }, params);
 
 
-            }, onConnectError, params);
+            }, function (err) {
+                if (err.message === "Device previously connected, reconnect or close for new device") {
+                    self.disconnect(err.address);
+                }
+            }, params);
         };
 
-        if (singleTry !== true) {
-            setInterval(function () {
-                listen.apply(this, []);
-            }, 20000);
-        }
+        let attempts = 1;
+        let attemptsIntervalId = setInterval(function () {
+            if (attempts >= attemptsLimit) return clearInterval(attemptsIntervalId);
+            listen.apply(this, []);
+        }, 20000);
+
         listen();
 
         self.address = address;
     }
 
+    /**
+     * @private
+     *
+     * @param {Array<BleService>} services
+     * @return {BleService|null}
+     */
+    scanServices(services) {
+        let result = null;
+        for (let service of services) {
+            if (SERVICES.indexOf(service.uuid) < 0) continue;
+            result = service;
+        }
+        return result;
+    }
+
+    /**
+     * @private
+     * @param {Array<BleCharacteristic>} characteristics
+     * @return {BleCharacteristic|null}
+     */
+    scanCharacteristics(characteristics) {
+        /** @type BleCharacteristic|null */
+        let result = null;
+        for (let characteristic of characteristics) {
+            if (CHARACTERISTICS.indexOf(characteristic.uuid) < 0) continue;
+            result = characteristic;
+        }
+        return result;
+    }
+
+    /**
+     * Decode value to extract metric from sensor retrieved data
+     *
+     * @param {String} serviceUuid
+     * @param {String} value raw value from sensor
+     * @return {number}
+     */
+    decode(serviceUuid, value) {
+        if (serviceUuid === BLE_PROFILES.CYCLING_CADENCE.SERVICE_UUID) {
+            if (this._cyclingCandenceCalculator === null)
+                this._cyclingCandenceCalculator = new CyclingCadenceMetricCalculator();
+            return this._cyclingCandenceCalculator.decode(value);
+        } else {
+            return bluetoothle.encodedStringToBytes(value)[1];
+        }
+    }
+
     disconnect(address) {
-        var self = this;
+        let self = this;
         if (!address && self.address === null) return;
 
         address = address || self.address;
 
-        bluetoothle.unsubscribe(function(){}, function(){}, {
+        bluetoothle.unsubscribe(function () {
+        }, function () {
+        }, {
             address: address,
             service: self.service,
             characteristic: self.characteristic
         });
 
-        bluetoothle.close(function(){}, function(){}, {address: address});
+        bluetoothle.close(function () {
+        }, function () {
+        }, {address: address});
     }
 
     forget(address) {
-        var self = this;
+        let self = this;
         if (address === null) return;
 
-        bluetoothle.disconnect(function(){}, function(err){console.log(err)}, {
+        bluetoothle.disconnect(function () {
+        }, function (err) {
+            console.log(err)
+        }, {
             address: self.address
         });
 
-        bluetoothle.close(function(){}, function(err){console.log(err)}, {address: self.address});
+        bluetoothle.close(function () {
+        }, function (err) {
+            console.log(err)
+        }, {address: self.address});
     }
 
     stopScan() {
@@ -241,9 +343,103 @@ class Bluetooth {
     }
 
     close(address) {
-        bluetoothle.close(function(){}, function(){}, {address: address});
+        bluetoothle.close(function () {
+        }, function () {
+        }, {address: address});
     }
 }
 
+class CyclingCadenceMetricCalculator {
+    constructor() {
+        this._previousCumulativeCrankRevolutions = null;
+        this._previouCrankEventTime = null;
+        this._records = [];
+    }
+
+    /**
+     *
+     * @param value
+     * @return {number}
+     */
+    decode(value) {
+        let bytes = bluetoothle.encodedStringToBytes(value);
+        let flag = bytes[0];
+        // must be equal to 2 to have cadence
+        let cumulativeCrankRevolutions = this.convertTo16bits(bytes.buffer, 1);
+        let lastCrankEventTime = this.convertTo16bits(bytes.buffer, 3);
+
+        if (this._previouCrankEventTime === null) {
+            this._previousCumulativeCrankRevolutions = cumulativeCrankRevolutions;
+            this._previouCrankEventTime = lastCrankEventTime;
+            return 0;
+        }
+
+        let crankTimeDiff = this.diffForSample(lastCrankEventTime, this._previouCrankEventTime, UINT16_MAX);
+        crankTimeDiff /= 1024; // Convert from fractional seconds (roughly ms) -> full seconds
+        let crankDiff = this.diffForSample(cumulativeCrankRevolutions, this._previousCumulativeCrankRevolutions, UINT16_MAX);
+
+        this._previousCumulativeCrankRevolutions = cumulativeCrankRevolutions;
+        this._previouCrankEventTime = lastCrankEventTime;
+
+        let cadence = (crankTimeDiff === 0) ? 0 : (60 * crankDiff / crankTimeDiff); // RPM
+        if (cadence === 0 || cadence < 1) {
+            console.log(`cumulativeCrankRevolutions: ${previous.cumulativeCrankRevolutions} / ${cumulativeCrankRevolutions}; lastCrankEventTime: ${previous.lastCrankEventTime} / ${lastCrankEventTime}; crankTimeDiff: ${previous.crankTimeDiff} / ${crankTimeDiff}; crankDiff: ${previous.crankDiff} / ${crankDiff}; RPM: ${previous.cadence} / ${cadence}`);
+        }
+
+        cadence = Math.round(cadence);
+        return this.cadence({
+            cumulativeCrankRevolutions: cumulativeCrankRevolutions,
+            lastCrankEventTime: lastCrankEventTime,
+            crankTimeDiff: crankTimeDiff,
+            crankDiff: crankDiff,
+            cadence: cadence,
+            recordedAt: Date.now()
+        })
+    }
+
+    /**
+     *
+     * @param buffer
+     * @param start
+     * @return {number}
+     */
+    convertTo16bits(buffer, start) {
+        let u16bytesHr = buffer.slice(start, start + 2);
+        return new Uint16Array(u16bytesHr)[0];
+    }
+
+    diffForSample(current, previous, max) {
+        if (current >= previous) {
+            return current - previous;
+        } else {
+            return (max - previous) + current;
+        }
+    }
+
+    /**
+     *
+     * @param {CrankRevolutionData} record
+     * @return {Number}
+     */
+    cadence(record) {
+        this._records.push(record);
+        if (this._records.length > 5) {
+            this._records.shift();
+        }
+
+        if (this._records.length < 5)
+            return 0;
+
+        if (record.cadence > 0) return record.cadence;
+
+        for (let i = this._records.length - 1; i >= 0; i--) {
+            record = this._records[i];
+            if (record.cadence > 0 && Date.now() - record.recordedAt < 5000) return record.cadence;
+        }
+        return 0
+    }
+}
+
+let previous = {};
 
 export default Bluetooth;

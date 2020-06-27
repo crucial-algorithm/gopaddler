@@ -1,8 +1,10 @@
 var webpack = require("webpack");
 
-var env = process.env.NODE_ENV;
-var viewMode = process.env.VIEW_MODE || 'landscape';
+const env = process.env.NODE_ENV;
+const app = process.env.app;
+const viewMode = process.env.VIEW_MODE || 'landscape';
 var isPortraitMode = false;
+var exec = require('child_process').exec;
 
 if (viewMode === 'portrait') {
     isPortraitMode = 1;
@@ -29,10 +31,9 @@ var CONFIG = {
 
 };
 
-
 function extend() {
-    for (var i = 1; i < arguments.length; i++) {
-        for (var key in arguments[i]) {
+    for (let i = 1; i < arguments.length; i++) {
+        for (let key in arguments[i]) {
             if (arguments[i].hasOwnProperty(key))
                 arguments[0][key] = arguments[i][key];
         }
@@ -40,12 +41,16 @@ function extend() {
     return arguments[0];
 }
 
-console.log("env = ", env);
+console.log("... env = ", env, " app = ", app);
 if (env !== 'dev' && env !== 'prod' && env !== 'remote-dev')
     throw 'Unknown env. Allowed are: "dev" or "prod" ';
 
-var config = extend({}, CONFIG.common, CONFIG[env]);
+if (app !== 'gopaddler' && app !== 'uttercycling')
+    throw 'Unknown app. Allowed are: "gopaddler" or "uttercycling" ';
 
+console.log('building for app ' + app);
+
+let config = extend({}, CONFIG.common, CONFIG[env]);
 
 module.exports = {
     context: __dirname + "/src/main/js",
@@ -63,8 +68,34 @@ module.exports = {
             __VERSION__: JSON.stringify(config.version),
             __IS_PORTRAIT_MODE__: JSON.stringify(isPortraitMode),
             __API_VERSION__: JSON.stringify(config.apiVersion),
-            __SESSION_FORMAT_VERSION__: JSON.stringify(config.sessionVersion)
-        })
+            __SESSION_FORMAT_VERSION__: JSON.stringify(config.sessionVersion),
+            __APP__: JSON.stringify(app),
+            __APP_CONFIG__: JSON.stringify("")
+        }),
+        {
+            apply: (compiler) => {
+                compiler.hooks.afterEmit.tap('AfterEmitPlugin', () => {
+                    // hook that replaces javascript files in android project so running is faster (by just opening android studio and running from there)
+                    exec('cp -f www/dist/app.js www/dist/app.js.map platforms/android/app/src/main/assets/www/dist/', (err, stdout, stderr) => {
+                        if (stdout) process.stdout.write(stdout);
+                        if (stderr) process.stderr.write(stderr);
+                        if (!stdout && !stderr) console.log('... hot swap js in android platform');
+                    });
+                });
+            }
+        },
+        {
+            apply: (compiler) => {
+                compiler.hooks.afterEmit.tap('AfterEmitPlugin', () => {
+                    // override config.xml setttings for the specific app we are building to
+                    exec(`./scripts/generate-config-for-app.js ${app}`, (err, stdout, stderr) => {
+                        if (stdout) process.stdout.write(stdout);
+                        if (stderr) process.stderr.write(stderr);
+                        if (!stdout && !stderr) console.log('... rewrite config.xml');
+                    });
+                });
+            }
+        }
     ],
     module: {
         rules: [

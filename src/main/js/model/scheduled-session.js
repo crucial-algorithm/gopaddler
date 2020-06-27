@@ -2,6 +2,13 @@
 
 import Api from '../server/api';
 
+/**
+ * @typedef {Object} SplitDefinition
+ * @property {number} _duration
+ * @property {boolean} _recovery
+ * @property {string} _unit
+ */
+
 class ScheduledSession {
 
     constructor(date = null, expression = null, id = null, splits = null) {

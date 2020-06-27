@@ -1,0 +1,26 @@
+<div class="session-controls">
+    <div class="session-controls-row">
+        <div class="session-controls-round-button session-start-on-minute-turn blue">
+            <div class="session-controls-round-button-label">{{"session_start_at_minute_turn" | translate}}</div>
+        </div>
+
+        <div class="session-controls-round-button session-cancel grey">
+            <div class="session-controls-round-button-label">{{"session_cancel" | translate}}</div>
+        </div>
+    </div>
+    <div class="session-controls-row">
+        <div class="session-controls-round-button  session-start-immediately yellow">
+            <div class="session-controls-round-button-label">{{"session_start_now" | translate}}</div>
+        </div>
+
+        <div class="session-controls-round-button  session-finish red">
+            <div class="session-controls-round-button-label">{{"session_finish" | translate}}</div>
+        </div>
+    </div>
+</div>
+
+<div class="session-app-tester-controls">
+        <div data-selector="left-right-debug" class="session-controls-square-button {{if isTestingLeftRight}}session-controls-square-toggled{{/if}}">
+    Left/right Debug
+</div>
+</div>

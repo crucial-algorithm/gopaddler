@@ -19,7 +19,7 @@ class Speed {
             return 0;
         }
 
-        var speed = this.kalmanFilter.filter(position.coords.speed);
+        let speed = this.kalmanFilter.filter(position.coords.speed);
 
         if (this.speeds.length > 5) {
             this.speeds.shift();
@@ -46,7 +46,7 @@ class Speed {
             return this.speeds[this.speeds.length - 1];
         }
 
-        var count = 0, total = 0, i = this.speeds.length - 1;
+        let count = 0, total = 0, i = this.speeds.length - 1;
         while (i >= 0) {
             total += this.speeds[i];
             count++;

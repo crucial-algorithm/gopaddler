@@ -273,9 +273,8 @@ class Context {
     }
 
     static render(page, template) {
-        var $page = $(page), $content;
+        let $page = $(page), $content;
         $page.append(template);
-
 
         if (($content = $page.find('[data-no-scroll="true"]')).length) {
             $content.height($(window).height())

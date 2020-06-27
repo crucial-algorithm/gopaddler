@@ -176,8 +176,8 @@ function emulateCordova () {
             }, 0);
         },
         subscribe: function (callback) {
-            setTimeout(function () {
-                callback.apply({}, [{value: Utils.getRandomInt(100, 200)}])
+            setInterval(function () {
+                callback.apply({}, [{value: 'Am4ASb0='}])
             }, 0);
         },
         unsubscribe: function (callback) {
@@ -193,23 +193,13 @@ function emulateCordova () {
         discover: function (success) {
             setTimeout(function () {
                 success.apply({}, [{
-                    services: {
-                        forEach: function (servicesCallback) {
-                            setTimeout(function () {
-                                servicesCallback.apply({}, [{
-                                    characteristics: {
-                                        forEach: function (characteristicsCallback) {
-                                            setTimeout(function () {
-                                                characteristicsCallback.apply({}, [{
-                                                    uuid: '2A37'
-                                                }])
-                                            }, 0)
-                                        }
-                                    } // characteristics
-                                }])
-                            }, 0)
-                        }
-                    } // services
+                    services: [{ uuid: '180D',
+                        characteristics: [{uuid: '2A37'}]
+                    }]
+                }, {
+                    services: [{ uuid: '1816',
+                        characteristics: [{uuid: '2A5B'}]
+                    }]
                 }])
             }, 0);
         },
@@ -235,6 +225,10 @@ function emulateCordova () {
                 callback = callback || function(){};
                 callback.apply({}) // intentionally left blank
             }, 0);
+        },
+
+        encodedStringToBytes(value) {
+            return [0, ]
         }
 
     };

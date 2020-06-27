@@ -5,6 +5,16 @@ const ERROR_CODES = {
     INVALID_SPLIT_POSITION: 1
 };
 
+/**
+ * @typedef {Object} SplitInfo
+ * @property {boolean} isRecovery
+ * @property {number} position
+ * @property {boolean} isDistanceBased
+ * @property {number} duration
+ * @property {{time: number, distance: number}} start
+ * @property {{time: number, distance: number}} finish
+ */
+
 class Splits {
     /**
      *
@@ -15,7 +25,7 @@ class Splits {
      * @param currentDuration
      * @param {boolean} manual
      */
-    constructor(splits, listener, manual
+    constructor(splits = null, listener = null, manual = true
         , distanceToTime = function(value){return value}, timeToDistance = function(value){return value}, currentDuration = function(value){return value}) {
         this.splits = [];
         this.stats = [];
@@ -102,6 +112,7 @@ class Splits {
         this.timestamp = timestamp;
         this.duration = duration;
         this.distance = Math.round(distance * 1000);
+        this.reCalculate()
     }
 
     assessTimeBasedSplit() {

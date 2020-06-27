@@ -10,6 +10,11 @@ module.exports = {
         versionCode: "10",
     },
     src: {
-       distanceStep: 100
+       distanceStep: 100,
+        database: {
+            name: 'uttercycling.db',
+            location: 2
+        },
+        sessionType: 'cycling'
     }
 }

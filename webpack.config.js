@@ -14,7 +14,7 @@ var CONFIG = {
     common: {
         version: "1.6.0",
         apiVersion: 2,
-        sessionVersion: 4
+        sessionVersion: 5
     },
     dev : {
         server: "http://local.gopaddler.com",

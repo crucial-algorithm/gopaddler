@@ -171,27 +171,29 @@ class SessionDetail {
     /**
      *
      * @param {Integer} sessionId
-     * @param {number[]} splits
+     * @param {Array<number>} splits
+     * @param {number} pausedDuration
      * @param {function} callback
      */
-    static getDetailedMetrics(sessionId, splits, callback) {
+    static getDetailedMetrics(sessionId, splits, pausedDuration, callback) {
         let connection = Database.getConnection();
         let SQL = [
             'SELECT split,',
-            '       Max(distance)                   maxDistance,',
-            '       Max(distance) - Min(distance)   distance,',
-            '       Max(timestamp) - Min(timestamp) duration,',
-            '       Max(speed)                      maxSpeed,',
-            '       Max(spm)                        maxSPM,',
-            '       Max(efficiency)                 maxEfficiency,',
-            '       SUM(spm)                        totalSPM,',
-            '       SUM(efficiency)                 totalEfficiency,',
-            '       SUM(heart_rate)                 totalHeartRate',
+            '       Max(distance)                                            maxDistance,',
+            '       Max(distance) - Min(distance)                            distance,',
+            '       Max(timestamp) - Min(timestamp) - ' + pausedDuration + ' duration,',
+            '       Max(speed)                                               maxSpeed,',
+            '       Max(spm)                                                 maxSPM,',
+            '       Max(efficiency)                                          maxEfficiency,',
+            '       SUM(spm)                                                 totalSPM,',
+            '       SUM(efficiency)                                          totalEfficiency,',
+            '       SUM(heart_rate)                                          totalHeartRate',
             'FROM   session_data ',
             'WHERE  SESSION = ? ',
             'GROUP  BY split ',
             'ORDER  BY split ASC'
         ].join(' ');
+
         connection.executeSql(SQL, [sessionId], function (res) {
             let rows = [];
             try {

@@ -148,6 +148,7 @@ const ddl = [
     // v.1.7.0
     [
         ["ALTER TABLE session_data add column altitude REAL"],
+        ["ALTER TABLE session add column paused_duration INTEGER default 0"],
         ["UPDATE settings SET version = 15"]
     ]
 
@@ -181,7 +182,7 @@ class Database {
     static init() {
 
         const defer = $.Deferred();
-        connection = window.sqlitePlugin.openDatabase({name: "sessions.db", "location": 2});
+        connection = window.sqlitePlugin.openDatabase({name: __APP_CONFIG__.database.name, "location": __APP_CONFIG__.database.location});
 
         determineDbVersion().then(function (version) {
             connection.transaction(function (tx) {

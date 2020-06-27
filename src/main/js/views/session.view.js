@@ -469,7 +469,6 @@ class SessionView {
      */
     confirmBeforeExit() {
         const self = this;
-        // var tx = false, isConfirmDialogOpen = false;
 
         if (self.tx) {
             self.tx = false;
@@ -506,13 +505,11 @@ class SessionView {
         }
 
         // pause session
-        self.timer.pause();
-        self.paused = true;
+        self.pause();
 
         self.isConfirmDialogOpen = true;
         self.leaveOrResumeConfirmDialog(function resume() {
-            self.paused = false;
-            self.timer.resume();
+            self.resume();
             Dialog.hideModal();
             self.isConfirmDialogOpen = false;
         }, function finish() {
@@ -521,6 +518,18 @@ class SessionView {
         });
 
         return false;
+    }
+
+    pause() {
+        this.paused = true;
+        this.timer.pause();
+        this.metrics.pause();
+    }
+
+    resume() {
+        this.paused = false;
+        this.timer.resume();
+        this.metrics.resume();
     }
 
     /**

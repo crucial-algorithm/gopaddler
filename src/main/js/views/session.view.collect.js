@@ -116,6 +116,9 @@ export default class SessionViewCollectMetrics {
         /**@type Expression */
         this._expression = null;
         this._skipMetricPersistenceCountDown = 0;
+        /**@type number */
+        this._sessionPausedAt = 0;
+        this._pausedDuration = 0;
 
         this._handlers = {
             leftRightChanged: ()=>{},
@@ -165,10 +168,12 @@ export default class SessionViewCollectMetrics {
 
     pause() {
         this.isSessionPaused = true;
+        this.sessionPausedAt = Date.now();
     }
 
     resume() {
         this.isSessionPaused = false;
+        this.pausedDuration += Date.now() - this.sessionPausedAt;
     }
 
     /**
@@ -182,7 +187,7 @@ export default class SessionViewCollectMetrics {
         if (this.strokeDetectorSensor) this.strokeDetectorSensor.stop();
         if (this.cyclingCadenceSensor) this.cyclingCadenceSensor.stop();
         this.flushDebugBuffer();
-        return this.session.finish(this.splitsDefinition, this.expression)
+        return this.session.finish(this.splitsDefinition, this.expression, this.pausedDuration)
     }
 
     /**
@@ -410,6 +415,7 @@ export default class SessionViewCollectMetrics {
      * @param {number} duration
      */
     cycle(timestamp, duration) {
+        if (this.isSessionPaused) return;
         // update distance to current duration
         this.driftLocation(duration);
         let persistRecord = this.skipMetricPersistenceCountDown <= 0;
@@ -758,5 +764,21 @@ export default class SessionViewCollectMetrics {
 
     set skipMetricPersistenceCountDown(value) {
         this._skipMetricPersistenceCountDown = value;
+    }
+
+    get sessionPausedAt() {
+        return this._sessionPausedAt;
+    }
+
+    set sessionPausedAt(value) {
+        this._sessionPausedAt = value;
+    }
+
+    get pausedDuration() {
+        return this._pausedDuration;
+    }
+
+    set pausedDuration(value) {
+        this._pausedDuration = value;
     }
 }

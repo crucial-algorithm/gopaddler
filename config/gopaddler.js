@@ -10,6 +10,11 @@ module.exports = {
         versionCode: "1600",
     },
     app: {
-        distanceStep: 10
+        distanceStep: 10,
+        database: {
+            name: 'sessions.db',
+            location: 2
+        },
+        sessionType: 'canoeing'
     }
 }

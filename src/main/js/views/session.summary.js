@@ -57,7 +57,7 @@ class SessionSummaryView {
 
             session = new Session(json.session_start, json.anglez, json.noisex, json.noisez, json.factorx, json.factorz, json.axis
                 , json.distance, json.avg_spm, json.top_spm, json.avg_speed, json.top_speed
-                , json.avg_efficiency, json.top_efficiency, json.session_end, json.data);
+                , json.avg_efficiency, json.top_efficiency, json.session_end, json.data, 0);
 
             session.avgHeartRate = json.avg_heart_rate;
             session.expression = sessionDefinition.expression;

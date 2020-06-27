@@ -8,5 +8,8 @@ module.exports = {
         authorHref: "https://gopaddler.com",
         version: "1.6.0",
         versionCode: "1600",
+    },
+    app: {
+        distanceStep: 10
     }
 }

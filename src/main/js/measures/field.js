@@ -1,7 +1,15 @@
 'use strict';
 
-import Measure from './measure';
+import Metric from './metric';
 import Utils from '../utils/utils';
+
+/**
+ * @typedef {Object} FieldMetadata
+ * @property {number} position
+ * @property {string} type
+ * @property {jQuery} $dom
+ * @property {Metric} instance
+ */
 
 class Field {
 
@@ -16,9 +24,11 @@ class Field {
         self.length = self.$measures.find('div').length;
         self.width = self.$element.width();
 
+        /**@type Array<FieldMetadata*/
         self.positions = [];
         self.measures = {};
-        self.current = {};
+        /**@type FieldMetadata | null */
+        self._current = null;
         self.context = context;
         self.convertToImperial = context.preferences().isImperial();
 
@@ -78,10 +88,12 @@ class Field {
 
             options = FIELD_SETTINGS[type];
 
-            instance = Measure.get(size, $dom, self.context.translate(options.label)
+            instance = Metric.get(size, $dom, self.context.translate(options.label)
                 , self.context.getUnit(type, size === 'large')
                 , options.translate === true ? self.context.translate(options.init) : options.init
-                , self.context.isPortraitMode());
+                , self.context.isPortraitMode()
+                , options.formatter
+            );
             instance.render(options.hint);
             self.positions[i] = {position: i, type: type, $dom: $dom, instance: instance};
             self.options[type] = options;
@@ -189,7 +201,7 @@ class Field {
     }
 
     /**
-     * Set value of field. If type is not being corrently rendered, it will just ignore
+     * Set value of field. If type is not being currently rendered, it will just ignore
      *
      * @param type
      * @param value
@@ -218,6 +230,14 @@ class Field {
         if (this.current.type === type)
             this.current.instance.setUnit(unit);
     }
+
+    get current() {
+        return this._current || {};
+    }
+
+    set current(value) {
+        this._current = value;
+    }
 }
 
 
@@ -238,7 +258,18 @@ const FIELD_SETTINGS = {
     },
     distance: {
         label: "session_distance",
-        init: 0
+        init: 0,
+        formatter(value) {
+            if (value < 1000) return value;
+            let output = [];
+            let parts = (value + '').split(''), counter = 1;
+            for (let i = parts.length - 1; i >=0; i--) {
+                output.unshift(parts[i]);
+                if (counter % 3 === 0) output.unshift(' ');
+                counter++;
+            }
+            return output.join('').trim();
+        }
     },
     spm: {
         label: "session_spm",

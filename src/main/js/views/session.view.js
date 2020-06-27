@@ -1,8 +1,6 @@
 'use strict';
 
 import Context from '../context';
-import Distance from '../measures/distance';
-import Speed from '../measures/speed';
 import Timer from '../measures/timer';
 import Field from '../measures/field';
 import Calibration from '../model/calibration';
@@ -15,7 +13,6 @@ import snippetFinishWarmUpControls from './session.view.warmup.controls.art.html
 import Unlock from '../utils/widgets/unlock';
 import Sound from '../utils/sound';
 import Api from '../server/api';
-import Utils from '../utils/utils';
 import Splits from '../core/splits-handler';
 import SessionViewCollectMetrics from './session.view.collect';
 import {SessionViewSplits} from "./session.view.splits";
@@ -134,42 +131,8 @@ class SessionView {
             }
         });
 
-        this.metrics.on('leftRightChanged', this.leftToRightDebug.bind(this));
-        this.metrics.on('startCountDown', () => {
-            sound.playStartCountDown()
-        });
-        this.metrics.on('finishCountDown', () => {
-            sound.playFinishCountDown()
-        });
-        this.metrics.on('finishedNotification', () => {
-            sound.playFinish();
-            navigator.vibrate(1000)
-        });
-        this.metrics.on('finishedSplit', () => {
-            this.showLastSplitSummaryCountDown = 5;
-            this.distanceProgressHandler.finish();
-        });
-        this.metrics.on('splitStateUpdated', this.updateSplitsFieldHandler.bind(this));
-        this.metrics.on('finished', () => {
-            // splits finished
-            this.showLastSplitSummaryCountDown = 5;
-            this.distanceProgressHandler.finish();
-            this.splitsAreFinished = true;
-        });
-        this.metrics.on('startedDistanceBased', (duration) => {
-            this.distanceProgressHandler.start(duration);
-        });
-        this.metrics.on('warmUpFinishedRemotely', () => {
-            Dialog.hideModal();
-            self.inWarmUp = false;
-        });
-        this.metrics.on('lostGpsSignal', () => {
-            let values = {speed: 0, pace: 0, efficiency: 0, strokes: 0};
-            self.top.setValues(values);
-            self.middle.setValues(values);
-            self.bottom.setValues(values);
-            self.large.setValues(values);
-        });
+        // capture events from this.metrics and adjust UI accordingly
+        this.registerHandlersForMetricsEvents();
 
         this.metrics.start(startAt, self.splitsDefinition, options.wasStartedRemotely === true
             , self.expression, options.remoteScheduledSessionId, calibration
@@ -190,7 +153,7 @@ class SessionView {
             let stats = self.metrics.status();
 
             let distance = Math.round((stats.distance * 1000 - stats.lastSplitStartDistance));
-            stats.distance = distance - distance % 10;
+            stats.distance = distance - distance % context.appConfig.distanceStep;
 
             if (self.showLastSplitSummaryCountDown > 0) {
                 self.showLastSplitSummaryCountDown--;
@@ -227,6 +190,35 @@ class SessionView {
         // debug left/right
         self.$left = $('.session-left');
         self.$right = $('.session-right');
+    }
+
+    /**
+     * Apply color to session according to user preferences
+     */
+    applyColorScheme() {
+        if (this.appContext.preferences().isShowBlackAndWhite()) {
+            this.setBlackAndWhite();
+        } else {
+            this.$page.find(".app-content").removeClass('black-and-white');
+        }
+    }
+
+    startSessionLayout(context, page) {
+        let fields;
+        if (context.preferences().isRestoreLayout()) {
+            fields = loadLayout();
+        } else {
+            fields = DEFAULT_POSITIONS;
+        }
+
+        if (this.hasSplitsDefined === true) {
+            fields.top = 'splits';
+        }
+
+        this.top = new Field($('.session-small-measure.yellow', page), fields.top, SMALL, context, this.hasSplitsDefined);
+        this.middle = new Field($('.session-small-measure.blue', page), fields.middle, SMALL, context, this.hasSplitsDefined);
+        this.bottom = new Field($('.session-small-measure.red', page), fields.bottom, SMALL, context, this.hasSplitsDefined);
+        this.large = new Field($('.session-large-measure', page), fields.large, LARGE, context, this.hasSplitsDefined);
     }
 
     /**
@@ -267,22 +259,58 @@ class SessionView {
         }
     }
 
-    startSessionLayout(context, page) {
-        let fields;
-        if (context.preferences().isRestoreLayout()) {
-            fields = loadLayout();
-        } else {
-            fields = DEFAULT_POSITIONS;
+    registerHandlersForMetricsEvents() {
+        this.metrics.on('leftRightChanged', this.leftToRightDebug.bind(this));
+        this.metrics.on('startCountDown', () => {
+            sound.playStartCountDown()
+        });
+        this.metrics.on('finishCountDown', () => {
+            sound.playFinishCountDown()
+        });
+        this.metrics.on('finishedNotification', () => {
+            sound.playFinish();
+            navigator.vibrate(1000)
+        });
+        this.metrics.on('finishedSplit', () => {
+            this.showLastSplitSummaryCountDown = 5;
+            this.distanceProgressHandler.finish();
+        });
+        this.metrics.on('splitStateUpdated', this.updateSplitsFieldHandler.bind(this));
+        this.metrics.on('finished', () => {
+            // splits finished
+            this.showLastSplitSummaryCountDown = 5;
+            this.distanceProgressHandler.finish();
+            this.splitsAreFinished = true;
+        });
+        this.metrics.on('startedDistanceBased', (duration) => {
+            this.distanceProgressHandler.start(duration);
+        });
+        this.metrics.on('warmUpFinishedRemotely', () => {
+            Dialog.hideModal();
+            this.inWarmUp = false;
+        });
+        this.metrics.on('lostGpsSignal', () => {
+            let values = {speed: 0, pace: 0, efficiency: 0, strokes: 0};
+            this.top.setValues(values);
+            this.middle.setValues(values);
+            this.bottom.setValues(values);
+            this.large.setValues(values);
+        });
+    }
+
+    setBlackAndWhite() {
+        this.$page.find(".session-small-measures").addClass('black-and-white');
+        this.$page.find(".session-large-measure").addClass('black-and-white');
+
+        if (!context.isPortraitMode()) {
+            let width = this.$page.width();
+            this.$page.find(".session-large-measure").css({width: Math.floor(width / 2) - 1});
         }
 
-        if (this.hasSplitsDefined === true) {
-            fields.top = 'splits';
-        }
-
-        this.top = new Field($('.session-small-measure.yellow', page), fields.top, SMALL, context, this.hasSplitsDefined);
-        this.middle = new Field($('.session-small-measure.blue', page), fields.middle, SMALL, context, this.hasSplitsDefined);
-        this.bottom = new Field($('.session-small-measure.red', page), fields.bottom, SMALL, context, this.hasSplitsDefined);
-        this.large = new Field($('.session-large-measure', page), fields.large, LARGE, context, this.hasSplitsDefined);
+        this.$page.find(".big-measure-label").addClass('black-and-white');
+        this.$page.find(".big-measure-units").addClass('black-and-white');
+        this.$page.find("#animation-pause-circle").attr('fill', '#000');
+        this.$page.find("#animation-pause-dash").attr('stroke', '#000');
     }
 
     leaveOrResumeConfirmDialog(onresume, onfinish) {
@@ -384,32 +412,6 @@ class SessionView {
         launches++;
         localStorage.setItem("session_view_launches", launches);
         return launches <= 3
-    }
-
-    /**
-     * Apply color to session according to user preferences
-     */
-    applyColorScheme() {
-        if (this.appContext.preferences().isShowBlackAndWhite()) {
-            this.setBlackAndWhite();
-        } else {
-            this.$page.find(".app-content").removeClass('black-and-white');
-        }
-    }
-
-    setBlackAndWhite() {
-        this.$page.find(".session-small-measures").addClass('black-and-white');
-        this.$page.find(".session-large-measure").addClass('black-and-white');
-
-        if (!context.isPortraitMode()) {
-            let width = this.$page.width();
-            this.$page.find(".session-large-measure").css({width: Math.floor(width / 2) - 1});
-        }
-
-        this.$page.find(".big-measure-label").addClass('black-and-white');
-        this.$page.find(".big-measure-units").addClass('black-and-white');
-        this.$page.find("#animation-pause-circle").attr('fill', '#000');
-        this.$page.find("#animation-pause-dash").attr('stroke', '#000');
     }
 
     /**

@@ -1,11 +1,12 @@
-class SmallMeasure {
+class SmallMetric {
 
-    constructor($parent, label, unit, value, isPortraitMode) {
+    constructor($parent, label, unit, value, isPortraitMode, formatter) {
         this.$parent = $parent;
         this.label = label;
         this.unit = unit;
         this.defaultValue = value;
         this.isPortraitMode = isPortraitMode;
+        this.formatter = formatter;
     }
 
     render(hint) {
@@ -39,6 +40,7 @@ class SmallMeasure {
         if (typeof value === "string") {
             this.$value.html(value);
         } else {
+            value = this.formatter === null ? value : this.formatter(value)
             this.$value.text(value);
         }
 
@@ -59,14 +61,15 @@ class SmallMeasure {
 
 
 
-class LargeMeasure {
+class LargeMetric {
 
-    constructor($parent, label, unit, value, isPortraitMode) {
+    constructor($parent, label, unit, value, isPortraitMode, formatter) {
         this.$parent = $parent;
         this.label = label;
         this.unit = unit;
         this.defaultValue = value;
         this.isPortraitMode = isPortraitMode;
+        this.formatter = formatter;
 
     }
 
@@ -100,14 +103,14 @@ class LargeMeasure {
             this.$value.css({"font-size": ""});
             this.fontSizeChanged = false;
         }
-
+        value = this.formatter === null ? value : this.formatter(value)
         this.$value.html(value);
     }
 
     setUnit() {}
 }
 
-class Measure {
+class Metric {
     /**
      *
      * @param type
@@ -116,15 +119,16 @@ class Measure {
      * @param unit
      * @param defaultValue
      * @param isPortraitMode
+     * @param formatter
      * @return {{render: function, setValue: function, setUnit: function}}
      */
-    static get(type, $parent, label, unit, defaultValue, isPortraitMode) {
+    static get(type, $parent, label, unit, defaultValue, isPortraitMode, formatter = null) {
         if (type === 'small') {
-            return new SmallMeasure($parent, label, unit, defaultValue, isPortraitMode);
+            return new SmallMetric($parent, label, unit, defaultValue, isPortraitMode, formatter);
         } else {
-            return new LargeMeasure($parent, label, unit, defaultValue, isPortraitMode);
+            return new LargeMetric($parent, label, unit, defaultValue, isPortraitMode, formatter);
         }
     }
 }
 
-export default Measure;
+export default Metric;

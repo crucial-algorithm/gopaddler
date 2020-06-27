@@ -8,5 +8,8 @@ module.exports = {
         authorHref: "https://uttercoach.com",
         version: "0.0.1",
         versionCode: "10",
+    },
+    src: {
+       distanceStep: 100
     }
 }

@@ -52,6 +52,11 @@ console.log('building for app ' + app);
 
 let config = extend({}, CONFIG.common, CONFIG[env]);
 
+const GOPADDLER_CONFIG = require('./config/gopaddler');
+const UTTERCYCLING_CONFIG = require('./config/uttercycling');
+
+let appConfig = app === 'gopaddler' ? GOPADDLER_CONFIG : UTTERCYCLING_CONFIG;
+
 module.exports = {
     context: __dirname + "/src/main/js",
     entry: "./main.js",
@@ -70,7 +75,7 @@ module.exports = {
             __API_VERSION__: JSON.stringify(config.apiVersion),
             __SESSION_FORMAT_VERSION__: JSON.stringify(config.sessionVersion),
             __APP__: JSON.stringify(app),
-            __APP_CONFIG__: JSON.stringify("")
+            __APP_CONFIG__: JSON.stringify(appConfig.src)
         }),
         {
             apply: (compiler) => {

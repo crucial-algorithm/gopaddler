@@ -37,6 +37,10 @@ class Speed {
         this.distance = 0;
     }
 
+    /**
+     * @private
+     * @return {number|*}
+     */
     average() {
         if (this.speeds.length === 0) {
             return 0;
@@ -58,6 +62,19 @@ class Speed {
         }
 
         return total / count;
+    }
+
+    /**
+     *
+     * @param distance
+     * @param movingDuration    Duration without pause time
+     * @return {number}
+     */
+    avgSessionSpeed(distance, movingDuration) {
+        if (movingDuration === 0 || distance === 0) return 0;
+        let value = distance * (3600000 / movingDuration);
+        if (isNaN(value)) value = 0;
+        return value;
     }
 
     getValue() {

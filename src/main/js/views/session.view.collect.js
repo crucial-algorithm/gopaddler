@@ -462,6 +462,7 @@ export default class SessionViewCollectMetrics {
             spm: this.cadence.value,
             heartRate: this.heartRate,
             speed: this.location.speed, //speed is averaged or instant based on user settings
+            averageSpeed: this.speedTools.avgSessionSpeed(this.location.distance, this.timer.getDuration())
         }
     }
 

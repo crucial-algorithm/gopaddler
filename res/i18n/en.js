@@ -112,6 +112,7 @@ const EN = {
         , session_splits: "Intervals"
         , session_splits_before_start: "<p class='small-measure-hint-primary'>Warming up</p><p class='small-measure-hint-secondary'>Unlock to start intervals</p>"
         , session_speed: "Speed"
+        , session_avg_speed: "Avg. Speed"
         , session_distance: "Distance"
         , session_spm: "Stroke Rate"
         , session_efficiency: "Stroke Length"

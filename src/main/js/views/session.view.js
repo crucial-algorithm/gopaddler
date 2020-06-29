@@ -37,6 +37,7 @@ let sound = null;
  * @property {number} spm
  * @property {number} heartRate
  * @property {number} speed
+ * @property {number} averageSpeed
  * @property {number|string} [splits]
  */
 

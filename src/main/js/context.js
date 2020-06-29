@@ -18,6 +18,10 @@ const units = {
             label: {regular: "units_metric_speed_regular", large: "units_metric_speed_large"},
             decimalPlaces: 1
         },
+        averageSpeed: {
+            label: {regular: "units_metric_speed_regular", large: "units_metric_speed_large"},
+            decimalPlaces: 1
+        },
         distance: {
             label: {regular: "units_metric_distance_regular", large: "units_metric_distance_large"},
             decimalPlaces: 2
@@ -57,6 +61,10 @@ const units = {
             round: false
         },
         speed: {
+            label: {regular: "units_imperial_speed_regular", large: "units_imperial_speed_large"},
+            decimalPlaces: 1
+        },
+        averageSpeed: {
             label: {regular: "units_imperial_speed_regular", large: "units_imperial_speed_large"},
             decimalPlaces: 1
         },

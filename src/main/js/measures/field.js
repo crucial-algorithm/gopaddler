@@ -46,6 +46,7 @@ class Field {
                 '    <div class="measure" data-type="timer"></div>',
                 '    <div class="measure" data-type="splits"></div>',
                 '    <div class="measure" data-type="speed"></div>',
+                '    <div class="measure" data-type="averageSpeed"></div>',
                 '    <div class="measure" data-type="distance"></div>',
                 '    <div class="measure" data-type="pace"></div>',
                 '    <div class="measure" data-type="spm"></div>',
@@ -63,6 +64,7 @@ class Field {
             $([
                 '<div class="measures">',
                 '    <div class="measure" data-type="speed"></div>',
+                '    <div class="measure" data-type="averageSpeed"></div>',
                 '    <div class="measure" data-type="distance"></div>',
                 '    <div class="measure" data-type="pace"></div>',
                 '    <div class="measure" data-type="spm"></div>',
@@ -254,6 +256,10 @@ const FIELD_SETTINGS = {
     },
     speed: {
         label: "session_speed",
+        init: 0
+    },
+    averageSpeed: {
+        label: "session_avg_speed",
         init: 0
     },
     distance: {

@@ -5,6 +5,7 @@ import Sync from '../server/sync';
 import Api from '../server/api';
 import Utils from '../utils/utils';
 import template from './session.summary.art.html';
+import generalStatsTemplate from './session.summary.general.art.html';
 import intervalsTemplate from './session.summary.intervals.art.html';
 import zonesTemplate from './session.summary.zones.art.html';
 import GpChart from '../utils/widgets/chart';
@@ -12,6 +13,21 @@ import {MockSessionGenerator} from "../global";
 import ScheduledSession from "../model/scheduled-session";
 import Session from "../model/session";
 
+
+/**
+ * @typedef {Object}    SummaryInterval
+ * @property {number}               number
+ * @property {number}               count
+ * @property {number}               startAt
+ * @property {number}               finishedAt
+ * @property {number}               distanceStart
+ * @property {number}               distanceEnd
+ * @property {number}               spmTotal
+ * @property {number}               hrTotal
+ * @property {boolean}              recovery
+ * @property {boolean}              isDistanceBased
+ * @property {Array<SessionDetail>} isDistanceBased
+ */
 
 class SessionSummaryView {
 
@@ -24,24 +40,16 @@ class SessionSummaryView {
     constructor(page, context, sessionSummaryArguments) {
         Context.render(page, template({isPortraitMode: context.isPortraitMode()}));
 
-        const self = this;
         /** @type Session */
         let session = sessionSummaryArguments.session;
 
         let isPastSession    = sessionSummaryArguments.isPastSession,
             $page            = $(page),
-            $duration        = $page.find('[data-selector="duration"]'),
-            $distance        = $page.find('[data-selector="distance"]'),
-            $paused          = $page.find('[data-selector="paused"]'),
-            $avgSpeed        = $page.find('[data-selector="avg-speed"]'),
-            $avgSPM          = $page.find('[data-selector="avg-spm"]'),
-            $avgEfficiency   = $page.find('[data-selector="avg-efficiency"]'),
-            $avgHeartRate    = $page.find('[data-selector="avg-heart-rate"]'),
-            $details         = $page.find('#summary-details'),
             $finish          = $page.find('#summary-finish'),
             $back            = $page.find('#summary-back')
         ;
 
+        // show sample session for the 1st time user tries the product
         if (session.id === 1 && isPastSession !== true) {
             const modal = context.ui.modal.undecorated([
                 '<div class="sessions-summary-sample-model">',
@@ -70,20 +78,8 @@ class SessionSummaryView {
             }, 5000);
         }
 
-        // if session summary is loading a past session, change Finish button to Back and change Congrats to Details
-        if (isPastSession === true) {
-            $finish.hide();
-            $back.show();
-        } else {
-            if (context.isPortraitMode() === false) {
-                $details.hide();
-            }
-            Sync.uploadSessions();
-        }
-
-        $page.find('#summary-details-session').html(moment(session.sessionStart).format('MMMM Do YYYY, HH:mm') + 'h');
-
-        let duration = moment.duration(session.sessionEnd - session.sessionStart);
+        // calculate stats
+        let duration = moment.duration(session.sessionEnd - session.sessionStart - (session.pausedDuration || 0));
         let durationFormatted = Utils.lpad(duration.hours(), 2)
             + ':' + Utils.lpad(duration.minutes(), 2) + ":" + Utils.lpad(duration.seconds(), 2);
 
@@ -93,10 +89,13 @@ class SessionSummaryView {
         let avgEfficiency = context.displayMetric('efficiency', session.avgEfficiency);
         let heartRate = context.displayMetric('heartRate', session.avgHeartRate);
 
-        let now = Date.now();
-        if (isPastSession === false) {
+        // if session summary is loading a past session, change Finish button to Back and change Congrats to Details
+        if (isPastSession === true) {
+            $finish.hide();
+            $back.show();
+        } else {
+            let now = Date.now();
             Api.TrainingSessions.live.finished(now);
-
             Api.TrainingSessions.live.update({
                 spm: avgSPM,
                 timestamp: now,
@@ -105,17 +104,11 @@ class SessionSummaryView {
                 efficiency: avgEfficiency,
                 duration: duration.asMilliseconds()
             }, 'finished');
+
+            Sync.uploadSessions();
         }
 
-        $duration.html('<b>' + durationFormatted + '</b>');
-        $distance.html('<b>' + distance + '</b>' + context.getUnit('distance_in_session_list'));
-        if (session.pausedDuration > 0) {
-            $paused.html(' / ' + Utils.duration(session.pausedDuration));
-        }
-        $avgSpeed.html('<b>' + avgSpeed + '</b>');
-        $avgSPM.html('<b>' + avgSPM + '</b>');
-        $avgEfficiency.html('<b>' + avgEfficiency + '</b>');
-        $avgHeartRate.html('<b>' + heartRate + '</b>');
+        $page.find('#summary-details-session').html(moment(session.sessionStart).format('MMMM Do YYYY, HH:mm') + 'h');
 
         $finish.on('tap', function () {
             App.load('home', undefined, undefined, function () {
@@ -127,13 +120,19 @@ class SessionSummaryView {
             $page.find('.summary-layout-intervals').remove();
         }
 
-
         $page.on('appShow', function () {
+            Context.render(document.getElementsByClassName('summary-layout-general')[0], generalStatsTemplate({
+                duration: durationFormatted,
+                distance: distance,
+                speed: avgSpeed,
+                cadence: avgSPM,
+                efficiency: avgEfficiency,
+                heartRate: heartRate
+            }));
 
             session.detail().then(function (records) {
-                self.loadCharts(collapseMetrics(records));
                 let output = calculateIntervals(session, records);
-                let zones = new SessionSummaryZones(session, output.working);
+                let zones = new SessionSummaryZones(session, output.working, context);
                 zones.render(context, zonesTemplate, $('.summary-layout-zones'));
 
                 if (session.version < 2) return;
@@ -145,50 +144,6 @@ class SessionSummaryView {
             });
         });
     }
-
-    loadCharts(collapsedMetrics) {
-        let labels = [], speed = [], spm = [], efficiency = [], hr = [];
-
-        collapsedMetrics.map(function(detail) {
-            labels.push(detail.timestamp);
-            speed.push(detail.speed);
-            spm.push(detail.spm);
-            efficiency.push(detail.efficiency);
-            hr.push(detail.heartRate);
-        });
-
-        let labelFormatter = function(data, places) {
-            return function (value, context) {
-                if (context.dataIndex === 0) return '';
-                if (context.dataIndex === data.length -1 ) return '';
-                if (context.dataIndex % 3 === 0) return Utils.round(value, places);
-                return '';
-            }
-        };
-
-        var dataset = function(values) {
-            return {
-                data: values,
-                backgroundbackColor: 'rgba(59, 61, 98, 0)',
-                borderColor: 'rgba(238, 97, 86, 1)',
-                borderWidth: 2,
-                pointRadius: 0
-            }
-        };
-
-        var labelOptions = {
-            weight: 700,
-            size: 10,
-            align: 'start',
-            anchor: 'start',
-            clamp: true
-        };
-
-        new GpChart($('[data-selector="speed-chart"]'), 'line', labels, dataset(speed), labelFormatter(speed, 2), labelOptions, false);
-        new GpChart($('[data-selector="spm-chart"]'), 'line', labels, dataset(spm), labelFormatter(spm, 0), labelOptions, false);
-        new GpChart($('[data-selector="efficiency-chart"]'), 'line', labels, dataset(efficiency), labelFormatter(efficiency, 2), labelOptions, false);
-        new GpChart($('[data-selector="heart-rate-chart"]'), 'line', labels, dataset(hr), labelFormatter(hr, 0), labelOptions, false);
-    }
 }
 
 
@@ -199,19 +154,19 @@ class SessionSummaryIntervals {
     }
 
     render(context, template, $container) {
-        var self = this;
-        var position = 1, intervals = [];
+        let self = this;
+        let position = 1, intervals = [];
 
-        for (var i = 0; i < this.intervals.length; i++) {
-            var interval = this.intervals[i];
+        for (let i = 0; i < this.intervals.length; i++) {
+            let interval = this.intervals[i];
             if (interval.recovery) continue;
 
 
-            var distance = Math.round((interval.distanceEnd - interval.distanceStart) * 1000);
-            var speed = Utils.calculateAverageSpeed(interval.distanceEnd - interval.distanceStart
+            let distance = Math.round((interval.distanceEnd - interval.distanceStart) * 1000);
+            let speed = Utils.calculateAverageSpeed(interval.distanceEnd - interval.distanceStart
                 , interval.finishedAt - interval.startedAt);
-            var spm = Math.round(interval.spmTotal / interval.count);
-            var length = Utils.calculateStrokeLength(interval.spmTotal / interval.count, speed);
+            let spm = Math.round(interval.spmTotal / interval.count);
+            let length = Utils.calculateStrokeLength(interval.spmTotal / interval.count, speed);
 
             intervals.push({
                 index: i,
@@ -237,7 +192,7 @@ class SessionSummaryIntervals {
             }
             self.loadCharts(collapseMetrics(self.intervals[0].records, 50));
             $container.on('click', '[data-selector="interval"]', function () {
-                var $tr = $(this), interval = self.intervals[parseInt($tr.data('interval'))];
+                let $tr = $(this), interval = self.intervals[parseInt($tr.data('interval'))];
                 $container.find('.summary-table-interval-selected').removeClass('summary-table-interval-selected');
                 $tr.addClass('summary-table-interval-selected');
                 self.loadCharts(collapseMetrics(interval.records, 50));
@@ -247,7 +202,7 @@ class SessionSummaryIntervals {
     }
 
     loadCharts(metrics) {
-        var labels = [], speed = [], spm = [], efficiency = [], hr = [];
+        let labels = [], speed = [], spm = [], efficiency = [], hr = [];
 
         metrics.map(function(detail) {
             labels.push(detail.timestamp);
@@ -257,7 +212,7 @@ class SessionSummaryIntervals {
             hr.push(detail.heartRate);
         });
 
-        var labelFormatter = function(data, places) {
+        let labelFormatter = function(data, places) {
             return function (value, context) {
                 if (context.dataIndex === 0) return '';
                 if (context.dataIndex === data.length -1 ) return '';
@@ -266,7 +221,7 @@ class SessionSummaryIntervals {
             }
         };
 
-        var dataset = function(values) {
+        let dataset = function(values) {
             return {
                 data: values,
                 backgroundbackColor: 'rgba(59, 61, 98, 0)',
@@ -276,7 +231,7 @@ class SessionSummaryIntervals {
             }
         };
 
-        var labelOptions = {
+        let labelOptions = {
             weight: 700,
             size: 10,
             align: 'start',
@@ -295,89 +250,95 @@ class SessionSummaryIntervals {
 class SessionSummaryZones {
     /**
      *
-     * @param {Session} session
-     * @param records
+     * @return {number}
      */
-    constructor(session, records) {
-        var SPM_ZONE_STEP = Api.User.getProfile().boat === "C" ? 5 : 10
-            , spmZones = [], speedZones = [], heartRateZones = [], spmToSpeedZones = [], level = 0
-            , HIDE_PERCENTAGE_THRESHOLD = 5
+    static hidePercentageThreshold() {
+        return 5;
+    }
+    /**
+     *
+     * @param {Session} session
+     * @param {Array<SessionDetail>} records
+     * @param {Context} context
+     */
+    constructor(session, records, context) {
+        const athlete = Api.User.get();
+        let spmZones = new Array(athlete.strokeRateZones.length).fill(0)
+            , speedZones = new Array(athlete.speedZones.length).fill(0)
+            , heartRateZones = new Array(athlete.heartRateZones.length).fill(0)
+            , spmToSpeedZones
         ;
 
-        for (var i = 0; i < records.length; i++) {
-            var record = records[i];
-            level = Math.floor(record.getSpm() / SPM_ZONE_STEP);
-            if (spmZones[level] === undefined) spmZones[level] = 0;
-            if (spmToSpeedZones[level] === undefined) spmToSpeedZones[level] = [];
-            spmZones[level]++;
-            spmToSpeedZones[level].push(record.getSpeed());
 
-            level = Math.floor(record.getSpeed());
-            if (speedZones[level] === undefined) speedZones[level] = 0;
-            speedZones[level]++;
+        this.speedZones = this.prepareZoneChartsData(records, "speed", session.avgSpeed, speedZones, athlete.speedZones);
+        this.spmZones = this.prepareZoneChartsData(records, "spm", session.avgSpm, spmZones, athlete.strokeRateZones);
+        this.heartRateZones = this.prepareZoneChartsData(records, "heartRate", session.avgHeartRate
+            , heartRateZones, athlete.heartRateZones, (hr) => {
+                return Utils.heartRateReserveCalculation(context.getRestingHeartRate(), context.getMaxHeartRate(), hr);
+            });
 
-            level = Math.floor(record.getHeartRate() / 10);
-            if (heartRateZones[level] === undefined) heartRateZones[level] = 0;
-            heartRateZones[level]++;
+        spmToSpeedZones = spmZones.slice();
+        for (let i = 0, l = athlete.strokeRateZones.length;  i < l; i++) {
+            if (spmToSpeedZones[i] === 0) {
+                spmToSpeedZones[i] = [];
+                continue;
+            }
+            let zone = athlete.strokeRateZones[i];
+            spmToSpeedZones[i] = [];
+            for (let record of records) {
+                if (record.getSpm() >= zone.start && record.getSpm() <= zone.end && record.recovery === false) {
+                    spmToSpeedZones[i].push(record.getSpeed());
+                }
+            }
         }
 
-        this.speedZones = [];
-        var percentage, max = Utils.minMaxAvgStddev(speedZones).max / records.length * 100;
-        var lower = session.avgSpeed - Utils.minMaxAvgStddev(records.map(function (rec) {return rec.speed})).stddev;
-        var discarding = false;
-        for (var sz = 0; sz < speedZones.length; sz++) {
-            if (speedZones[sz] === undefined) continue;
-            percentage = Math.round(speedZones[sz] / records.length * 100);
-            if (percentage === 0) continue;
-            if (sz < lower && percentage < HIDE_PERCENTAGE_THRESHOLD) discarding = true;
-            this.speedZones.push({zone: sz, percentage: percentage, bar: percentage * 100/ max, discard: discarding});
-            discarding = false;
-        }
-
-        this.spmZones = [];
-        max = Utils.minMaxAvgStddev(spmZones).max / records.length * 100;
-        lower = session.avgSpm - Utils.minMaxAvgStddev(records.map(function (rec) {return rec.spm})).stddev;
-        discarding = false;
-        for (var spm = 0; spm < spmZones.length; spm++) {
-            if (spmZones[spm] === undefined) continue;
-            percentage = Math.round(spmZones[spm] / records.length * 100);
-            if (percentage === 0) continue;
-            if (spm * SPM_ZONE_STEP < lower && percentage < HIDE_PERCENTAGE_THRESHOLD) discarding = true;
-            this.spmZones.push({zone: spm * SPM_ZONE_STEP, percentage: percentage, bar: percentage * 100/ max, discard: discarding});
-            discarding = false;
-        }
-
-
+        let discarding = false, percentage;
         this.spmToSpeedZones = [];
-        lower = session.avgSpm - Utils.minMaxAvgStddev(records.map(function (rec) {return rec.spm})).stddev;
-        for (var ss = 0; ss < spmToSpeedZones.length; ss++) {
+        for (let ss = 0; ss < spmToSpeedZones.length; ss++) {
             if (spmToSpeedZones[ss] === undefined || spmToSpeedZones[ss].length === 0) continue;
             percentage = Math.round(spmToSpeedZones[ss].length / records.length * 100);
             if (percentage === 0) continue;
-            if (ss * SPM_ZONE_STEP < lower && percentage < HIDE_PERCENTAGE_THRESHOLD) continue;
-            var stats = Utils.minMaxAvgStddev(spmToSpeedZones[ss]);
+            let stats = Utils.minMaxAvgStddev(spmToSpeedZones[ss]);
             this.spmToSpeedZones.push({
-                zone: ss * SPM_ZONE_STEP,
+                zone: `${athlete.strokeRateZones[ss].start}-${athlete.strokeRateZones[ss].end}`,
                 avg: Utils.round2(stats.avg),
                 min: Utils.round2(Math.max(0, stats.avg - stats.stddev)),
                 max: Utils.round2(stats.avg + stats.stddev)
             });
             discarding = false;
         }
+    }
 
-        this.heartRateZones = [];
-        max = Utils.minMaxAvgStddev(heartRateZones).max / records.length * 100;
-        for (var hr = 0; hr < heartRateZones.length; hr++) {
-            if (heartRateZones[hr] === undefined) continue;
-            percentage = Math.round(heartRateZones[hr] / records.length * 100);
+    /**
+     * @param {Array<SessionDetail>}                                                    records
+     * @param {string}                                                                  property
+     * @param {number}                                                                  avg
+     * @param {Array<number>}                                                           zones
+     * @param {Array<AthleteTrainingZone>}                                              definition  zones definition
+     * @param {function}                                                                process     function to process value
+     * @return {Array<Object>}
+     */
+    prepareZoneChartsData(records, property, avg, zones, definition, process = (value) => {
+        return Math.floor(value)
+    }) {
+        let stats = calculateZones(records, definition.slice(0), property, zones, [], process);
+        let lower = avg - Utils.minMaxAvgStddev(records.map(function (rec) {return rec[property]})).stddev;
+        let percentage, max = Utils.minMaxAvgStddev(zones).max / stats.count * 100, discarding = false;
+        let result = [];
+        for (let i = 0; i < zones.length; i++) {
+            if (zones[i] === undefined) continue;
+            percentage = Math.round(zones[i] / stats.workingCount * 100);
             if (percentage === 0) continue;
-            this.heartRateZones.push({zone: hr * 10, percentage: percentage, bar: percentage * 100/ max});
+            if (i < lower && percentage < SessionSummaryZones.hidePercentageThreshold()) discarding = true;
+            let zone = definition[i];
+            result.push({zone: `${zone.start}-${zone.end}`, percentage: percentage, bar: percentage * 100/ max, discard: discarding});
+            discarding = false;
         }
-
+        return result;
     }
 
     render(context, template, $container) {
-        var self = this;
+        const self = this;
 
         Context.render($container, template({isPortraitMode: context.isPortraitMode()
             , speedZones: self.speedZones
@@ -385,15 +346,19 @@ class SessionSummaryZones {
             , heartRateZones: self.heartRateZones
             , spmToSpeedZones: self.spmToSpeedZones
         }));
-
-        setTimeout(function () {
-
-        }, 0);
     }
 }
 
+
+/**
+ * reduce number of points in chart so charts are easier to read in mobile
+ *
+ * @param details
+ * @param nbrOfPoints
+ * @return {[]}
+ */
 function collapseMetrics(details, nbrOfPoints) {
-    var step, speed = 0, spm = 0, efficiency = 0, hr = 0, count = 0, result = [], i, l
+    let step, speed = 0, spm = 0, efficiency = 0, hr = 0, count = 0, result = [], i, l
         , distance = details[details.length - 1].getDistance() * 1000, position;
 
     if (!nbrOfPoints) nbrOfPoints = 10;
@@ -426,7 +391,7 @@ function collapseMetrics(details, nbrOfPoints) {
     step = Math.floor(distance / nbrOfPoints);
     position = step;
     for (i = 0, l = details.length; i < l; i++) {
-        var detail = details[i];
+        let detail = details[i];
         if (detail.getDistance() * 1000 > position) {
             result.push({
                 speed: speed / count,
@@ -466,7 +431,8 @@ function collapseMetrics(details, nbrOfPoints) {
 /**
  *
  * @param {Session} session
- * @param details  Session data records
+ * @param {Array<SessionDetail>} details  Session data records
+ * @return {{intervals: SummaryInterval, working: Array<SessionDetail>}}
  */
 function calculateIntervals(session, details) {
 
@@ -484,11 +450,11 @@ function calculateIntervals(session, details) {
         }
     }
 
-    var interval = null, previous = null, intervals = [], definition, workingDetails = [];
+    let interval = null, previous = null, intervals = [], definition, workingDetails = [];
     definition = session.expressionJson;
 
-    for (var i = 0, l = details.length; i < l; i++) {
-        var record = details[i];
+    for (let i = 0, l = details.length; i < l; i++) {
+        let record = details[i];
         if (record.split === -1) {
             if (previous) {
                 previous.finishedAt = record.getTimestamp();
@@ -540,6 +506,73 @@ function calculateIntervals(session, details) {
     return {
         intervals: intervals,
         working: workingDetails
+    }
+}
+
+
+/**
+ *
+ * @param {Array<SessionDetail>}        data
+ * @param {Array<AthleteTrainingZone>}  zones
+ * @param {string}                      property        Property from data that should be read
+ * @param {Array}                       aggregator      Write working output
+ * @param {Array}                       aggregatorFull  Write full output
+ * @param {function}                    process         function to process value
+ * @return {{count: number, workingCount: number, total: number, working: number}}
+ */
+function calculateZones(data, zones, property, aggregator, aggregatorFull, process = function (value) {
+    return Math.floor(value)
+}) {
+    let total = 0, working = 0, workingCount = 0, count = 0;
+
+    loopZones(data, zones, property, function (value, position) {
+        workingCount++;
+        aggregator[position] = aggregator[position] === undefined ? 1 : aggregator[position] + 1;
+        working += value;
+    }, function all(value, position) {
+        count++
+        aggregatorFull[position] = aggregatorFull[position] === undefined ? 1 : aggregatorFull[position] + 1;
+        total += value;
+    }, process);
+
+
+    return {
+        working: working,
+        workingCount: workingCount,
+        count: count,
+        total: total
+    }
+}
+
+/**
+ *
+ * @param {Array<SessionDetail>}        data
+ * @param {Array<AthleteTrainingZone>}  zones
+ * @param {string}                      property        Property from data that should be read
+ * @param {function}                    working         Write working output
+ * @param {function}                    all             Write full output
+ * @param {function}                    process         function to process value
+
+ */
+function loopZones(data, zones, property, working, all, process = function (value) {
+    return Math.floor(value)
+}) {
+    let index = -1;
+
+    while (zones.length > 0) {
+        let zone = zones.shift();
+        index++;
+
+        for (let record of data) {
+            let value = process(record[property]);
+
+            if (value >= zone.start && value <= zone.end) {
+                all.apply({}, [record[property], index, record]);
+
+                if (record.recovery) continue;
+                working.apply({}, [record[property], index, record]);
+            }
+        }
     }
 }
 

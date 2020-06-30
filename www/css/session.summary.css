@@ -1,17 +1,57 @@
+.app-page[data-page="session-summary"] .app-content {
+    color: #ffffff;
+}
+
+.summary-current-session {
+    text-align: center;
+    font-size: 24px;
+    margin: 8px 0;
+    font-weight: 600;
+}
+
 .summary-layout {
-    height: 100%;
     width: 100%;
 }
+
+.summary-session-details {
+    background-color: #EE6156;
+}
+
 
 .summary-thumbs-up-icon {
     fill: #ffffff;
 }
 
+.summary-stats {
+    width: 100vw;
+}
+
 .summary-stats-row {
     width: 100%;
-    clear: both;
-    height: 100px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
 }
+
+.summary-stats-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.summary-stats-column > label {
+    color: #808080;
+    font-size: 14px;
+}
+
+.summary-stats-column > span {
+    font-size: 28px;
+    font-weight: 600;
+}
+
+
 
 .summary-stats-left {
     width: 30%;
@@ -28,8 +68,6 @@
     padding: 0 20px;
 }
 
-
-
 .summary-label {
     color: rgba(255,255,255,0.9);
     line-height: 20px;
@@ -37,10 +75,6 @@
 
 .summary-value {
     color: #ffffff;
-}
-
-canvas.summary-value {
-    height: 70px;
 }
 
 .summary-value > b {
@@ -53,14 +87,6 @@ canvas.summary-value {
     text-transform: uppercase;
     background-color: #343540;
     padding: 15px 30px;
-}
-
-#summary-congrats {
-    display: none;
-}
-
-.summary-session-details {
-    background-color: #EE6156;
 }
 
 .summary-duration {
@@ -113,8 +139,6 @@ canvas.summary-value {
 
 .summary-intervals-header {
     height: 60px;
-    background-color: #FFFFFF;
-    color: #3B3D62;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -124,14 +148,10 @@ canvas.summary-value {
 }
 
 .summary-intervals-body {
-    height: calc(90vh - 64px);
-    overflow: auto;
-    width: 90vw;
-    margin: 0 auto;
 }
 
 .summary-intervals-header-expression {
-    color: #fff;
+    color: #808080;
     border-radius: 4px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -142,8 +162,6 @@ canvas.summary-value {
 }
 
 .summary-intervals-table {
-    background: #F3F3F3;
-    border: 1px solid #D9D9D9;
     height: 36vh;
     margin-top: 10px;
     border-radius: 0 0 4px 4px;
@@ -161,7 +179,7 @@ canvas.summary-value {
 }
 
 .summary-table-header {
-    color: #B3B3B3;
+    color: #fff;
     font-size: 10px;
     text-align: center;
 }
@@ -213,13 +231,12 @@ canvas.summary-value {
 }
 
 .summary-intervals-charts-label, .summary-zones-label {
-    color: #565454;
-    background-color: #D9D9D9;
-    padding-left: 20px;
     line-height: 50px;
     text-transform: capitalize;
     margin-top: 20px;
     border-radius: 4px 4px 0 0;
+    text-align: center;
+    font-weight: 600;
 }
 
 .summary-intervals-charts canvas:last-child {
@@ -231,16 +248,13 @@ canvas.summary-value {
 /* Zones */
 /* ------*/
 .summary-zones-header {
-    height: 60px;
-    background-color: #FFFFFF;
-    color: #3B3D62;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     font-weight: 600;
     text-transform: uppercase;
-    margin: 40px 0;
+    margin: 40px 0 10px 0;
 }
 
 .summary-zones-zone-container {
@@ -249,8 +263,6 @@ canvas.summary-value {
 }
 
 .summary-zones-zone-card {
-    border-radius: 4px;
-    background-color: #F3F3F3;
 }
 
 .summary-zones-zone-card:first-child > .summary-zones-label {
@@ -285,6 +297,8 @@ canvas.summary-value {
 
 .summary-zones-table-bar {
     background-color: #EE6156;
+    border-radius: 0 10px 10px 0;
+    height: 30px;
 }
 .summary-zones-table-bar.summary-zones-table-bar-discarded {
 /*    background-color: #71B57B; */

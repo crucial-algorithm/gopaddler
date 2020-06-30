@@ -192,7 +192,8 @@ const PT = {
 
         , session_summary_title: "Sumário"
         , session_summary_finish_button: "Terminar"
-        , session_summary_metrics_title: "Métricas (médias)"
+        , session_summary_metrics_duration: "Duração"
+        , session_summary_metrics_distance: "Distância"
         , session_summary_metrics_speed: "Km/h"
         , session_summary_metrics_spm: "RPM"
         , session_summary_metrics_efficiency: "Deslocamento"
@@ -211,7 +212,6 @@ const PT = {
         , session_summary_intervals_length_chart_label: "Deslocamento"
         , session_summary_intervals_hr_chart_label: "Ritmo cardíaco"
 
-        , session_summary_zones_title: "Zonas"
         , session_summary_zones_speed_label: "Velocidade"
         , session_summary_zones_spm_label: "Cadência de Remada"
         , session_summary_zones_spm_speed_label: "Cadência / Velocidade"

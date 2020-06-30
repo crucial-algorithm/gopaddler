@@ -45,6 +45,7 @@ class Session {
 
         this._version = VERSION_WITH_RECOVERY_IN_DATA;
         this._expressionJson = null;
+        /**@type Array<SessionDetail>*/
         this._data = null;
         if (data) {
             this._data = [];
@@ -201,25 +202,23 @@ class Session {
     }
 
     /**
-     * Get session_data for this session
-     * @returns {*}
+     *
+     * @return {Promise<Array<SessionDetail>>}
      */
     detail() {
-        const self = this,
-            defer = $.Deferred();
+        const self = this;
+        return new Promise((resolve) => {
+            if (self._data) {
+                setTimeout(() => {
+                    resolve(self._data);
+                }, 0);
+                return;
+            }
 
-        if (this._data) {
-            setTimeout(() => {
-                defer.resolve(this._data);
-            }, 0);
-            return defer.promise();
-        }
-
-        SessionDetail.get(self.id, function (rows) {
-            defer.resolve(rows);
+            SessionDetail.get(self.id, function (rows) {
+                resolve(rows);
+            });
         });
-
-        return defer.promise();
     }
 
     calculateMetrics(splits, pausedDuration = 0) {

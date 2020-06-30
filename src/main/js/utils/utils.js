@@ -356,6 +356,10 @@ class Utils {
 
     }
 
+    static heartRateReserveCalculation(resting, max, hr) {
+        return Math.floor(((resting - hr) / (max - resting)) * -100)
+    }
+
 }
 
 export default Utils

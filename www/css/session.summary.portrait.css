@@ -1,9 +1,3 @@
-.summary-session-details {
-    height: 17vh;
-    width: 100%;
-    background-color: #EE6156;
-}
-
 .summary-stats {
     width: 100%;
     background-color: #3b3d62;
@@ -11,28 +5,3 @@
     text-align: center;
 }
 
-.summary-congrats-title {
-    display: none;
-}
-
-.summary-icon {
-    display: none;
-}
-
-.summary-label-highlight {
-    display: none;
-}
-
-.summary-current-session {
-    color: rgba(255,255,255,0.9);
-    text-align: center;
-    font-size: 12px;
-    height: 40px;
-    line-height: 40px;
-    font-weight: 700;
-}
-
-.summary-layout-general {
-    height: 90vh;
-    overflow: auto;
-}

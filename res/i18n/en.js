@@ -192,7 +192,8 @@ const EN = {
 
         , session_summary_title: "Summary"
         , session_summary_finish_button: "Finish"
-        , session_summary_metrics_title: "Average Metrics"
+        , session_summary_metrics_duration: "Duration"
+        , session_summary_metrics_distance: "Distance"
         , session_summary_metrics_speed: "Km/h"
         , session_summary_metrics_spm: "SPM"
         , session_summary_metrics_efficiency: "Length"
@@ -211,7 +212,6 @@ const EN = {
         , session_summary_intervals_length_chart_label: "stroke length"
         , session_summary_intervals_hr_chart_label: "Heart Rate"
 
-        , session_summary_zones_title: "Zones"
         , session_summary_zones_speed_label: "Speed"
         , session_summary_zones_spm_label: "Stroke rate"
         , session_summary_zones_spm_speed_label: "Stroke rate / Speed"

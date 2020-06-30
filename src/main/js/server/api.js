@@ -7,6 +7,44 @@ const createClass = require('asteroid').createClass;
 const facebook = require('../asteroid/facebook');
 const Asteroid = createClass([facebook]);
 
+/**
+ * @typedef {Object}    AthleteProfile
+ * @property {Date}     birthdate
+ * @property {string}   boat
+ * @property {String}   country
+ * @property {boolean}  debug
+ * @property {Object}   device
+ * @property {string}   gender
+ * @property {boolean}  inMailchimp
+ * @property {number}   liveUpdateEvery
+ * @property {number}   maxHeartRate
+ * @property {string}   origin
+ * @property {string}   sport
+ * @property {boolean}  welcomeEmailSent
+ */
+
+/**
+ * @typedef {Object}    AthleteTrainingZone
+ * @property {number}   start
+ * @property {number}   end
+ */
+
+/**
+ * @typedef {Object}                        Athlete
+ * @property {string}                       _id
+ * @property {Date}                         birthDate
+ * @property {string}                       boat
+ * @property {string}                       gender
+ * @property {boolean}                      hasCoach
+ * @property {AthleteProfile}               profile
+ * @property {Array<string>}                roles
+ * @property {boolean}                      hasStrava
+ * @property {string}                       stravaAthleteName
+ * @property {Array<AthleteTrainingZone>}   heartRateZones
+ * @property {Array<AthleteTrainingZone>}   speedZones
+ * @property {Array<AthleteTrainingZone>}   strokeRateZones
+ */
+
 Asteroid.prototype.loginWithGoPaddler = function (user) {
 
     let self = this;
@@ -564,6 +602,10 @@ let User = {
     },
 
 
+    /**
+     *
+     * @return {Athlete}
+     */
     get: function () {
         return asteroid.user;
     },
@@ -573,6 +615,10 @@ let User = {
         return asteroid.userId;
     },
 
+    /**
+     *
+     * @return {AthleteProfile}
+     */
     getProfile: function () {
         return asteroid.user.profile;
     },

@@ -1,7 +1,13 @@
-.summary-layout {
+.summary-stats {
+}
+
+.summary-stats-row {
+    width: 80vw;
+    margin: auto;
+    height: 80px;
     display: flex;
-    height: 82vh;
-    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
 }
 
 .summary-layout-general {
@@ -11,29 +17,10 @@
 .summary-session-details {
     height: 90px;
     width: 100%;
-    background-color: #EE6156;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-}
-
-#summary-congrats {
-    display: table-cell;
-    height: 100%;
-    width: 50%;
-    background-color: #EE6156;
-    float: left;
-}
-
-
-.summary-stats {
-    width: 100vw;
-    background-color: #3b3d62;
-    vertical-align: top;
-    text-align: center;
-    overflow: auto;
-    float: right;
 }
 
 .summary-congrats-title {
@@ -56,12 +43,6 @@
     text-align: center;
     margin-top: -10px;
     font-weight: bold;
-}
-
-.summary-current-session {
-    color: rgba(255,255,255,0.9);
-    text-align: center;
-    font-size: 3vw;
 }
 
 .summary-duration {

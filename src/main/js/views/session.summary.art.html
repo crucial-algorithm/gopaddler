@@ -15,62 +15,8 @@
 </div>
 <div class="app-content" style="height:82vh" data-no-scroll="true">
     <div class="summary-layout">
-        <div class="summary-layout-general">
-            <div id="summary-details" class="summary-session-details">
-                <div id="summary-details-session" class="summary-current-session"></div>
-                <div class="summary-highlight">
-                    <div class="summary-duration" data-selector="duration"></div>
-                    <div class="summary-paused" data-selector="paused"></div>
-                    <div class="summary-distance" data-selector="distance"></div>
-                </div>
-            </div>
-            <div class="summary-stats">
-
-                <h2>{{"session_summary_metrics_title" | translate}}</h2>
-
-
-                <div class="summary-stats-row">
-                    <div class="summary-stats-left">
-                        <div class="summary-value" data-selector="avg-speed"></div>
-                        <div class="summary-label">{{"session_summary_metrics_speed" | translate}}</div>
-                    </div>
-                    <div class="summary-stats-right">
-                        <canvas class="summary-value" data-selector="speed-chart" height="70"></canvas>
-                    </div>
-                </div>
-
-                <div class="summary-stats-row">
-                    <div class="summary-stats-left">
-                        <div class="summary-value" data-selector="avg-spm"></div>
-                        <div class="summary-label">{{"session_summary_metrics_spm" | translate}}</div>
-                    </div>
-                    <div class="summary-stats-right">
-                        <canvas class="summary-value" data-selector="spm-chart" height="70"></canvas>
-                    </div>
-                </div>
-
-                <div class="summary-stats-row">
-                    <div class="summary-stats-left">
-                        <div class="summary-value" data-selector="avg-efficiency"></div>
-                        <div class="summary-label">{{"session_summary_metrics_efficiency" | translate}}</div>
-                    </div>
-                    <div class="summary-stats-right">
-                        <canvas class="summary-value" data-selector="efficiency-chart" height="70"></canvas>
-                    </div>
-                </div>
-
-                <div class="summary-stats-row">
-                    <div class="summary-stats-left">
-                        <div class="summary-value" data-selector="avg-heart-rate"></div>
-                        <div class="summary-label">{{"session_summary_metrics_heart_rate" | translate}}</div>
-                    </div>
-                    <div class="summary-stats-right">
-                        <canvas class="summary-value" data-selector="heart-rate-chart" height="70"></canvas>
-                    </div>
-                </div>
-
-            </div>
-        </div>
+        <div id="summary-details-session" class="summary-current-session"></div>
+        <div class="summary-layout-general"></div>
         <div class="summary-layout-zones"></div>
         <div class="summary-layout-intervals"></div>
     </div>

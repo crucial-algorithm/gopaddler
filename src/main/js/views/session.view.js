@@ -16,6 +16,7 @@ import Api from '../server/api';
 import Splits from '../core/splits-handler';
 import SessionViewCollectMetrics from './session.view.collect';
 import {SessionViewSplits} from "./session.view.splits";
+import AppSettings from "../utils/AppSettings";
 
 
 const DEFAULT_POSITIONS = {
@@ -154,7 +155,7 @@ class SessionView {
             let stats = self.metrics.status();
 
             let distance = Math.round((stats.distance * 1000 - stats.lastSplitStartDistance));
-            stats.distance = distance - distance % context.appConfig.distanceStep;
+            stats.distance = distance - distance % AppSettings.distanceStep();
 
             if (self.showLastSplitSummaryCountDown > 0) {
                 self.showLastSplitSummaryCountDown--;

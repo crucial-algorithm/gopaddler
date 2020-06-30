@@ -1,6 +1,8 @@
 'use strict';
 
 // Array with DDL to be applied to each version of database; Each position corresponds to a version number
+import AppSettings from "./utils/AppSettings";
+
 const ddl = [
     [
         ["CREATE TABLE IF NOT EXISTS settings (",
@@ -182,7 +184,8 @@ class Database {
     static init() {
 
         const defer = $.Deferred();
-        connection = window.sqlitePlugin.openDatabase({name: __APP_CONFIG__.database.name, "location": __APP_CONFIG__.database.location});
+        connection = window.sqlitePlugin.openDatabase({name: AppSettings.databaseName()
+            , location: AppSettings.databaseLocation()});
 
         determineDbVersion().then(function (version) {
             connection.transaction(function (tx) {

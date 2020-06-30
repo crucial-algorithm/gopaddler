@@ -14,6 +14,7 @@ import Pace from "../measures/pace";
 import Context from "../context";
 import {SessionViewSplits} from "./session.view.splits";
 import Session from "../model/session";
+import AppSettings from "../utils/AppSettings";
 
 /**
  * @typedef {Object} Location
@@ -153,14 +154,11 @@ export default class SessionViewCollectMetrics {
         this.createSession(startAt, calibration, remoteScheduledSessionId, startSplitsImmediately);
         this.startCommon(startAt, splitsDefinition, wasStartedRemotely, expression, startSplitsImmediately);
 
-        let app = __APP__;
-        if (app === 'gopaddler') {
+        AppSettings.switch(() => {
             this.startGoPaddler(startAt);
-        } else if (app === 'uttercycling') {
+        }, () => {
             this.startUtterCycling(startAt);
-        } else {
-            throw 'unknown app configuration - check your package.json and webpack.config.js - ' + app;
-        }
+        });
 
         this.splitsDefinition = splitsDefinition;
         this.expression = expression;

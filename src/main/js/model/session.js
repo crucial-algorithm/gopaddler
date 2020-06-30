@@ -3,6 +3,7 @@
 import SessionDetail from './session-detail';
 import Utils from '../utils/utils';
 import Database from '../db';
+import AppSettings from "../utils/AppSettings";
 
 const VERSION_WITH_RECOVERY_IN_DATA = 2;
 
@@ -122,7 +123,7 @@ class Session {
             }
 
             defer.resolve({
-                type: __APP_CONFIG__.sessionType,
+                type: AppSettings.sessionType(),
                 pausedDuration: self.pausedDuration,
                 timestamp: new Date(self.sessionStart).getTime(),
                 serverClockGap: self.serverClockGap,

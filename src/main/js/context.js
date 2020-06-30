@@ -127,8 +127,6 @@ class Context {
         this._userConnectedToStrava = [];
 
         this._coachInviteTokenResolver = null;
-        /**@type AppConfig */
-        this._appConfig = __APP_CONFIG__;
     }
 
     preferences() {
@@ -284,14 +282,6 @@ class Context {
 
     set coachInviteTokenResolver(value) {
         this._coachInviteTokenResolver = value;
-    }
-
-    get appConfig() {
-        return this._appConfig;
-    }
-
-    set appConfig(value) {
-        this._appConfig = value;
     }
 
     static render(page, template) {

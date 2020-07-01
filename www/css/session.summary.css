@@ -230,7 +230,7 @@
     height: 200px;
 }
 
-.summary-intervals-charts-label, .summary-zones-label {
+.summary-section-title {
     line-height: 50px;
     text-transform: capitalize;
     margin-top: 20px;
@@ -265,7 +265,7 @@
 .summary-zones-zone-card {
 }
 
-.summary-zones-zone-card:first-child > .summary-zones-label {
+.summary-zones-zone-card:first-child > .summary-section-title {
     margin-top: 10px;
 }
 

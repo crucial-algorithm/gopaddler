@@ -54,3 +54,9 @@
 .portrait-app-content .calibrate-action-preset-flat {
     height: 20vh;
 }
+
+
+.app-gp-portrait .progress-line.progress-line-top {
+    position: fixed;
+    top: 10vh;
+}

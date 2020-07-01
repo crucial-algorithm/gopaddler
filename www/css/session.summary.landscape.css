@@ -63,3 +63,12 @@
 .summary-interval-detail-container {
     height: 132px;
 }
+
+.summary-layout-cycling {
+    width: 86vw;
+    margin: 0 auto;
+}
+
+.summary-cycling-charts .summary-section-title {
+    line-height: unset;
+}

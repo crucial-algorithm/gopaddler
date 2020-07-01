@@ -8,14 +8,16 @@ import template from './session.summary.art.html';
 import generalStatsTemplate from './session.summary.general.art.html';
 import intervalsTemplate from './session.summary.intervals.art.html';
 import zonesTemplate from './session.summary.zones.art.html';
+import cyclingTemplate from './session.summary.cycling.art.html';
 import GpChart from '../utils/widgets/chart';
 import {MockSessionGenerator} from "../global";
 import ScheduledSession from "../model/scheduled-session";
 import Session from "../model/session";
+import AppSettings from "../utils/AppSettings";
 
 
 /**
- * @typedef {Object}    SummaryInterval
+ * @typedef {Object}                SummaryInterval
  * @property {number}               number
  * @property {number}               count
  * @property {number}               startAt
@@ -38,15 +40,17 @@ class SessionSummaryView {
      * @param sessionSummaryArguments
      */
     constructor(page, context, sessionSummaryArguments) {
+        const self = this;
+
         Context.render(page, template({isPortraitMode: context.isPortraitMode()}));
 
         /** @type Session */
         let session = sessionSummaryArguments.session;
 
-        let isPastSession    = sessionSummaryArguments.isPastSession,
-            $page            = $(page),
-            $finish          = $page.find('#summary-finish'),
-            $back            = $page.find('#summary-back')
+        let isPastSession = sessionSummaryArguments.isPastSession,
+            $page = $(page),
+            $finish = $page.find('#summary-finish'),
+            $back = $page.find('#summary-back')
         ;
 
         // show sample session for the 1st time user tries the product
@@ -131,21 +135,112 @@ class SessionSummaryView {
             }));
 
             session.detail().then(function (records) {
-                let output = calculateIntervals(session, records);
+                let output = self.calculateIntervals(session, records);
                 let zones = new SessionSummaryZones(session, output.working, context);
                 zones.render(context, zonesTemplate, $('.summary-layout-zones'));
 
-                if (session.version < 2) return;
+                if (session.version < 2) return self.stopProgressBar();
 
-                if (!session.expression) return;
+                AppSettings.switch(() => {
+                }, () => {
+                    let cycling = new UtterCycling(session, records, context);
+                    cycling.render(cyclingTemplate, document.getElementsByClassName('summary-layout-cycling')[0])
+                });
+
+                if (!session.expression) return self.stopProgressBar();
 
                 let intervals = new SessionSummaryIntervals(session, output.intervals);
                 intervals.render(context, intervalsTemplate, $('.summary-layout-intervals'));
+                self.stopProgressBar()
             });
         });
     }
-}
 
+    stopProgressBar() {
+        $('.progress-line').hide();
+    }
+
+    /**
+     *
+     * @param {Session} session
+     * @param {Array<SessionDetail>} details  Session data records
+     * @return {{intervals: SummaryInterval, working: Array<SessionDetail>}}
+     */
+    calculateIntervals(session, details) {
+
+        if (session.version < 2) {
+            return {
+                intervals: [],
+                working: details
+            }
+        }
+
+        if (!session.expression) {
+            return {
+                intervals: [],
+                working: details
+            }
+        }
+
+        let interval = null, previous = null, intervals = [], definition, workingDetails = [];
+        definition = session.expressionJson;
+
+        for (let i = 0, l = details.length; i < l; i++) {
+            let record = details[i];
+            if (record.split === -1) {
+                if (previous) {
+                    previous.finishedAt = record.getTimestamp();
+                    previous.distanceEnd = record.getDistance();
+                    previous = null;
+                }
+                continue;
+            }
+
+            interval = intervals[record.split];
+            if (interval === undefined) {
+                if (previous) {
+                    previous.finishedAt = record.getTimestamp();
+                    previous.distanceEnd = record.getDistance();
+                }
+                intervals[record.split] = {
+                    number: record.split,
+                    count: 0,
+                    startedAt: record.getTimestamp(),
+                    finishedAt: null,
+                    distanceStart: record.getDistance(),
+                    distanceEnd: null,
+                    spmTotal: 0,
+                    hrTotal: 0,
+                    recovery: definition[record.split]._recovery === true,
+                    isDistanceBased: definition[record.split]._unit.toLowerCase() === 'meters'
+                        || definition[record.split]._unit.toLowerCase() === 'kilometers',
+                    records: []
+
+                }
+            }
+
+            if (intervals[record.split].recovery === false) {
+                intervals[record.split].spmTotal += record.getSpm();
+                intervals[record.split].hrTotal += record.getHeartRate();
+                intervals[record.split].records.push(record);
+                intervals[record.split].count++;
+                workingDetails.push(record);
+            }
+
+            previous = interval;
+        }
+
+        if (intervals[intervals.length - 1] !== undefined && intervals[intervals.length - 1].finishedAt === null) {
+            intervals[intervals.length - 1].finishedAt = record.getTimestamp();
+            intervals[intervals.length - 1].distanceEnd = record.getDistance();
+        }
+
+        return {
+            intervals: intervals,
+            working: workingDetails
+        }
+    }
+}
 
 class SessionSummaryIntervals {
     constructor(session, intervals) {
@@ -181,9 +276,10 @@ class SessionSummaryIntervals {
             });
             position++;
         }
-        Context.render($container, template({isPortraitMode: context.isPortraitMode()
-            , intervals: intervals, session: self.session.expression}));
-
+        Context.render($container, template({
+            isPortraitMode: context.isPortraitMode()
+            , intervals: intervals, session: self.session.expression
+        }));
 
         setTimeout(function () {
             if (!self.intervals || self.intervals.length === 0) {
@@ -204,7 +300,7 @@ class SessionSummaryIntervals {
     loadCharts(metrics) {
         let labels = [], speed = [], spm = [], efficiency = [], hr = [];
 
-        metrics.map(function(detail) {
+        metrics.map(function (detail) {
             labels.push(detail.timestamp);
             speed.push(detail.speed);
             spm.push(detail.spm);
@@ -212,38 +308,49 @@ class SessionSummaryIntervals {
             hr.push(detail.heartRate);
         });
 
-        let labelFormatter = function(data, places) {
-            return function (value, context) {
-                if (context.dataIndex === 0) return '';
-                if (context.dataIndex === data.length -1 ) return '';
-                if (context.dataIndex % 5 === 0) return Utils.round(value, places);
-                return '';
-            }
+        /**@type ChartOptions */
+        let options = {
+            /**@type ChartLabelOptions*/
+            labels: {
+                display: true,
+                weight: 700,
+                size: 10,
+                align: 'start',
+                anchor: 'start',
+                clamp: true
+            },
+            displayYAxisGridLines: false
         };
 
-        let dataset = function(values) {
-            return {
-                data: values,
-                backgroundbackColor: 'rgba(59, 61, 98, 0)',
-                borderColor: 'rgba(238, 97, 86, 1)',
-                borderWidth: 2,
-                pointRadius: 0
-            }
-        };
+        new GpChart($('#speed'), GpChart.TYPES().LINE, labels, dataset(speed), labelFormatter(speed, 2), options, false);
+        new GpChart($('#spm'), GpChart.TYPES().LINE, labels, dataset(spm), labelFormatter(spm, 0), options, false);
+        new GpChart($('#length'), GpChart.TYPES().LINE, labels, dataset(efficiency), labelFormatter(efficiency, 2), options, false);
+        new GpChart($('#hr'), GpChart.TYPES().LINE, labels, dataset(hr), labelFormatter(hr, 0), options, false);
 
-        let labelOptions = {
-            weight: 700,
-            size: 10,
-            align: 'start',
-            anchor: 'start',
-            clamp: true
-        };
+    }
+}
 
-        new GpChart($('#speed'), 'line', labels, dataset(speed), labelFormatter(speed, 2), labelOptions, false);
-        new GpChart($('#spm'), 'line', labels, dataset(spm), labelFormatter(spm, 0), labelOptions, false);
-        new GpChart($('#length'), 'line', labels, dataset(efficiency), labelFormatter(efficiency, 2), labelOptions, false);
-        new GpChart($('#hr'), 'line', labels, dataset(hr), labelFormatter(hr, 0), labelOptions, false);
+function labelFormatter(data, places) {
+    return function (value, context) {
+        if (context.dataIndex === 0) return '';
+        if (context.dataIndex === data.length - 1) return '';
+        if (context.dataIndex % 5 === 0) return Utils.round(value, places);
+        return '';
+    }
+}
 
+/**
+ *
+ * @param values
+ * @return {ChartDataSet}
+ */
+function dataset(values) {
+    return {
+        data: values,
+        backgroundbackColor: 'rgba(59, 61, 98, 0)',
+        borderColor: 'rgba(238, 97, 86, 1)',
+        borderWidth: 2,
+        pointRadius: 0
     }
 }
 
@@ -255,6 +362,7 @@ class SessionSummaryZones {
     static hidePercentageThreshold() {
         return 5;
     }
+
     /**
      *
      * @param {Session} session
@@ -278,7 +386,7 @@ class SessionSummaryZones {
             });
 
         spmToSpeedZones = spmZones.slice();
-        for (let i = 0, l = athlete.strokeRateZones.length;  i < l; i++) {
+        for (let i = 0, l = athlete.strokeRateZones.length; i < l; i++) {
             if (spmToSpeedZones[i] === 0) {
                 spmToSpeedZones[i] = [];
                 continue;
@@ -321,8 +429,10 @@ class SessionSummaryZones {
     prepareZoneChartsData(records, property, avg, zones, definition, process = (value) => {
         return Math.floor(value)
     }) {
-        let stats = calculateZones(records, definition.slice(0), property, zones, [], process);
-        let lower = avg - Utils.minMaxAvgStddev(records.map(function (rec) {return rec[property]})).stddev;
+        let stats = this.calculateZones(records, definition.slice(0), property, zones, [], process);
+        let lower = avg - Utils.minMaxAvgStddev(records.map(function (rec) {
+            return rec[property]
+        })).stddev;
         let percentage, max = Utils.minMaxAvgStddev(zones).max / stats.count * 100, discarding = false;
         let result = [];
         for (let i = 0; i < zones.length; i++) {
@@ -331,7 +441,12 @@ class SessionSummaryZones {
             if (percentage === 0) continue;
             if (i < lower && percentage < SessionSummaryZones.hidePercentageThreshold()) discarding = true;
             let zone = definition[i];
-            result.push({zone: `${zone.start}-${zone.end}`, percentage: percentage, bar: percentage * 100/ max, discard: discarding});
+            result.push({
+                zone: `${zone.start}-${zone.end}`,
+                percentage: percentage,
+                bar: percentage * 100 / max,
+                discard: discarding
+            });
             discarding = false;
         }
         return result;
@@ -340,15 +455,174 @@ class SessionSummaryZones {
     render(context, template, $container) {
         const self = this;
 
-        Context.render($container, template({isPortraitMode: context.isPortraitMode()
+        Context.render($container, template({
+            isPortraitMode: context.isPortraitMode()
             , speedZones: self.speedZones
             , spmZones: self.spmZones
             , heartRateZones: self.heartRateZones
             , spmToSpeedZones: self.spmToSpeedZones
         }));
     }
+
+    /**
+     *
+     * @param {Array<SessionDetail>}        data
+     * @param {Array<AthleteTrainingZone>}  zones
+     * @param {string}                      property        Property from data that should be read
+     * @param {Array}                       aggregator      Write working output
+     * @param {Array}                       aggregatorFull  Write full output
+     * @param {function}                    process         function to process value
+     * @return {{count: number, workingCount: number, total: number, working: number}}
+     */
+    calculateZones(data, zones, property, aggregator, aggregatorFull, process = function (value) {
+        return Math.floor(value)
+    }) {
+        let total = 0, working = 0, workingCount = 0, count = 0;
+
+        this.loopZones(data, zones, property, function (value, position) {
+            workingCount++;
+            aggregator[position] = aggregator[position] === undefined ? 1 : aggregator[position] + 1;
+            working += value;
+        }, function all(value, position) {
+            count++
+            aggregatorFull[position] = aggregatorFull[position] === undefined ? 1 : aggregatorFull[position] + 1;
+            total += value;
+        }, process);
+
+
+        return {
+            working: working,
+            workingCount: workingCount,
+            count: count,
+            total: total
+        }
+    }
+
+    /**
+     *
+     * @param {Array<SessionDetail>}        data
+     * @param {Array<AthleteTrainingZone>}  zones
+     * @param {string}                      property        Property from data that should be read
+     * @param {function}                    working         Write working output
+     * @param {function}                    all             Write full output
+     * @param {function}                    process         function to process value
+
+     */
+    loopZones(data, zones, property, working, all, process = function (value) {
+        return Math.floor(value)
+    }) {
+        let index = -1;
+
+        while (zones.length > 0) {
+            let zone = zones.shift();
+            index++;
+
+            for (let record of data) {
+                let value = process(record[property]);
+
+                if (value >= zone.start && value <= zone.end) {
+                    all.apply({}, [record[property], index, record]);
+
+                    if (record.recovery) continue;
+                    working.apply({}, [record[property], index, record]);
+                }
+            }
+        }
+    }
 }
 
+class UtterCycling {
+    /**
+     *
+     * @param {Session} session
+     * @param {Array<SessionDetail>} records
+     * @param {Context} context
+     */
+    constructor(session, records, context) {
+        this._session = session;
+        this._records = records;
+        this._context = context;
+    }
+
+    /**
+     *
+     * @param {function} template
+     * @param {Element} container
+     */
+    render(template, container) {
+        Context.render(container, template({}));
+
+        setTimeout(() => {
+            this.loadCharts(this.records);
+        }, 0);
+
+    }
+
+    /**
+     *
+     * @param {Array<SessionDetail>} metrics
+     */
+    loadCharts(metrics) {
+        let labels = [], altitude = [];
+
+        // collapseMetrics(metrics, 50);
+        let min = null;
+        for (let record of metrics) {
+            let value = record.altitude;
+            if (value === undefined) {
+                continue;
+            }
+            if (min === null || value < min) {
+                min = value;
+            }
+        }
+
+        let i = 0;
+        metrics.map(function (detail) {
+            i++;
+            labels.push(detail.distance);
+            altitude.push(detail.altitude - (min !== null ? min : 0));
+        });
+
+        let labelsToShow = {};
+
+        /**@type ChartOptions */
+        let options = {
+            /**@type ChartLabelOptions*/
+            labels: {
+                display: false
+            },
+            displayYAxisGridLines: true,
+            displayXAxisGridLines: true,
+            xAxisLabelMaxRotation: 0,
+            xAxisLabelCallback: (label) => {
+                const value = Math.floor(label);
+                if (value === 0) return null;
+                if (value % 10 !== 0) return null;
+                if (labelsToShow[value] === true) return null;
+                labelsToShow[value] = true;
+                return value;
+            }
+
+        };
+
+        new GpChart(document.getElementById('cycling-altitude'), GpChart.TYPES().LINE, labels
+            , dataset(altitude), labelFormatter(altitude, 2)
+            , options, false);
+    }
+
+    get session() {
+        return this._session;
+    }
+
+    get records() {
+        return this._records;
+    }
+
+    get context() {
+        return this._context;
+    }
+}
 
 /**
  * reduce number of points in chart so charts are easier to read in mobile
@@ -428,152 +702,5 @@ function collapseMetrics(details, nbrOfPoints) {
     return result;
 }
 
-/**
- *
- * @param {Session} session
- * @param {Array<SessionDetail>} details  Session data records
- * @return {{intervals: SummaryInterval, working: Array<SessionDetail>}}
- */
-function calculateIntervals(session, details) {
 
-    if (session.version < 2) {
-        return {
-            intervals: [],
-            working: details
-        }
-    }
-
-    if (!session.expression) {
-        return {
-            intervals: [],
-            working: details
-        }
-    }
-
-    let interval = null, previous = null, intervals = [], definition, workingDetails = [];
-    definition = session.expressionJson;
-
-    for (let i = 0, l = details.length; i < l; i++) {
-        let record = details[i];
-        if (record.split === -1) {
-            if (previous) {
-                previous.finishedAt = record.getTimestamp();
-                previous.distanceEnd = record.getDistance();
-                previous = null;
-            }
-            continue;
-        }
-
-        interval = intervals[record.split];
-        if (interval === undefined) {
-            if (previous) {
-                previous.finishedAt = record.getTimestamp();
-                previous.distanceEnd = record.getDistance();
-            }
-            intervals[record.split] = {
-                number: record.split,
-                count: 0,
-                startedAt: record.getTimestamp(),
-                finishedAt: null,
-                distanceStart: record.getDistance(),
-                distanceEnd: null,
-                spmTotal: 0,
-                hrTotal: 0,
-                recovery: definition[record.split]._recovery === true,
-                isDistanceBased: definition[record.split]._unit.toLowerCase() === 'meters'
-                    || definition[record.split]._unit.toLowerCase() === 'kilometers',
-                records: []
-
-            }
-        }
-
-        if (intervals[record.split].recovery === false) {
-            intervals[record.split].spmTotal += record.getSpm();
-            intervals[record.split].hrTotal += record.getHeartRate();
-            intervals[record.split].records.push(record);
-            intervals[record.split].count++;
-            workingDetails.push(record);
-        }
-
-        previous = interval;
-    }
-
-    if (intervals[intervals.length -1] !== undefined && intervals[intervals.length -1].finishedAt === null) {
-        intervals[intervals.length -1].finishedAt = record.getTimestamp();
-        intervals[intervals.length -1].distanceEnd = record.getDistance();
-    }
-
-    return {
-        intervals: intervals,
-        working: workingDetails
-    }
-}
-
-
-/**
- *
- * @param {Array<SessionDetail>}        data
- * @param {Array<AthleteTrainingZone>}  zones
- * @param {string}                      property        Property from data that should be read
- * @param {Array}                       aggregator      Write working output
- * @param {Array}                       aggregatorFull  Write full output
- * @param {function}                    process         function to process value
- * @return {{count: number, workingCount: number, total: number, working: number}}
- */
-function calculateZones(data, zones, property, aggregator, aggregatorFull, process = function (value) {
-    return Math.floor(value)
-}) {
-    let total = 0, working = 0, workingCount = 0, count = 0;
-
-    loopZones(data, zones, property, function (value, position) {
-        workingCount++;
-        aggregator[position] = aggregator[position] === undefined ? 1 : aggregator[position] + 1;
-        working += value;
-    }, function all(value, position) {
-        count++
-        aggregatorFull[position] = aggregatorFull[position] === undefined ? 1 : aggregatorFull[position] + 1;
-        total += value;
-    }, process);
-
-
-    return {
-        working: working,
-        workingCount: workingCount,
-        count: count,
-        total: total
-    }
-}
-
-/**
- *
- * @param {Array<SessionDetail>}        data
- * @param {Array<AthleteTrainingZone>}  zones
- * @param {string}                      property        Property from data that should be read
- * @param {function}                    working         Write working output
- * @param {function}                    all             Write full output
- * @param {function}                    process         function to process value
-
- */
-function loopZones(data, zones, property, working, all, process = function (value) {
-    return Math.floor(value)
-}) {
-    let index = -1;
-
-    while (zones.length > 0) {
-        let zone = zones.shift();
-        index++;
-
-        for (let record of data) {
-            let value = process(record[property]);
-
-            if (value >= zone.start && value <= zone.end) {
-                all.apply({}, [record[property], index, record]);
-
-                if (record.recovery) continue;
-                working.apply({}, [record[property], index, record]);
-            }
-        }
-    }
-}
-
-export default  SessionSummaryView;
+export default SessionSummaryView;

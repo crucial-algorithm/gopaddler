@@ -1,12 +1,68 @@
 'use strict';
-
+import Chart from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 const labelColor = 'rgba(255, 255, 255, 0.5)';
 let initialized = false;
 
+
+
+
+/**
+ * @typedef {Object} ChartLabelOptions
+ * @property {boolean}  [display]
+ * @property {string}   [align]       position related; defaults to 'end'
+ * @property {string}   [anchor]      Position related; defaults to 'end'
+ * @property {boolean}  [clamp]       enforces the anchor position to be calculated based on the visible geometry
+ * @property {number}   [offset]      position offset
+ * @property {string}   [color]       font color
+ * @property {number}   [weight]      font weight
+ * @property {number}   [size]        font size
+ *
+ */
+
+
+/**
+ * @typedef {Object} ChartOptions
+ * @property {ChartLabelOptions}    labels                      Labels in bar/line (not to confuse with axis labels)
+ * @property {boolean}              [displayYAxisGridLines]
+ * @property {boolean}              [displayXAxisGridLines]
+ * @property {function}             [xAxisLabelCallback]        Null not to show label or grid line; '' to empty label;
+ * @property {number}               [xAxisLabelMaxRotation]     defaults to 50
+ */
+
+/**
+ * @typedef {Object} ChartDataSet
+ * @property {Array<number>}    data
+ * @property {string}           backgroundbackColor
+ * @property {string}           borderColor
+ * @property {number}           borderWidth
+ * @property {number}           pointRadius
+ *
+ */
+
 class GpChart {
-    
-    constructor(canvas, type, labels, dataset, formatter, labelOptions, displayAverage) {
+
+    static TYPES() {
+        return {
+            LINE: 'line',
+            BAR: 'bar'
+        }
+    }
+
+    /**
+     *
+     * @param {Element} canvas
+     * @param type
+     * @param labels
+     * @param {ChartDataSet} dataset
+     * @param {function} formatter
+     * @param {ChartOptions} options
+     * @param {boolean} displayAverage
+     */
+    constructor(canvas, type, labels, dataset, formatter, options, displayAverage = false) {
+        const labelOptions = options.labels;
+        labelOptions.display = labelOptions.display !== false;
 
         if (initialized === false) {
             extend();
@@ -16,7 +72,7 @@ class GpChart {
 
         if (displayAverage === true) {
             let averageSet = {
-                type: 'line',
+                type: GpChart.TYPES().LINE,
                 name: 'gen-avg',
                 backgroundbackColor: dataset.backgroundbackColor,
                 borderColor: dataset.borderColor,
@@ -25,9 +81,9 @@ class GpChart {
                 borderDash: [5, 15]
             };
 
-            let total = 0, average = [];
-            for (let i = 0, l = dataset.data.length; i < l; i++) {
-                total += dataset.data[i];
+            let total = 0, average = [], l = dataset.data.length;
+            for (let i = 0; i < l; i++) {
+                total += isNaN(dataset.data[i]) ? 0 : dataset.data[i];
                 average.push(0);
             }
             let avg = total / l;
@@ -39,9 +95,9 @@ class GpChart {
             datasets.push(averageSet);
         }
 
-
         new Chart(canvas, {
             type: type,
+            plugins: [ChartDataLabels],
             data: {
                 labels: labels,
                 datasets: datasets
@@ -56,15 +112,20 @@ class GpChart {
                 },
                 scales: {
                     yAxes: [{
-                        display: false
+                        display: options.displayYAxisGridLines === true
                     }],
                     xAxes: [{
-                        display: false
+                        display: options.displayXAxisGridLines === true,
+                        ticks: {
+                            autoSkip: typeof options.xAxisLabelCallback !== 'function',
+                            maxRotation: isNaN(options.xAxisLabelMaxRotation) ? 50 : options.xAxisLabelMaxRotation,
+                            callback: options.xAxisLabelCallback
+                        }
                     }]
                 },
                 plugins: {
                     datalabels: {
-                        display: true,
+                        display: labelOptions.display === true,
                         align: labelOptions.align || 'end',
                         anchor: labelOptions.anchor || 'end',
                         clamp: labelOptions.clamp === true,

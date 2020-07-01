@@ -211,6 +211,7 @@ const PT = {
         , session_summary_intervals_spm_chart_label: "Cadência de remada"
         , session_summary_intervals_length_chart_label: "Deslocamento"
         , session_summary_intervals_hr_chart_label: "Ritmo cardíaco"
+        , session_summary_intervals_altitude_chart_label: "Elevação"
 
         , session_summary_zones_speed_label: "Velocidade"
         , session_summary_zones_spm_label: "Cadência de Remada"

@@ -9,7 +9,6 @@ import portrait from './home.portrait.art.html';
 import Utils from '../utils/utils';
 import Settings from '../model/settings';
 import GpChart from '../utils/widgets/chart';
-import 'chartjs-plugin-datalabels';
 
 
 class HomeView {
@@ -215,12 +214,12 @@ class HomeView {
                 return Math.round(value);
             };
 
-            new GpChart($ctx, 'bar', labels, {
+            new GpChart($ctx, GpChart.TYPES().BAR, labels, /**@type ChartDataSet */{
                 data: data,
                 backgroundColor: 'rgba(238, 97, 86, 1)',
                 borderColor: 'rgba(238, 97, 86, 1)',
                 borderWidth: 1
-            }, formatter, {weight: 700, offset: -10});
+            }, formatter, {labels: {weight: 700, offset: -10}});
 
 
             if (total ===0) {

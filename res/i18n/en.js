@@ -211,6 +211,7 @@ const EN = {
         , session_summary_intervals_spm_chart_label: "stroke rate"
         , session_summary_intervals_length_chart_label: "stroke length"
         , session_summary_intervals_hr_chart_label: "Heart Rate"
+        , session_summary_intervals_altitude_chart_label: "Elevation"
 
         , session_summary_zones_speed_label: "Speed"
         , session_summary_zones_spm_label: "Stroke rate"

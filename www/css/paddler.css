@@ -680,6 +680,19 @@ div[aria-live="polite"],  div[aria-live="polite"] > .slick-track{
     animation: running-progress 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
+.progress-line.red {
+    background-color: unset;
+}
+
+.progress-line.red:before {
+    background-color: #EE6156;
+}
+
+.progress-line.progress-line-top {
+    position: fixed;
+    top: 18vh;
+}
+
 @-webkit-keyframes running-progress {
     0% { margin-left: 0px; margin-right: 100%; }
     50% { margin-left: 25%; margin-right: 0%; }

@@ -17,6 +17,7 @@ import Splits from '../core/splits-handler';
 import SessionViewCollectMetrics from './session.view.collect';
 import {SessionViewSplits} from "./session.view.splits";
 import AppSettings from "../utils/AppSettings";
+import Utils from "../utils/utils";
 
 
 const DEFAULT_POSITIONS = {
@@ -317,7 +318,7 @@ class SessionView {
 
     leaveOrResumeConfirmDialog(onresume, onfinish) {
         const self = this;
-        let $controls, $resume, $finish;
+        let $controls, $resume, $finish, $lock;
 
         let modal = self.appContext.ui.modal.undecorated(snippetPauseControls({
             isTestingLeftRight: Api.User.isAppTester() && self.tester.isTestingLeftRight
@@ -326,6 +327,7 @@ class SessionView {
         $controls = modal.$modal.find('.session-controls');
         $resume = $controls.find('.session-resume');
         $finish = $controls.find('.session-finish');
+        $lock = modal.$modal.find('.session-lock-in-pause');
 
         // add behavior
         $resume.on('touchend', function (e) {
@@ -339,6 +341,23 @@ class SessionView {
             e.preventDefault();
             e.stopImmediatePropagation();
         });
+
+        $lock.on('touchend', function (e) {
+            let unlock = new Unlock(self.appContext);
+            modal.$modal.addClass('session-screen-locked');
+            unlock.onUnlocked(() => {
+                modal.$modal.removeClass('session-screen-locked');
+            });
+            unlock.show(Infinity, modal.$modal);
+            e.preventDefault();
+            e.stopImmediatePropagation();
+        });
+
+        const $timer = modal.$modal.find('.session-controls-paused-timer-watch');
+        let pausedAt = Date.now();
+        setInterval(() => {
+            $timer.text(Utils.displayDurationHasTime(Date.now() - pausedAt));
+        }, 1000);
 
         this.toggleLeftRightDebug(modal.$modal.find('[data-selector="left-right-debug"]'));
     }

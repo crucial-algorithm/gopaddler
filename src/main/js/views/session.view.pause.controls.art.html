@@ -1,9 +1,15 @@
-<div class="session-controls session-controls-free-session">
-    <div class="session-controls-round-button session-resume">
-        <div class="session-controls-round-button-label">{{"session_resume" | translate}}</div>
+<div class="session-controls">
+    <div class="session-controls-paused-timer">
+        <div class="session-controls-paused-timer-label">{{"session_paused" | translate}}</div>
+        <div class="session-controls-paused-timer-watch">00:00:00</div>
     </div>
-    <div class="session-controls-round-button  session-finish">
-        <div class="session-controls-round-button-label">{{"session_finish" | translate}}</div>
+    <div class="session-controls-free-session">
+        <div class="session-controls-round-button session-resume">
+            <div class="session-controls-round-button-label">{{"session_resume" | translate}}</div>
+        </div>
+        <div class="session-controls-round-button  session-finish">
+            <div class="session-controls-round-button-label">{{"session_finish" | translate}}</div>
+        </div>
     </div>
 </div>
 
@@ -11,4 +17,8 @@
         <div data-selector="left-right-debug" class="session-controls-square-button {{if isTestingLeftRight}}session-controls-square-toggled{{/if}}">
     Left/right Debug
 </div>
+</div>
+
+<div class="session-lock-in-pause session-controls-round-button">
+    {{"session_lock" | translate}}
 </div>

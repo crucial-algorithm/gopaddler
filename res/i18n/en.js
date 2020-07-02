@@ -125,6 +125,8 @@ const EN = {
         , session_cancel: "Cancel"
         , session_resume: "resume"
         , session_finish: "finish"
+        , session_lock: "Lock Screen"
+        , session_paused: "Session Paused"
         , units_metric_timer_regular: ""
         , units_metric_timer_large: ""
         , units_metric_splits_regular: ""

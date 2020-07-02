@@ -125,6 +125,8 @@ const PT = {
         , session_cancel: "Cancelar"
         , session_resume: "continuar"
         , session_finish: "terminar"
+        , session_lock: "Bloquear"
+        , session_paused: "Sessão em Pausa"
         , units_metric_timer_regular: ""
         , units_metric_timer_large: ""
         , units_metric_splits_regular: ""

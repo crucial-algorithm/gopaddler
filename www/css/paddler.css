@@ -534,7 +534,7 @@ body {
     height: 100%;
     width: 100%;
     z-index: 10000;
-    background-color: rgba(0,0,0,0.7);
+    background-color: rgba(0,0,0,0.85);
 }
 
 .progress-waiting-cancel {
@@ -895,9 +895,13 @@ ul.list-widget > li:nth-child(even) {
     width: 100%;
     height: 100%;
     color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
-.session-controls.session-controls-free-session {
+.session-controls-free-session {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -951,6 +955,25 @@ ul.list-widget > li:nth-child(even) {
 .session-controls-row:nth-child(2) {
     align-items: flex-start;
 }
+.session-controls-paused-timer {
+    color: #ffffff;
+    text-transform: uppercase;
+    text-align: center;
+    font-size: 26px;
+    margin-bottom: 20px;
+}
+
+.session-controls-paused-timer-label {
+    font-weight: lighter;
+    margin-bottom: 10px;
+}
+
+.session-controls-paused-timer-watch {
+    font-weight: 600;
+}
+
+
+
 
 .session-resume {
     background: #5650EF url(../images/play.svg) no-repeat center center;
@@ -968,6 +991,29 @@ ul.list-widget > li:nth-child(even) {
     height: 36vw;
     display: flex;
     margin: 2vh;
+}
+
+.session-lock-in-pause.session-controls-round-button {
+    position: fixed;
+    width: 100px;
+    height: 100px;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #dcdedc;
+    color: #313131;
+    font-size: 12px;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+
+.session-screen-locked .session-resume, .session-screen-locked .session-finish
+, .session-screen-locked .session-lock-in-pause.session-controls-round-button
+, .session-screen-locked .session-app-tester-controls {
+    visibility: hidden;
 }
 
 .session-start-immediately {
@@ -994,6 +1040,7 @@ ul.list-widget > li:nth-child(even) {
     background-color: rgba(105, 105, 105, 0.5);
     border-radius: 14px;
     overflow: hidden;
+    z-index: 2000;
 }
 
 .session-slide-to-unlock-handle {

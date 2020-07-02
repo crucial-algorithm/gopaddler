@@ -360,6 +360,36 @@ class Utils {
         return Math.floor(((resting - hr) / (max - resting)) * -100)
     }
 
+
+    /**
+     *
+     * @param duration
+     * @param {boolean} includeMilis
+     * @return {string}
+     */
+    static displayDurationHasTime(duration, includeMilis = false) {
+        let hour, minute, second, elapsed, milisString = duration + "";
+
+        elapsed = Math.round(duration / 1000);
+        minute = Math.floor(elapsed / 60);
+        second = elapsed - minute * 60;
+        milisString = milisString.substr(milisString.length - 3, 3);
+
+        hour = 0;
+        if (minute > 0) {
+            hour = Math.floor(minute / 60);
+            minute = minute - hour * 60;
+        }
+        return zeroPad(hour) + ':' + zeroPad(minute) + ':' + zeroPad(second) + (includeMilis ? "." + milisString : '');
+    }
+
+}
+
+function zeroPad(value) {
+    if (value < 10) {
+        value = "0" + value;
+    }
+    return value;
 }
 
 export default Utils

@@ -27,16 +27,21 @@ class Unlock {
         $('body').append(this.$dom);
     }
 
-    show(duration) {
-        var self = this;
-
-        duration = isNaN(parseInt(duration))? 3000 : parseInt(duration);
+    /**
+     *
+     * @param {number}  duration
+     * @param {Element} [appendTo]
+     */
+    show(duration = 3000, appendTo ) {
+        const self = this;
 
         if (self.showing === true) {
             return;
         }
 
-        self.$dom = $(this.TEMPLATE).appendTo($('.app-content'));
+        appendTo = appendTo || $('.app-content');
+
+        self.$dom = $(this.TEMPLATE).appendTo(appendTo);
         self.lockHandledAt = new Date().getTime();
         self.showing = true;
 

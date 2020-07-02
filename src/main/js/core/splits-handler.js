@@ -1,6 +1,8 @@
 'use strict';
 
 
+import Utils from "../utils/utils";
+
 const ERROR_CODES = {
     INVALID_SPLIT_POSITION: 1
 };
@@ -344,18 +346,7 @@ class Splits {
     }
 
     format(time) {
-        let hour, minute, second, elapsed;
-
-        elapsed = Math.round(time);
-        minute = Math.floor(elapsed / 60);
-        second = elapsed - minute * 60;
-
-        hour = 0;
-        if (minute > 0) {
-            hour = Math.floor(minute / 60);
-            minute = minute - hour * 60;
-        }
-        return this.zeroPad(hour) + ':' + this.zeroPad(minute) + ':' + this.zeroPad(second);
+        return Utils.displayDurationHasTime(time);
     }
 
     getPosition() {

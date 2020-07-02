@@ -194,10 +194,11 @@ const EN = {
         , session_summary_finish_button: "Finish"
         , session_summary_metrics_duration: "Duration"
         , session_summary_metrics_distance: "Distance"
-        , session_summary_metrics_speed: "Km/h"
-        , session_summary_metrics_spm: "SPM"
+        , session_summary_metrics_speed: "Speed"
+        , session_summary_metrics_spm: "Cadence"
         , session_summary_metrics_efficiency: "Length"
         , session_summary_metrics_heart_rate: "HR"
+        , session_summary_metrics_elevation: "Elevation"
 
         , session_summary_intervals_title: "Intervals"
         , session_summary_intervals_duration: "D"

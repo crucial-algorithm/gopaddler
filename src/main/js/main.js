@@ -63,6 +63,7 @@ function pathFor(img) {
 
 import artTemplateRuntime from 'art-template/lib/runtime';
 import ProfileView from "./views/profile.view";
+import AppSettings from "./utils/AppSettings";
 
 artTemplateRuntime.translate = translate;
 artTemplateRuntime.pathFor = pathFor;
@@ -367,6 +368,12 @@ function loadDb() {
 
 function loadUi(universalLinkPromise = null) {
     Analytics.init();
+
+    AppSettings.switch(() => {
+        document.body.classList.add('gopaddler');
+    }, () => {
+        document.body.classList.add('utter-cycling');
+    });
 
     // hack - for some reason, when not connected, screen orientation may not be properly set
     checkOrientationHack();

@@ -194,10 +194,11 @@ const PT = {
         , session_summary_finish_button: "Terminar"
         , session_summary_metrics_duration: "Duração"
         , session_summary_metrics_distance: "Distância"
-        , session_summary_metrics_speed: "Km/h"
-        , session_summary_metrics_spm: "RPM"
+        , session_summary_metrics_speed: "Velocidade"
+        , session_summary_metrics_spm: "Cadência"
         , session_summary_metrics_efficiency: "Deslocamento"
         , session_summary_metrics_heart_rate: "Freq. Cardíaca"
+        , session_summary_metrics_elevation: "Elevação"
 
         , session_summary_intervals_title: "Intervalos"
         , session_summary_intervals_duration: "D"

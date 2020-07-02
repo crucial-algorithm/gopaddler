@@ -151,6 +151,7 @@ const ddl = [
     [
         ["ALTER TABLE session_data add column altitude REAL"],
         ["ALTER TABLE session add column paused_duration INTEGER default 0"],
+        ["ALTER TABLE session add column elevation INTEGER default 0"],
         ["UPDATE settings SET version = 15"]
     ]
 

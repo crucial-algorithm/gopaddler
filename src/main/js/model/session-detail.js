@@ -3,6 +3,7 @@
 import Api from '../server/api';
 import Utils from '../utils/utils';
 import Database from '../db';
+import {UtterCyclingUtils} from "../utils/utter-cycling-utils";
 
 
 class SessionDetail {
@@ -194,19 +195,22 @@ class SessionDetail {
             'ORDER  BY split ASC'
         ].join(' ');
 
-        connection.executeSql(SQL, [sessionId], function (res) {
-            let rows = [];
-            try {
-                for (let i = 0; i < res.rows.length; i++) {
-                    rows.push(res.rows.item(i));
+        SessionDetail.get(sessionId, /**@param {Array<SessionDetail>} records */(records) => {
+            const elevation = UtterCyclingUtils.calculateElevationGain(records);
+            connection.executeSql(SQL, [sessionId], function (res) {
+                let rows = [];
+                try {
+                    for (let i = 0; i < res.rows.length; i++) {
+                        rows.push(res.rows.item(i));
+                    }
+                    callback(new SessionDetailMetrics(rows, splits, elevation));
+                } catch (err) {
+                    Utils.notify(Api.User.getProfile().name, " Failed to load records from session detail " + err);
+                    throw err;
                 }
-                callback(new SessionDetailMetrics(rows, splits));
-            } catch (err) {
-                Utils.notify(Api.User.getProfile().name, " Failed to load records from session detail " + err);
-                throw err;
-            }
-        }, function (error) {
-            console.log('Error retrieving sessions: ' + error.message);
+            }, function (error) {
+                console.log('Error retrieving sessions: ' + error.message);
+            });
         });
     }
 }
@@ -219,8 +223,9 @@ class SessionDetailMetrics {
      *
      * @param {Array} rows
      * @param {number[]} splits
+     * @param {number} elevation
      */
-    constructor(rows, splits) {
+    constructor(rows, splits, elevation = 0) {
         if (rows.length === 0) {
             this._distance = 0;
             this._avgSpeed = 0;
@@ -230,6 +235,7 @@ class SessionDetailMetrics {
             this._maxEfficiency = 0;
             this._avgEfficiency = 0;
             this._avgHeartRate = 0;
+            this._elevation = isNaN(elevation) ? 0 : elevation;
             return;
         }
 
@@ -277,6 +283,7 @@ class SessionDetailMetrics {
         this._maxEfficiency = data.maxEfficiency;
         this._avgEfficiency = data.totalEfficiency / (data.duration / 1000);
         this._avgHeartRate = data.totalHeartRate / (data.duration / 1000);
+        this._elevation = elevation;
     }
 
     getDistance() {
@@ -309,6 +316,14 @@ class SessionDetailMetrics {
 
     getAvgHeartRate() {
         return this._avgHeartRate;
+    }
+
+    get elevation() {
+        return this._elevation;
+    }
+
+    set elevation(value) {
+        this._elevation = value;
     }
 }
 

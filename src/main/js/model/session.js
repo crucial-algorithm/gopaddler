@@ -11,7 +11,8 @@ const VERSION_WITH_RECOVERY_IN_DATA = 2;
 class Session {
 
     constructor(sessionStart, angleZ, noiseX, noiseZ, factorX, factorZ, axis, distance, avgSpm, topSpm
-        , avgSpeed, topSpeed, avgEfficiency, topEfficiency, sessionEnd, data = null, pausedDuration = 0) {
+                , avgSpeed, topSpeed, avgEfficiency, topEfficiency, sessionEnd, data = null
+                , pausedDuration = 0, elevation = 0) {
 
         this.connection = Database.getConnection();
         this._id = null;
@@ -56,6 +57,7 @@ class Session {
             }
         }
         this._pausedDuration = pausedDuration;
+        this._elevation = elevation;
     }
 
     handleMotionString(string) {
@@ -147,9 +149,10 @@ class Session {
     persist() {
         const self = this;
         self.connection.executeSql("INSERT INTO session (id, session_start, anglez, noisex, noisez," +
-            " factorx, factorz, axis, dbg_file, server_clock_gap, version, expr_json, paused_duration) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            " factorx, factorz, axis, dbg_file, server_clock_gap, version, expr_json, paused_duration, elevation) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             [this.id, this.sessionStart, this.angleZ, this.noiseX, this.noiseZ, this.factorX, this.factorZ, this.axis
-                , this.debugFile, this.serverClockGap, this.version, JSON.stringify(this.expressionJson), this.pausedDuration], function (res) {
+                , this.debugFile, this.serverClockGap, this.version, JSON.stringify(this.expressionJson)
+                , this.pausedDuration, this.elevation], function (res) {
                 self.id = res.insertId;
             }, function (error) {
                 console.log(error.message);
@@ -170,7 +173,7 @@ class Session {
         let sessionEndAt = Date.now();
         self.sessionEnd = sessionEndAt;
 
-        self.calculateMetrics(splits, pausedDuration).then(function (/**@type SessionDetailMetrics */ metrics) {
+        self.calculateMetrics(splits, pausedDuration).then(/**@param {SessionDetailMetrics} metrics */ function (metrics) {
             self.distance = metrics.getDistance();
             self.avgSpeed = metrics.getAvgSpeed();
             self.topSpeed = metrics.getMaxSpeed();
@@ -182,15 +185,16 @@ class Session {
             self.expression = expression;
             self.expressionJson = splits;
             self.pausedDuration = pausedDuration;
+            self.elevation = metrics.elevation;
 
             self.connection.executeSql("update session set distance = ?, avg_spm = ?, top_spm = ?, avg_speed = ?" +
                 ", top_speed = ?, avg_efficiency = ?, top_efficiency = ?, avg_heart_rate = ?, session_end = ?" +
                 ", scheduled_session_id = ?,  scheduled_session_start = ?, expression = ?, expr_json = ? " +
-                ", paused_duration = ? where id = ?"
+                ", paused_duration = ?, elevation = ? where id = ?"
                 , [metrics.getDistance(), metrics.getAvgSpm(), metrics.getMaxSpm(), metrics.getAvgSpeed(), metrics.getMaxSpeed()
                     , metrics.getAvgEfficiency(), metrics.getMaxEfficiency(), metrics.getAvgHeartRate(), sessionEndAt
                     , self.scheduledSessionId, self.scheduledSessionStart
-                    , self.expression, JSON.stringify(self.expressionJson), self.pausedDuration, self.id]
+                    , self.expression, JSON.stringify(self.expressionJson), self.pausedDuration, self.elevation, self.id]
                 , function (a) {
                     defer.resolve(self);
                 }, function (a) {
@@ -223,22 +227,20 @@ class Session {
     }
 
     calculateMetrics(splits, pausedDuration = 0) {
-        const self = this,
-            defer = $.Deferred();
-
-        let relevantSplits = [];
-        if (splits && splits.length > 0) {
-            for (let i = 0; i < splits.length; i++) {
-                if (splits[i]._recovery === true) continue;
-                relevantSplits.push(i);
+        const self = this
+        return new Promise(function (resolve, reject) {
+            let relevantSplits = [];
+            if (splits && splits.length > 0) {
+                for (let i = 0; i < splits.length; i++) {
+                    if (splits[i]._recovery === true) continue;
+                    relevantSplits.push(i);
+                }
             }
-        }
 
-        SessionDetail.getDetailedMetrics(self.id, relevantSplits, pausedDuration, function (/**@type SessionDetailMetrics */metrics) {
-            defer.resolve(metrics);
+            SessionDetail.getDetailedMetrics(self.id, relevantSplits, pausedDuration, function (/**@type SessionDetailMetrics */metrics) {
+                resolve(metrics);
+            });
         });
-
-        return defer.promise();
     }
 
     static delete(id) {
@@ -665,6 +667,14 @@ class Session {
     set pausedDuration(value) {
         this._pausedDuration = value;
     }
+
+    get elevation() {
+        return this._elevation;
+    }
+
+    set elevation(value) {
+        this._elevation = value;
+    }
 }
 
 function sessionFromDbRow(data) {
@@ -685,7 +695,8 @@ function sessionFromDbRow(data) {
         data.top_efficiency,
         data.session_end,
         null,
-        data.paused_duration
+        data.paused_duration,
+        data.elevation
     );
 
     session.id = data.id;

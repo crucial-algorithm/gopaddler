@@ -14,6 +14,7 @@ import {MockSessionGenerator} from "../global";
 import ScheduledSession from "../model/scheduled-session";
 import Session from "../model/session";
 import AppSettings from "../utils/AppSettings";
+import {UtterCyclingUtils} from "../utils/utter-cycling-utils";
 
 
 /**
@@ -125,16 +126,18 @@ class SessionSummaryView {
         }
 
         $page.on('appShow', function () {
-            Context.render(document.getElementsByClassName('summary-layout-general')[0], generalStatsTemplate({
-                duration: durationFormatted,
-                distance: distance,
-                speed: avgSpeed,
-                cadence: avgSPM,
-                efficiency: avgEfficiency,
-                heartRate: heartRate
-            }));
 
             session.detail().then(function (records) {
+                Context.render(document.getElementsByClassName('summary-layout-general')[0], generalStatsTemplate({
+                    duration: durationFormatted,
+                    distance: distance,
+                    speed: avgSpeed,
+                    cadence: avgSPM,
+                    efficiency: avgEfficiency,
+                    heartRate: heartRate,
+                    elevation: UtterCyclingUtils.calculateElevationGain(records)
+                }));
+
                 let output = self.calculateIntervals(session, records);
                 let zones = new SessionSummaryZones(session, output.working, context);
                 zones.render(context, zonesTemplate, $('.summary-layout-zones'));
@@ -542,6 +545,7 @@ class UtterCycling {
         this._session = session;
         this._records = records;
         this._context = context;
+        UtterCyclingUtils.calculateElevationGain(records);
     }
 
     /**

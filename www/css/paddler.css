@@ -1044,3 +1044,11 @@ ul.list-widget > li:nth-child(even) {
 .app-gp-portrait .btn-primary {
     padding: 1em;
 }
+
+body.utter-cycling [data-selector="gopaddler"] {
+    display: none;
+}
+
+body.gopaddler [data-selector="utter-cycling"] {
+    display: none;
+}

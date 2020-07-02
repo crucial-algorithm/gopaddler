@@ -119,7 +119,7 @@ class GpChart {
                         ticks: {
                             autoSkip: typeof options.xAxisLabelCallback !== 'function',
                             maxRotation: isNaN(options.xAxisLabelMaxRotation) ? 50 : options.xAxisLabelMaxRotation,
-                            callback: options.xAxisLabelCallback
+                            callback: options.xAxisLabelCallback || function(label){return label}
                         }
                     }]
                 },

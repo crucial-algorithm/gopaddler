@@ -204,7 +204,7 @@ class HomeView {
 
                 total += distance;
                 data.push(distance);
-                labels.push(day);
+                labels.push(cal.day);
             });
 
             let formatter = function (value, context) {

@@ -7,9 +7,15 @@ export class UtterCyclingUtils {
      */
     static calculateElevationGain(records) {
         let filter = new KalmanFilter({R: 2, Q: 0.8});
-        let previous = null, total = 0;
+        let previous = null, total = 0, started = false;
         for (let r of records) {
-            if (isNaN(r.altitude)) continue;
+            if (isNaN(r.altitude) || r.altitude === 0 && started === false) continue;
+
+            if (r.altitude !== 0 && started === false) {
+                started = true;
+                previous = r.altitude;
+                continue;
+            }
             let altitude = Math.floor(filter.filter(r.altitude));
 
             if (previous === null) {

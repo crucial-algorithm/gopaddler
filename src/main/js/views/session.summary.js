@@ -13,7 +13,7 @@ import GpChart from '../utils/widgets/chart';
 import {MockSessionGenerator} from "../global";
 import ScheduledSession from "../model/scheduled-session";
 import Session from "../model/session";
-import AppSettings from "../utils/AppSettings";
+import AppSettings from "../utils/app-settings";
 import {UtterCyclingUtils} from "../utils/utter-cycling-utils";
 
 

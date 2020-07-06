@@ -16,6 +16,14 @@ body {
     background-color: #3B3D62;
 }
 
+body.utter-cycling [data-selector="gopaddler"] {
+    display: none;
+}
+
+body.gopaddler [data-selector="utter-cycling"] {
+    display: none;
+}
+
 .button-primary {
     cursor: pointer;
     height: 60px;
@@ -337,7 +345,7 @@ body {
     align-items: center;
 }
 
-.settings-row.odd {
+.settings-row:nth-child(odd) {
     background-color: #35375b;
 }
 
@@ -1092,10 +1100,3 @@ ul.list-widget > li:nth-child(even) {
     padding: 1em;
 }
 
-body.utter-cycling [data-selector="gopaddler"] {
-    display: none;
-}
-
-body.gopaddler [data-selector="utter-cycling"] {
-    display: none;
-}

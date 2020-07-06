@@ -5,12 +5,13 @@ import Calibration from '../model/calibration';
 import Api from '../server/api';
 import Settings from '../model/settings';
 import template from './settings.art.html';
+import AppSettings from "../utils/app-settings";
 
 
 class SettingsView {
     constructor(page, context, settings) {
         Context.render(page, template({isPortraitMode: context.isPortraitMode()}));
-        var $calibration = $('#calibration', page)
+        let $calibration = $('#calibration', page)
             , $bluetooth = $('#bluetooth', page)
             , $back = $('.back-button', page)
             , $profile = $('#profile', page)
@@ -115,12 +116,12 @@ class SettingsView {
 
         $page.on('appBeforeBack', function (e) {
 
-            var units = $units.is(':checked') ? Settings.CONSTANTS().MI : Settings.CONSTANTS().KM;
-            var blackAndWhite = $blackAndWhite.is(':checked') ;
-            var layout = $layout.is(':checked');
-            var isPortraitMode = $portraitMode.is(':checked');
+            let units = $units.is(':checked') ? Settings.CONSTANTS().MI : Settings.CONSTANTS().KM;
+            let blackAndWhite = $blackAndWhite.is(':checked') ;
+            let layout = $layout.is(':checked');
+            let isPortraitMode = $portraitMode.is(':checked');
 
-            if (isPortraitMode !== settings.isPortraitMode()) {
+            if (isPortraitMode !== settings.isPortraitMode() && AppSettings.requiresCalibration()) {
                 context.ui.modal.confirm(context.translate('settings_update_orientation_notification')
                     ,  '<p>' + context.translate('settings_update_orientation_notification_line1') + '</p>' +
                     '<p>' + context.translate('settings_update_orientation_notification_line2') + '</p>'

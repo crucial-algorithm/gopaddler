@@ -1,4 +1,4 @@
-const EN = {
+const BASE_EN = {
     translations: {void: ""
         , home_menu_salute: "hi"
         , home_menu_start_session: "start session"
@@ -352,4 +352,4 @@ const EN = {
     }
 };
 
-export default EN;
+export default BASE_EN;

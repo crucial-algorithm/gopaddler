@@ -3,7 +3,7 @@
 import SessionDetail from './session-detail';
 import Utils from '../utils/utils';
 import Database from '../db';
-import AppSettings from "../utils/AppSettings";
+import AppSettings from "../utils/app-settings";
 
 const VERSION_WITH_RECOVERY_IN_DATA = 2;
 

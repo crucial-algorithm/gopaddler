@@ -14,7 +14,7 @@ import Pace from "../measures/pace";
 import Context from "../context";
 import {SessionViewSplits} from "./session.view.splits";
 import Session from "../model/session";
-import AppSettings from "../utils/AppSettings";
+import AppSettings from "../utils/app-settings";
 
 /**
  * @typedef {Object} Location

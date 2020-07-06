@@ -27,30 +27,8 @@ import Utils from './utils/utils';
 import Analytics from './utils/analytics.js';
 import Database  from './db.js';
 import Settings from './model/settings';
+import i18n from "./i18n/i18n";
 
-
-let LANGUAGE = localStorage.getItem('language') || 'en';
-
-// Start handle i18 stuff -------
-import PT from '../../../res/i18n/pt';
-import EN from '../../../res/i18n/en';
-
-const i18n = {
-    en: EN,
-    pt: PT
-};
-
-function translate(key, placeholders) {
-    let text = i18n[LANGUAGE].translations[key] || "";
-    placeholders = placeholders || [];
-    let i = 1;
-    for (let p = 0, l = placeholders.length; p < l; p++) {
-        let placeholder = placeholders[p];
-        text = text.replace(new RegExp("\\$" + i, "g"), placeholder);
-        i++;
-    }
-    return text;
-}
 
 let environment = undefined;
 
@@ -63,9 +41,9 @@ function pathFor(img) {
 
 import artTemplateRuntime from 'art-template/lib/runtime';
 import ProfileView from "./views/profile.view";
-import AppSettings from "./utils/AppSettings";
+import AppSettings from "./utils/app-settings";
 
-artTemplateRuntime.translate = translate;
+artTemplateRuntime.translate = i18n.translate;
 artTemplateRuntime.pathFor = pathFor;
 artTemplateRuntime.isLandscapeMode = function () {
     console.log('global isLadscapeMode');
@@ -76,7 +54,7 @@ artTemplateRuntime.isLandscapeMode = function () {
     return isLandscape;
 };
 
-moment.locale(LANGUAGE);
+moment.locale(i18n.language());
 
 // END handle i18 stuff -------
 
@@ -196,7 +174,7 @@ App.controller('settings', function (page) {
         page.onDestroy.then(function () {
             loadContextDefer = $.Deferred();
             loadContext = loadContextDefer.promise();
-            context = new Context(context.preferences(), environment, translate, LANGUAGE);
+            context = new Context(context.preferences(), environment, i18n.translate, i18n.language());
             loadContextDefer.resolve(context);
         });
     });
@@ -301,7 +279,6 @@ App.controller('choose-sport', function (page, request) {
     });
 });
 
-
 App.controller('redirect-coach', function (page, request) {
     enrichPageArg(page, 'redirect-coach');
     loadContext.then(function (context) {
@@ -373,6 +350,13 @@ function loadUi(universalLinkPromise = null) {
         document.body.classList.add('gopaddler');
     }, () => {
         document.body.classList.add('utter-cycling');
+        let head = document.getElementsByTagName('head')[0];
+        let link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = 'css/utter-cycling.css';
+        link.media = 'all';
+        head.appendChild(link);
     });
 
     // hack - for some reason, when not connected, screen orientation may not be properly set
@@ -382,7 +366,7 @@ function loadUi(universalLinkPromise = null) {
 
     Settings.loadSettings().then(function (s) {
         settings = s;
-        const context = new Context(settings, environment, translate, LANGUAGE);
+        const context = new Context(settings, environment, i18n.translate, i18n.language());
         if (context.isPortraitMode()) {
             $('body').addClass('app-gp-portrait')
         }
@@ -390,7 +374,7 @@ function loadUi(universalLinkPromise = null) {
         loadContextDefer.resolve(context);
     }).fail(function (error, defaultSettings) {
         settings = defaultSettings;
-        loadContextDefer.resolve(new Context(settings, environment, translate, LANGUAGE));
+        loadContextDefer.resolve(new Context(settings, environment, i18n.translate, i18n.language()));
     });
 
     Api.Auth.login().done(function () {

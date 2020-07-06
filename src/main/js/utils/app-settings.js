@@ -33,8 +33,24 @@ export default class AppSettings {
         throw 'unknown app configuration - check your package.json and webpack.config.js - ' + app;
     }
 
+    /**
+     * Returns the app type we are in
+     * @return {string} "gopaddler" or "uttercycling"
+     */
     static app() {
         return APP;
+    }
+
+    static isShowOnboarding() {
+        return AppSettings.app() === AppSettings.types().GOPADDLER;
+    }
+
+    static isShowCalibrationTips() {
+        return AppSettings.app() === AppSettings.types().GOPADDLER;
+    }
+
+    static requiresCalibration() {
+        return AppSettings.app() === AppSettings.types().GOPADDLER;
     }
 
     static distanceStep() {

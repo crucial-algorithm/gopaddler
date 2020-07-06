@@ -1,7 +1,7 @@
 'use strict';
 
 // Array with DDL to be applied to each version of database; Each position corresponds to a version number
-import AppSettings from "./utils/AppSettings";
+import AppSettings from "./utils/app-settings";
 
 const ddl = [
     [
@@ -11,7 +11,7 @@ const ddl = [
             "sync_wifi integer not null default 1,",
             "restore_layout integer not null default 1,",
             "show_touch_events_tips integer not null default 1,",
-            "show_calibration_tips integer not null default 1,",
+            `show_calibration_tips integer not null default ${AppSettings.isShowCalibrationTips() ? 1 : 0},`,
             "default_session_filter TEXT DEFAULT NULL,",
             "default_start_date INTEGER,",
             "default_end_date INTEGER",

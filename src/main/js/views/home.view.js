@@ -9,6 +9,7 @@ import portrait from './home.portrait.art.html';
 import Utils from '../utils/utils';
 import Settings from '../model/settings';
 import GpChart from '../utils/widgets/chart';
+import AppSettings from "../utils/app-settings";
 
 
 class HomeView {
@@ -56,6 +57,11 @@ class HomeView {
         });
 
         $session.off('tap click').on('tap click', function () {
+            if (AppSettings.requiresCalibration() === false) {
+                context.navigate('select-session', false, undefined);
+                return;
+            }
+
             let calibration = Calibration.load(context.isPortraitMode());
             if (!calibration && JSON.parse(localStorage.getItem("first_experiment_done")) === true) {
                 showNoCalibrationModal(context);

@@ -178,7 +178,7 @@ class Context {
             target = 'calibration-help';
         }
 
-        if (target === 'home' && !Api.User.hasChosenBoat()) {
+        if (target === 'home' && Api.User.isShowOnboarding()) {
             target = 'choose-sport';
         }
 

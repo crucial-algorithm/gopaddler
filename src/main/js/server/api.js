@@ -2,6 +2,7 @@
 
 import Utils from '../utils/utils';
 import Database from '../db';
+import AppSettings from "../utils/app-settings";
 
 const createClass = require('asteroid').createClass;
 const facebook = require('../asteroid/facebook');
@@ -506,7 +507,7 @@ let Auth = {
 
     createAccount: function () {
         let defer = $.Deferred();
-        _call("gpCreateImplicitUser").then(function (response) {
+        _call("gpCreateImplicitUser", AppSettings.app()).then(function (response) {
             Database.updateToken(response.token);
             Auth.loginWithPassword(response.id, response.token).then(function () {
                 defer.resolve();
@@ -625,6 +626,11 @@ let User = {
 
     getName: function () {
         return asteroid.user.profile.name;
+    },
+
+    isShowOnboarding: function () {
+        if (AppSettings.isShowOnboarding() === false) return false;
+        return !Api.User.hasChosenBoat();
     },
 
     hasChosenBoat: function () {

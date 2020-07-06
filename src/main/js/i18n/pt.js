@@ -1,4 +1,4 @@
-const PT = {
+const BASE_PT = {
     translations: { void: ""
         , home_menu_salute: "Olá"
         , home_menu_start_session: "Iniciar Sessão"
@@ -352,4 +352,4 @@ const PT = {
     }
 };
 
-export default PT;
+export default BASE_PT;

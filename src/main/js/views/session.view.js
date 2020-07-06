@@ -16,7 +16,7 @@ import Api from '../server/api';
 import Splits from '../core/splits-handler';
 import SessionViewCollectMetrics from './session.view.collect';
 import {SessionViewSplits} from "./session.view.splits";
-import AppSettings from "../utils/AppSettings";
+import AppSettings from "../utils/app-settings";
 import Utils from "../utils/utils";
 
 

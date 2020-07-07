@@ -249,7 +249,7 @@ const BASE_PT = {
         , no_calibration_found_alert_option_calibrate: "Calibrar"
         , no_calibration_found_alert_option_try_it: "Ignorar"
 
-        , new_version_alert_title: "Nova versão do GoPaddler"
+        , new_version_alert_title: "Nova versão da applicação"
         , new_version_alert_message: "É necessária uma actualização para que o teu treinador possa acompanhar a sessão"
         , new_version_alert_acknowledge: "OK"
 

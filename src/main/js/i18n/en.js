@@ -240,7 +240,7 @@ const BASE_EN = {
         , choose_language_option_portuguese: "Português"
 
         , choose_language_restart_app_title: "Language changed"
-        , choose_language_restart_app_message: "In order for changes to take effect, please restart GoPaddler app"
+        , choose_language_restart_app_message: "In order for changes to take effect, please restart the application"
         , choose_language_restart_app_acknowledge: "Ok"
 
         , no_calibration_found_alert_title: "No calibration found"
@@ -249,7 +249,7 @@ const BASE_EN = {
         , no_calibration_found_alert_option_calibrate: "Calibrate"
         , no_calibration_found_alert_option_try_it: "Try it"
 
-        , new_version_alert_title: "New GoPaddler Version"
+        , new_version_alert_title: "New application version"
         , new_version_alert_message: "You need to update your application so your coach can see your data properly"
         , new_version_alert_acknowledge: "OK"
 
@@ -309,7 +309,7 @@ const BASE_EN = {
         , coach_redirect_online_you_are_in_the_wrong_place: "Coach features are available online, not in this app"
         , coach_redirect_online_you_are_in_the_wrong_place_secondary: "This app is for your athletes to use on the boat to collect their metrics! As a coach, you don't need the app, just access our website instead"
         , coach_redirect_online_how_it_works: "Build a team"
-        , coach_redirect_online_how_it_works_secondary: "Athletes whith this app will be able to join your team, giving you access to their metrics during and after each session"
+        , coach_redirect_online_how_it_works_secondary: "Athletes with this app will be able to join your team, giving you access to their metrics during and after each session"
         , coach_redirect_online_action: "To start an account has a coach open <span class=\"small\"> https://coach.gopaddler.com</span>"
         , coach_redirect_online_action_redirect: "<span class=\"btn-primary\">Open GoPaddler Coach</span>"
         , coach_redirect_online_action_proceed: "Continue as athlete"

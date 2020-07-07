@@ -2,14 +2,15 @@
     background-color: #535465;
 }
 
-.portrait-home-user-info {
+.app-content.portrait-home .home-user-info {
     background-color: #3b3d62;
     height: 55vh;
+    width: 100vw;
     position: relative;
     color: #fff;
 }
 
-.portrait-home-user-info-welcome {
+.app-content.portrait-home .home-user-info-welcome {
     height: 20vh;
     line-height: 20vh;
     text-align: center;
@@ -23,17 +24,17 @@
     right: 0;
 }
 
-.portrait-home-user-info-chart {
+.app-content.portrait-home .home-user-info-chart {
     width: 92%;
     margin: auto;
 }
 
-.portrait-home-user-info canvas {
+.app-content.portrait-home .home-user-info canvas {
     position: absolute;
     bottom: 0;
 }
 
-.portrait-home-user-info-chart h1 {
+.app-content.portrait-home .home-user-info-chart h1 {
     position: absolute;
     bottom: 0;
     left: 0;
@@ -46,31 +47,44 @@
     text-align: center;
 }
 
-.portrait-home-actions {
+.app-content.portrait-home .home-actions {
     height: 45vh;
 }
 
-.portrait-home-actions-menu {
-    display: table;
+.app-content.portrait-home .home-actions-menu {
     height: 15vh;
     width: 100%;
     padding: 10px;
     box-sizing: border-box;
+    position: unset;
 }
 
-.portrait-home-row-title {
+.app-content.portrait-home .home-settings-btn,  .app-content.portrait-home .home-sessions-btn {
+    display: flex;
+}
+
+.app-content.portrait-home .home-settings-btn > .home-row-title {
+    display: block;
+}
+
+.app-content.portrait-home .home-row-title {
     text-align: left;
 }
 
-.portrait-home-menu-icon {
+.app-content.portrait-home .home-menu-icon {
     background-position: left
 }
 
-.portrait-home-actions-menu.portrait-home-actions-menu-short {
+.app-content.portrait-home .home-settings-btn > .home-icon.home-menu-icon > img {
+    width: 80px;
+    height: 80px;
+}
+
+.app-content.portrait-home .home-actions-menu.home-actions-menu-short {
     width: calc(100% - 80px)
 }
 
-.portrait-exit-button {
+.app-content.portrait-home  .home-exit-button {
     position: fixed;
     bottom: 0;
     right: 0;

@@ -70,8 +70,8 @@
   "homepage": "https://bitbucket.org/kimile/paddler-app#readme",
   "cordova": {
     "platforms": [
-      "android",
-      "ios"
+      "ios",
+      "android"
     ],
     "plugins": {
       "cordova-plugin-statusbar": {},

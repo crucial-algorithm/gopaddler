@@ -74,10 +74,10 @@ class GpChart {
             let averageSet = {
                 type: GpChart.TYPES().LINE,
                 name: 'gen-avg',
-                backgroundbackColor: dataset.backgroundbackColor,
-                borderColor: dataset.borderColor,
+                backgroundbackColor: 'rgba(0, 0, 0, 0.2)',
+                borderColor: 'rgba(0, 0, 0, 0.2)',
                 borderWidth: 1,
-                pointRadius: dataset.pointRadius,
+                pointRadius: 0,
                 borderDash: [5, 15]
             };
 
@@ -103,9 +103,25 @@ class GpChart {
                 datasets: datasets
             },
             options: {
+                onClick: options.onClick || function(){},
+                title: {
+                    display: !!options.title,
+                    text: options.title || null,
+                    fontSize: 14,
+                    fontStyle: 'bold',
+                    fontColor: 'rgba(0, 0, 0, 0.5)'
+                },
                 cornerRadius: 12,
                 legend: {
                     display: false
+                },
+                layout: {
+                    padding: {
+                        left: options.paddingLeft || 0,
+                        right: options.paddingRight || 0,
+                        top: options.paddingTop || 0,
+                        bottom: options.paddingBottom || 0,
+                    }
                 },
                 tooltips: {
                     enabled: false
@@ -117,6 +133,8 @@ class GpChart {
                     xAxes: [{
                         display: options.displayXAxisGridLines === true,
                         ticks: {
+                            fontColor: "rgba(255, 255, 255, 1)",
+                            fontSize: 10,
                             autoSkip: typeof options.xAxisLabelCallback !== 'function',
                             maxRotation: isNaN(options.xAxisLabelMaxRotation) ? 50 : options.xAxisLabelMaxRotation,
                             callback: options.xAxisLabelCallback || function(label){return label}
@@ -137,6 +155,11 @@ class GpChart {
                             size: labelOptions.size || undefined
                         }
                     }
+                },
+                elements: {
+                    line: {
+                        tension: 0 // disables bezier curves
+                    }
                 }
             }
         });
@@ -145,7 +168,7 @@ class GpChart {
 
 function extend() {
 
-    Chart.defaults.global.defaultFontFamily = 'Roboto';
+    Chart.defaults.global.defaultFontFamily = "'Roboto', sans-serif";
     Chart.defaults.global.defaultFontSize = 14;
     Chart.defaults.global.defaultFontColor = "#fff";
 

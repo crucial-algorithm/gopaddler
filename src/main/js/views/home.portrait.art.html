@@ -1,35 +1,38 @@
-<link rel="stylesheet" href="css/home.portrait.css">
-<link rel="stylesheet" href="css/portrait.css">
+{{if isPortraitMode}}
+    <link rel="stylesheet" href="css/home.portrait.css">
+    <link rel="stylesheet" href="css/portrait.css">
+{{/if}}
 
-<div class="app-content portrait-home">
+<div class="app-content home-page {{if isPortraitMode}}portrait-home{{/if}}" data-no-scroll="true">
 
-    <div class="portrait-home-user-info">
+    <div class="home-user-info">
         {{if hasName}}
-        <div class="portrait-home-user-info-welcome">
+        <div class="home-user-info-welcome">
             {{"home_menu_salute" | translate}}, <b>{{name}}</b>
         </div>
         {{/if}}
-        <div class="portrait-home-user-info-chart">
-            <canvas id="home-chart-metrics" width="80%" height="40"></canvas>
+        <div class="home-user-info-chart">
+            <canvas id="home-chart-metrics"></canvas>
         </div>
     </div>
-    <div class="portrait-home-actions">
 
-        <div class="portrait-home-actions-menu home-start-session-btn" id="btn-session">
-            <div class="home-icon start-icon portrait-home-menu-icon">&nbsp;</div>
-            <div class="portrait-home-row-title home-row-title" style="font-weight: bold">{{"home_menu_start_session" | translate}}</div>
+    <div class="home-actions">
+
+        <div class="home-actions-menu home-start-session-btn" id="btn-session">
+            <div class="home-icon home-menu-icon"><img src="{{"start.svg"  | pathFor}}"></div>
+            <div class="home-row-title" style="font-weight: bold">{{"home_menu_start_session" | translate}}</div>
         </div>
 
-        <div class="portrait-home-actions-menu home-sessions-btn" id="btn-sessions">
-            <div class="home-icon sessions-icon portrait-home-menu-icon">&nbsp;</div>
-            <div class="portrait-home-row-title home-row-title">{{"home_menu_sessions" | translate}}</div>
+        <div class="home-actions-menu home-sessions-btn" id="btn-sessions">
+            <div class="home-icon home-menu-icon"><img src="{{"sessions.svg"  | pathFor}}"></div>
+            <div class="home-row-title">{{"home_menu_sessions" | translate}}</div>
         </div>
 
-        <div class="portrait-home-actions-menu home-settings-btn {{if isAndroid}}portrait-home-actions-menu-short{{/if}}" id="btn-settings">
-            <div class="home-icon settings-icon portrait-home-menu-icon">&nbsp;</div>
-            <div class="portrait-home-row-title home-row-title">{{"home_menu_settings" | translate}}</div>
+        <div class="home-actions-menu home-settings-btn {{if isAndroid}}home-actions-menu-short{{/if}}" id="btn-settings">
+            <div class="home-icon home-menu-icon"><img src="{{"settings.svg"  | pathFor}}"></div>
+            <div class="home-row-title">{{"home_menu_settings" | translate}}</div>
         </div>
-        {{if isAndroid}}<div class="portrait-exit-button" id="exit"><i class="fas fa-power-off"></i></div>{{/if}}
+        {{if isAndroid}}<div class="home-exit-button" id="exit"><i class="fas fa-power-off"></i></div>{{/if}}
     </div>
 
 

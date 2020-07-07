@@ -4,8 +4,7 @@ import Context from '../context';
 import Calibration from '../model/calibration';
 import Session from '../model/session';
 import Api from '../server/api';
-import landscape from './home.art.html';
-import portrait from './home.portrait.art.html';
+import template from './home.portrait.art.html';
 import Utils from '../utils/utils';
 import Settings from '../model/settings';
 import GpChart from '../utils/widgets/chart';
@@ -34,13 +33,12 @@ class HomeView {
             }
         });
 
-        if (context.isPortraitMode()) {
-            Context.render(page, portrait({hasName: !!name, name: name, isAndroid: context.isAndroid()}));
-        } else {
-            Context.render(page, landscape({hasName: !!name, name: name,isAndroid: context.isAndroid()}));
-        }
 
-        screen.orientation.lock(context.isPortraitMode() ? 'portrait' : 'landscape-secondary');
+        Context.render(page, template({isPortraitMode: context.isPortraitMode()
+            , hasName: !!name, name: name, isAndroid: context.isAndroid()}));
+
+        /**@type Promise */
+        this.orientationDefinitionPromise = screen.orientation.lock(context.isPortraitMode() ? 'portrait' : 'landscape-secondary');
 
         let $page = $(page)
             , self = this
@@ -83,11 +81,10 @@ class HomeView {
         page.onReady.then(function () {
             self.updateLastSessionDate();
             Utils.forceSafariToReflow($('body')[0]);
-            if (context.isPortraitMode()) {
-                setTimeout(function() {
-                    self.loadChart();
-                }, 0);
-            }
+
+            self.applyDimensionsToChart.apply(self, []).then(($canvas) => {
+                self.loadChart($canvas);
+            });
 
             Api.User.listenForCoachRequests(function (request) {
                 setTimeout(function () {
@@ -138,7 +135,7 @@ class HomeView {
         });
 
 
-        // check if we are comming from calibration and show dialog if that's the case
+        // check if we are coming from calibration and show dialog if that's the case
         if (request.from === 'calibration') {
             showFirstCalibrationCompletedModal(context);
         }
@@ -178,6 +175,9 @@ class HomeView {
                 }, 2000);
             }
         }
+
+        /**@type Context */
+        this.context = context;
     }
 
     updateLastSessionDate() {
@@ -191,13 +191,59 @@ class HomeView {
         });
     }
 
-    loadChart() {
-        let $ctx = $("#home-chart-metrics");
 
-        Session.getFromDate(moment().add(-15, 'days').toDate().getTime(), function(sessions) {
-            let data = [],
-                labels = [],
-                day, total = 0;
+    /**
+     *
+     * @return {Promise<Element>}
+     */
+    applyDimensionsToChart() {
+        return new Promise((resolve, reject) => {
+            const $canvas =  $("#home-chart-metrics");
+            this.calculateWithAndHeightForChart.apply(this, []).then((dimensions) => {
+                const $container = $('.home-user-info-chart');
+                let x = {
+                    height: dimensions.height * (this.context.isPortraitMode() ? 0.55 : 0.6666666666),
+                    width: dimensions.width
+                };
+                $container.css(x);
+                $canvas.css(x);
+                resolve($canvas);
+            }).catch((err) => {
+                console.error(err);
+                resolve($canvas)
+            });
+        });
+    }
+
+    /**
+     *
+     * @return {Promise<{width: number, height: number}>}
+     */
+    calculateWithAndHeightForChart() {
+        return new Promise((resolve, reject) => {
+            this.orientationDefinitionPromise.then(() => {
+                // unfortunately, if browser does not support lock natively, plugin will call Android/ios native functions
+                // to handle orientation and resolve promise before actually it gets applied! So, we need to add a
+                // timeout and hope for the best
+                setTimeout(() => {
+                    const height = $(window).innerHeight();
+                    const width  = $(window).innerWidth();
+                    resolve({width: width, height: height});
+                }, 250);
+            }).catch((err) => {
+                reject(err);
+            })
+        });
+    }
+
+    loadChart($ctx) {
+        const self = this
+            , NBR_OF_DAYS = 15;
+
+
+        Session.getFromDate(moment().add(-NBR_OF_DAYS, 'days').toDate().getTime(), function(sessions) {
+            let data = [], labels = [], total = 0;
+
 
             let indexed = indexSessionsByDay(sessions);
             eachDayInLastXDays(8, function(cal) {
@@ -209,23 +255,53 @@ class HomeView {
                 }
 
                 total += distance;
+                if (distance === 0) return;
                 data.push(distance);
                 labels.push(cal.day);
             });
 
+            let title;
+
+            if (total === 0) {
+                for (let i = 0; i < NBR_OF_DAYS; i++) {
+                    labels[i] = moment().add(-NBR_OF_DAYS + i * 86400000);
+                }
+                title = self.context.translate('home_header_no_sessions');
+            } else {
+                const avg = Math.round(Utils.minMaxAvgStddev(data).avg * 100) / 100 + ' km';
+                title = self.context.translate('home_header', [avg]);
+            }
+
             let formatter = function (value, context) {
-                if (value === 0) {
+                if (context.datasetIndex === 1) {
                     return '';
                 }
                 return Math.round(value);
             };
 
-            new GpChart($ctx, GpChart.TYPES().BAR, labels, /**@type ChartDataSet */{
+            new GpChart($ctx, GpChart.TYPES().LINE, labels, /**@type ChartDataSet */{
                 data: data,
-                backgroundColor: 'rgba(238, 97, 86, 1)',
-                borderColor: 'rgba(238, 97, 86, 1)',
-                borderWidth: 1
-            }, formatter, {labels: {weight: 700, offset: -10}});
+                backgroundColor: 'rgba(0, 0, 0, 0.2)',
+                borderColor: 'rgba(255, 255, 255, 1)',
+                borderWidth: 4,
+                pointRadius: 6,
+                pointBackgroundColor: 'rgba(255, 255, 255, 1)'
+            }, formatter, {
+                displayYAxisGridLines: false
+                , displayXAxisGridLines: true
+                , xAxisLabelCallback: (label) => {
+                    return moment(label).format('dd')
+                }
+                , title: title
+                , onClick: ()=>{ self.context.navigate('sessions') }
+                , paddingLeft: 10
+                , paddingRight: 10
+                , paddingTop: 20
+                , labels: {display: true, weight: 700, offset: -30
+                    , clamp: true
+                    , align: 'bottom'
+                    , anchor: 'center'}
+            }, true);
 
 
             if (total ===0) {

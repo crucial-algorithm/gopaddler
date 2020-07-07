@@ -5,6 +5,8 @@ const BASE_PT = {
         , home_menu_sessions: "Sessões"
         , home_menu_settings: "Definições"
         , home_menu_last_record: "Último registo"
+        , home_header: "Últimas sessões; Média: $1"
+        , home_header_no_sessions: "Nenhuma sessão recente encontrada"
 
         , settings_title: "Definições"
         , settings_menu_coach: "Treinadores"

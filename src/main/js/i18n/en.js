@@ -5,6 +5,8 @@ const BASE_EN = {
         , home_menu_sessions: "sessions"
         , home_menu_settings: "settings"
         , home_menu_last_record: "Last record"
+        , home_header: "Latest sessions; Average: $1"
+        , home_header_no_sessions: "Ups, no recent sessions found"
 
         , settings_title: "Settings"
         , settings_menu_coach: "Coach"

@@ -113,6 +113,11 @@ function emulateCordova () {
     window.screen = {
         orientation: {
             lock: function () {
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        resolve()
+                    }, 0);
+                })
             }
         }
     };

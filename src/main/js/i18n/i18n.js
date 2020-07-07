@@ -54,7 +54,6 @@ class i18n {
         }, () => {
             TRANSLATIONS.pt.translations = i18n.override(TRANSLATIONS.pt.translations, UTTER_CYCLING.pt.translations);
             TRANSLATIONS.en.translations = i18n.override(TRANSLATIONS.en.translations, UTTER_CYCLING.en.translations);
-            console.log(TRANSLATIONS);
         });
     }
 
@@ -65,7 +64,6 @@ class i18n {
      * @return {Object}
      */
     static override(base, specific) {
-        console.log(specific);
         for (const property in specific) {
             base[property] = specific[property];
         }

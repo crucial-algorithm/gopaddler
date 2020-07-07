@@ -427,7 +427,8 @@ class MockSessionGenerator {
             top_efficiency: ef + Math.random(),
             avg_heart_rate: 160 + Math.round(Math.random() * 20),
             data: this.data,
-            version: 2,
+            version: __SESSION_FORMAT_VERSION__,
+            elevation: Utils.getRandomInt(300, 900),
             expr_json: this.definition ? JSON.stringify(this.definition.splits) : null
         };
         return this.output;

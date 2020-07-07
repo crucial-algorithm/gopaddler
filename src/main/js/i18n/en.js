@@ -181,6 +181,7 @@ const BASE_EN = {
         , sessions_summary_speed_label: "Speed"
         , sessions_summary_spm_label: "SPM"
         , sessions_summary_spm_length_label: "S. Length"
+        , sessions_summary_elevation_label: "Elevation gain"
         , sessions_header_date: "Date"
         , sessions_header_duration: "Duration"
         , sessions_header_distance: "Distance"

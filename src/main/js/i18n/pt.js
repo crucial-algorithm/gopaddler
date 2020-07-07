@@ -181,6 +181,7 @@ const BASE_PT = {
         , sessions_summary_speed_label: "Velocidade"
         , sessions_summary_spm_label: "RPM"
         , sessions_summary_spm_length_label: "Deslocamento"
+        , sessions_summary_elevation_label: "Elevação"
         , sessions_header_date: "Data"
         , sessions_header_duration: "Duração"
         , sessions_header_distance: "Distância"

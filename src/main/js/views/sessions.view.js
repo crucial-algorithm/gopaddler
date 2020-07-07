@@ -21,6 +21,7 @@ let LAST_30_DAYS_PERIOD_FILTER = 'last-30-days',
     $summarySpeed,
     $summarySPM,
     $summaryLength,
+    $summaryElevation,
     $summaryTime,
 
     $calendar,
@@ -49,6 +50,7 @@ function addSessionsToSessionList(sessions, context) {
         $summarySpeed.text("0");
         $summarySPM.text("0");
         $summaryLength.text("0");
+        $summaryElevation.text("0");
 
         return;
     }
@@ -135,12 +137,15 @@ function updateGlobalStats(sessions, context) {
     var totalDistance = 0.0,
         totalDuration = 0,
         totalSPM = 0.0,
-        totalLength = 0.0;
+        totalLength = 0.0,
+        totalElevation = 0
+    ;
 
     sessions.forEach(/** @param {Session} session */function (session) {
         let duration = moment.duration(session.sessionEnd - session.sessionStart);
         totalDistance += session.distance;
         totalDuration += duration;
+        totalElevation += session.elevation;
         totalSPM += (duration * session.avgSpm);
         totalLength += (duration * session.avgEfficiency);
     });
@@ -149,6 +154,7 @@ function updateGlobalStats(sessions, context) {
     $summarySpeed.text(Utils.round2(totalDistance / (totalDuration / 3600000)));
     $summarySPM.text(totalDuration ? Math.round(totalSPM / totalDuration) : 0);
     $summaryLength.text(Utils.round2(totalLength / totalDuration));
+    $summaryElevation.text(totalElevation);
 }
 
 /**
@@ -371,6 +377,7 @@ class SessionsView {
         $summarySpeed = $page.find('#summary-speed');
         $summarySPM = $page.find('#summary-spm');
         $summaryLength = $page.find('#summary-length');
+        $summaryElevation = $page.find('#summary-elevation');
         $summaryTime = $page.find('#total-duration');
 
         // set unit labes according to user preference

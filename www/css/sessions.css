@@ -1,7 +1,9 @@
 .app-content.sessions {
+    display: flex;
     height:100%;
     overflow: hidden;
     text-transform: uppercase;
+    flex-direction: column;
 }
 
 .sessions-content {

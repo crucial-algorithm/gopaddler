@@ -44,14 +44,17 @@
         <div class="sessions-summary-secondary">
             <div><span class="sessions-summary-secondary-value" id="summary-speed">0.0</span><label class="sessions-summary-secondary-label">{{"sessions_summary_speed_label" | translate}}</label></div>
             <div><span class="sessions-summary-secondary-value" id="summary-spm">0</span><label class="sessions-summary-secondary-label">{{"sessions_summary_spm_label" | translate}}</label></div>
-            <div><span class="sessions-summary-secondary-value" id="summary-length">0</span><label class="sessions-summary-secondary-label">{{"sessions_summary_spm_length_label" | translate}}</label></div>
+            <div data-selector="gopaddler"><span class="sessions-summary-secondary-value" id="summary-length">0</span><label class="sessions-summary-secondary-label">{{"sessions_summary_spm_length_label" | translate}}</label></div>
+            <div data-selector="utter-cycling"><span class="sessions-summary-secondary-value" id="summary-elevation">0</span><label class="sessions-summary-secondary-label">{{"sessions_summary_elevation_label" | translate}}</label></div>
         </div>
     </div>
-    <div class="sessions-table-header">
+    <div class="sessions-summary-list">
+        <div class="sessions-table-header">
         <div>{{"sessions_header_date" | translate}}</div>
         <div>{{"sessions_header_duration" | translate}}</div>
         <div>{{"sessions_header_distance" | translate}}</div>
         <div>{{"sessions_header_synced" | translate}}</div>
     </div>
-    <div id="sessions-wrapper-for-pull-to-refresh" class="sessions-list"></div>
+        <div id="sessions-wrapper-for-pull-to-refresh" class="sessions-list"></div>
+    </div>
 </div>

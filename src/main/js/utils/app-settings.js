@@ -68,4 +68,14 @@ export default class AppSettings {
     static sessionType() {
         return SETTINGS.sessionType;
     }
+
+    static applicationName() {
+        if (APP === AppSettings.types().GOPADDLER) {
+            return 'GoPaddler';
+        }
+
+        if (APP === AppSettings.types().UTTER_CYCLING) {
+            return 'UtterCycling';
+        }
+    }
 }

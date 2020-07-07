@@ -1,5 +1,7 @@
 'use strict';
 
+import AppSettings from "./app-settings";
+
 class Utils {
 
     static lpad(value, places) {
@@ -70,7 +72,7 @@ class Utils {
                 navigator.notification.alert(
                     message,    // message
                     null,       // callback
-                    "GoPaddler",  // title
+                    AppSettings.applicationName(),  // title
                     'OK'        // buttonName
                 );
             };

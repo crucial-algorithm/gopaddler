@@ -2,32 +2,17 @@
     <div class="summary-zones-zone-container">
         <div class="summary-zones-zone-card">
             <div class="summary-section-title">{{"session_summary_zones_speed_label" | translate}}</div>
-            <table class="summary-table summary-table-header summary-zones-table">
-                <tbody>
-                {{each speedZones}}
-                    <tr>
-                        <td>{{$value.zone}}</td>
-                        <td><div class="summary-zones-table-bar {{if $value.discard}}summary-zones-table-bar-discarded{{/if}}" style="width: {{$value.bar}}%">&nbsp;</div></td>
-                        <td>{{$value.percentage}}%</td>
-                    </tr>
-                {{/each}}
-                </tbody>
-            </table>
+            <canvas class="summary-intervals-chart" id="zones-speed"></canvas>
         </div>
 
         <div class="summary-zones-zone-card">
           <div class="summary-section-title">{{"session_summary_zones_spm_label" | translate}}</div>
-          <table class="summary-table summary-table-header summary-zones-table">
-              <tbody>
-              {{each spmZones}}
-                  <tr>
-                      <td>{{$value.zone}}</td>
-                      <td><div class="summary-zones-table-bar {{if $value.discard}}summary-zones-table-bar-discarded{{/if}}" style="width: {{$value.bar}}%">&nbsp;</div></td>
-                      <td>{{$value.percentage}}%</td>
-                  </tr>
-              {{/each}}
-              </tbody>
-          </table>
+            <canvas class="summary-intervals-chart" id="zones-spm"></canvas>
+        </div>
+
+        <div class="summary-zones-zone-card">
+            <div class="summary-section-title">{{"session_summary_zones_hr_label" | translate}}</div>
+            <canvas class="summary-intervals-chart" id="zones-heart-rate"></canvas>
         </div>
 
         <div class="summary-zones-zone-card">
@@ -52,20 +37,6 @@
           </table>
         </div>
 
-        <div class="summary-zones-zone-card">
-          <div class="summary-section-title">{{"session_summary_zones_hr_label" | translate}}</div>
-          <table class="summary-table summary-table-header summary-zones-table">
-              <tbody>
-              {{each heartRateZones}}
-                  <tr>
-                      <td>{{$value.zone}}</td>
-                      <td><div class="summary-zones-table-bar" style="width: {{$value.bar}}%">&nbsp;</div></td>
-                      <td>{{$value.percentage}}%</td>
-                  </tr>
-              {{/each}}
-              </tbody>
-          </table>
-        </div>
     </div>
 
 

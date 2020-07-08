@@ -1,6 +1,8 @@
 import Api from "../server/api";
 import Utils from "../utils/utils";
 import Context from "../context";
+import GpChart from "../utils/widgets/chart";
+import SessionSummaryIntervals from "./session.summary.intervals";
 
 export default class SessionSummaryZones {
     /**
@@ -72,32 +74,30 @@ export default class SessionSummaryZones {
      * @param {Array<number>}                                                           zones
      * @param {Array<AthleteTrainingZone>}                                              definition  zones definition
      * @param {function}                                                                process     function to process value
-     * @return {Array<Object>}
+     * @return {{labels: Array<string>, data: Array<number>}}
      */
     prepareZoneChartsData(records, property, avg, zones, definition, process = (value) => {
         return Math.floor(value)
     }) {
+        let labels = [], data = [];
         let stats = this.calculateZones(records, definition.slice(0), property, zones, [], process);
         let lower = avg - Utils.minMaxAvgStddev(records.map(function (rec) {
             return rec[property]
         })).stddev;
-        let percentage, max = Utils.minMaxAvgStddev(zones).max / stats.count * 100, discarding = false;
-        let result = [];
+        let percentage;
         for (let i = 0; i < zones.length; i++) {
             if (zones[i] === undefined) continue;
             percentage = Math.round(zones[i] / stats.workingCount * 100);
-            if (percentage === 0) continue;
-            if (i < lower && percentage < SessionSummaryZones.hidePercentageThreshold()) discarding = true;
+
             let zone = definition[i];
-            result.push({
-                zone: `${zone.start}${zone.end === Infinity ? '+' : '-' + zone.end}`,
-                percentage: percentage,
-                bar: percentage * 100 / max,
-                discard: discarding
-            });
-            discarding = false;
+            if (zone.start === zone.end) {
+                labels.push(zone.start);
+            } else {
+                labels.push(`${zone.start}${zone.end === Infinity ? '+' : '-' + zone.end}`);
+            }
+            data.push(percentage);
         }
-        return result;
+        return {labels: labels, data: data};
     }
 
     render(context, template, $container) {
@@ -117,6 +117,41 @@ export default class SessionSummaryZones {
             , heartRateZones: self.heartRateZones
             , spmToSpeedZones: self.spmToSpeedZones
         }));
+
+        setTimeout(() => {
+            this.loadCharts()
+        }, 0);
+    }
+
+    loadCharts() {
+
+        /**@type ChartOptions */
+        let options = {
+            /**@type ChartLabelOptions*/
+            labels: {
+                display: true
+            },
+            displayYAxisGridLines: false,
+            displayXAxisGridLines: true,
+            paddingLeft: 10,
+            paddingRight: 10,
+            paddingTop: 20
+        };
+
+        new GpChart(document.getElementById('zones-speed'), GpChart.TYPES().BAR, this.speedZones.labels
+            , SessionSummaryIntervals.dataset(this.speedZones.data)
+            , (value)=> { return value + '%' }
+            , options, false);
+
+        new GpChart(document.getElementById('zones-spm'), GpChart.TYPES().BAR, this.spmZones.labels
+            , SessionSummaryIntervals.dataset(this.spmZones.data)
+            , (value)=> { return value + '%' }
+            , options, false);
+
+        new GpChart(document.getElementById('zones-heart-rate'), GpChart.TYPES().BAR, this.heartRateZones.labels
+            , SessionSummaryIntervals.dataset(this.heartRateZones.data)
+            , (value)=> { return value + '%' }
+            , options, false);
     }
 
     /**

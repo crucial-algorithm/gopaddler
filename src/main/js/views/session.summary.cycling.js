@@ -79,7 +79,6 @@ export default class UtterCycling {
                 const value = Math.floor(label);
                 if (value === 0) return null;
                 if (step === null && last > 0) {
-                    console.log(last, last/6, metrics[metrics.length -1].distance);
                     step = Math.floor(last / 6);
                 }
                 if (value % step !== 0) return null;

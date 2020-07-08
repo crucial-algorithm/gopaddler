@@ -144,8 +144,8 @@ export default class SessionSummaryIntervals {
     static dataset(values) {
         return {
             data: values,
-            backgroundbackColor: 'rgba(59, 61, 98, 0)',
-            borderColor: 'rgba(238, 97, 86, 1)',
+            backgroundColor: 'rgba(0, 0, 0, 0.2)',
+            borderColor: 'rgba(255, 255, 255, 1)',
             borderWidth: 2,
             pointRadius: 0
         }

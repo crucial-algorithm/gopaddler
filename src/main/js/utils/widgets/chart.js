@@ -111,7 +111,7 @@ class GpChart {
                     fontStyle: 'bold',
                     fontColor: 'rgba(0, 0, 0, 0.5)'
                 },
-                cornerRadius: 12,
+                cornerRadius: 0,
                 legend: {
                     display: false
                 },

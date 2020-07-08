@@ -149,6 +149,8 @@ const BASE_EN = {
         , units_metric_heartRate_large: "BPM"
         , units_metric_distance_in_session_list_regular: "Km"
         , units_metric_distance_in_session_list_large: "Km"
+        , units_metric_elevation_regular: "m"
+        , units_metric_elevation_large: "m"
         , units_imperial_timer_regular: ""
         , units_imperial_timer_large: ""
         , units_imperial_splits_regular: ""
@@ -169,6 +171,8 @@ const BASE_EN = {
         , units_imperial_heartRate_large: "BPM"
         , units_imperial_distance_in_session_list_regular: "Mi"
         , units_imperial_distance_in_session_list_large: "Mi"
+        , units_imperial_elevation_regular: "ft"
+        , units_imperial_elevation_large: "ft"
 
         , sessions_filter_last_30_days: "Last 30 days"
         , sessions_filter_last_month: "Last Month"

@@ -49,6 +49,10 @@ const units = {
         distance_in_session_list: {
             label: {regular: "units_metric_distance_in_session_list_regular", large: "units_metric_distance_in_session_list_large"},
             decimalPlaces: 2
+        },
+        elevation: {
+            label: {regular: "units_metric_elevation_regular", large: "units_metric_elevation_large"},
+            round: false
         }
     },
     imperial: {
@@ -95,6 +99,10 @@ const units = {
         distance_in_session_list: {
             label: {regular: "units_imperial_distance_in_session_list_regular", large: "units_imperial_distance_in_session_list_large"},
             decimalPlaces: 2
+        },
+        elevation: {
+            label: {regular: "units_imperial_elevation_regular", large: "units_imperial_elevation_large"},
+            decimalPlaces: 0
         }
     }
 };
@@ -105,6 +113,28 @@ const units = {
  */
 
 class Context {
+
+    /**
+     *
+     * @return {{SPEED: string, SPM: string, DISTANCE: string, SPLITS: string, AVERAGE_SPEED: string, HEART_RATE: string, PACE: string, TIMER: string, DISTANCE_IN_SESSION_LIST: string, ELEVATION: string, EFFICIENCY: string, STROKES: string}}
+     * @constructor
+     */
+    static FIELD_TYPES() {
+        return {
+            TIMER: 'timer'
+            , SPLITS: 'splits'
+            , SPEED: 'speed'
+            , AVERAGE_SPEED: 'averageSpeed'
+            , DISTANCE: 'distance'
+            , SPM: 'spm'
+            , EFFICIENCY: 'efficiency'
+            , STROKES: 'strokes'
+            , PACE: 'pace'
+            , HEART_RATE: 'heartRate'
+            , DISTANCE_IN_SESSION_LIST: 'distance_in_session_list'
+            , ELEVATION: 'elevation'
+        }
+    }
 
     /**
      *
@@ -141,6 +171,20 @@ class Context {
         return this._settings.isPortraitMode();
     }
 
+    /**
+     *
+     * @return {boolean}
+     */
+    isImperial() {
+        return this._settings.isImperial()
+    }
+
+    /**
+     *
+     * @param {string} type
+     * @param {boolean} large
+     * @return {string}
+     */
     getUnit(type, large) {
         var size = large === true ? "large" : "regular";
 
@@ -160,15 +204,35 @@ class Context {
         return units[this._system][type].decimalPlaces;
     }
 
-    displayMetric(type, value) {
+    /**
+     *
+     * @param {string}  type                     field name
+     * @param {number}  value                    field value
+     * @param {boolean} reduceNextLogicalUnit    field value
+     * @return {number}
+     */
+    displayMetric(type, value, reduceNextLogicalUnit = false) {
         if (units[this._system][type] === undefined) {
-            throw 'unkown field type - ' + type;
+            throw 'unknown field type - ' + type;
         }
 
         if (isNaN(value)) return 0;
 
+        const isImperial = this._settings.isImperial();
+
+        if (isImperial && type === Context.FIELD_TYPES().DISTANCE
+            || type === Context.FIELD_TYPES().AVERAGE_SPEED
+            || type === Context.FIELD_TYPES().SPEED) {
+            value = reduceNextLogicalUnit ? Utils.meterToFeet(value * 1000) : Utils.kmToMiles(value)
+        }
+
+        if (isImperial && type === Context.FIELD_TYPES().ELEVATION) {
+            value = Utils.meterToFeet(value);
+        }
+
         if (this.round(type))
             return Utils.round(value, this.getUnitDecimalPlaces(type));
+
         return value;
     }
 

@@ -256,7 +256,7 @@ class HomeView {
 
                 total += distance;
                 if (distance === 0) return;
-                data.push(distance);
+                data.push(self.context.displayMetric(Context.FIELD_TYPES().DISTANCE, distance));
                 labels.push(cal.day);
             });
 
@@ -268,7 +268,7 @@ class HomeView {
                 }
                 title = self.context.translate('home_header_no_sessions');
             } else {
-                const avg = Math.round(Utils.minMaxAvgStddev(data).avg * 100) / 100 + ' km';
+                const avg = Math.round(Utils.minMaxAvgStddev(data).avg * 100) / 100 + ' ' + self.context.getUnit(Context.FIELD_TYPES().DISTANCE_IN_SESSION_LIST, false);
                 title = self.context.translate('home_header', [avg]);
             }
 
@@ -276,7 +276,7 @@ class HomeView {
                 if (context.datasetIndex === 1) {
                     return '';
                 }
-                return Math.round(value);
+                return Math.round(value * 10) / 10;
             };
 
             new GpChart($ctx, GpChart.TYPES().LINE, labels, /**@type ChartDataSet */{

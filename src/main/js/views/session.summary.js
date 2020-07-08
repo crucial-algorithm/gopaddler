@@ -29,7 +29,7 @@ import {UtterCyclingUtils} from "../utils/utter-cycling-utils";
  * @property {number}               hrTotal
  * @property {boolean}              recovery
  * @property {boolean}              isDistanceBased
- * @property {Array<SessionDetail>} isDistanceBased
+ * @property {Array<SessionDetail>} records
  */
 
 class SessionSummaryView {
@@ -128,6 +128,7 @@ class SessionSummaryView {
         $page.on('appShow', function () {
 
             session.detail().then(function (records) {
+                const elevation = UtterCyclingUtils.calculateElevationGain(records);
                 Context.render(document.getElementsByClassName('summary-layout-general')[0], generalStatsTemplate({
                     duration: durationFormatted,
                     distance: distance,
@@ -135,7 +136,7 @@ class SessionSummaryView {
                     cadence: avgSPM,
                     efficiency: avgEfficiency,
                     heartRate: heartRate,
-                    elevation: UtterCyclingUtils.calculateElevationGain(records)
+                    elevation: context.displayMetric(Context.FIELD_TYPES().ELEVATION, elevation)
                 }));
 
                 let output = self.calculateIntervals(session, records);
@@ -167,7 +168,7 @@ class SessionSummaryView {
      *
      * @param {Session} session
      * @param {Array<SessionDetail>} details  Session data records
-     * @return {{intervals: SummaryInterval, working: Array<SessionDetail>}}
+     * @return {{intervals: Array<SummaryInterval>, working: Array<SessionDetail>}}
      */
     calculateIntervals(session, details) {
 
@@ -246,14 +247,23 @@ class SessionSummaryView {
 }
 
 class SessionSummaryIntervals {
+    /**
+     *
+     * @param {Session} session
+     * @param {Array<SummaryInterval>} intervals
+     */
     constructor(session, intervals) {
+        /**@type Array<SummaryInterval> */
         this.intervals = intervals;
         this.session = session;
+        /**@type Context */
+        this._context = null;
     }
 
     render(context, template, $container) {
         let self = this;
         let position = 1, intervals = [];
+        this.context = context;
 
         for (let i = 0; i < this.intervals.length; i++) {
             let interval = this.intervals[i];
@@ -289,40 +299,61 @@ class SessionSummaryIntervals {
                 self.loadCharts([]);
                 return;
             }
-            self.loadCharts(collapseMetrics(self.intervals[0].records, 50));
+            self.loadCharts(self.intervals[0]);
             $container.on('click', '[data-selector="interval"]', function () {
                 let $tr = $(this), interval = self.intervals[parseInt($tr.data('interval'))];
                 $container.find('.summary-table-interval-selected').removeClass('summary-table-interval-selected');
                 $tr.addClass('summary-table-interval-selected');
-                self.loadCharts(collapseMetrics(interval.records, 50));
+                self.loadCharts(interval);
             });
 
         }, 0);
     }
 
-    loadCharts(metrics) {
-        let labels = [], speed = [], spm = [], efficiency = [], hr = [];
+    /**
+     *
+     * @param {SummaryInterval} interval
+     */
+    loadCharts(interval) {
+        let metrics = interval.records;
+        let labels = [], speed = [], spm = [], efficiency = [], hr = []
+            , first = metrics[0]
+            , last = metrics[metrics.length - 1]
+            , finishedAt = -1;
 
-        metrics.map(function (detail) {
-            labels.push(detail.timestamp);
+        metrics.map((detail) => {
             speed.push(detail.speed);
             spm.push(detail.spm);
             efficiency.push(detail.efficiency);
             hr.push(detail.heartRate);
+
+            if (interval.isDistanceBased) {
+                if (finishedAt  < 0 ) finishedAt = this.context.displayMetric(Context.FIELD_TYPES().DISTANCE
+                    , last.distance - first.distance);
+
+                if (this.context.isImperial()) {
+                    let reduce = finishedAt < 1;
+                    labels.push(Math.round(this.context.displayMetric(Context.FIELD_TYPES().DISTANCE,
+                        detail.distance - first.distance, reduce)));
+                } else {
+                    labels.push(Math.round(finishedAt > 2 ? detail.distance - first.distance : (detail.distance - first.distance) * 1000));
+                }
+            } else {
+                labels.push(Math.round((detail.timestamp - first.timestamp) / 1000));
+            }
         });
 
         /**@type ChartOptions */
         let options = {
             /**@type ChartLabelOptions*/
             labels: {
-                display: true,
-                weight: 700,
-                size: 10,
-                align: 'start',
-                anchor: 'start',
-                clamp: true
+                display: false
             },
-            displayYAxisGridLines: false
+            displayYAxisGridLines: true,
+            displayXAxisGridLines: true,
+            xAxisLabelMaxRotation: 50,
+            paddingLeft: 10,
+            paddingRight: 10
         };
 
         new GpChart($('#speed'), GpChart.TYPES().LINE, labels, dataset(speed), labelFormatter(speed, 2), options, false);
@@ -330,6 +361,14 @@ class SessionSummaryIntervals {
         new GpChart($('#length'), GpChart.TYPES().LINE, labels, dataset(efficiency), labelFormatter(efficiency, 2), options, false);
         new GpChart($('#hr'), GpChart.TYPES().LINE, labels, dataset(hr), labelFormatter(hr, 0), options, false);
 
+    }
+
+    get context() {
+        return this._context;
+    }
+
+    set context(value) {
+        this._context = value;
     }
 }
 
@@ -567,9 +606,9 @@ class UtterCycling {
      * @param {Array<SessionDetail>} metrics
      */
     loadCharts(metrics) {
-        let labels = [], altitude = [];
+        const self = this;
+        let labels = [], altitude = [], last = 0, step = null;
 
-        // collapseMetrics(metrics, 50);
         let min = null;
         for (let record of metrics) {
             let value = record.altitude;
@@ -584,8 +623,13 @@ class UtterCycling {
         let i = 0;
         metrics.map(function (detail) {
             i++;
-            labels.push(detail.distance);
-            altitude.push(detail.altitude - (min !== null ? min : 0));
+            let distance = self.context.displayMetric(Context.FIELD_TYPES().DISTANCE, detail.distance);
+            let value = self.context.displayMetric(Context.FIELD_TYPES().ELEVATION, detail.altitude - (min !== null ? min : 0));
+
+            labels.push(distance);
+            altitude.push(value);
+
+            last = distance;
         });
 
         let labelsToShow = {};
@@ -599,10 +643,16 @@ class UtterCycling {
             displayYAxisGridLines: true,
             displayXAxisGridLines: true,
             xAxisLabelMaxRotation: 0,
+            paddingLeft: 10,
+            paddingRight: 10,
             xAxisLabelCallback: (label) => {
                 const value = Math.floor(label);
                 if (value === 0) return null;
-                if (value % 10 !== 0) return null;
+                if (step === null && last > 0) {
+                    console.log(last, last/6, metrics[metrics.length -1].distance);
+                    step = Math.floor(last / 6);
+                }
+                if (value % step !== 0) return null;
                 if (labelsToShow[value] === true) return null;
                 labelsToShow[value] = true;
                 return value;
@@ -626,84 +676,6 @@ class UtterCycling {
     get context() {
         return this._context;
     }
-}
-
-/**
- * reduce number of points in chart so charts are easier to read in mobile
- *
- * @param details
- * @param nbrOfPoints
- * @return {[]}
- */
-function collapseMetrics(details, nbrOfPoints) {
-    let step, speed = 0, spm = 0, efficiency = 0, hr = 0, count = 0, result = [], i, l
-        , distance = details[details.length - 1].getDistance() * 1000, position;
-
-    if (!nbrOfPoints) nbrOfPoints = 10;
-
-    if (details.length === 0 || distance < 100) {
-        for (i = 0, l = 10; i < l; i++) {
-            result.push({speed: 0, spm: 0, efficiency: 0, heartRate: 0, timestamp: i});
-        }
-        return result;
-
-    }
-
-    if (details.length <= 15) {
-        for (i = 0, l = 15; i < l; i++) {
-            if (details.length - 1 > i) {
-                result.push({
-                    speed: details[i].getSpeed(),
-                    spm: details[i].getSpm(),
-                    efficiency: details[i].getEfficiency(),
-                    heartRate: details[i].getHeartRate(),
-                    timestamp: i
-                });
-            } else {
-                result.push({speed: 0, spm: 0, efficiency: 0, heartRate: 0, timestamp: i});
-            }
-        }
-        return result;
-    }
-
-    step = Math.floor(distance / nbrOfPoints);
-    position = step;
-    for (i = 0, l = details.length; i < l; i++) {
-        let detail = details[i];
-        if (detail.getDistance() * 1000 > position) {
-            result.push({
-                speed: speed / count,
-                spm: spm / count,
-                efficiency: efficiency / count,
-                heartRate: hr / count,
-                timestamp: detail.getTimestamp()
-            });
-            speed = 0;
-            spm = 0;
-            efficiency = 0;
-            hr = 0;
-            count = 0;
-            position += step;
-        }
-
-        speed += detail.getSpeed();
-        spm += detail.getSpm();
-        efficiency += detail.getEfficiency();
-        hr += detail.getHeartRate();
-
-        count++;
-    }
-
-    if (count > 0) {
-        result.push({
-            speed: speed / count,
-            spm: spm / count,
-            efficiency: efficiency / count,
-            heartRate: hr / count
-        });
-    }
-
-    return result;
 }
 
 

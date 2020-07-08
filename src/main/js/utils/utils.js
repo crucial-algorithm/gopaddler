@@ -10,6 +10,12 @@ class Utils {
         return pad.substring(0, pad.length - str.length) + str;
     }
 
+    /**
+     *
+     * @param value
+     * @param decimalPlaces
+     * @return {number}
+     */
     static round(value, decimalPlaces) {
         if (decimalPlaces === 0) return Math.round(value);
 

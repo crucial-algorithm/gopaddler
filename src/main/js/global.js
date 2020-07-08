@@ -380,6 +380,7 @@ class MockSessionGenerator {
             latitude: 1,
             longitude: 1,
             split: split,
+            altitude: Utils.getRandomInt(80, 120),
             recovery: isRecovery === true ? 1 : 0
         };
 

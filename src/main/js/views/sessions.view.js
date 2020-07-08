@@ -150,11 +150,12 @@ function updateGlobalStats(sessions, context) {
         totalLength += (duration * session.avgEfficiency);
     });
 
-    $summaryDistance.text(Utils.round2(totalDistance));
+    console.log(totalDistance, context.displayMetric('distance', totalDistance));
+    $summaryDistance.text(context.displayMetric('distance', totalDistance));
     $summarySpeed.text(Utils.round2(totalDistance / (totalDuration / 3600000)));
     $summarySPM.text(totalDuration ? Math.round(totalSPM / totalDuration) : 0);
     $summaryLength.text(Utils.round2(totalLength / totalDuration));
-    $summaryElevation.text(totalElevation);
+    $summaryElevation.text(context.displayMetric('elevation', totalElevation));
 }
 
 /**
@@ -223,7 +224,7 @@ function filterSessionsByPeriod(context, onlyUpdateGlobals) {
 /**
  * Change sessions period according to selected filter
  *
- * @param {string}  filter
+ * @param {string|null}  filter
  * @param {boolean} updateCalendar
  */
 function setSessionPeriod(filter, updateCalendar) {
@@ -240,7 +241,6 @@ function setSessionPeriod(filter, updateCalendar) {
 
     // if updateCalendar is set to false, don't change calendar dates
     if (updateCalendar === false) {
-
         return;
     }
 
@@ -399,7 +399,7 @@ class SessionsView {
         self.progress = {};
 
         // load sessions according to user preferences
-        setSessionPeriod(context.preferences().getDefaultSessionFilter());
+        setSessionPeriod(context.preferences().getDefaultSessionFilter(), true);
 
         if (context.preferences().getDefaultStartDate() !== null && context.preferences().getDefaultStartDate() !== undefined) {
             filterStartDate = moment(context.preferences().getDefaultStartDate());

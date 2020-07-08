@@ -420,10 +420,10 @@ class SessionSummaryZones {
         ;
 
 
-        this.speedZones = this.prepareZoneChartsData(records, "speed", session.avgSpeed, speedZones, athlete.speedZones);
-        this.spmZones = this.prepareZoneChartsData(records, "spm", session.avgSpm, spmZones, athlete.strokeRateZones);
+        this.speedZones = this.prepareZoneChartsData(records, "speed", session.avgSpeed, speedZones, this.convertZoneEndToInfinity(athlete.speedZones));
+        this.spmZones = this.prepareZoneChartsData(records, "spm", session.avgSpm, spmZones, this.convertZoneEndToInfinity(athlete.strokeRateZones));
         this.heartRateZones = this.prepareZoneChartsData(records, "heartRate", session.avgHeartRate
-            , heartRateZones, athlete.heartRateZones, (hr) => {
+            , heartRateZones, this.convertZoneEndToInfinity(athlete.heartRateZones), (hr) => {
                 return Utils.heartRateReserveCalculation(context.getRestingHeartRate(), context.getMaxHeartRate(), hr);
             });
 
@@ -484,7 +484,7 @@ class SessionSummaryZones {
             if (i < lower && percentage < SessionSummaryZones.hidePercentageThreshold()) discarding = true;
             let zone = definition[i];
             result.push({
-                zone: `${zone.start}-${zone.end}`,
+                zone: `${zone.start}${zone.end === Infinity ? '+' : '-' + zone.end}`,
                 percentage: percentage,
                 bar: percentage * 100 / max,
                 discard: discarding
@@ -570,6 +570,21 @@ class SessionSummaryZones {
                 }
             }
         }
+    }
+
+    /**
+     *
+     * @param {Array<AthleteTrainingZone>} zones
+     * @return {Array<AthleteTrainingZone>}
+     */
+    convertZoneEndToInfinity(zones) {
+        if (zones.length === 0) return zones;
+        let last = zones[zones.length - 1];
+        if (typeof last.end !== 'object') return zones;
+        if (last.end.$InfNaN === 1) {
+            last.end = Infinity;
+        }
+        return zones;
     }
 }
 

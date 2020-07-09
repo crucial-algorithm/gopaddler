@@ -150,7 +150,6 @@ function updateGlobalStats(sessions, context) {
         totalLength += (duration * session.avgEfficiency);
     });
 
-    console.log(totalDistance, context.displayMetric('distance', totalDistance));
     $summaryDistance.text(context.displayMetric('distance', totalDistance));
     $summarySpeed.text(Utils.round2(totalDistance / (totalDuration / 3600000)));
     $summarySPM.text(totalDuration ? Math.round(totalSPM / totalDuration) : 0);

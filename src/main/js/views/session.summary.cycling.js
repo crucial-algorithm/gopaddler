@@ -37,7 +37,7 @@ export default class UtterCycling {
      */
     loadCharts(metrics) {
         const self = this;
-        let labels = [], altitude = [], last = 0, step = null;
+        let labels = [], altitude = [], speed = [], cadence = [], heartRate = [], last = 0, step = null;
 
         let min = null;
         for (let record of metrics) {
@@ -54,10 +54,12 @@ export default class UtterCycling {
         metrics.map(function (detail) {
             i++;
             let distance = self.context.displayMetric(Context.FIELD_TYPES().DISTANCE, detail.distance);
-            let value = self.context.displayMetric(Context.FIELD_TYPES().ELEVATION, detail.altitude - (min !== null ? min : 0));
 
             labels.push(distance);
-            altitude.push(value);
+            altitude.push(self.context.displayMetric(Context.FIELD_TYPES().ELEVATION, detail.altitude - (min !== null ? min : 0)));
+            speed.push(self.context.displayMetric(Context.FIELD_TYPES().SPEED, detail.speed));
+            cadence.push(detail.spm);
+            heartRate.push(detail.heartRate);
 
             last = distance;
         });
@@ -75,11 +77,11 @@ export default class UtterCycling {
             xAxisLabelMaxRotation: 0,
             paddingLeft: 10,
             paddingRight: 10,
-            xAxisLabelCallback: (label) => {
+            xAxisLabelCallback: (label, context) => {
                 const value = Math.floor(label);
                 if (value === 0) return null;
                 if (step === null && last > 0) {
-                    step = Math.floor(last / 6);
+                    step = Math.floor(last / 10);
                 }
                 if (value % step !== 0) return null;
                 if (labelsToShow[value] === true) return null;
@@ -90,8 +92,24 @@ export default class UtterCycling {
         };
 
         new GpChart(document.getElementById('cycling-altitude'), GpChart.TYPES().LINE, labels
-            , SessionSummaryIntervals.dataset(altitude), SessionSummaryIntervals.labelFormatter(altitude, 2)
+            , GpChart.dataset(altitude)
             , options, false);
+        labelsToShow = {}
+
+        let dataSetAltitudeSecondary = GpChart.dataset(altitude, GpChart.YAxis().SECOND);
+
+        new GpChart(document.getElementById('cycling-speed'), GpChart.TYPES().LINE, labels
+            , [GpChart.dataset(speed), dataSetAltitudeSecondary]
+            , options, true);
+        labelsToShow = {}
+        new GpChart(document.getElementById('cycling-cadence'), GpChart.TYPES().LINE, labels
+            , [GpChart.dataset(cadence), dataSetAltitudeSecondary]
+            , options, true);
+        labelsToShow = {}
+        new GpChart(document.getElementById('cycling-heart-rate'), GpChart.TYPES().LINE, labels
+            , [GpChart.dataset(heartRate), dataSetAltitudeSecondary]
+            , options, true);
+
     }
 
     get session() {

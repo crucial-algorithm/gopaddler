@@ -112,10 +112,10 @@ export default class SessionSummaryIntervals {
             paddingRight: 10
         };
 
-        new GpChart($('#speed'), GpChart.TYPES().LINE, labels, SessionSummaryIntervals.dataset(speed), SessionSummaryIntervals.labelFormatter(speed, 2), options, false);
-        new GpChart($('#spm'), GpChart.TYPES().LINE, labels, SessionSummaryIntervals.dataset(spm), SessionSummaryIntervals.labelFormatter(spm, 0), options, false);
-        new GpChart($('#length'), GpChart.TYPES().LINE, labels, SessionSummaryIntervals.dataset(efficiency), SessionSummaryIntervals.labelFormatter(efficiency, 2), options, false);
-        new GpChart($('#hr'), GpChart.TYPES().LINE, labels, SessionSummaryIntervals.dataset(hr), SessionSummaryIntervals.labelFormatter(hr, 0), options, false);
+        new GpChart($('#speed'), GpChart.TYPES().LINE, labels, GpChart.dataset(speed), options, false);
+        new GpChart($('#spm'), GpChart.TYPES().LINE, labels, GpChart.dataset(spm), options, false);
+        new GpChart($('#length'), GpChart.TYPES().LINE, labels, GpChart.dataset(efficiency), options, false);
+        new GpChart($('#hr'), GpChart.TYPES().LINE, labels, GpChart.dataset(hr), options, false);
 
     }
 
@@ -125,29 +125,5 @@ export default class SessionSummaryIntervals {
 
     set context(value) {
         this._context = value;
-    }
-
-    static labelFormatter(data, places) {
-        return function (value, context) {
-            if (context.dataIndex === 0) return '';
-            if (context.dataIndex === data.length - 1) return '';
-            if (context.dataIndex % 5 === 0) return Utils.round(value, places);
-            return '';
-        }
-    }
-
-    /**
-     *
-     * @param values
-     * @return {ChartDataSet}
-     */
-    static dataset(values) {
-        return {
-            data: values,
-            backgroundColor: 'rgba(0, 0, 0, 0.2)',
-            borderColor: 'rgba(255, 255, 255, 1)',
-            borderWidth: 2,
-            pointRadius: 0
-        }
     }
 }

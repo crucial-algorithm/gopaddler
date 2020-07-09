@@ -286,7 +286,7 @@ class HomeView {
                 borderWidth: 4,
                 pointRadius: 6,
                 pointBackgroundColor: 'rgba(255, 255, 255, 1)'
-            }, formatter, {
+            }, {
                 displayYAxisGridLines: false
                 , displayXAxisGridLines: true
                 , xAxisLabelCallback: (label) => {
@@ -298,6 +298,7 @@ class HomeView {
                 , paddingRight: 10
                 , paddingTop: 20
                 , labels: {display: true, weight: 700, offset: -30
+                    , formatter: formatter
                     , clamp: true
                     , align: 'bottom'
                     , anchor: 'center'}

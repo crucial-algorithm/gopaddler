@@ -103,13 +103,6 @@ export default class SessionSummaryZones {
     render(context, template, $container) {
         const self = this;
 
-        console.log({
-            isPortraitMode: context.isPortraitMode()
-            , speedZones: self.speedZones
-            , spmZones: self.spmZones
-            , heartRateZones: self.heartRateZones
-            , spmToSpeedZones: self.spmToSpeedZones
-        });
         Context.render($container, template({
             isPortraitMode: context.isPortraitMode()
             , speedZones: self.speedZones
@@ -129,7 +122,8 @@ export default class SessionSummaryZones {
         let options = {
             /**@type ChartLabelOptions*/
             labels: {
-                display: true
+                display: true,
+                formatter: (value)=> { return value + '%' }
             },
             displayYAxisGridLines: false,
             displayXAxisGridLines: true,
@@ -139,18 +133,15 @@ export default class SessionSummaryZones {
         };
 
         new GpChart(document.getElementById('zones-speed'), GpChart.TYPES().BAR, this.speedZones.labels
-            , SessionSummaryIntervals.dataset(this.speedZones.data)
-            , (value)=> { return value + '%' }
+            , GpChart.dataset(this.speedZones.data)
             , options, false);
 
         new GpChart(document.getElementById('zones-spm'), GpChart.TYPES().BAR, this.spmZones.labels
-            , SessionSummaryIntervals.dataset(this.spmZones.data)
-            , (value)=> { return value + '%' }
+            , GpChart.dataset(this.spmZones.data)
             , options, false);
 
         new GpChart(document.getElementById('zones-heart-rate'), GpChart.TYPES().BAR, this.heartRateZones.labels
-            , SessionSummaryIntervals.dataset(this.heartRateZones.data)
-            , (value)=> { return value + '%' }
+            , GpChart.dataset(this.heartRateZones.data)
             , options, false);
     }
 

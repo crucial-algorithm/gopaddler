@@ -50,57 +50,31 @@ class GpChart {
         }
     }
 
+    static YAxis() {
+        return {
+            FIRST: 'y-axis-1',
+            SECOND: 'y-axis-2'
+        }
+    }
+
+
     /**
-     *
-     * @param {Element} canvas
+     * @private
      * @param type
-     * @param labels
-     * @param {ChartDataSet} dataset
-     * @param {function} formatter
-     * @param {ChartOptions} options
-     * @param {boolean} displayAverage
+     * @param options
+     * @return {{data: {datasets: null, labels: null}, plugins: [*], options: {layout: {padding: {top: (number|string|string), left: (number|string), bottom: (number|string), right: (number|string)}}, onClick: (*|(function(...[*]=))), legend: {display: boolean}, plugins: {datalabels: {formatter: (Function|((x: number) => number)|FIELD_SETTINGS.distance.formatter), offset: (*), color: (*|string), display: boolean, anchor: (String|Array|Function|string|[string]|*|((name: string) => string)), align: (*|string), clamp: boolean, font: {size: (*|undefined), weight: (*|undefined)}}}, scales: {yAxes: [{display: boolean}], xAxes: [{ticks: {maxRotation: (number|*), callback, fontSize: number, fontColor: string, autoSkip: boolean}, display: boolean}]}, elements: {line: {tension: number}}, title: {display: boolean, fontSize: number, text: null, fontStyle: string, fontColor: string}, tooltips: {enabled: boolean}, cornerRadius: number}, type: *}}
      */
-    constructor(canvas, type, labels, dataset, formatter, options, displayAverage = false) {
+    static config(type, options) {
+
         const labelOptions = options.labels;
         labelOptions.display = labelOptions.display !== false;
 
-        if (initialized === false) {
-            extend();
-            initialized = true;
-        }
-        let datasets = [dataset];
-
-        if (displayAverage === true) {
-            let averageSet = {
-                type: GpChart.TYPES().LINE,
-                name: 'gen-avg',
-                backgroundbackColor: 'rgba(0, 0, 0, 0.2)',
-                borderColor: 'rgba(0, 0, 0, 0.2)',
-                borderWidth: 1,
-                pointRadius: 0,
-                borderDash: [5, 15]
-            };
-
-            let total = 0, average = [], l = dataset.data.length;
-            for (let i = 0; i < l; i++) {
-                total += isNaN(dataset.data[i]) ? 0 : dataset.data[i];
-                average.push(0);
-            }
-            let avg = total / l;
-            average = average.map(function (value) {
-                return avg
-            });
-
-            averageSet.data = average;
-            datasets.push(averageSet);
-        }
-
-        new Chart(canvas, {
+        return {
             type: type,
             plugins: [ChartDataLabels],
             data: {
-                labels: labels,
-                datasets: datasets
+                labels: null, // needs to be written
+                datasets: null // needs to be written
             },
             options: {
                 onClick: options.onClick || function(){},
@@ -127,9 +101,6 @@ class GpChart {
                     enabled: false
                 },
                 scales: {
-                    yAxes: [{
-                        display: options.displayYAxisGridLines === true
-                    }],
                     xAxes: [{
                         display: options.displayXAxisGridLines === true,
                         ticks: {
@@ -139,6 +110,10 @@ class GpChart {
                             maxRotation: isNaN(options.xAxisLabelMaxRotation) ? 50 : options.xAxisLabelMaxRotation,
                             callback: options.xAxisLabelCallback || function(label){return label}
                         }
+                    }],
+                    yAxes: [{
+                        display: options.displayYAxisGridLines === true,
+                        id: 'y-axis-1'
                     }]
                 },
                 plugins: {
@@ -148,7 +123,7 @@ class GpChart {
                         anchor: labelOptions.anchor || 'end',
                         clamp: labelOptions.clamp === true,
                         offset: typeof labelOptions.offset === 'number' ? labelOptions.offset : undefined,
-                        formatter: formatter || Math.round,
+                        formatter: labelOptions.formatter || Math.round,
                         color: labelOptions.color || labelColor,
                         font: {
                             weight: labelOptions.weight || undefined,
@@ -162,7 +137,101 @@ class GpChart {
                     }
                 }
             }
-        });
+        }
+    }
+
+
+    static config2Axis(type, options) {
+        let config = GpChart.config(type, options);
+        config.options.scales.yAxes = [{
+            display: options.displayYAxisGridLines === true,
+            position: 'left',
+            id: 'y-axis-1'
+        }, {
+            display: options.displayYAxisGridLines === true,
+            position: 'right',
+            ticks: {
+                callback: () => { return null }
+            },
+            fontColor: 'blue',
+            id: 'y-axis-2'
+        }]
+
+        return config;
+    }
+
+    /**
+     *
+     * @param {Element} canvas
+     * @param type
+     * @param labels
+     * @param {ChartDataSet|Array<ChartDataSet>} dataset
+     * @param {ChartOptions} options
+     * @param {boolean} displayAverage
+     */
+    constructor(canvas, type, labels, dataset, options, displayAverage = false) {
+
+        if (initialized === false) {
+            extend();
+            initialized = true;
+        }
+        let config;
+        let datasets;
+        if (Array.isArray(dataset)) {
+            config = GpChart.config2Axis(type, options);
+            datasets = dataset;
+        } else {
+            config = GpChart.config(type, options);
+            datasets = [dataset];
+        }
+
+        if (displayAverage === true) {
+            let averageSet = {
+                type: GpChart.TYPES().LINE,
+                name: 'gen-avg',
+                backgroundbackColor: 'rgba(0, 0, 0, 0.2)',
+                borderColor: 'rgba(0, 0, 0, 0.2)',
+                borderWidth: 1,
+                pointRadius: 0,
+                borderDash: [5, 15]
+            };
+
+            let total = 0, average = [], l = datasets[0].data.length;
+            for (let i = 0; i < l; i++) {
+                total += isNaN(datasets[0].data[i]) ? 0 : datasets[0].data[i];
+                average.push(0);
+            }
+            let avg = total / l;
+            average = average.map(function (value) {
+                return avg
+            });
+
+            averageSet.data = average;
+            datasets.push(averageSet);
+        }
+
+
+        config.data.labels = labels;
+        config.data.datasets = datasets;
+
+        new Chart(canvas, config);
+    }
+
+    /**
+     *
+     * @param values
+     * @param id
+     * @return {ChartDataSet}
+     */
+    static dataset(values, id = 'y-axis-1') {
+        return {
+            data: values,
+            backgroundColor: 'rgba(0, 0, 0, 0.2)',
+            borderColor: id === 'y-axis-1' ? 'rgba(0, 0, 0, 0.4)': 'rgba(255, 255, 255, 0)',
+            borderWidth: id === 'y-axis-1' ? 1 : 0,
+            pointRadius: 0,
+            yAxisID: id
+        }
     }
 }
 

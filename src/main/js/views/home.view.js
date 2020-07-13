@@ -238,7 +238,7 @@ class HomeView {
 
     loadChart($ctx) {
         const self = this
-            , NBR_OF_DAYS = 60;
+            , NBR_OF_DAYS = 20;
 
 
         Session.getFromDate(moment().add(-NBR_OF_DAYS, 'days').toDate().getTime(), function(sessions) {
@@ -276,7 +276,7 @@ class HomeView {
                 if (context.datasetIndex === 1) {
                     return '';
                 }
-                return Math.round(value * 10) / 10;
+                return Math.round(value);
             };
 
             new GpChart($ctx, GpChart.TYPES().LINE, labels, /**@type ChartDataSet */{

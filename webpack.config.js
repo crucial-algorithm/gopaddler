@@ -10,26 +10,48 @@ if (viewMode === 'portrait') {
     isPortraitMode = 1;
 }
 
-var CONFIG = {
-    common: {
-        version: "1.6.0",
-        apiVersion: 2,
-        sessionVersion: 5
+let CONFIG = {
+    gopaddler: {
+        common: {
+            version: "1.6.0",
+            apiVersion: 2,
+            sessionVersion: 5
+        },
+        dev : {
+            server: "http://local.gopaddler.com",
+            endpoint: "ws://local.gopaddler.com/websocket"
+        },
+        "remote-dev": {
+            server: "https://dev.gopaddler.com",
+            endpoint: "wss://dev.gopaddler.com/websocket"
+        },
+        prod: {
+            server: "https://app.gopaddler.com",
+            endpoint: "wss://app.gopaddler.com/websocket"
+        }
     },
-    dev : {
-        server: "http://local.gopaddler.com",
-        endpoint: "ws://local.gopaddler.com/websocket"
-    },
-    "remote-dev": {
-        server: "https://dev.gopaddler.com",
-        endpoint: "wss://dev.gopaddler.com/websocket"
-    },
-    prod: {
-        server: "https://app.gopaddler.com",
-        endpoint: "wss://app.gopaddler.com/websocket"
+    uttercycling: {
+        common: {
+            version: "0.1.0",
+            apiVersion: 2,
+            sessionVersion: 5
+        },
+        dev : {
+            server: "http://local.gopaddler.com",
+            endpoint: "ws://local.gopaddler.com/websocket"
+        },
+        "remote-dev": {
+            server: "https://dev.gopaddler.com",
+            endpoint: "wss://dev.gopaddler.com/websocket"
+        },
+        prod: {
+            server: "https://app.gopaddler.com",
+            endpoint: "wss://app.gopaddler.com/websocket"
+        }
     }
 
 };
+
 
 function extend() {
     for (let i = 1; i < arguments.length; i++) {
@@ -50,7 +72,7 @@ if (app !== 'gopaddler' && app !== 'uttercycling')
 
 console.log('building for app ' + app);
 
-let config = extend({}, CONFIG.common, CONFIG[env]);
+let config = extend({}, CONFIG[app].common, CONFIG[app][env]);
 
 const GOPADDLER_CONFIG = require('./config/gopaddler');
 const UTTERCYCLING_CONFIG = require('./config/uttercycling');

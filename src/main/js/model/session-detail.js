@@ -203,7 +203,7 @@ class SessionDetail {
                     for (let i = 0; i < res.rows.length; i++) {
                         rows.push(res.rows.item(i));
                     }
-                    callback(new SessionDetailMetrics(rows, splits, elevation));
+                    callback(new SessionDetailMetrics(rows, splits, elevation), records);
                 } catch (err) {
                     Utils.notify(Api.User.getProfile().name, " Failed to load records from session detail " + err);
                     throw err;

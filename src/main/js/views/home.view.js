@@ -238,7 +238,7 @@ class HomeView {
 
     loadChart($ctx) {
         const self = this
-            , NBR_OF_DAYS = 15;
+            , NBR_OF_DAYS = 60;
 
 
         Session.getFromDate(moment().add(-NBR_OF_DAYS, 'days').toDate().getTime(), function(sessions) {
@@ -246,7 +246,7 @@ class HomeView {
 
 
             let indexed = indexSessionsByDay(sessions);
-            eachDayInLastXDays(8, function(cal) {
+            eachDayInLastXDays(NBR_OF_DAYS, function(cal) {
                 let distance;
                 if (indexed[cal.day]) {
                     distance = sumSessions(indexed[cal.day]);
@@ -294,8 +294,8 @@ class HomeView {
                 }
                 , title: title
                 , onClick: ()=>{ self.context.navigate('sessions') }
-                , paddingLeft: 10
-                , paddingRight: 10
+                , paddingLeft: 20
+                , paddingRight: 20
                 , paddingTop: 20
                 , labels: {display: true, weight: 700, offset: -30
                     , formatter: formatter

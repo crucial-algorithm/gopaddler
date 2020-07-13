@@ -28,8 +28,7 @@ class Timer {
     }
 
     stop() {
-        var self = this;
-        clearInterval(self.intervalId);
+        clearInterval(this.intervalId);
     }
 
     getDuration() {

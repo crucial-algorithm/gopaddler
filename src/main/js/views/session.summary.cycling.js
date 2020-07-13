@@ -1,7 +1,7 @@
 import {UtterCyclingUtils} from "../utils/utter-cycling-utils";
 import Context from "../context";
 import GpChart from "../utils/widgets/chart";
-import SessionSummaryIntervals from "./session.summary.intervals";
+import Utils from "../utils/utils";
 
 export default class UtterCycling {
     /**
@@ -51,14 +51,15 @@ export default class UtterCycling {
         }
 
         let i = 0;
-        metrics.map(function (detail) {
+        let values = this.reduce(metrics);
+        values.map(function (detail) {
             i++;
-            let distance = self.context.displayMetric(Context.FIELD_TYPES().DISTANCE, detail.distance);
+            let distance = detail.distance;
 
-            labels.push(distance);
+            labels.push(detail.distance);
             altitude.push(self.context.displayMetric(Context.FIELD_TYPES().ELEVATION, detail.altitude - (min !== null ? min : 0)));
             speed.push(self.context.displayMetric(Context.FIELD_TYPES().SPEED, detail.speed));
-            cadence.push(detail.spm);
+            cadence.push(detail.cadence > 300 ? 0 : detail.cadence);
             heartRate.push(detail.heartRate);
 
             last = distance;
@@ -78,10 +79,11 @@ export default class UtterCycling {
             paddingLeft: 10,
             paddingRight: 10,
             xAxisLabelCallback: (label, context) => {
-                const value = Math.floor(label);
+                const value = Math.floor(label / 10);
                 if (value === 0) return null;
                 if (step === null && last > 0) {
-                    step = Math.floor(last / 10);
+                    let consideredGlobalDistance = Math.floor(last / 100) * 10;
+                    step = Math.floor( consideredGlobalDistance / 10);
                 }
                 if (value % step !== 0) return null;
                 if (labelsToShow[value] === true) return null;
@@ -110,6 +112,44 @@ export default class UtterCycling {
             , [GpChart.dataset(heartRate), dataSetAltitudeSecondary]
             , options, true);
 
+    }
+
+
+    /**
+     * Reduce metrics to 1 per 100 meters in metric system, 1 per 528 meters in imperial
+     *
+     * {Array<SessionDetail>} metrics
+     * @return {[{altitude: number, speed: number, cadence: number, hearRate: number}]}
+     */
+    reduce(metrics) {
+        let result = [];
+        for (let metric of metrics) {
+            let distance = metric.distance;
+            if (this.context.isImperial()) {
+                distance = Math.floor(Utils.meterToFeet(distance * 1000) / 528); // 1/10 mile
+            } else {
+                distance = Math.floor(distance * 10); // scale is hectometre
+            }
+
+            let stats = result[distance];
+            if (!stats) stats = {
+                distance: distance,
+                altitude: 0,
+                speed: 0,
+                cadence: 0,
+                heartRate: 0
+            };
+
+            result[distance] = {
+                distance: distance,
+                altitude: Math.max(stats.altitude, metric.altitude),
+                speed: Math.max(stats.speed, metric.speed),
+                cadence: Math.max(stats.cadence, metric.spm),
+                heartRate: Math.max(stats.heartRate, metric.heartRate)
+            }
+        }
+
+        return result;
     }
 
     get session() {

@@ -220,9 +220,9 @@ class Context {
 
         const isImperial = this._settings.isImperial();
 
-        if (isImperial && type === Context.FIELD_TYPES().DISTANCE
+        if (isImperial && (type === Context.FIELD_TYPES().DISTANCE
             || type === Context.FIELD_TYPES().AVERAGE_SPEED
-            || type === Context.FIELD_TYPES().SPEED) {
+            || type === Context.FIELD_TYPES().SPEED)) {
             value = reduceNextLogicalUnit ? Utils.meterToFeet(value * 1000) : Utils.kmToMiles(value)
         }
 

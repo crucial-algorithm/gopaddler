@@ -173,35 +173,42 @@ class Session {
         let sessionEndAt = Date.now();
         self.sessionEnd = sessionEndAt;
 
-        self.calculateMetrics(splits, pausedDuration).then(/**@param {SessionDetailMetrics} metrics */ function (metrics) {
-            self.distance = metrics.getDistance();
-            self.avgSpeed = metrics.getAvgSpeed();
-            self.topSpeed = metrics.getMaxSpeed();
-            self.avgSpm = metrics.getAvgSpm();
-            self.topSpm = metrics.getMaxSpm();
-            self.avgEfficiency = metrics.getAvgEfficiency();
-            self.topEfficiency = metrics.getMaxEfficiency();
-            self.avgHeartRate = metrics.getAvgHeartRate();
-            self.expression = expression;
-            self.expressionJson = splits;
-            self.pausedDuration = pausedDuration;
-            self.elevation = metrics.elevation;
+        self.calculateMetrics(splits, pausedDuration).then(
+            /**@param {{metrics: SessionDetailMetrics, records: Array<SessionDetail>}} details*/
+            function (details) {
+                const metrics = details.metrics;
+                self.distance = metrics.getDistance();
+                self.avgSpeed = metrics.getAvgSpeed();
+                self.topSpeed = metrics.getMaxSpeed();
+                self.avgSpm = metrics.getAvgSpm();
+                self.topSpm = metrics.getMaxSpm();
+                self.avgEfficiency = metrics.getAvgEfficiency();
+                self.topEfficiency = metrics.getMaxEfficiency();
+                self.avgHeartRate = metrics.getAvgHeartRate();
+                self.expression = expression;
+                self.expressionJson = splits;
+                self.pausedDuration = pausedDuration;
+                self.elevation = metrics.elevation;
 
-            self.connection.executeSql("update session set distance = ?, avg_spm = ?, top_spm = ?, avg_speed = ?" +
-                ", top_speed = ?, avg_efficiency = ?, top_efficiency = ?, avg_heart_rate = ?, session_end = ?" +
-                ", scheduled_session_id = ?,  scheduled_session_start = ?, expression = ?, expr_json = ? " +
-                ", paused_duration = ?, elevation = ? where id = ?"
-                , [metrics.getDistance(), metrics.getAvgSpm(), metrics.getMaxSpm(), metrics.getAvgSpeed(), metrics.getMaxSpeed()
-                    , metrics.getAvgEfficiency(), metrics.getMaxEfficiency(), metrics.getAvgHeartRate(), sessionEndAt
-                    , self.scheduledSessionId, self.scheduledSessionStart
-                    , self.expression, JSON.stringify(self.expressionJson), self.pausedDuration, self.elevation, self.id]
-                , function (a) {
-                    defer.resolve(self);
-                }, function (a) {
-                    console.log('error', a);
-                    defer.reject(self);
-                });
-        });
+                if (details.records.length > 0) {
+                    self.sessionEnd = details.records[details.records.length - 1].timestamp;
+                }
+
+                self.connection.executeSql("update session set distance = ?, avg_spm = ?, top_spm = ?, avg_speed = ?" +
+                    ", top_speed = ?, avg_efficiency = ?, top_efficiency = ?, avg_heart_rate = ?, session_end = ?" +
+                    ", scheduled_session_id = ?,  scheduled_session_start = ?, expression = ?, expr_json = ? " +
+                    ", paused_duration = ?, elevation = ? where id = ?"
+                    , [metrics.getDistance(), metrics.getAvgSpm(), metrics.getMaxSpm(), metrics.getAvgSpeed()
+                        , metrics.getMaxSpeed(), metrics.getAvgEfficiency(), metrics.getMaxEfficiency(), metrics.getAvgHeartRate()
+                        , sessionEndAt, self.scheduledSessionId, self.scheduledSessionStart, self.expression
+                        , JSON.stringify(self.expressionJson), self.pausedDuration, self.elevation, self.id]
+                    , function (a) {
+                        defer.resolve(self);
+                    }, function (a) {
+                        console.log('error', a);
+                        defer.reject(self);
+                    });
+            });
 
         return defer.promise();
     }
@@ -237,9 +244,15 @@ class Session {
                 }
             }
 
-            SessionDetail.getDetailedMetrics(self.id, relevantSplits, pausedDuration, function (/**@type SessionDetailMetrics */metrics) {
-                resolve(metrics);
-            });
+            SessionDetail.getDetailedMetrics(self.id, relevantSplits, pausedDuration,
+                /**
+                 *
+                 * @param {SessionDetailMetrics} metrics
+                 * @param {Array<SessionDetail>} records
+                 */
+                function (metrics, records) {
+                    resolve({metrics: metrics, records: records});
+                });
         });
     }
 

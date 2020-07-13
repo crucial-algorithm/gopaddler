@@ -226,8 +226,8 @@ class GpChart {
     static dataset(values, id = 'y-axis-1') {
         return {
             data: values,
-            backgroundColor: 'rgba(0, 0, 0, 0.2)',
-            borderColor: id === 'y-axis-1' ? 'rgba(0, 0, 0, 0.4)': 'rgba(255, 255, 255, 0)',
+            backgroundColor: 'rgba(255, 255, 255, 0.2)',
+            borderColor: id === 'y-axis-1' ? 'rgba(255, 255, 255, 0.6)': 'rgba(255, 255, 255, 0)',
             borderWidth: id === 'y-axis-1' ? 1 : 0,
             pointRadius: 0,
             yAxisID: id

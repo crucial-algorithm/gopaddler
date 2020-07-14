@@ -15,7 +15,7 @@ const BASE_PT = {
         , settings_menu_units: "Unidades"
         , settings_menu_black_and_white: "Preto e branco"
         , settings_menu_save_session_layout: "Guardar o layout da sessão"
-        , settings_menu_portrait_mode: "Modo vertical"
+        , settings_menu_portrait_mode: "Orientação do Telefone"
         , settings_menu_gps_refresh_rate: "Velocidade GPS"
         , settings_menu_heart_rate_sensor: "Bandas Freq. Cardíaca"
         , settings_menu_heart_rate: "Freq. Cardíaca"

@@ -340,6 +340,19 @@ body.gopaddler [data-selector="utter-cycling"] {
     background-color: #35375b;
 }
 
+.settings-options-orientation-img {
+    width: 32px;
+    height: 32px;
+}
+
+.settings-option-orientation-landscape [data-selector="portrait"] {
+    display: none;
+}
+
+.settings-option-orientation-portrait [data-selector="landscape"] {
+    display: none;
+}
+
 .settings-calibrate {
     display: table-cell;
     height: 100%;

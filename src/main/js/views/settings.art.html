@@ -62,15 +62,14 @@
             </div>
         </div>
     </div>
-    <div class="settings-row">
+    <div id="portrait-mode" class="settings-row {{if isPortraitMode}} settings-option-orientation-portrait
+                {{else}} settings-option-orientation-landscape {{/if}}">
         <div class="settings-option settings-option-label">
             {{ "settings_menu_portrait_mode" | translate}}
         </div>
-        <div class="settings-option settings-option-action">
-            <div class="onoffswitch">
-                <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="portrait-mode">
-                <label class="onoffswitch-label toggle" for="portrait-mode"></label>
-            </div>
+        <div class="settings-option settings-option-action settings-option-orientation">
+            <img src="{{"landscape.png" | pathFor}}" class="settings-options-orientation-img" data-selector="landscape"/>
+            <img src="{{"portrait.png" | pathFor}}" class="settings-options-orientation-img" data-selector="portrait"/>
         </div>
     </div>
     <div class="settings-row">

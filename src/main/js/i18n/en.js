@@ -15,7 +15,7 @@ const BASE_EN = {
         , settings_menu_units: "Units"
         , settings_menu_black_and_white: "black and white"
         , settings_menu_save_session_layout: "Save session layout"
-        , settings_menu_portrait_mode: "portrait mode"
+        , settings_menu_portrait_mode: "Phone orientation"
         , settings_menu_gps_refresh_rate: "GPS refresh rate"
         , settings_menu_heart_rate_sensor: "Heart Rate Sensor"
         , settings_menu_heart_rate: "Heart Rate"

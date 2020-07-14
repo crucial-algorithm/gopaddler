@@ -26,7 +26,8 @@ class SettingsView {
             , $maxHeartRate = $('#max-heart-rate', page)
             , $strava = $('#strava', page)
             , $layout = $('#layout', page)
-            , $portraitMode = $('#portrait-mode', page);
+            , $portraitMode = $('#portrait-mode', page)
+            , isPortraitMode = settings.isPortraitMode();
 
         if (Api.User.boat() === "C") {
             $boat.prop('checked', true)
@@ -42,10 +43,6 @@ class SettingsView {
 
         if (settings.isRestoreLayout()) {
             $layout.prop('checked', true);
-        }
-
-        if (settings.isPortraitMode()) {
-            $portraitMode.prop('checked', true);
         }
 
         $calibration.on('tap', function () {
@@ -89,6 +86,17 @@ class SettingsView {
             $back.off('touchstart');
         });
 
+        $portraitMode.on('click', () => {
+            if (isPortraitMode === true) {
+                $portraitMode.removeClass('settings-option-orientation-portrait')
+                    .addClass('settings-option-orientation-landscape');
+            } else {
+                $portraitMode.removeClass('settings-option-orientation-landscape')
+                    .addClass('settings-option-orientation-portrait');
+            }
+            isPortraitMode = !isPortraitMode;
+        });
+
         $('[data-selector="version"]', page).html('&nbsp;' + __VERSION__);
 
         $('.settings-website-text', page).on('click', function () {
@@ -119,7 +127,6 @@ class SettingsView {
             let units = $units.is(':checked') ? Settings.CONSTANTS().MI : Settings.CONSTANTS().KM;
             let blackAndWhite = $blackAndWhite.is(':checked') ;
             let layout = $layout.is(':checked');
-            let isPortraitMode = $portraitMode.is(':checked');
 
             if (isPortraitMode !== settings.isPortraitMode() && AppSettings.requiresCalibration()) {
                 context.ui.modal.confirm(context.translate('settings_update_orientation_notification')

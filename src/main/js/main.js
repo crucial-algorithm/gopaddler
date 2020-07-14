@@ -301,6 +301,7 @@ App.controller('profile', function (page) {
 });
 
 function onDeviceReady() {
+    document.getElementsByTagName('title')[0].innerText = AppSettings.applicationName();
     document.pd_device_ready = true;
     let token = null;
     let universalLinkDefer = $.Deferred();
@@ -330,7 +331,7 @@ if (environment === 'prod') {
     document.addEventListener("deviceready", onDeviceReady, false);
 
 } else {
-
+    document.getElementsByTagName('title')[0].innerText = AppSettings.applicationName();
     // in browser (development mode!)
     emulateCordova();
     let universalLinkDefer = $.Deferred();

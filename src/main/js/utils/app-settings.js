@@ -79,7 +79,7 @@ export default class AppSettings {
         }
 
         if (APP === AppSettings.types().UTTER_CYCLING) {
-            return 'UtterCycling';
+            return 'Utter Cycling';
         }
     }
 }

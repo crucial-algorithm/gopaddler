@@ -37,8 +37,9 @@ class HomeView {
         Context.render(page, template({isPortraitMode: context.isPortraitMode()
             , hasName: !!name, name: name, isAndroid: context.isAndroid()}));
 
+        const orientation = context.isPortraitMode() ? 'portrait' : 'landscape-secondary';
         /**@type Promise */
-        this.orientationDefinitionPromise = screen.orientation.lock(context.isPortraitMode() ? 'portrait' : 'landscape-secondary');
+        this.orientationDefinitionPromise = screen.orientation.lock(orientation);
 
         let $page = $(page)
             , self = this

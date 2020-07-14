@@ -111,7 +111,25 @@ module.exports = {
                     exec('cp -f www/css/* www/dist/app.js.map platforms/android/app/src/main/assets/www/css/', (err, stdout, stderr) => {
                         if (stdout) process.stdout.write(stdout);
                         if (stderr) process.stderr.write(stderr);
-                        if (!stdout && !stderr) console.log('... hot swap js in android platform');
+                        if (!stdout && !stderr) console.log('... hot swap css in android platform');
+                    });
+                });
+            }
+        },
+        {
+            apply: (compiler) => {
+                compiler.hooks.afterEmit.tap('AfterEmitPlugin', () => {
+                    // hook that replaces javascript files in android project so running is faster (by just opening android studio and running from there)
+                    exec('cp -f www/dist/app.js www/dist/app.js.map platforms/ios/www/dist/', (err, stdout, stderr) => {
+                        if (stdout) process.stdout.write(stdout);
+                        if (stderr) process.stderr.write(stderr);
+                        if (!stdout && !stderr) console.log('... hot swap js in ios platform');
+                    });
+
+                    exec('cp -f www/css/* www/dist/app.js.map platforms/ios/www/css/', (err, stdout, stderr) => {
+                        if (stdout) process.stdout.write(stdout);
+                        if (stderr) process.stderr.write(stderr);
+                        if (!stdout && !stderr) console.log('... hot swap css in ios platform');
                     });
                 });
             }

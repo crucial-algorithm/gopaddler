@@ -116,7 +116,7 @@ const ddl = [
     // v.1.1
     [
         ["ALTER TABLE session add column avg_heart_rate REAL default 0"],
-        ["UPDATE settings SET version = 10, portrait_mode = 1"]
+        [`UPDATE settings SET version = 10, portrait_mode =  ${AppSettings.isPortraitModeDefault() ? "1" : "0"}`]
     ],
 
     // v.1.2

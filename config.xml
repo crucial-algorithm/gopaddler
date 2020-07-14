@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="{{VERSION_CODE}}" id="{{APP_ID}}" version="{{APP_VERSION}}" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>{{APP_NAME}}</name>
+<widget android-versionCode="10" id="com.uttercoach.cycling" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Utter Cycling</name>
     <description>
         {{APP_DESCRIPTION}}
     </description>

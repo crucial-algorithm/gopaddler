@@ -49,6 +49,10 @@ export default class AppSettings {
         return AppSettings.app() === AppSettings.types().GOPADDLER;
     }
 
+    static isPortraitModeDefault() {
+        return AppSettings.app() === AppSettings.types().GOPADDLER;
+    }
+
     static requiresCalibration() {
         return AppSettings.app() === AppSettings.types().GOPADDLER;
     }

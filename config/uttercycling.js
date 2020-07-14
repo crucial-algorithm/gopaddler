@@ -1,7 +1,7 @@
 module.exports = {
     cordova: {
         id: "com.uttercoach.cycling",
-        name: "Utter Coach",
+        name: "Utter Cycling",
         description: "Track speed, distance and cadence using Utter Cycling",
         author: "UtterCoach team",
         authorEmail: "filipe@uttercoach.com",

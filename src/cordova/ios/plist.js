@@ -3,7 +3,11 @@
 var fs = require('fs');
 var plist = require('plist');
 
-var FILEPATH = 'platforms/ios/GoPaddler/GoPaddler-Info.plist';
+if (!process.env.APP) throw 'APP enviornement variable need to be set to either gopaddler or uttercycling'
+
+var FILEPATH = process.env.APP === 'gopaddler' ? 'platforms/ios/GoPaddler/GoPaddler-Info.plist' : 'platforms/ios/Utter Cycling/Utter Cycling-Info.plist';
+
+console.log(process.env);
 
 function overridePlist(context) {
     var xml = fs.readFileSync(FILEPATH, 'utf8');

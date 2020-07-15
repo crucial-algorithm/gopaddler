@@ -125,6 +125,7 @@ class GpChart {
                         offset: typeof labelOptions.offset === 'number' ? labelOptions.offset : undefined,
                         formatter: labelOptions.formatter || Math.round,
                         color: labelOptions.color || labelColor,
+                        rotation: labelOptions.rotation || 0,
                         font: {
                             weight: labelOptions.weight || undefined,
                             size: labelOptions.size || undefined
@@ -209,7 +210,6 @@ class GpChart {
             averageSet.data = average;
             datasets.push(averageSet);
         }
-
 
         config.data.labels = labels;
         config.data.datasets = datasets;

@@ -2,7 +2,6 @@ import Api from "../server/api";
 import Utils from "../utils/utils";
 import Context from "../context";
 import GpChart from "../utils/widgets/chart";
-import SessionSummaryIntervals from "./session.summary.intervals";
 
 export default class SessionSummaryZones {
     /**
@@ -33,7 +32,15 @@ export default class SessionSummaryZones {
         this.heartRateZones = this.prepareZoneChartsData(records, "heartRate", session.avgHeartRate
             , heartRateZones, this.convertZoneEndToInfinity(athlete.heartRateZones), (hr) => {
                 return Utils.heartRateReserveCalculation(context.getRestingHeartRate(), context.getMaxHeartRate(), hr);
-            });
+            }, (() => {
+                let matrix = [];
+                for (let i = 0; i <= 300; i++) {
+                    matrix.push(Utils.heartRateReserveCalculation(context.getRestingHeartRate(), context.getMaxHeartRate(), i));
+                }
+                return (zone)=> {
+                    return matrix.indexOf(zone);
+                }
+            })());
 
         spmToSpeedZones = spmZones.slice();
         for (let i = 0, l = athlete.strokeRateZones.length; i < l; i++) {
@@ -65,6 +72,8 @@ export default class SessionSummaryZones {
             });
             discarding = false;
         }
+
+        this.duration = session.sessionEnd - session.sessionStart - session.pausedDuration;
     }
 
     /**
@@ -74,11 +83,12 @@ export default class SessionSummaryZones {
      * @param {Array<number>}                                                           zones
      * @param {Array<AthleteTrainingZone>}                                              definition  zones definition
      * @param {function}                                                                process     function to process value
+     * @param {function}                                                                reverse     Reverts process function (previous param)
      * @return {{labels: Array<string>, data: Array<number>}}
      */
     prepareZoneChartsData(records, property, avg, zones, definition, process = (value) => {
         return Math.floor(value)
-    }) {
+    }, reverse = (zone) => { return zone}) {
         let labels = [], data = [];
         let stats = this.calculateZones(records, definition.slice(0), property, zones, [], process);
         let lower = avg - Utils.minMaxAvgStddev(records.map(function (rec) {
@@ -91,9 +101,9 @@ export default class SessionSummaryZones {
 
             let zone = definition[i];
             if (zone.start === zone.end) {
-                labels.push(zone.start);
+                labels.push(reverse(zone.start));
             } else {
-                labels.push(`${zone.start}${zone.end === Infinity ? '+' : '-' + zone.end}`);
+                labels.push(`${reverse(zone.start)}${zone.end === Infinity ? '+' : '-' + reverse(zone.end)}`);
             }
             data.push(percentage);
         }
@@ -123,7 +133,9 @@ export default class SessionSummaryZones {
             /**@type ChartLabelOptions*/
             labels: {
                 display: true,
-                formatter: (value)=> { return value + '%' }
+                size: 12,
+                rotation: 0,
+                formatter: (value)=> { return Utils.displayDurationHasTime(value/100 * this.duration) }
             },
             displayYAxisGridLines: false,
             displayXAxisGridLines: true,

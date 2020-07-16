@@ -87,21 +87,30 @@ class LargeMetric {
     }
 
     setValue(value) {
-        if ((value + '').length > 10) {
-            this.$value.css({"font-size": this.isPortraitMode ? "8vh" : "26px"});
-            this.fontSizeChanged = true;
-        } if ((value + '').length > 4) {
-            this.$value.css({"font-size": this.isPortraitMode ? "18vh" : "19vw"});
-            this.fontSizeChanged = true;
-        } else if ((value + '').length > 3) {
-            this.$value.css({"font-size": this.isPortraitMode ? "24vh" : "25vw"});
-            this.fontSizeChanged = true;
-        } else if ((value + '').length > 2) {
-            this.$value.css({"font-size": this.isPortraitMode ? "30vh" : "30vw"});
-            this.fontSizeChanged = true;
-        } else if (value < 100 && this.fontSizeChanged) {
+        const str = (this.formatter === null ? value : this.formatter(value)) + '';
+
+        let length = [ {port: '0', land: '0'}
+        , /* length =  1 */ {port: '38vh', land: '40vw'}
+        , /* length =  2 */ {port: '38vh', land: '40vw'}
+        , /* length =  3 */ {port: '30vh', land: '28vw'}
+        , /* length =  4 */ {port: '24vh', land: '20vw'}
+        , /* length =  5 */ {port: '18vh', land: '16vw'}
+        , /* length =  6 */ {port: '18vh', land: '14vw'}
+        , /* length =  7 */ {port: '15vh', land: '12vw'}
+        , /* length =  8 */ {port: '15vh', land: '10vw'}
+        , /* length =  9 */ {port: '12vh', land:  '9vw'}
+        , /* length = 10 */ {port: '10vh', land:  '8vw'}
+        , /* length = 11 */ {port:  '8vh', land:  '6vw'}
+        , /* length = 12 */ {port:  '8vh', land:  '6vw'}
+        , /* length = 13 */ {port:  '8vh', land:  '6vw'}
+        , /* length = 14 */ {port:  '8vh', land:  '6vw'}
+            ];
+
+        let fontSize = length[str.length];
+        if (!fontSize) {
             this.$value.css({"font-size": ""});
-            this.fontSizeChanged = false;
+        } else {
+            this.$value.css({"font-size": this.isPortraitMode ? fontSize.port : fontSize.land});
         }
         value = this.formatter === null ? value : this.formatter(value)
         this.$value.html(value);

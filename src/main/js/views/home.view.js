@@ -37,9 +37,9 @@ class HomeView {
         Context.render(page, template({isPortraitMode: context.isPortraitMode()
             , hasName: !!name, name: name, isAndroid: context.isAndroid()}));
 
-        const orientation = context.isPortraitMode() ? 'portrait' : 'landscape-secondary';
+        this.orientation = context.isPortraitMode() ? 'portrait-primary' : 'landscape-secondary';
         /**@type Promise */
-        this.orientationDefinitionPromise = screen.orientation.lock(orientation);
+        this.orientationDefinitionPromise = screen.orientation.lock(this.orientation);
 
         let $page = $(page)
             , self = this
@@ -222,7 +222,7 @@ class HomeView {
      */
     calculateWithAndHeightForChart() {
         return new Promise((resolve, reject) => {
-            this.orientationDefinitionPromise.then(() => {
+            this.isDeviceOrientationSet().then(() => {
                 // unfortunately, if browser does not support lock natively, plugin will call Android/ios native functions
                 // to handle orientation and resolve promise before actually it gets applied! So, we need to add a
                 // timeout and hope for the best
@@ -233,6 +233,33 @@ class HomeView {
                 }, 250);
             }).catch((err) => {
                 reject(err);
+            })
+        });
+    }
+
+    isDeviceOrientationSet() {
+        return new Promise((resolve) => {
+            this.orientationDefinitionPromise.finally(() => {
+                if (this.context.isAndroid()) {
+                    return resolve();
+                }
+
+                const pluginOrientation = screen.orientation.type;
+                if (pluginOrientation !== this.orientation) {
+                    // -> in iOS, if app is in landscape but device is in portrait, render get's messed up
+                    // this is a hack to try to prevent that
+                    console.log('orientation differs - hacking');
+                    screen.orientation.unlock();
+                    setTimeout(() => {
+                        screen.orientation.lock(this.orientation).finally(() => {
+                            console.log('orientation = ', screen.orientation.type);
+                            resolve();
+                        });
+                    }, 3000);
+                } else {
+                    console.log('orientation properly set');
+                    resolve();
+                }
             })
         });
     }

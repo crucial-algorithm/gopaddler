@@ -62,7 +62,6 @@
     <plugin name="cordova-plugin-dialogs" spec="^1.3.3" />
     <plugin name="cordova-plugin-ios-longpress-fix" spec="^1.1.0" />
     <plugin name="cordova-plugin-powermanagement" spec="^1.0.5" />
-    <plugin name="cordova-plugin-screen-orientation" spec="^2.0.1" />
     <plugin name="cordova-plugin-whitelist" spec="^1.3.2" />
     <plugin name="cordova-plugin-file" spec="^4.3.3" />
     <plugin name="cordova-plugin-geolocation" spec="^2.4.3">

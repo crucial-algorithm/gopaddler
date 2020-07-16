@@ -2,6 +2,7 @@
 
 import Metric from './metric';
 import Utils from '../utils/utils';
+import AppSettings from "../utils/app-settings";
 
 /**
  * @typedef {Object} FieldMetadata
@@ -41,38 +42,10 @@ class Field {
         this.$element.empty();
 
         if (size === 'small') {
-            var dom = [
-                '<div class="measures">',
-                '    <div class="measure" data-type="timer"></div>',
-                '    <div class="measure" data-type="splits"></div>',
-                '    <div class="measure" data-type="speed"></div>',
-                '    <div class="measure" data-type="averageSpeed"></div>',
-                '    <div class="measure" data-type="distance"></div>',
-                '    <div class="measure" data-type="pace"></div>',
-                '    <div class="measure" data-type="spm"></div>',
-                '    <div class="measure" data-type="efficiency"></div>',
-                '    <div class="measure" data-type="strokes"></div>',
-                '    <div class="measure" data-type="heartRate"></div>',
-                '</div>'
-            ];
-            if (enableSplits !== true)
-                dom.splice(2, 1); // remove splits if no planned session
-
-            $(dom.join('')).appendTo(this.$element);
+            $(AppSettings.metricsForSmallField(enableSplits))
+                .appendTo(this.$element);
         } else {
-
-            $([
-                '<div class="measures">',
-                '    <div class="measure" data-type="speed"></div>',
-                '    <div class="measure" data-type="averageSpeed"></div>',
-                '    <div class="measure" data-type="distance"></div>',
-                '    <div class="measure" data-type="pace"></div>',
-                '    <div class="measure" data-type="spm"></div>',
-                '    <div class="measure" data-type="efficiency"></div>',
-                '    <div class="measure" data-type="strokes"></div>',
-                '    <div class="measure" data-type="heartRate"></div>',
-                '</div>'
-            ].join('')).appendTo(this.$element);
+            $(AppSettings.metricsForBigField()).appendTo(this.$element);
         }
     }
 

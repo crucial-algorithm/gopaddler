@@ -119,7 +119,9 @@ function emulateCordova () {
                         resolve()
                     }, 0);
                 })
-            }
+            },
+            unlock: () => { },
+            type: __IS_PORTRAIT_MODE__ ? 'portrait-primary' : 'landscape-secondary'
         }
     };
     window.device = {};

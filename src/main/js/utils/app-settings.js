@@ -82,4 +82,60 @@ export default class AppSettings {
             return 'Utter Cycling';
         }
     }
+
+    /**
+     *
+     * @param areSplitsEnabled
+     * @return {string}
+     */
+    static metricsForSmallField(areSplitsEnabled) {
+        let structure = [
+            '<div class="measures">',
+            '    <div class="measure" data-type="timer"></div>',
+            '    <div class="measure" data-type="splits"></div>',
+            '    <div class="measure" data-type="speed"></div>',
+            '    <div class="measure" data-type="averageSpeed"></div>',
+            '    <div class="measure" data-type="distance"></div>',
+            '    <div class="measure" data-type="pace"></div>',
+            '    <div class="measure" data-type="spm"></div>',
+            '    <div class="measure" data-type="efficiency"></div>',
+            '    <div class="measure" data-type="strokes"></div>',
+            '    <div class="measure" data-type="heartRate"></div>',
+            '</div>'
+        ];
+
+        if (APP === AppSettings.types().UTTER_CYCLING) {
+            structure.splice(9, 1); // remove strokes/100 in cycling
+        }
+
+        if (areSplitsEnabled !== true)
+            structure.splice(2, 1); // remove splits if no planned session
+
+        return structure.join('')
+    }
+
+    /**
+     *
+     * @return {string}
+     */
+    static metricsForBigField() {
+        let structure = [
+            '<div class="measures">',
+            '    <div class="measure" data-type="speed"></div>',
+            '    <div class="measure" data-type="averageSpeed"></div>',
+            '    <div class="measure" data-type="distance"></div>',
+            '    <div class="measure" data-type="pace"></div>',
+            '    <div class="measure" data-type="spm"></div>',
+            '    <div class="measure" data-type="efficiency"></div>',
+            '    <div class="measure" data-type="strokes"></div>',
+            '    <div class="measure" data-type="heartRate"></div>',
+            '</div>'
+        ];
+
+        if (APP === AppSettings.types().UTTER_CYCLING) {
+            structure.splice(7, 1); // remove strokes/100 in cycling
+        }
+
+        return structure.join('')
+    }
 }

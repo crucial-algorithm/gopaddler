@@ -7,8 +7,6 @@ if (!process.env.APP) throw 'APP enviornement variable need to be set to either 
 
 var FILEPATH = process.env.APP === 'gopaddler' ? 'platforms/ios/GoPaddler/GoPaddler-Info.plist' : 'platforms/ios/Utter Cycling/Utter Cycling-Info.plist';
 
-console.log(process.env);
-
 function overridePlist(context) {
     var xml = fs.readFileSync(FILEPATH, 'utf8');
     var obj = plist.parse(xml);

@@ -186,6 +186,10 @@ body.gopaddler [data-selector="utter-cycling"] {
     display: none;
 }
 
+body[platform=ios] .home-settings-btn {
+    right: 0;
+}
+
 .info-modal-body {
     background-color: #3b3d62;
     color: #ffffff;

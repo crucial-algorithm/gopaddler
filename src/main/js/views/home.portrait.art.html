@@ -32,7 +32,7 @@
             <div class="home-icon home-menu-icon"><img src="{{"settings.svg"  | pathFor}}"></div>
             <div class="home-row-title">{{"home_menu_settings" | translate}}</div>
         </div>
-        <div class="home-exit-button" id="exit"><i class="fas fa-power-off"></i></div>
+        {{if isAndroid}}<div class="home-exit-button" id="exit"><i class="fas fa-power-off"></i></div>{{/if}}
     </div>
 
 

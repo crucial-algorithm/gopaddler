@@ -302,6 +302,8 @@ App.controller('profile', function (page) {
 
 function onDeviceReady() {
     document.getElementsByTagName('title')[0].innerText = AppSettings.applicationName();
+    document.body.setAttribute('platform', device.platform.toLowerCase());
+
     document.pd_device_ready = true;
     let token = null;
     let universalLinkDefer = $.Deferred();

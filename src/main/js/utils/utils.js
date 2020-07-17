@@ -84,7 +84,7 @@ class Utils {
             };
 
             window.confirm = function (message, callback) {
-                return navigator.notification.confirm(message, callback, "Paddler", null)
+                return navigator.notification.confirm(message, callback, AppSettings.applicationName(), null)
             }
         }
 

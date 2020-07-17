@@ -6,6 +6,7 @@ var plist = require('plist');
 if (!process.env.APP) throw 'APP enviornement variable need to be set to either gopaddler or uttercycling'
 
 var FILEPATH = process.env.APP === 'gopaddler' ? 'platforms/ios/GoPaddler/GoPaddler-Info.plist' : 'platforms/ios/Utter Cycling/Utter Cycling-Info.plist';
+var APP_NAME = process.env.APP === 'gopaddler' ? "GoPaddler" : "Utter Cycling";
 
 function overridePlist(context) {
     var xml = fs.readFileSync(FILEPATH, 'utf8');
@@ -13,11 +14,12 @@ function overridePlist(context) {
 
     obj.UIStatusBarHidden = true;
     obj.UIViewControllerBasedStatusBarAppearance = false;
-    obj.CFBundleDisplayName = "GoPaddler";
+    obj.CFBundleDisplayName = APP_NAME;
     obj.NSLocationWhenInUseUsageDescription = "track distance and speed";
     obj.NSLocationAlwaysUsageDescription = "track distance and speed";
-    obj.NSBluetoothPeripheralUsageDescription = "gopaddler requires Bluetooth to connect to heart rate monitors";
-
+    obj.NSLocationAlwaysAndWhenInUseUsageDescription = "track distance and speed";
+    obj.NSBluetoothPeripheralUsageDescription = "Connect to BLE sensores for cadence and heart rate";
+    obj.UIBackgroundModes = ["bluetooth-central", "location"];
 
     obj.UISupportedInterfaceOrientations = [
         "UIInterfaceOrientationPortrait",

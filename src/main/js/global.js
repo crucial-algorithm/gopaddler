@@ -240,6 +240,12 @@ function emulateCordova () {
         }
 
     };
+
+    window.BackgroundGeolocation = {
+        configure: ()=>{},
+        on: ()=>{},
+        checkStatus: ()=>{}
+    }
 }
 
 jQuery.fn.center = function () {

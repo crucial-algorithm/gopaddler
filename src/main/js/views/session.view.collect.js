@@ -14,7 +14,8 @@ import Pace from "../measures/pace";
 import Context from "../context";
 import {SessionViewSplits} from "./session.view.splits";
 import Session from "../model/session";
-import AppSettings from "../utils/app-settings";
+import AppSettings from "../utils/app-settings"
+import SessionViewCollectMetricsBackground from "./session.view.collect.background";
 
 /**
  * @typedef {Object} Location
@@ -121,6 +122,8 @@ export default class SessionViewCollectMetrics {
         this._sessionPausedAt = 0;
         this._pausedDuration = 0;
 
+        this._background = new SessionViewCollectMetricsBackground(context);
+
         this._handlers = {
             leftRightChanged: ()=>{},
             lostGpsSignal: ()=>{},
@@ -185,6 +188,7 @@ export default class SessionViewCollectMetrics {
         if (this.strokeDetectorSensor) this.strokeDetectorSensor.stop();
         if (this.cyclingCadenceSensor) this.cyclingCadenceSensor.stop();
         this.flushDebugBuffer();
+        this.background.stop();
         return this.session.finish(this.splitsDefinition, this.expression, this.pausedDuration)
     }
 
@@ -222,14 +226,8 @@ export default class SessionViewCollectMetrics {
             this.heartRate = hr;
         });
 
-        this.gpsSensor.listen( (position) => {
-            if (this.isSessionPaused) return;
-            this.location.latitude = position.coords.latitude;
-            this.location.longitude = position.coords.longitude;
-            this.location.altitude = position.coords.altitude;
-            this.lastKnownGPSPosition = position;
-            this.lastKnownGPSPosition.sessionDuration = this.timer.getDuration();
-        });
+        this.gpsSensor.listen(this.locationUpdatedCallback.bind(this));
+        this.background.onLocationChanged(this.locationUpdatedCallback.bind(this));
 
         this.splitsTools = new SessionViewSplits(startAt, this, splitsDefinition, wasStartedRemotely
             , this.distanceTools.distanceToTime.bind(this.distanceTools)
@@ -273,6 +271,16 @@ export default class SessionViewCollectMetrics {
             this._handlers.finishedNotification.apply({}, []);
         });
 
+        this.background.start();
+    }
+
+    locationUpdatedCallback(position) {
+        if (this.isSessionPaused) return;
+        this.location.latitude = position.coords.latitude;
+        this.location.longitude = position.coords.longitude;
+        this.location.altitude = position.coords.altitude;
+        this.lastKnownGPSPosition = position;
+        this.lastKnownGPSPosition.sessionDuration = this.timer.getDuration();
     }
 
     /**
@@ -779,5 +787,13 @@ export default class SessionViewCollectMetrics {
 
     set pausedDuration(value) {
         this._pausedDuration = value;
+    }
+
+    get background() {
+        return this._background;
+    }
+
+    set background(value) {
+        this._background = value;
     }
 }

@@ -129,6 +129,7 @@ const BASE_PT = {
         , session_finish: "terminar"
         , session_lock: "Bloquear"
         , session_paused: "Sessão em Pausa"
+        , session_running_background: "A capturar dados..."
         , units_metric_timer_regular: ""
         , units_metric_timer_large: ""
         , units_metric_splits_regular: ""
@@ -198,6 +199,9 @@ const BASE_PT = {
         , sessions_free: "Livre"
         , sessions_summary_modal_sample_session_primary: "exemplo de sessão"
         , sessions_summary_modal_sample_session_secondary: "Para uma melhor experiência apresentamos um exemplo de uma sessão real"
+        , sessions_pull_to_sync: "deslize para sincronizar"
+        , sessions_release_to_sync: "large para sincronizar"
+        , sessions_syncing: "A sincronizar"
 
         , session_summary_title: "Sumário"
         , session_summary_finish_button: "Terminar"

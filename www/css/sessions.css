@@ -60,6 +60,17 @@
     height: 64px;
 }
 
+.session-row-progress-container {
+    display: block;
+}
+
+.session-row.deleted .session-row-actions {
+    opacity: 30%;
+}
+.session-row.deleted {
+    opacity: 20%;
+}
+
 
 .session-row-wrapper {
     display: block;

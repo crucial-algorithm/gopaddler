@@ -29,6 +29,7 @@ let LAST_30_DAYS_PERIOD_FILTER = 'last-30-days',
     selectedFilter,
     filterStartDate,
     filterEndDate,
+    /**@type List */
     sessionsListWidget;
 
 /**
@@ -358,6 +359,11 @@ function setupSessionFilter($page, context) {
 
 class SessionsView {
 
+    /**
+     *
+     * @param page
+     * @param {Context} context
+     */
     constructor(page, context) {
         Context.render(page, template({isPortraitMode: context.isPortraitMode()
             , isLandscapeMode: !context.isPortraitMode()}));
@@ -422,10 +428,12 @@ class SessionsView {
                 $elem: $container,
                 swipe: true,
                 swipeSelector: '.session-row-actions',
+                progressLineCustomClass: 'session-row-progress-container',
+                keepDomOnDelete: true,
                 ptr: {
-                    label: 'Pull down to sync',
-                    release: 'Release to sync',
-                    refreshing: 'Syncing sessions',
+                    label: context.translate('sessions_pull_to_sync'),
+                    release: context.translate('sessions_release_to_sync'),
+                    refreshing: context.translate('sessions_syncing'),
                     onRefresh: function () {
                         self.uploadUnsyncedSessions($page);
                     }
@@ -435,12 +443,13 @@ class SessionsView {
             filterSessionsByPeriod(context, false);
 
             $page.on('touchstart', '.session-row-delete-btn', function (e) {
-                var $el = $(event.target);
-                var sessionId = $el.attr('session-id');
+                let $el = $(event.target);
+                if ($el.closest('.session-row.deleted').length > 0) return;
+                let sessionId = $el.attr('session-id');
                 sessionsListWidget.delete($el, sessionId, function () {
                     return Session.delete(parseInt(sessionId))
                         .then(function () {
-                            sessionsListWidget.refresh();
+//                            sessionsListWidget.refresh();
                             filterSessionsByPeriod(appContext, true);
                         });
                 });
@@ -450,6 +459,7 @@ class SessionsView {
 
             $page.on('touchstart', '.session-row-upload-btn', function (e) {
                 const $el = $(event.target);
+                if ($el.closest('.session-row.deleted').length > 0) return;
                 let sessionId = parseInt($el.attr('session-id'))
                     , session = sessionsDict[sessionId];
 

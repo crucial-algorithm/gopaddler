@@ -129,6 +129,7 @@ const BASE_EN = {
         , session_finish: "finish"
         , session_lock: "Lock Screen"
         , session_paused: "Session Paused"
+        , session_running_background: "Running..."
         , units_metric_timer_regular: ""
         , units_metric_timer_large: ""
         , units_metric_splits_regular: ""
@@ -198,6 +199,9 @@ const BASE_EN = {
         , sessions_free: "free"
         , sessions_summary_modal_sample_session_primary: "sample session"
         , sessions_summary_modal_sample_session_secondary: "For better user experience, we present you how a report of a real session would look like"
+        , sessions_pull_to_sync: "Pull down to sync"
+        , sessions_release_to_sync: "Release to sync"
+        , sessions_syncing: "Syncing sessions"
 
         , session_summary_title: "Summary"
         , session_summary_finish_button: "Finish"

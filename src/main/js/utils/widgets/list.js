@@ -135,8 +135,9 @@ List.prototype.appendRow = function ($row, stripped) {
  * @param $row
  */
 List.prototype.newRow = function ($row) {
+    const self = this;
     this.$ul.append($row.attr('data-selector', 'row'));
-    this.$ul.append($('<li style="display: none;"><div class="progress-line" style="width:1%;"></div></li>'));
+    this.$ul.append($(`<li class="${self.options.progressLineCustomClass}" style="display: none;"><div class="progress-line" style="width:1%;"></div></li>`));
     this.$ul.append($('<li style="width:1%;height:0;"></li>'));
 };
 
@@ -185,9 +186,13 @@ List.prototype._animateAction = function ($button, id, callback) {
             defer.then(function (success) {
                 if (success !== true) return;
 
-                $li.next().remove();
-                $li.remove();
-                $parent.remove();
+                if (self.options.keepDomOnDelete === true) {
+                    $parent.addClass('deleted').removeAttr('style');
+                } else {
+                    $li.next().remove();
+                    $li.remove();
+                    $parent.remove();
+                }
             });
 
             if (result === undefined) {

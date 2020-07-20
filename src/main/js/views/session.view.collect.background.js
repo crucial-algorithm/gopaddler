@@ -19,7 +19,7 @@ export default class SessionViewCollectMetricsBackground {
                 locationProvider: BackgroundGeolocation.RAW_PROVIDER,
                 desiredAccuracy: BackgroundGeolocation.HIGH_ACCURACY,
                 notificationTitle: AppSettings.applicationName(),
-                notificationText: '',
+                notificationText: this.context.translate('session_running_background'),
                 debug: false,
                 interval: 1000,
                 fastestInterval: 1000,
@@ -79,6 +79,7 @@ export default class SessionViewCollectMetricsBackground {
     }
 
     updateNotificationText(text) {
+        if (1 === 1) return;
         BackgroundGeolocation.configure({
             notificationText: text
         })
@@ -112,16 +113,16 @@ export default class SessionViewCollectMetricsBackground {
         });
 
         BackgroundGeolocation.on('authorization', function(status) {
-            console.log('[INFO] BackgroundGeolocation authorization status: ' + status);
-            if (status !== BackgroundGeolocation.AUTHORIZED) {
-                // we need to set delay or otherwise alert may not be shown
-                setTimeout(function() {
-                    let showSettings = confirm('App requires location tracking permission. Would you like to open app settings?');
-                    if (showSettings) {
-                        return BackgroundGeolocation.showAppSettings();
-                    }
-                }, 1000);
-            }
+//           console.log('[INFO] BackgroundGeolocation authorization status: ' + status);
+//           if (status !== BackgroundGeolocation.AUTHORIZED) {
+//               // we need to set delay or otherwise alert may not be shown
+//               setTimeout(function() {
+//                   let showSettings = confirm('App requires location tracking permission. Would you like to open app settings?');
+//                   if (showSettings) {
+//                       return BackgroundGeolocation.showAppSettings();
+//                   }
+//               }, 1000);
+//           }
         });
     }
 

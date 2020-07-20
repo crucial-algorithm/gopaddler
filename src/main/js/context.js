@@ -185,7 +185,7 @@ class Context {
      * @param {boolean} large
      * @return {string}
      */
-    getUnit(type, large) {
+    getUnit(type, large = false) {
         var size = large === true ? "large" : "regular";
 
         return this.translate(units[this._system][type].label[size]);

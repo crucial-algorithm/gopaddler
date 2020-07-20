@@ -31,10 +31,23 @@ class Timer {
         clearInterval(this.intervalId);
     }
 
+    /**
+     * Get session duration as per the last time the duration was updated (1 per second)
+     * Differs from getCurrentDuration() in the fact that it will not account for the miliseconds that passed since
+     * last time the timer was triggered
+     *
+     * @return {number}
+     */
     getDuration() {
         return this.duration;
     }
 
+    /**
+     * Get duration as per what it is at the time of the call of this method
+     * Differs from getDuration() in the fact that it will add the miliseconds that have passed since the last time
+     * the timer was triggered to give the actual current duration to the milisecond
+     * @return {number}
+     */
     getCurrentDuration() {
         return this.duration + (Date.now() - this.timestamp);
     }

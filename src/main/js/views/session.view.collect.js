@@ -452,6 +452,8 @@ export default class SessionViewCollectMetrics {
             this.speedTools.reset();
             this._handlers.lostGpsSignal.apply({}, []);
         }
+
+        this.background.updateNotificationText(this.timer.format(this.timer.getDuration()));
     }
 
     /**

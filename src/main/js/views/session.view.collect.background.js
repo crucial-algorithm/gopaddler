@@ -1,3 +1,5 @@
+import AppSettings from "../utils/app-settings";
+
 export default class SessionViewCollectMetricsBackground {
     /**
      *
@@ -16,8 +18,8 @@ export default class SessionViewCollectMetricsBackground {
             BackgroundGeolocation.configure({
                 locationProvider: BackgroundGeolocation.RAW_PROVIDER,
                 desiredAccuracy: BackgroundGeolocation.HIGH_ACCURACY,
-                notificationTitle: 'Background tracking',
-                notificationText: 'enabled',
+                notificationTitle: AppSettings.applicationName(),
+                notificationText: '',
                 debug: false,
                 interval: 1000,
                 fastestInterval: 1000,
@@ -50,6 +52,7 @@ export default class SessionViewCollectMetricsBackground {
 
     stop() {
         BackgroundGeolocation.stop();
+        this.stopListeners();
     }
 
     onLocationChanged(callback) {
@@ -75,6 +78,15 @@ export default class SessionViewCollectMetricsBackground {
         });
     }
 
+    updateNotificationText(text) {
+        BackgroundGeolocation.configure({
+            notificationText: text
+        })
+    }
+
+    /**
+     * @private
+     */
     startListeners() {
         const self = this;
         BackgroundGeolocation.on('error', function(error) {
@@ -113,6 +125,9 @@ export default class SessionViewCollectMetricsBackground {
         });
     }
 
+    /**
+     * @private
+     */
     stopListeners() {
         BackgroundGeolocation.removeAllListeners();
         this.listenersRegistered = false;

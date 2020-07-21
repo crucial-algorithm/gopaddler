@@ -102,7 +102,7 @@ const BASE_EN = {
         , select_session_slave_mode_description: "Start to handle control"
         , select_session_warm_up_before_start: "Warm up before start"
         , select_session_coach_teaser_dialog_title: "Invite your coach"
-        , select_session_coach_teaser_dialog_message: "<p>Only coaches at <a href=\"https://coach.gopaddler.com\">https://coach.gopaddler.com</a> can plan sessions for you.</p><p>&nbsp;</p><p>Invite your coach to GoPaddler and get the most out of the system.</p>"
+        , select_session_coach_teaser_dialog_message: "<p>Only coaches at <a href=\"https://my.uttercoach.com\">https://my.uttercoach.com</a> can plan sessions for you.</p><p>&nbsp;</p><p>Invite your coach to Utter Coach and get the most out of the system.</p>"
         , select_session_coach_teaser_dialog_later: "maybe later"
         , select_session_coach_teaser_dialog_invite: "invite"
 
@@ -309,7 +309,7 @@ const BASE_EN = {
         , choose_sport_disciple_other: "other"
         , choose_sport_disciple_coach: "I'm a coach"
         , choose_sport_picked_sup: "Currently SUP is not tested! Git it a try and ping us an e-mail with your feedback."
-        , choose_sport_picked_coach: 'If you are a coach, this app is for your athletes! As a coach, create an account at <a class="paddler-link" href="https://gopaddler.com/for-coaches/">our online service</a> instead!'
+        , choose_sport_picked_coach: 'If you are a coach, this app is for your athletes! As a coach, create an account at <a class="paddler-link" href="https://uttercoach.com/">our online service</a> instead!'
         , choose_sport_picked_not_supported: "We only tested our app in sprint and marathon! Give it a try and ping us an e-mail with your feedback."
         , choose_sport_picked_not_supported_title: "We are sorry!"
         , choose_sport_picked_not_supported_acknowledge: "OK"
@@ -319,8 +319,8 @@ const BASE_EN = {
         , coach_redirect_online_you_are_in_the_wrong_place_secondary: "This app is for your athletes to use on the boat to collect their metrics! As a coach, you don't need the app, just access our website instead"
         , coach_redirect_online_how_it_works: "Build a team"
         , coach_redirect_online_how_it_works_secondary: "Athletes with this app will be able to join your team, giving you access to their metrics during and after each session"
-        , coach_redirect_online_action: "To start an account has a coach open <span class=\"small\"> https://coach.gopaddler.com</span>"
-        , coach_redirect_online_action_redirect: "<span class=\"btn-primary\">Open GoPaddler Coach</span>"
+        , coach_redirect_online_action: "To start an account has a coach open <span class=\"small\"> https://my.uttercoach.com</span>"
+        , coach_redirect_online_action_redirect: "<span class=\"btn-primary\">Open Utter Coach</span>"
         , coach_redirect_online_action_proceed: "Continue as athlete"
 
         , phone_mount_cta_title: "In Need of a Phone mount?"

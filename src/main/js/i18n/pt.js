@@ -102,7 +102,7 @@ const BASE_PT = {
         , select_session_slave_mode_description: "Inicia para delegar"
         , select_session_warm_up_before_start: "Aquecer antes de iniciar"
         , select_session_coach_teaser_dialog_title: "Convida o teu treinador"
-        , select_session_coach_teaser_dialog_message: "<p>Só os treinadores com conta em <a href=\"https://coach.gopaddler.com\">https://coach.gopaddler.com</a> podem planear sessões.</p><p>&nbsp;</p><p>Convida o teu treinador para teres a experiência completa do GoPaddler.</p>"
+        , select_session_coach_teaser_dialog_message: "<p>Só os treinadores com conta em <a href=\"https://my.uttercoach.com\">https://my.uttercoach.com</a> podem planear sessões.</p><p>&nbsp;</p><p>Convida o teu treinador para teres a experiência de treino completa.</p>"
         , select_session_coach_teaser_dialog_later: "Mais tarde"
         , select_session_coach_teaser_dialog_invite: "Convidar"
 
@@ -310,7 +310,7 @@ const BASE_PT = {
         , choose_sport_disciple_other: "other"
         , choose_sport_disciple_coach: "I'm a coach"
         , choose_sport_picked_sup: "Currently SUP is not tested! Git it a try and ping us an e-mail with your feedback."
-        , choose_sport_picked_coach: 'If you are a coach, this app is for your athletes! As a coach, create an account at <a class="paddler-link" href="https://gopaddler.com/for-coaches/">our online service</a> instead!'
+        , choose_sport_picked_coach: 'If you are a coach, this app is for your athletes! As a coach, create an account at <a class="paddler-link" href="https://uttercoach.com/">our online service</a> instead!'
         , choose_sport_picked_not_supported: "We only tested our app in sprint and marathon! Give it a try and ping us an e-mail with your feedback."
         , choose_sport_picked_not_supported_title: "We are sorry!"
         , choose_sport_picked_not_supported_acknowledge: "OK"
@@ -319,8 +319,8 @@ const BASE_PT = {
         , coach_redirect_online_you_are_in_the_wrong_place_secondary: "A aplicação destina-se ao uso dos atletas, para recolha de métricas! Como treinador não necessita da aplicação e deve aceder ao serviço pelo síto web"
         , coach_redirect_online_how_it_works: "Forme a sua equipa"
         , coach_redirect_online_how_it_works_secondary: "Isto irá permitir o acesso às métricas dos atletas (durante e depois da sessão) e à preparação do seu plano de treino"
-        , coach_redirect_online_action: "Para criar uma conta como treinador, aceda a <span class=\"small\"> https://coach.gopaddler.com</span>"
-        , coach_redirect_online_action_redirect: "<span class=\"btn-primary\">Abrir o GoPaddler Coach</span>"
+        , coach_redirect_online_action: "Para criar uma conta como treinador, aceda a <span class=\"small\"> https://my.uttercoach.com</span>"
+        , coach_redirect_online_action_redirect: "<span class=\"btn-primary\">Abrir o Utter Coach</span>"
         , coach_redirect_online_action_proceed: "Continuar como atleta"
 
         , phone_mount_cta_title: "Precisas de um suporte?"

@@ -52,7 +52,8 @@
     "build:utter-cycling-portrait": "NODE_ENV=remote-dev;VIEW_MODE=portrait;app=uttercycling node_modules/webpack/bin/webpack.js --mode=development --progress --colors --watch",
     "build:utter-cycling-device": "NODE_ENV=prod;app='uttercycling' node_modules/webpack/bin/webpack.js --mode=development -p",
     "build:device": "NODE_ENV=prod node_modules/webpack/bin/webpack.js --mode=development -p",
-    "build:prod": "NODE_ENV=prod node_modules/webpack/bin/webpack.js --mode=production -p"
+    "build:prod": "NODE_ENV=prod node_modules/webpack/bin/webpack.js --mode=production -p",
+    "build:generate-images": "scripts/generate-images.js"
   },
   "description": "GoPaddler mobile app",
   "main": "webpack.config.js",
@@ -60,6 +61,7 @@
     "@babel/core": "^7.6.0",
     "@babel/preset-env": "^7.6.0",
     "babel-loader": "^8.0.6",
+    "gm": "^1.23.1",
     "webpack": "^4.27.1",
     "webpack-cli": "^3.1.2"
   },

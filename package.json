@@ -45,12 +45,9 @@
   "scripts": {
     "start": "zerver www",
     "build:dev": "NODE_ENV=dev;app=gopaddler node_modules/webpack/bin/webpack.js --mode=development --progress --colors --watch",
-    "build:dev-portrait": "NODE_ENV=dev;VIEW_MODE=portrait;app=gopaddler node_modules/webpack/bin/webpack.js --mode=development --progress --colors --watch",
-    "build:dev-remote-portrait": "NODE_ENV=remote-dev;VIEW_MODE=portrait;app=gopaddler node_modules/webpack/bin/webpack.js --mode=development --progress --colors --watch",
-    "build:dev-remote-landscape": "NODE_ENV=remote-dev;app=gopaddler node_modules/webpack/bin/webpack.js --mode=development --progress --colors --watch",
-    "build:utter-cycling": "NODE_ENV=remote-dev;app='uttercycling' node_modules/webpack/bin/webpack.js --mode=development --progress --colors --watch",
-    "build:utter-cycling-portrait": "NODE_ENV=remote-dev;VIEW_MODE=portrait;app=uttercycling node_modules/webpack/bin/webpack.js --mode=development --progress --colors --watch",
-    "build:utter-cycling-device": "NODE_ENV=prod;app='uttercycling' node_modules/webpack/bin/webpack.js --mode=development -p",
+    "build:dev-portrait": "NODE_ENV=dev;VIEW_MODE=portrait; node_modules/webpack/bin/webpack.js --mode=development --progress --colors --watch",
+    "build:dev-remote-portrait": "NODE_ENV=remote-dev;VIEW_MODE=portrait; node_modules/webpack/bin/webpack.js --mode=development --progress --colors --watch",
+    "build:dev-remote-landscape": "NODE_ENV=remote-dev; node_modules/webpack/bin/webpack.js --mode=development --progress --colors --watch",
     "build:device": "NODE_ENV=prod node_modules/webpack/bin/webpack.js --mode=development -p",
     "build:prod": "NODE_ENV=prod node_modules/webpack/bin/webpack.js --mode=production -p",
     "build:generate-images": "scripts/generate-images.js"

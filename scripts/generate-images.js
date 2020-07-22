@@ -105,8 +105,13 @@ function generateiOS() {
         generate(iOSSplashImages, images.splash, iosProjectFolder);
         generate(iOSIconImages, images.icon, iosProjectFolder);
     }).catch((err) => {
-        console.error(err);
-        process.exit(1);
+        if (err.code === 'ENOENT') {
+            console.log('missing .app file: create .app file in root dir with the name of the app this project folder is target at');
+            process.exit(0);
+        } else {
+            console.error(err);
+            process.exit(1);
+        }
     });
 }
 

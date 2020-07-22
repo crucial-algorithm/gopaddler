@@ -1,10 +1,10 @@
-var webpack = require("webpack");
+const webpack = require("webpack");
 const fs = require('fs');
 
 const env = process.env.NODE_ENV;
 const viewMode = process.env.VIEW_MODE || 'landscape';
-var isPortraitMode = false;
-var exec = require('child_process').exec;
+let isPortraitMode = false;
+let exec = require('child_process').exec;
 
 if (viewMode === 'portrait') {
     isPortraitMode = 1;
@@ -23,73 +23,18 @@ try {
     }
 }
 
-function extend() {
-    for (let i = 1; i < arguments.length; i++) {
-        for (let key in arguments[i]) {
-            if (arguments[i].hasOwnProperty(key))
-                arguments[0][key] = arguments[i][key];
-        }
-    }
-    return arguments[0];
-}
-
-console.log("... env = ", env, " app = ", app);
 if (env !== 'dev' && env !== 'prod' && env !== 'remote-dev')
     throw 'Unknown env. Allowed are: "dev" or "prod" ';
 
 if (app !== 'gopaddler' && app !== 'uttercycling')
     throw 'Unknown app. Allowed are: "gopaddler" or "uttercycling"! You may be missing .app file ';
 
-console.log('building for app ' + app);
+let config = require(`./config/${app}`);
 
-const GOPADDLER_CONFIG = require('./config/gopaddler');
-const UTTERCYCLING_CONFIG = require('./config/uttercycling');
+let log = `** Building for ${app}; Mode = ${isPortraitMode ? 'Portrait' : 'Landscape'} **`;
+let separator = Array(log.length).fill('*').join('');
 
-let CONFIG = {
-    gopaddler: {
-        common: {
-            version: GOPADDLER_CONFIG.cordova.version,
-            apiVersion: 2,
-            sessionVersion: 5
-        },
-        dev : {
-            server: "http://local.gopaddler.com",
-            endpoint: "ws://local.gopaddler.com/websocket"
-        },
-        "remote-dev": {
-            server: "https://dev.gopaddler.com",
-            endpoint: "wss://dev.gopaddler.com/websocket"
-        },
-        prod: {
-            server: "https://app.gopaddler.com",
-            endpoint: "wss://app.gopaddler.com/websocket"
-        }
-    },
-    uttercycling: {
-        common: {
-            version: UTTERCYCLING_CONFIG.cordova.version,
-            apiVersion: 2,
-            sessionVersion: 5
-        },
-        dev : {
-            server: "http://local.gopaddler.com",
-            endpoint: "ws://local.gopaddler.com/websocket"
-        },
-        "remote-dev": {
-            server: "https://dev.gopaddler.com",
-            endpoint: "wss://dev.gopaddler.com/websocket"
-        },
-        prod: {
-            server: "https://app.gopaddler.com",
-            endpoint: "wss://app.gopaddler.com/websocket"
-        }
-    }
-
-};
-
-let config = extend({}, CONFIG[app].common, CONFIG[app][env]);
-
-let appConfig = app === 'gopaddler' ? GOPADDLER_CONFIG : UTTERCYCLING_CONFIG;
+console.log(`${separator}\n${log}\n${separator}\n\n`);
 
 module.exports = (_, argv) => {
     const isReleaseVersion = argv.mode === 'production';
@@ -104,14 +49,14 @@ module.exports = (_, argv) => {
         },
         plugins:[
             new webpack.DefinePlugin({
-                __WS_ENDPOINT__: JSON.stringify(config.endpoint),
-                __WEB_URL__: JSON.stringify(config.server),
-                __VERSION__: JSON.stringify(config.version),
+                __WS_ENDPOINT__: JSON.stringify(config.src.endpoints[env].endpoint),
+                __WEB_URL__: JSON.stringify(config.src.endpoints[env].server),
+                __VERSION__: JSON.stringify(config.cordova.version),
                 __IS_PORTRAIT_MODE__: JSON.stringify(isPortraitMode),
-                __API_VERSION__: JSON.stringify(config.apiVersion),
-                __SESSION_FORMAT_VERSION__: JSON.stringify(config.sessionVersion),
+                __API_VERSION__: JSON.stringify(config.src.versioning.apiVersion),
+                __SESSION_FORMAT_VERSION__: JSON.stringify(config.src.versioning.sessionVersion),
                 __APP__: JSON.stringify(app),
-                __APP_CONFIG__: JSON.stringify(appConfig.src)
+                __APP_CONFIG__: JSON.stringify(config.src)
             }),
             {
                 apply: (compiler) => {

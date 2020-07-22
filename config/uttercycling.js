@@ -10,7 +10,25 @@ module.exports = {
         versionCode: "10",
     },
     src: {
-       distanceStep: 100,
+        versioning: {
+            apiVersion: 2,
+            sessionVersion: 5
+        },
+        endpoints: {
+            dev: {
+                server: "http://local.gopaddler.com",
+                endpoint: "ws://local.gopaddler.com/websocket"
+            },
+            "remote-dev": {
+                server: "https://dev.gopaddler.com",
+                endpoint: "wss://dev.gopaddler.com/websocket"
+            },
+            prod: {
+                server: "https://app.gopaddler.com",
+                endpoint: "wss://app.gopaddler.com/websocket"
+            }
+        },
+        distanceStep: 100,
         database: {
             name: 'uttercycling.db',
             location: 2

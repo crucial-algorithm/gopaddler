@@ -5,8 +5,10 @@ const gm = require('gm').subClass({imageMagick: true});
 // script requires a .app file to be present in the root folder and for it to contain the app name we are generating for
 
 // this is what get's executed!
-generateAndroid();
-generateiOS();
+(async function run() {
+    await generateAndroid();
+    await generateiOS();
+})()
 
 const androidSplashImages = [ null
     , {width:  800, height:  480,  file: "platforms/android/app/src/main/res/drawable-land-hdpi/screen.png" }
@@ -75,43 +77,62 @@ const iOSIconImages = [ null
     , { width:  114, height:  114, file: 'platforms/ios/{{ios_project_folder}}/Images.xcassets/AppIcon.appiconset/icon@2x.png' }
 ];
 
+/**
+ *
+ * @return {Promise<unknown>}
+ */
 function generateAndroid() {
-    getAppImages().then((images) => {
-        console.log('*****************************************************************************************************************************************************');
-        console.log('** Android icons cannot be generated programmatically!!! Use Image Asset Studio to generate images (available in Android Studio > Resource Manager **');
-        console.log('*****************************************************************************************************************************************************');
+    return new Promise((resolve) => {
+        getAppImages().then(async (images) => {
+            console.log('*****************************************************************************************************************************************************');
+            console.log('** Android icons cannot be generated programmatically!!! Use Image Asset Studio to generate images (available in Android Studio > Resource Manager **');
+            console.log('*****************************************************************************************************************************************************');
 
-        console.log('\n\nGenerating android splash screen images')
-        generate(androidSplashImages, images.splash);
-    }).catch((err) => {
-        if (err.code === 'ENOENT') {
-            console.log('missing .app file: create .app file in root dir with the name of the app this project folder is target at');
-            process.exit(0);
-        } else {
-            console.error(err);
-            process.exit(1);
-        }
+            console.log('\n\nGenerating android splash screen images')
+            await generate(androidSplashImages, images.splash);
+            console.log('\n\n --> Android image generation complete <-- \n')
+            resolve();
+        }).catch((err) => {
+            if (err.code === 'ENOENT') {
+                console.log('missing .app file: create .app file in root dir with the name of the app this project folder is target at');
+                process.exit(0);
+            } else {
+                console.error(err);
+                process.exit(1);
+            }
+        });
     });
 }
 
+/**
+ *
+ * @return {Promise<unknown>}
+ */
 function generateiOS() {
-    getAppImages().then((images) => {
-        let iosProjectFolder = null;
-        if (images.app === 'gopaddler') {
-            throw 'don\'t know the folder path name yet';
-        } else {
-            iosProjectFolder = 'Utter Cycling';
-        }
-        generate(iOSSplashImages, images.splash, iosProjectFolder);
-        generate(iOSIconImages, images.icon, iosProjectFolder);
-    }).catch((err) => {
-        if (err.code === 'ENOENT') {
-            console.log('missing .app file: create .app file in root dir with the name of the app this project folder is target at');
-            process.exit(0);
-        } else {
-            console.error(err);
-            process.exit(1);
-        }
+    return new Promise((resolve) => {
+        getAppImages().then(async (images) => {
+            let iosProjectFolder = null;
+            if (images.app === 'gopaddler') {
+                throw 'don\'t know the folder path name yet';
+            } else {
+                iosProjectFolder = 'Utter Cycling';
+            }
+
+            console.log('Generating ios splash screen images')
+            await generate(iOSSplashImages, images.splash, iosProjectFolder);
+            console.log('\n\nGenerating ios icon images')
+            await generate(iOSIconImages, images.icon, iosProjectFolder);
+            console.log('\n\n --> iOS image generation complete <-- \n')
+            resolve();
+        }).catch((err) => {
+            if (err.code === 'ENOENT') {
+                console.log('missing .app file: create .app file in root dir with the name of the app this project folder is target at');
+                process.exit(0);
+            } else {
+                console.error(err);
+                process.exit(1);
+            }
+        });
     });
 }
 
@@ -120,15 +141,21 @@ function generateiOS() {
  * @param {Array<null|{width: number, height: number, file: string}>} sizes  List of image sizes we want to generate
  * @param {string}      image                Image path
  * @param {string|null} iosProjectFolder     ios project folder name
+ * @return {Promise<>}
  */
 function generate(sizes, image, iosProjectFolder= null) {
-
-    for (let config of sizes) {
-        if (config === null) continue;
-        let filename = config.file;
-        if (iosProjectFolder !== null) filename = filename.replace('{{ios_project_folder}}', iosProjectFolder);
-        generateImage(image, config.width, config.height, filename);
-    }
+    return new Promise((resolve) => {
+        (function loop(sizes) {
+            if (sizes.length === 0) return resolve();
+            let config = sizes.pop();
+            if (config === null) return loop(sizes);
+            let filename = config.file;
+            if (iosProjectFolder !== null) filename = filename.replace('{{ios_project_folder}}', iosProjectFolder);
+            generateImage(image, config.width, config.height, filename).finally(() => {
+                loop(sizes);
+            });
+        })(sizes);
+    });
 }
 
 /**
@@ -154,11 +181,17 @@ function getAppImages() {
  * @param {number} width        Target width
  * @param {number} height       Target height
  * @param {string} output       target file name
+ * @return {Promise}
  */
 function generateImage(imagePath, width, height, output) {
-    let image = gm(imagePath);
-    determineImageSize(image, width, height, output).then(resize).then(crop).catch((err) => {
-        console.error(err);
+    return new Promise((resolve) => {
+        let image = gm(imagePath);
+        determineImageSize(image, width, height, output).then(resize).then(crop).then(() => {
+            resolve();
+        }).catch((err) => {
+            console.error(err);
+            resolve(err);
+        })
     });
 }
 
@@ -208,16 +241,19 @@ function resize(options) {
 /**
  *
  * @param {{source: string, output: string, width: number, height: number}} options
+ * @return {Promise<string>}
  */
 function crop(options) {
-
-    gm(options.source).gravity('Center')
-        .crop(options.width, options.height, 0, 0, null).write(options.output, function (err) {
-        if (err) {
-            console.log(err);
-        } else {
-            console.log(`Created ${options.width}x${options.height} @ ${options.output}`);
-            fs.unlink(options.source, ()=>{});
-        }
+    return new Promise((resolve, reject) => {
+        gm(options.source).gravity('Center')
+            .crop(options.width, options.height, 0, 0, null).write(options.output, function (err) {
+            if (err) {
+                reject(err);
+            } else {
+                console.log(`Created ${options.width}x${options.height} @ ${options.output}`);
+                fs.unlinkSync(options.source);
+                resolve();
+            }
+        });
     });
 }

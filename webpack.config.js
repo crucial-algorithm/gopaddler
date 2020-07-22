@@ -31,7 +31,7 @@ if (app !== 'gopaddler' && app !== 'uttercycling')
 
 let config = require(`./config/${app}`);
 
-let log = `** Building for ${app}; Mode = ${isPortraitMode ? 'Portrait' : 'Landscape'} **`;
+let log = `**       Building for ${app} / ${env} | Screen = ${isPortraitMode ? 'Portrait' : 'Landscape'}       **`;
 let separator = Array(log.length).fill('*').join('');
 
 console.log(`${separator}\n${log}\n${separator}\n\n`);

@@ -104,3 +104,9 @@ cordova-splash --splash=./res/splash.png
 #### App hanging before creating database schema
 Probably missing plugin:
 cordova plugin add cordova-sqlite-storage
+
+
+
+#### org.gradle.api.file.ProjectLayout.directoryProperty(Lorg/gradle/api/provider/Provider;)Lorg/gradle/api/file/DirectoryProperty;
+- Edit platforms/android/build.gradle
+- Change classpath version from classpath 'com.android.tools.build:gradle:3.3.0' -> classpath 'com.android.tools.build:gradle:4.0.0'

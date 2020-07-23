@@ -11,18 +11,38 @@ const gm = require('gm').subClass({imageMagick: true});
 })()
 
 const androidSplashImages = [ null
-    , {width:  800, height:  480,  file: "platforms/android/app/src/main/res/drawable-land-hdpi/screen.png" }
-    , {width:  320, height:  200,  file: "platforms/android/app/src/main/res/drawable-land-ldpi/screen.png" }
-    , {width:  480, height:  320,  file: "platforms/android/app/src/main/res/drawable-land-mdpi/screen.png" }
-    , {width: 1280, height:  720,  file: "platforms/android/app/src/main/res/drawable-land-xhdpi/screen.png" }
-    , {width: 1600, height:  960,  file: "platforms/android/app/src/main/res/drawable-land-xxhdpi/screen.png" }
-    , {width: 1920, height: 1280,  file: "platforms/android/app/src/main/res/drawable-land-xxxhdpi/screen.png" }
-    , {width:  480, height:  800,  file: "platforms/android/app/src/main/res/drawable-port-hdpi/screen.png" }
-    , {width:  200, height:  320,  file: "platforms/android/app/src/main/res/drawable-port-ldpi/screen.png" }
-    , {width:  320, height:  480,  file: "platforms/android/app/src/main/res/drawable-port-mdpi/screen.png" }
-    , {width:  720, height: 1280,  file: "platforms/android/app/src/main/res/drawable-port-xhdpi/screen.png" }
-    , {width:  960, height: 1600,  file: "platforms/android/app/src/main/res/drawable-port-xxhdpi/screen.png" }
-    , {width: 1280, height: 1920,  file: "platforms/android/app/src/main/res/drawable-port-xxxhdpi/screen.png" }
+    , {width:  800, height:  480,  file: 'platforms/android/app/src/main/res/drawable-land-hdpi/screen.png' }
+    , {width:  320, height:  200,  file: 'platforms/android/app/src/main/res/drawable-land-ldpi/screen.png' }
+    , {width:  480, height:  320,  file: 'platforms/android/app/src/main/res/drawable-land-mdpi/screen.png' }
+    , {width: 1280, height:  720,  file: 'platforms/android/app/src/main/res/drawable-land-xhdpi/screen.png' }
+    , {width: 1600, height:  960,  file: 'platforms/android/app/src/main/res/drawable-land-xxhdpi/screen.png' }
+    , {width: 1920, height: 1280,  file: 'platforms/android/app/src/main/res/drawable-land-xxxhdpi/screen.png' }
+    , {width:  480, height:  800,  file: 'platforms/android/app/src/main/res/drawable-port-hdpi/screen.png' }
+    , {width:  200, height:  320,  file: 'platforms/android/app/src/main/res/drawable-port-ldpi/screen.png' }
+    , {width:  320, height:  480,  file: 'platforms/android/app/src/main/res/drawable-port-mdpi/screen.png' }
+    , {width:  720, height: 1280,  file: 'platforms/android/app/src/main/res/drawable-port-xhdpi/screen.png' }
+    , {width:  960, height: 1600,  file: 'platforms/android/app/src/main/res/drawable-port-xxhdpi/screen.png' }
+    , {width: 1280, height: 1920,  file: 'platforms/android/app/src/main/res/drawable-port-xxxhdpi/screen.png' }
+];
+
+
+const androidIconImagesForeground = [ null
+    , {width:   36, height:   36,  file: 'platforms/android/app/src/main/res/mipmap-ldpi/ic_launcher.png', source: './res/{{app}}/icon.png'}
+    , {width:   72, height:   72,  file: 'platforms/android/app/src/main/res/mipmap-hdpi-v26/ic_launcher_foreground.png' }
+    , {width:   36, height:   36,  file: 'platforms/android/app/src/main/res/mipmap-ldpi-v26/ic_launcher_foreground.png' }
+    , {width:   48, height:   48,  file: 'platforms/android/app/src/main/res/mipmap-mdpi-v26/ic_launcher_foreground.png' }
+    , {width:  216, height:  216,  file: 'platforms/android/app/src/main/res/mipmap-xhdpi-v26/ic_launcher_foreground.png' }
+    , {width:  324, height:  324,  file: 'platforms/android/app/src/main/res/mipmap-xxhdpi-v26/ic_launcher_foreground.png' }
+    , {width:  432, height:  432,  file: 'platforms/android/app/src/main/res/mipmap-xxxhdpi-v26/ic_launcher_foreground.png' }
+];
+
+const androidIconImagesBackground = [ null
+    , {width:   72, height:   72,  file: 'platforms/android/app/src/main/res/mipmap-hdpi-v26/ic_launcher_background.png' }
+    , {width:   36, height:   36,  file: 'platforms/android/app/src/main/res/mipmap-ldpi-v26/ic_launcher_background.png' }
+    , {width:   48, height:   48,  file: 'platforms/android/app/src/main/res/mipmap-mdpi-v26/ic_launcher_background.png' }
+    , {width:  216, height:  216,  file: 'platforms/android/app/src/main/res/mipmap-xhdpi-v26/ic_launcher_background.png' }
+    , {width:  324, height:  324,  file: 'platforms/android/app/src/main/res/mipmap-xxhdpi-v26/ic_launcher_background.png' }
+    , {width:  432, height:  432,  file: 'platforms/android/app/src/main/res/mipmap-xxxhdpi-v26/ic_launcher_background.png' }
 ];
 
 const iOSSplashImages = [ null
@@ -84,12 +104,17 @@ const iOSIconImages = [ null
 function generateAndroid() {
     return new Promise((resolve) => {
         getAppImages().then(async (images) => {
-            console.log('*****************************************************************************************************************************************************');
-            console.log('** Android icons cannot be generated programmatically!!! Use Image Asset Studio to generate images (available in Android Studio > Resource Manager **');
-            console.log('*****************************************************************************************************************************************************');
 
             console.log('\n\nGenerating android splash screen images')
             await generate(androidSplashImages, images.splash);
+            console.log('\n\nGenerating android icon images')
+
+            console.log('*****************************************************************************************************************************************************');
+            console.log('** Android icons cannot be generated programmatically!!! Use Image Asset Studio to generate images (available in Android Studio > Resource Manager **');
+            console.log('*****************************************************************************************************************************************************\n\n');
+
+            await generate(androidIconImagesForeground, images.foreground, null, images.app);
+            await generate(androidIconImagesBackground, images.background, null, images.app);
             console.log('\n\n --> Android image generation complete <-- \n')
             resolve();
         }).catch((err) => {
@@ -113,7 +138,7 @@ function generateiOS() {
         getAppImages().then(async (images) => {
             let iosProjectFolder = null;
             if (images.app === 'gopaddler') {
-                throw 'don\'t know the folder path name yet';
+                iosProjectFolder = 'GoPaddler';
             } else {
                 iosProjectFolder = 'Utter Cycling';
             }
@@ -138,12 +163,13 @@ function generateiOS() {
 
 /**
  *
- * @param {Array<null|{width: number, height: number, file: string}>} sizes  List of image sizes we want to generate
+ * @param {Array<null|{width: number, height: number, file: string, [source]: string}>} sizes  List of image sizes we want to generate
  * @param {string}      image                Image path
  * @param {string|null} iosProjectFolder     ios project folder name
+ * @param {string|null} app                  app name for replace in case of override of image in setting
  * @return {Promise<>}
  */
-function generate(sizes, image, iosProjectFolder= null) {
+function generate(sizes, image, iosProjectFolder= null, app = null) {
     return new Promise((resolve) => {
         (function loop(sizes) {
             if (sizes.length === 0) return resolve();
@@ -151,6 +177,9 @@ function generate(sizes, image, iosProjectFolder= null) {
             if (config === null) return loop(sizes);
             let filename = config.file;
             if (iosProjectFolder !== null) filename = filename.replace('{{ios_project_folder}}', iosProjectFolder);
+            if (config.source) {
+                image = config.source.replace('{{app}}', app);
+            }
             generateImage(image, config.width, config.height, filename).finally(() => {
                 loop(sizes);
             });
@@ -160,7 +189,7 @@ function generate(sizes, image, iosProjectFolder= null) {
 
 /**
  * Get images path for app we are currently building for
- * @return {Promise<{splash: string, icon: string, app: string}>}
+ * @return {Promise<{splash: string, icon: string, app: string, background: string, foreground: string}>}
  */
 function getAppImages() {
     return new Promise((resolve, reject) => {
@@ -170,7 +199,11 @@ function getAppImages() {
                 return;
             }
             app = app.trimEnd();
-            resolve({splash: `./res/${app}/splash.png`, icon: `./res/${app}/icon.png`, app: app})
+            resolve({splash: `./res/${app}/splash.png`
+                , icon: `./res/${app}/icon.png`
+                , background: `./res/${app}/icon-background.png`
+                , foreground: `./res/${app}/icon-foreground.png`
+                , app: app})
         });
     });
 }

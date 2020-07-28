@@ -316,6 +316,7 @@ export default class SessionViewCollectMetrics {
     startUtterCycling(startAt) {
         this.cyclingCadenceSensor = new BleSensor(BleSensor.TYPES().CYCLING_CADENCE);
         this.cyclingCadenceSensor.listen((value) => {
+            if (value > 300) value = 0;
             this.cadence = {value : value, interval: 0, total: 0};
         })
     }

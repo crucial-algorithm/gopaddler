@@ -244,7 +244,8 @@ function emulateCordova () {
     window.BackgroundGeolocation = {
         configure: ()=>{},
         on: ()=>{},
-        checkStatus: ()=>{}
+        checkStatus: ()=>{},
+        start: ()=>{}
     }
 }
 

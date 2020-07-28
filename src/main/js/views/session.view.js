@@ -321,6 +321,7 @@ class SessionView {
         let $controls, $resume, $finish, $lock;
 
         let modal = self.appContext.ui.modal.undecorated(snippetPauseControls({
+            isAppTester: Api.User.isAppTester(),
             isTestingLeftRight: Api.User.isAppTester() && self.tester.isTestingLeftRight
         }));
 

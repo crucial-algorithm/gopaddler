@@ -245,7 +245,9 @@ function emulateCordova () {
         configure: ()=>{},
         on: ()=>{},
         checkStatus: ()=>{},
-        start: ()=>{}
+        start: ()=>{},
+        stop: ()=>{},
+        removeAllListeners: ()=>{}
     }
 }
 

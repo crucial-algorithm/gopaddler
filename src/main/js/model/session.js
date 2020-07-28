@@ -192,7 +192,16 @@ class Session {
 
                 if (details.records.length > 0) {
                     self.sessionEnd = details.records[details.records.length - 1].timestamp;
+
+                    // discard zeros from cadence
+                    let spm = [];
+                    for (let record of details.records) {
+                        if (record.getSpm() > 0) spm.push(record.getSpm());
+                    }
+
+                    self.avgSpm = Utils.minMaxAvgStddev(spm).avg;
                 }
+
 
                 self.connection.executeSql("update session set distance = ?, avg_spm = ?, top_spm = ?, avg_speed = ?" +
                     ", top_speed = ?, avg_efficiency = ?, top_efficiency = ?, avg_heart_rate = ?, session_end = ?" +

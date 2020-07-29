@@ -24,8 +24,8 @@ module.exports = {
                 endpoint: "wss://dev.gopaddler.com/websocket"
             },
             prod: {
-                server: "https://app.gopaddler.com",
-                endpoint: "wss://app.gopaddler.com/websocket"
+                server: "https://app.uttercoach.com",
+                endpoint: "wss://ws.uttercoach.com/websocket"
             }
         },
         distanceStep: 100,

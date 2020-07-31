@@ -1,12 +1,29 @@
 #!/usr/local/bin/node
 
-var fs = require('fs');
-var plist = require('plist');
+let fs = require('fs');
+let plist = require('plist');
 
-if (!process.env.APP) throw 'APP enviornement variable need to be set to either gopaddler or uttercycling'
 
-var FILEPATH = process.env.APP === 'gopaddler' ? 'platforms/ios/GoPaddler/GoPaddler-Info.plist' : 'platforms/ios/Utter Cycling/Utter Cycling-Info.plist';
-var APP_NAME = process.env.APP === 'gopaddler' ? "GoPaddler" : "Utter Cycling";
+let app = '', FILEPATH, APP_NAME;
+try {
+    app = fs.readFileSync('.app', {encoding: 'utf8', flag: 'r'});
+    app = app.trimEnd();
+    if (['uttercycling', 'gopaddler'].indexOf(app) < 0) {
+        console.error('unknown app found in .app; Known target apps are: gopaddler | uttercycling');
+        process.exit(0);
+    }
+    FILEPATH = app === 'gopaddler' ? 'platforms/ios/GoPaddler/GoPaddler-Info.plist' : 'platforms/ios/Utter Cycling/Utter Cycling-Info.plist';
+    APP_NAME = app === 'gopaddler' ? "GoPaddler" : "Utter Cycling";
+} catch (err) {
+
+    if (err.code === 'ENOENT') {
+        console.log('missing .app file: create .app file in root dir with the name of the app this project folder is target at (gopaddler|uttercycling)');
+        process.exit(0);
+    } else {
+        console.error(err);
+        process.exit(1);
+    }
+}
 
 function overridePlist(context) {
     var xml = fs.readFileSync(FILEPATH, 'utf8');

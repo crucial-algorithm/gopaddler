@@ -23,7 +23,7 @@
     "cordova-plugin-facebook4": "6.2.0",
     "cordova-plugin-file": "^4.3.3",
     "cordova-plugin-geolocation": "^2.4.3",
-    "cordova-plugin-inappbrowser": "^1.7.2",
+    "cordova-plugin-inappbrowser": "^4.0.0",
     "cordova-plugin-ios-longpress-fix": "^1.1.0",
     "cordova-plugin-nativeaudio": "^3.0.9",
     "cordova-plugin-network-information": "^1.3.4",
@@ -33,6 +33,7 @@
     "cordova-plugin-statusbar": "^2.4.1",
     "cordova-plugin-vibration": "^3.1.0",
     "cordova-plugin-whitelist": "^1.3.3",
+    "cordova-plugin-wkwebview-engine": "^1.2.1",
     "cordova-sqlite-storage": "^3.2.0",
     "dragdealer": "^0.9.9",
     "es6-promise-plugin": "^4.2.2",
@@ -78,7 +79,6 @@
       "cordova-plugin-statusbar": {},
       "cordova-plugin-network-information": {},
       "cordova-plugin-device": {},
-      "cordova-plugin-inappbrowser": {},
       "cordova-plugin-device-motion": {},
       "cordova-plugin-dialogs": {},
       "cordova-plugin-ios-longpress-fix": {},
@@ -114,7 +114,9 @@
         "CONTENT_AUTHORITY": "$PACKAGE_NAME",
         "ALWAYS_USAGE_DESCRIPTION": "This app always requires location tracking",
         "MOTION_USAGE_DESCRIPTION": "This app requires motion detection"
-      }
+      },
+      "cordova-plugin-wkwebview-engine": {},
+      "cordova-plugin-inappbrowser": {}
     }
   }
 }

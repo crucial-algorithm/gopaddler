@@ -66,9 +66,17 @@ module.exports = (_, argv) => {
                             if (stdout) process.stdout.write(stdout);
                             if (stderr) process.stderr.write(stderr);
                             if (!stdout && !stderr) console.log('... hot swap js in android platform');
+
+                            if (isReleaseVersion === false) return;
+                            exec('rm platforms/android/app/src/main/assets/www/dist/app.js.map', (err, stdout, stderr) => {
+                                if (stdout) process.stdout.write(stdout);
+                                if (stderr) process.stderr.write(stderr);
+                                if (!stdout && !stderr) console.log('... remove source map from android release distribution');
+                            });
+
                         });
 
-                        exec('cp -rf www/css/* www/dist/app.js.map platforms/android/app/src/main/assets/www/css/', (err, stdout, stderr) => {
+                        exec('cp -rf www/css/* platforms/android/app/src/main/assets/www/css/', (err, stdout, stderr) => {
                             if (stdout) process.stdout.write(stdout);
                             if (stderr) process.stderr.write(stderr);
                             if (!stdout && !stderr) console.log('... hot swap css in android platform');
@@ -84,9 +92,15 @@ module.exports = (_, argv) => {
                             if (stdout) process.stdout.write(stdout);
                             if (stderr) process.stderr.write(stderr);
                             if (!stdout && !stderr) console.log('... hot swap js in ios platform');
+
+                            exec('rm platforms/ios/www/dist/app.js.map', (err, stdout, stderr) => {
+                                if (stdout) process.stdout.write(stdout);
+                                if (stderr) process.stderr.write(stderr);
+                                if (!stdout && !stderr) console.log('... remove source map from ios release distribution');
+                            });
                         });
 
-                        exec('cp -rf www/css/* www/dist/app.js.map platforms/ios/www/css/', (err, stdout, stderr) => {
+                        exec('cp -rf www/css/* platforms/ios/www/css/', (err, stdout, stderr) => {
                             if (stdout) process.stdout.write(stdout);
                             if (stderr) process.stderr.write(stderr);
                             if (!stdout && !stderr) console.log('... hot swap css in ios platform');

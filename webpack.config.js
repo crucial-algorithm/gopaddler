@@ -93,6 +93,7 @@ module.exports = (_, argv) => {
                             if (stderr) process.stderr.write(stderr);
                             if (!stdout && !stderr) console.log('... hot swap js in ios platform');
 
+                            if (isReleaseVersion === false) return;
                             exec('rm platforms/ios/www/dist/app.js.map', (err, stdout, stderr) => {
                                 if (stdout) process.stdout.write(stdout);
                                 if (stderr) process.stderr.write(stderr);

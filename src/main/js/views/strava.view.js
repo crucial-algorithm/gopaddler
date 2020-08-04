@@ -3,6 +3,7 @@
 import Context from '../context';
 import Api from '../server/api';
 import template from './strava.art.html';
+import AppSettings from "../utils/app-settings";
 
 class StravaView {
 
@@ -12,7 +13,6 @@ class StravaView {
      * @param {Context} context
      */
     constructor(page, context) {
-        console.log(Api.User.hasStrava());
         Context.render(page, template({isPortraitMode: context.isPortraitMode()
             , isLandscapeMode: !context.isPortraitMode()
             , isConnected: Api.User.hasStrava()
@@ -23,7 +23,8 @@ class StravaView {
             self.onRendered(self.$page, context);
         });
 
-        context.listenToUserConnectingToStrava(() => {
+        context.listenToUserConnectingToStrava((payload) => {
+            $('.strava-user-connected').text(context.translate('strava_connected_has', [payload.name]));
             $('.strava-full-window').addClass('strava-connected');
         });
     }
@@ -32,7 +33,7 @@ class StravaView {
         $('.strava-button-connect').on('tap', function () {
             Api.Auth.createAppAuthToken().then((token) => {
                 let web = __WEB_URL__;
-                window.open(`${web}/strava/connect/` + token, '_system');
+                window.open(`${web}/strava/connect/${AppSettings.app()}/${token}`, '_system');
             })
         });
 

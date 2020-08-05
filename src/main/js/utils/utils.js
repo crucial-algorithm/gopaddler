@@ -104,6 +104,9 @@ class Utils {
         StatusBar.overlaysWebView(false);
         StatusBar.backgroundColorByHexString('#ffffff');
         StatusBar.styleDefault();
+
+        if (cordova.InAppBrowser)
+            window.open = cordova.InAppBrowser.open;
     }
 
     static notify(username, message) {

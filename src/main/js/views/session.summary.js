@@ -132,7 +132,14 @@ class SessionSummaryView {
      * @param {Context} context
      */
     showSampleSessionSummary(session, isPastSession, context) {
-        if (session.id > 1 || isPastSession === true) return;
+        let isThisAppSampleSessionCapable = false;
+        AppSettings.switch(() => {
+            isThisAppSampleSessionCapable = true;
+        }, () => {
+            isThisAppSampleSessionCapable = false;
+        });
+
+        if (isThisAppSampleSessionCapable === false || session.id > 1 || isPastSession === true) return;
 
         const modal = context.ui.modal.undecorated([
             '<div class="sessions-summary-sample-model">',

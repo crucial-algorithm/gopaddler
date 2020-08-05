@@ -355,6 +355,8 @@ const BASE_PT = {
 
         , strava_title: "Strava"
         , strava_connected_has: "Utilizador Strava: $1"
+        , strava_connect: "Ligar"
+        , strava_disconnect: "Desligar"
 
         , universal_link_join_team_title: "Equipa"
         , universal_link_join_team_success: "Foste adicionado à equipa de $1. <br/></br/>Para gerires quem são os teus treinadores, vai a Definições > Treinadores"

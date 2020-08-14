@@ -230,6 +230,7 @@ class SessionView {
      * @param context
      */
     catchUserEvents($page, context) {
+        const self = this;
         let $window = $(window);
         $window.on('scroll.session', function (event) {
             $window.scrollTop(0);

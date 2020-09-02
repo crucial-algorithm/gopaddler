@@ -17,9 +17,10 @@ export default class BleSensor {
         this.retryTimer = null;
         this.unresponsiveTimer = null;
         this.connectedDeviceAddress = null;
+        this.type = type;
     }
 
-    listen(callback) {
+    async listen(callback) {
         const self = this;
         clearInterval(self.retryTimer);
         clearInterval(self.unresponsiveTimer);
@@ -28,70 +29,77 @@ export default class BleSensor {
             return;
         }
 
-        console.log('start listening to ble, sends callback(0)');
+        console.log('start listening to ble, sends callback(0)', this.type, this.devices);
         callback(0);
 
         self.lastEventAt = Date.now();
-        self.bluetooth
-            .initialize()
-            .then(function () {
-                Utils.loopAsync(self.devices, function (iterator) {
-                    /**@type Device */
-                    const device = iterator.current();
-                    let updated = false;
+        try {
+            await self.bluetooth.initialize();
+            console.log('ble is ready', this.type, this.devices);
 
-                    self.bluetooth.listen(device.address, function (serviceUUID, value) {
-                        iterator.finish();
-                        self.connectedDeviceAddress = device.address;
+            Utils.loopAsync(self.devices, function (iterator) {
+                /**@type Device */
+                const device = iterator.current();
+                let updated = false;
+                const uuid = Utils.guid();
+                console.log(`[${uuid}] attempt to connect to ${device.name} (${device.address})`);
 
-                        if (updated === false) {
-                            Device.updateLastSeen(device.address);
-                            updated = true;
+                self.bluetooth.listen(device, function (value) {
+//                    console.log(`[${uuid}] connected to ${device.name} (${device.address})`);
+                    iterator.finish();
+                    self.connectedDeviceAddress = device.address;
 
-                            self.unresponsiveTimer = setInterval(function () {
-                                let diff = Date.now() - self.lastEventAt;
-                                if (diff > 15000) {
-                                    console.log('unresponsiveTimer', diff > 15000, diff, new Date(self.lastEventAt));
-                                    callback(0);
-                                }
-                            }, 5000);
-                        }
+                    if (updated === false) {
+                        Device.updateLastSeen(device.address);
+                        updated = true;
 
-                        self.lastEventAt = Date.now();
-                        callback(value);
-                    }, function onError() {
-                        console.log('failed', device.address);
-                        self.bluetooth.disconnect(device.address);
+                        clearInterval(self.unresponsiveTimer);
+                        self.unresponsiveTimer = setInterval(function () {
+                            let diff = Date.now() - self.lastEventAt;
+                            if (diff > 15000) {
+                                console.log('unresponsiveTimer', uuid, diff > 15000, diff, new Date(self.lastEventAt));
+                                callback(0);
+                            }
+                        }, 5000);
+                    }
 
-                        if (iterator.isFinished()) {
+                    self.lastEventAt = Date.now();
+                    callback(value);
+                }, function onError(err) {
+                    console.log(`[${uuid}] failed to connect to ${device.name} (${device.address})`, err);
 
-                            setTimeout(function(){
-                                iterator.restart();
-                                iterator.next();
-                            }, 60000);
+                    if (iterator.isFinished()) {
 
-                            return;
-                        }
+                        setTimeout(function(){
+                            console.log(`[${uuid}] no more devices of this type... restarting process ${device.name} (${device.address})`, err);
+                            iterator.restart();
+                            iterator.next();
+                        }, 20000);
 
-                        iterator.next();
-                    }, /* retry 3 times = */ 3);
-                });
-            })
-            .catch(function (err) {
-                if (err.reason !== 'disabled') {
-                    return;
-                }
+                        return;
+                    }
 
-                self.retryTimer = setInterval(function () {
-                    self.listen(callback);
-                }, 30000);
+                    iterator.next();
+                }, /* retry 3 times = */ 3);
             });
+
+        } catch (err) {
+            if (err.reason !== 'disabled') {
+                return;
+            }
+
+            self.retryTimer = setInterval(function () {
+                self.listen(callback);
+            }, 30000);
+        }
     }
 
     stop() {
         const self = this;
-        self.bluetooth.disconnect(self.connectedDeviceAddress);
         clearInterval(self.unresponsiveTimer);
         clearInterval(self.retryTimer);
+        self.bluetooth.disconnect(self.connectedDeviceAddress)
+            .then(() => console.log('disconnected', this.type))
+            .catch((err) => console.error(err));
     }
 }

@@ -23,7 +23,7 @@ try {
     }
 }
 
-if (env !== 'dev' && env !== 'prod' && env !== 'remote-dev')
+if (env !== 'dev' && env !== 'prod' && env !== 'remote-dev' && env !== 'device')
     throw 'Unknown env. Allowed are: "dev" or "prod" ';
 
 if (app !== 'gopaddler' && app !== 'uttercycling')
@@ -36,12 +36,20 @@ let separator = Array(log.length).fill('*').join('');
 
 console.log(`${separator}\n${log}\n${separator}\n\n`);
 
+
+function devTool() {
+    if (env === 'device') return 'inline-source-map';
+    if (env === 'dev' || env === 'remote-dev') return 'source-map';
+    return undefined;
+}
+console.log(devTool());
+let key = env === 'device' ? 'prod' : env;
 module.exports = (_, argv) => {
     const isReleaseVersion = argv.mode === 'production';
     return {
         context: __dirname + "/src/main/js",
         entry: "./main.js",
-        devtool: env === 'dev' || env === 'remote-dev' ? 'source-map' : undefined,
+        devtool: devTool(),
 
         output: {
             filename: "app.js",
@@ -49,8 +57,8 @@ module.exports = (_, argv) => {
         },
         plugins:[
             new webpack.DefinePlugin({
-                __WS_ENDPOINT__: JSON.stringify(config.src.endpoints[env].endpoint),
-                __WEB_URL__: JSON.stringify(config.src.endpoints[env].server),
+                __WS_ENDPOINT__: JSON.stringify(config.src.endpoints[key].endpoint),
+                __WEB_URL__: JSON.stringify(config.src.endpoints[key].server),
                 __VERSION__: JSON.stringify(config.cordova.version),
                 __IS_PORTRAIT_MODE__: JSON.stringify(isPortraitMode),
                 __API_VERSION__: JSON.stringify(config.src.versioning.apiVersion),

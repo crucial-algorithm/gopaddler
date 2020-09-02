@@ -224,7 +224,7 @@ export default class SessionViewCollectMetrics {
                 , startSplitsImmediately) {
         this.heartRateSensor.listen((hr) => {
             this.heartRate = hr;
-        });
+        }).catch((err) => console.error(err));
 
         this.gpsSensor.listen(this.locationUpdatedCallback.bind(this));
         this.background.onLocationChanged(this.locationUpdatedCallback.bind(this));
@@ -317,8 +317,8 @@ export default class SessionViewCollectMetrics {
         this.cyclingCadenceSensor = new BleSensor(BleSensor.TYPES().CYCLING_CADENCE);
         this.cyclingCadenceSensor.listen((value) => {
             if (value > 300) value = 0;
-            this.cadence = {value : value, interval: 0, total: 0};
-        })
+            this.cadence = {value: value, interval: 0, total: 0};
+        }).catch((err) => console.error(err))
     }
 
     /**

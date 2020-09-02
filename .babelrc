@@ -1,0 +1,15 @@
+{
+  "plugins": ["@babel/transform-runtime"],
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "useBuiltIns": "entry",
+        "targets": {
+          "android": 21,
+          "ios": 10
+        }
+      }
+    ]
+  ]
+}

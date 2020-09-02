@@ -4,12 +4,14 @@ const STORAGE_KEY = "devices";
 
 class Device {
 
-    constructor(name, address, type, addedAt = null, lastSeenAt = null) {
+    constructor(name, address, type, serviceUuid, characteristicUuid, addedAt = null, lastSeenAt = null) {
         this._name = name;
         this._address = address;
         this._addedAt = addedAt;
         this._lastSeenAt = lastSeenAt;
         this._type = type;
+        this._serviceUuid = serviceUuid;
+        this._characteristicUuid = characteristicUuid;
     }
 
     static count() {
@@ -29,7 +31,8 @@ class Device {
 
         for (/**@type {Device} */ let device of devices) {
             if (type === null || device.type === type)
-                result.push(new Device(device.name, device.address, device.type, device.addedAt, device.lastSeenAt));
+                result.push(new Device(device.name, device.address, device.type, device.serviceUuid
+                    , device.characteristicUuid, device.addedAt, device.lastSeenAt));
         }
 
         return result;
@@ -76,6 +79,7 @@ class Device {
     }
 
     static updateLastSeen(address) {
+        console.log('updating last seen at for ', address);
         const devices = Device.all();
         for (let device of devices) {
             if (device.address === address) {
@@ -128,6 +132,23 @@ class Device {
         this._type = value;
     }
 
+
+    get serviceUuid() {
+        return this._serviceUuid;
+    }
+
+    set serviceUuid(value) {
+        this._serviceUuid = value;
+    }
+
+    get characteristicUuid() {
+        return this._characteristicUuid;
+    }
+
+    set characteristicUuid(value) {
+        this._characteristicUuid = value;
+    }
+
     /**
      * method for JSON.stringify
      * @return {{lastSeenAt: *, addedAt: *, address: *, name: *}}
@@ -137,6 +158,8 @@ class Device {
             name: this.name,
             address: this.address,
             type: this.type,
+            serviceUuid: this.serviceUuid,
+            characteristicUuid: this.characteristicUuid,
             addedAt: this.addedAt,
             lastSeenAt: this.lastSeenAt
         }

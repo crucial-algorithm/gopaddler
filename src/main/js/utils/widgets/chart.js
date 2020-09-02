@@ -34,10 +34,11 @@ let initialized = false;
 /**
  * @typedef {Object} ChartDataSet
  * @property {Array<number>}    data
- * @property {string}           backgroundbackColor
+ * @property {string}           backgroundColor
  * @property {string}           borderColor
  * @property {number}           borderWidth
  * @property {number}           pointRadius
+ * @property {string}           yAxisID
  *
  */
 

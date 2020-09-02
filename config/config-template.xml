@@ -37,7 +37,7 @@
     <access launch-external="yes" origin="geo:*" />
     <platform name="android">
         <preference name="AndroidLaunchMode" value="singleInstance" />
-        <preference name="android-minSdkVersion" value="19" />
+        <preference name="android-minSdkVersion" value="22" />
         <preference name="android-targetSdkVersion" value="29" />
     </platform>
     <platform name="ios">
@@ -58,7 +58,7 @@
     <preference name="StatusBarOverlaysWebView" value="true" />
     <universal-links>
         <ios-team-id value="6METDDZA7J" />
-        <host name="coach.gopaddler.com" scheme="https" >
+        <host name="app.uttercoach.com" scheme="https" >
             <path url="/app-links/join-coach-team/*" event="ulJoinCoach"/>
         </host>
     </universal-links>

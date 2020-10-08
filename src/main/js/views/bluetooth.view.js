@@ -35,11 +35,12 @@ class BluetoothView {
             self.$searching = $page.find('[data-selector="searching-devices"]');
             self.$tryAgain = $page.find('p[data-selector="no-devices-found"]');
 
-            self.$devices.on('touchstart', 'div.bluetooth-devices-device-forget', function (ev) {
+            self.$devices.on('touchstart', 'div.bluetooth-devices-device-forget', async function (ev) {
                 ev.stopPropagation();
-                var $ev = $(ev.currentTarget);
-                var address = $ev.data('address');
+                const $ev = $(ev.currentTarget);
+                const address = $ev.data('address');
 
+                await self.bluetooth.unpair(address);
                 Device.remove(address);
                 if (Device.count() === 0) {
                     self.list.destroy();
@@ -51,7 +52,6 @@ class BluetoothView {
                         self.$noDevicesFound.show();
                         self.$searching.hide();
                     }
-
                     return;
                 }
 

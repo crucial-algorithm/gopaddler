@@ -28,7 +28,9 @@ const ERROR = {
     UNKNOWN_ERROR: 'UNKNOWN_ERROR',
     UNKNOWN_DEVICE_TYPE: 'UNKNOWN_DEVICE_TYPE',
     CONNECT_ERROR: 'CONNECT_ERROR',
-    SUBSCRIBE_ERROR: 'SUBSCRIBE_ERROR'
+    SUBSCRIBE_ERROR: 'SUBSCRIBE_ERROR',
+    PAIRING_ERROR: 'PAIRING/BOND ERROR',
+    DISCONNECT_ERROR: 'DISCONNECT ERROR'
 };
 
 const BLE_PROFILES = {
@@ -149,16 +151,21 @@ class Bluetooth {
         const self = this;
         return new Promise(async (resolve, reject) => {
             try {
+                console.log('connecting...');
                 await self.connect(address);
+                console.log('connected | Discovering...');
                 let info = await self.discover(address);
-                self.subscribeCharacteristic(address, info.service.uuid, info.characteristic.uuid, () => {
-                    self.disconnect(address);
-                    resolve(info);
-                }, (err) => {
-                    reject({type: ERROR.SUBSCRIBE_ERROR, error: err});
+                console.log('Discovered | Pairing...');
+                await self.pair(address);
+                console.log('Paired | Subscribing...');
+                await self.subscribeCharacteristic(address, info.service.uuid, info.characteristic.uuid);
+                console.log('Subscribed | Disconnecting...');
+                await self.disconnect(address).catch((error) => {
+                    console.log('failed to disconnect', error);
                 });
+                resolve(info);
             } catch (err) {
-                reject({type: ERROR.CONNECT_ERROR, error: err});
+                reject(err);
             }
         });
     }
@@ -178,7 +185,7 @@ class Bluetooth {
                 if (err.message === "Device previously connected, reconnect or close for new device") {
                     self.disconnect(address).then(resolve);
                 }
-                reject(err);
+                reject({type: ERROR.CONNECT_ERROR, err});
             }, {
                 address: address,
                 autoConnect: true
@@ -236,15 +243,12 @@ class Bluetooth {
             await self.connect(address);
             console.log(`ble connection established ${device.name} (${device.address})`);
             await self.discover(address);
-            console.log(`ble descovery finished established ${device.name} (${device.address})`);
-            self.subscribeCharacteristic(address, device.serviceUuid, device.characteristicUuid, (value) => {
+            console.log(`ble discovery finished established ${device.name} (${device.address})`);
+            await self.subscribeCharacteristic(address, device.serviceUuid, device.characteristicUuid, (value) => {
                 callback.apply({}, [value]);
-            }, (err) => {
-                self.disconnect(device.address);
-                onError({type: ERROR.SUBSCRIBE_ERROR, error: err});
             });
         } catch (err) {
-            onError({type: ERROR.CONNECT_ERROR, error: err});
+            onError(err);
         }
 
         self.address = address;
@@ -258,18 +262,28 @@ class Bluetooth {
      * @param serviceUUID
      * @param characteristicUUID
      * @param listener
-     * @param onSubscribeError
      */
-    subscribeCharacteristic(address, serviceUUID, characteristicUUID, listener, onSubscribeError) {
+    subscribeCharacteristic(address, serviceUUID, characteristicUUID, listener = ()=>{}) {
         const self = this;
-        bluetoothle.subscribe(function (result) {
-            if (!result.value) return;
-            listener(self.decode(serviceUUID, result.value));
-        }, onSubscribeError, {
-            address: address,
-            service: serviceUUID,
-            characteristic: characteristicUUID
+        return new Promise((resolve, reject) => {
+            let first = true;
+            bluetoothle.subscribe(function (result) {
+                if (!result.value) return;
+                let value = self.decode(serviceUUID, result.value);
+                listener(value);
+                if (first) {
+                    resolve(value);
+                    first = false;
+                }
+            }, (error) => {
+                reject({type: ERROR.SUBSCRIBE_ERROR, error})
+            }, {
+                address: address,
+                service: serviceUUID,
+                characteristic: characteristicUUID
+            });
         });
+
     }
 
     /**
@@ -303,6 +317,38 @@ class Bluetooth {
     }
 
     /**
+     * @private
+     * @param address
+     * @return {Promise<unknown>}
+     */
+    async pair(address) {
+        return new Promise(function (resolve, reject) {
+            bluetoothle.bond(function success(result) {
+                if (result.status === 'unbonded') return reject({type: ERROR.PAIRING_ERROR, error: 'received unbonded message'});
+                if (result.status === 'bonding') return;
+                resolve();
+            }, function (error) {
+                if (error.message === 'Device already bonded') {
+                    return resolve();
+                }
+                reject({type: ERROR.PAIRING_ERROR, error});
+            }, {address: address});
+        });
+    }
+
+    unpair(address) {
+        this.address = address;
+        return new Promise(function (resolve, reject) {
+            bluetoothle.unbond(function success(result) {
+                if (result.status === 'unbonded')
+                    resolve();
+            }, function (error) {
+                reject(error)
+            }, {address: address});
+        });
+    }
+
+    /**
      * Decode value to extract metric from sensor retrieved data
      *
      * @param {String} serviceUuid
@@ -322,15 +368,13 @@ class Bluetooth {
     disconnect(address) {
         let self = this;
         this._wasDisconnectIssued = true;
-        return new Promise((reject, resolve)=>{
-            if (!address && self.address === null) return;
-
+        return new Promise((resolve, reject) => {
+            if (!address && self.address === null) resolve();
             address = address || self.address;
-
             bluetoothle.close(function () {
                 resolve();
-            }, function (err) {
-                reject(err);
+            }, function (error) {
+                reject({type: ERROR.DISCONNECT_ERROR, error});
             }, {address: address});
         })
     }

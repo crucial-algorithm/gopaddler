@@ -323,6 +323,7 @@ class Bluetooth {
      */
     async pair(address) {
         return new Promise(function (resolve, reject) {
+            if (window.cordova.platformId === 'ios') return resolve();
             bluetoothle.bond(function success(result) {
                 if (result.status === 'unbonded') return reject({type: ERROR.PAIRING_ERROR, error: 'received unbonded message'});
                 if (result.status === 'bonding') return;

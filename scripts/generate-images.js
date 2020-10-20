@@ -143,8 +143,8 @@ function generateiOS() {
                 iosProjectFolder = 'Utter Cycling';
             }
 
-            console.log('Generating ios splash screen images')
-            await generate(iOSSplashImages, images.splash, iosProjectFolder);
+//            console.log('Generating ios splash screen images')
+//            await generate(iOSSplashImages, images.splash, iosProjectFolder);
             console.log('\n\nGenerating ios icon images')
             await generate(iOSIconImages, images.icon, iosProjectFolder);
             console.log('\n\n --> iOS image generation complete <-- \n')

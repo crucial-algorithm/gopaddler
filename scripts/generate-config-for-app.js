@@ -17,6 +17,7 @@ fs.readFile('./config/config-template.xml', 'utf8', function (err, data) {
     if (err) {
         return console.log(err);
     }
+    data = data.replace(/{{APP}}/g, app);
     data = data.replace(/{{VERSION_CODE}}/g, config.cordova.versionCode);
     data = data.replace(/{{APP_ID}}/g, config.cordova.id);
     data = data.replace(/{{APP_VERSION}}/g, config.cordova.version);

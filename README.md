@@ -1,37 +1,40 @@
 # README #
 
-GoPaddler mobile app
+GoPaddler mobile app instructions
 
-### How do I get set up? ###
 
-#### Clone this repository
+### Clone this repository ###
     > git clone https://kimile@bitbucket.org/kimile/paddler-app.git
-    
-#### Build source code
-    Build once
-    > webpack
-    watch mode
-    > webpack --progress --colors --watch
-    
-#### To deploy in mobile        
+    > npm install
+    > cordova platform add android
+    > cordova platform add ios
+    > npm run build:dev [build:dev-remote-portrait|...]
 
-##### Install npm dependencies   
-    > npm install plist
-
-##### Prepare cordova environment
-    > cordova prepare
-
-##### Try it
-    > cordova run android
-
-#### To develop in your browser
-    > npm install zerver
-    > zerver wwww
-    Open your browser in http://localhost:5000
-    Open developer tools and enable device mode; Last, set User Agent (in Network Conditions) to custom value "GoPaddler-DEV"
+### Development process ###
+    Build (watch for changes)
+    > npm run build:dev [build:dev-remote-portrait|...]
+    Test in browser (by default, localhost:5000, user-agent: gp-dev-ck)
+    > npm run www
     
 
-#### For Unit testing
+### Updating iOS/Android platform  ###
+    Updating requires removing and adding platform again
+    > cordova platform remove android|ios
+    Generate splash/icon images for the platform
+    > npm run build:generate-images
+    
+    Open XCode/Android studio and confirm that images have been properly generated
+        iOS: "Utter Cycling" > Resources > Images.xcassets > AppIcon | LaunchStoryBoard
+        Android: Resource Manager > Mim Map (icon) | Drawable (splash)        
+
+### Release  ###
+    Follow instructions on https://docs.google.com/spreadsheets/d/1ToKXbZJ-MfA47lgWT1xJlJshxDF8Np9Et8NNpjO1ddU/edit#gid=2058990100
+
+### Replace app images  ###
+    Images are stored in res/{app-name}/[icon|splash].png. For iOS, splash must be available with the name Default@2x~universal~anyany.png
+    Replacing iOS splash image requires removing and adding the platform
+
+### For Unit testing
 Test cases are stored in local PostgreSQL database
 
 ##### Requirements
@@ -92,13 +95,6 @@ If it does not work, try removing compat and adding again (version 1.2):
 cordova plugin rm cordova-plugin-compat --force
 cordova plugin add cordova-plugin-compat@1.2
 ```
-
-### Generating splash screen
-#### Install
-Follow instruction @ https://github.com/AlexDisler/cordova-splash
-Note: requires brew install ImageMagic
-
-cordova-splash --splash=./res/splash.png
 
 ### Troubleshooting
 #### App hanging before creating database schema

@@ -30,6 +30,7 @@
         <preference name="CordovaWebViewEngine" value="CDVWKWebViewEngine" />
 
     </platform>
+    <splash src="res/{{APP}}/Default@2x~universal~anyany.png" />
     <feature name="Geolocation">
         <param name="android-package" value="org.apache.cordova.GeoBroker" />
     </feature>

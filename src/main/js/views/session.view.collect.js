@@ -152,7 +152,7 @@ export default class SessionViewCollectMetrics {
      * @param {boolean} startSplitsImmediately
      */
     start(startAt, splitsDefinition, wasStartedRemotely, expression
-          , remoteScheduledSessionId, calibration, startSplitsImmediately) {
+        , remoteScheduledSessionId, calibration, startSplitsImmediately) {
 
         this.createSession(startAt, calibration, remoteScheduledSessionId, startSplitsImmediately);
         this.startCommon(startAt, splitsDefinition, wasStartedRemotely, expression, startSplitsImmediately);
@@ -221,7 +221,7 @@ export default class SessionViewCollectMetrics {
      * @param {boolean} startSplitsImmediately
      */
     startCommon(startAt, splitsDefinition, wasStartedRemotely, expression
-                , startSplitsImmediately) {
+        , startSplitsImmediately) {
         this.heartRateSensor.listen((hr) => {
             this.heartRate = hr;
         }).catch((err) => console.error(err));
@@ -289,9 +289,9 @@ export default class SessionViewCollectMetrics {
      */
     startGoPaddler(startAt) {
 
-        this.calibration = Calibration.load(context.isPortraitMode()) || Calibration.blank();
+        this.calibration = Calibration.load(this.context.isPortraitMode()) || Calibration.blank();
 
-        this.motionSensor = new MotionSensor(this.calibration, context.isPortraitMode());
+        this.motionSensor = new MotionSensor(this.calibration, this.context.isPortraitMode());
         this.motionSensor.start(startAt);
         this.motionSensor.listenLeftToRight((event) => {
             this._handlers.leftRightChanged.apply({}, [event]);

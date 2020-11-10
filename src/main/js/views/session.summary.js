@@ -216,11 +216,10 @@ class SessionSummaryView {
             }
         }
 
-        let interval = null, previous = null, intervals = [], definition, workingDetails = [];
+        let interval = null, previous = null, intervals = [], definition, workingDetails = [], record;
         definition = session.expressionJson;
-
         for (let i = 0, l = details.length; i < l; i++) {
-            let record = details[i];
+            record = details[i];
             if (record.split === -1) {
                 if (previous) {
                     previous.finishedAt = record.getTimestamp();

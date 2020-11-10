@@ -13,7 +13,6 @@
     "chart.js": "^2.9.3",
     "chartjs-plugin-datalabels": "^0.5.0",
     "cordova": "^10.0.0",
-    "cordova-android": "^9.0.0",
     "cordova-plugin-background-mode-bluetooth-central": "^1.0.0",
     "cordova-plugin-bluetoothle": "^4.5.13",
     "cordova-plugin-compat": "^1.2.0",
@@ -60,6 +59,7 @@
     "@babel/plugin-transform-runtime": "^7.11.5",
     "@babel/preset-env": "^7.6.0",
     "babel-loader": "^8.0.6",
+    "cordova-android": "^9.0.0",
     "cordova-ios": "^6.1.1",
     "gm": "^1.23.1",
     "webpack": "^4.27.1",
@@ -74,8 +74,8 @@
   "homepage": "https://bitbucket.org/kimile/paddler-app#readme",
   "cordova": {
     "platforms": [
-      "android",
-      "ios"
+      "ios",
+      "android"
     ],
     "plugins": {
       "cordova-plugin-statusbar": {},

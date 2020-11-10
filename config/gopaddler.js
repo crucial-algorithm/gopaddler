@@ -6,8 +6,8 @@ module.exports = {
         author: "GoPaddler Team",
         authorEmail: "joaquim.rego@gopaddler.com",
         authorHref: "https://gopaddler.com",
-        version: "1.6.0",
-        versionCode: "1600",
+        version: "1.7.0",
+        versionCode: "1700",
     },
     src: {
         versioning: {
@@ -24,8 +24,8 @@ module.exports = {
                 endpoint: "wss://dev.gopaddler.com/websocket"
             },
             prod: {
-                server: "https://app.gopaddler.com",
-                endpoint: "wss://app.gopaddler.com/websocket"
+                server: "https://app.uttercoach.com",
+                endpoint: "wss://ws.uttercoach.com/websocket"
             }
         },
         distanceStep: 10,

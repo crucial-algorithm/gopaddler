@@ -51,16 +51,16 @@ export class SessionViewSplits {
         this.handleLiveStream(this.startedAt, this.expression);
 
         this._handlers = {
-            startedIntervals:()=>{},        // when splits started
-            startedSplit: ()=>{},           // on every split start
-            finishedSplit: ()=>{},          // on every split finish
-            finished: ()=>{},               // splits finished
-            startedDistanceBased: ()=>{},   // distance split started
-            warmUpFinishedRemotely: ()=>{},
-            splitStateUpdated: ()=>{},
-            startCountDown:()=>{},
-            finishCountDown:()=>{},
-            finishedNotification:()=>{},
+            startedIntervals:() => {},        // when splits started
+            startedSplit: () => {},           // on every split start
+            finishedSplit: () => {},          // on every split finish
+            finished: () => {},               // splits finished
+            startedDistanceBased: () => {},   // distance split started
+            warmUpFinishedRemotely: () => {},
+            splitStateUpdated: () => {},
+            startCountDown:() => {},
+            finishCountDown:() => {},
+            finishedNotification:() => {},
         };
 
         if (startSplitsImmediately)
@@ -76,12 +76,26 @@ export class SessionViewSplits {
      * @param {Timer}                       timer
      * @return {Splits}
      */
-    initSplitsHandler(splitsDefinition,wasStartedRemotely,distanceToTime, timeToDistance, timer) {
-        return Array.isArray(splitsDefinition) && splitsDefinition.length > 0 ?
-            new Splits(splitsDefinition, this.currentSplitStateHandler.bind(this)
-                , wasStartedRemotely, distanceToTime, timeToDistance
-                , timer.getCurrentDuration.bind(timer))
-            : new Splits();
+    initSplitsHandler(splitsDefinition, wasStartedRemotely, distanceToTime, timeToDistance, timer) {
+        if (!(Array.isArray(splitsDefinition) && splitsDefinition.length > 0)) return new Splits();
+
+
+        const handler = new Splits(splitsDefinition, this.currentSplitStateHandler.bind(this)
+          , wasStartedRemotely, distanceToTime, timeToDistance
+          , timer.getCurrentDuration.bind(timer));
+
+
+        handler.onStartCountDownUserNotification(() => {
+            this._handlers.startCountDown();
+        });
+        handler.onFinishCountDownUserNotification(() => {
+            this._handlers.finishCountDown();
+        });
+        handler.onFinishUserNotification(() => {
+            this._handlers.finishedNotification();
+        });
+
+        return handler;
     }
 
     start(duration, delay, startedRemotely = false) {

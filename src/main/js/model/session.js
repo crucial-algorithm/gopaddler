@@ -193,13 +193,18 @@ class Session {
                 if (details.records.length > 0) {
                     self.sessionEnd = details.records[details.records.length - 1].timestamp;
 
-                    // discard zeros from cadence
-                    let spm = [];
-                    for (let record of details.records) {
-                        if (record.getSpm() > 0) spm.push(record.getSpm());
-                    }
+                    AppSettings.switch(() => {
+                        // intentionally left blank
+                    }, () => {
+                        if (!splits && splits.length === 0) return;
 
-                    self.avgSpm = Utils.minMaxAvgStddev(spm).avg;
+                        // discard zeros from cadence
+                        let spm = [];
+                        for (let record of details.records) {
+                            if (record.getSpm() > 0) spm.push(record.getSpm());
+                        }
+                        self.avgSpm = Utils.minMaxAvgStddev(spm).avg;
+                    });
                 }
 
 

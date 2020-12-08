@@ -131,6 +131,10 @@ class Distance {
         return (this.previous || {coords: {}}).coords.longitude;
     }
 
+    pause() {
+        this.previous = null;
+    }
+
 }
 
 export default Distance;

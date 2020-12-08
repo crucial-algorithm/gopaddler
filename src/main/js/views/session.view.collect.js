@@ -108,7 +108,7 @@ export default class SessionViewCollectMetrics {
         /**@type Position|null */
         this._lastCommunicatedGPSPosition = null;
         /**@type Position|null */
-        this._previousCollectedGPSPostion = null;
+        this._previousCollectedGPSPosition = null;
         this._isSessionPaused = false;
         this._isDebugEnabled = !!Api.User.getProfile().debug;
         this._rawSensorDataForDebug = [];
@@ -139,6 +139,9 @@ export default class SessionViewCollectMetrics {
             finishCountDown:()=>{},
             finishedNotification:()=>{},
         }
+
+        // variable used only for development purposes
+        this._inRecovery = true;
     }
 
     /**
@@ -170,6 +173,8 @@ export default class SessionViewCollectMetrics {
     pause() {
         this.isSessionPaused = true;
         this.sessionPausedAt = Date.now();
+        this.lastKnownGPSPosition = null;
+        this.distanceTools.pause();
     }
 
     resume() {
@@ -337,7 +342,7 @@ export default class SessionViewCollectMetrics {
      */
     driftLocation(duration) {
         let locationReady = this.lastKnownGPSPosition !== null
-            && this.lastKnownGPSPosition !== this.previousCollectedGPSPostion
+            && this.lastKnownGPSPosition !== this.previousCollectedGPSPosition
             && duration - this.lastKnownGPSPosition.sessionDuration <= 5000;
         if (!locationReady) return;
 
@@ -346,7 +351,7 @@ export default class SessionViewCollectMetrics {
         this.location.pace = this.paceTools.calculate(this.location.speed);
         this.location.efficiency = StrokeEfficiency.calculate(this.location.speed, this.cadence.interval);
         this.location.strokes = StrokeEfficiency.calculatePer100(this.location.efficiency);
-        this.previousCollectedGPSPostion = this.lastKnownGPSPosition;
+        this.previousCollectedGPSPosition = this.lastKnownGPSPosition;
     }
 
     /**
@@ -428,6 +433,7 @@ export default class SessionViewCollectMetrics {
         let persistRecord = this.skipMetricPersistenceCountDown <= 0;
         let splitDetail = this.splitsTools.cycle(timestamp, duration, this.location.distance, persistRecord);
         let sessionDetail = this.createSessionDataRecord(timestamp, duration, splitDetail.position, splitDetail.isRecovery);
+        this._inRecovery = splitDetail.isRecovery;
         if (persistRecord) sessionDetail.save();
         this.skipMetricPersistenceCountDown--;
 
@@ -578,7 +584,8 @@ export default class SessionViewCollectMetrics {
 
     get cadence() {
         if (this.context.isDev()) {
-            let value = Utils.getRandomInt(80, 84);
+
+            let value = this._inRecovery ? Utils.getRandomInt(60, 64) : Utils.getRandomInt(80, 84);
             let interval = 60 / value * 1000;
             this.cadence = {value: value, interval: interval, total: 0};
         }
@@ -692,12 +699,12 @@ export default class SessionViewCollectMetrics {
         this._rawSensorFileForDebug = value;
     }
 
-    get previousCollectedGPSPostion() {
-        return this._previousCollectedGPSPostion;
+    get previousCollectedGPSPosition() {
+        return this._previousCollectedGPSPosition;
     }
 
-    set previousCollectedGPSPostion(value) {
-        this._previousCollectedGPSPostion = value;
+    set previousCollectedGPSPosition(value) {
+        this._previousCollectedGPSPosition = value;
     }
 
     get distanceTools() {

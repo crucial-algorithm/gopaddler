@@ -64,6 +64,9 @@ const BASE_EN = {
         , blt_no_devices_found: "No devices found"
         , blt_no_devices_found_instructions: "Check that Bluetooth is turned on in your phone's settings or"
         , blt_no_devices_found_try_again: "try again"
+        , blt_error_disconnecting_title: "Error"
+        , blt_error_disconnecting_message: "We could not remove device at this point. Error: $1"
+        , blt_error_disconnecting_action: "OK"
 
         , blt_device_name: "Name"
         , blt_device_last_seen: "Last Seen"

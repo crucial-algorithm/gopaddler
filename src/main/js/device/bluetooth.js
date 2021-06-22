@@ -178,12 +178,12 @@ class Bluetooth {
     async connect(address) {
         const self = this;
         return new Promise((resolve, reject) => {
-            bluetoothle.connect(function () {
+            bluetoothle.connect( function () {
                 resolve();
-            }, function (err) {
+            }, async function (err) {
                 console.log('something wrong with the connection to ', address, err);
                 if (err.message === "Device previously connected, reconnect or close for new device") {
-                    self.disconnect(address).then(resolve);
+                    await self.disconnect(address);
                 }
                 reject({type: ERROR.CONNECT_ERROR, err});
             }, {
@@ -344,6 +344,9 @@ class Bluetooth {
                 if (result.status === 'unbonded')
                     resolve();
             }, function (error) {
+                if (error.message === 'Device already unbonded') {
+                    return resolve();
+                }
                 reject(error)
             }, {address: address});
         });
@@ -366,7 +369,7 @@ class Bluetooth {
         }
     }
 
-    disconnect(address) {
+    async disconnect(address) {
         let self = this;
         this._wasDisconnectIssued = true;
         return new Promise((resolve, reject) => {

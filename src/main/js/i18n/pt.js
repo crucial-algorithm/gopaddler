@@ -64,6 +64,9 @@ const BASE_PT = {
         , blt_no_devices_found: "Nenhum dispositivo encontrado"
         , blt_no_devices_found_instructions: "Verifique se tem o bluetooth ligado ou"
         , blt_no_devices_found_try_again: "tente de novo"
+        , blt_error_disconnecting_title: "Erro"
+        , blt_error_disconnecting_message: "Foi impossível remover o dispositivo. Erro: $1"
+        , blt_error_disconnecting_action: "OK"
 
         , blt_device_name: "Dispositivo"
         , blt_device_last_seen: "Visto a"

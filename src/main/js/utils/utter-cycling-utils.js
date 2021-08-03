@@ -27,6 +27,6 @@ export class UtterCyclingUtils {
             previous = altitude;
         }
         console.log("===> [gain] ", total);
-        return total;
+        return Math.round(total);
     }
 }

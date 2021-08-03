@@ -181,7 +181,7 @@ export default class SessionViewCollectMetrics {
      *
      * @return {Promise}
      */
-    stop() {
+    stop() {
         this.heartRateSensor.stop();
         this.gpsSensor.stop();
         if (this.motionSensor) this.motionSensor.stop();
@@ -315,9 +315,12 @@ export default class SessionViewCollectMetrics {
      */
     startUtterCycling(startAt) {
         this.cyclingCadenceSensor = new BleSensor(BleSensor.TYPES().CYCLING_CADENCE);
-        this.cyclingCadenceSensor.listen((value) => {
+        this.cyclingCadenceSensor.listen((value, unresponsive) => {
             if (value > 300) value = 0;
             this.cadence = {value: value, interval: 0, total: 0};
+            if (this.isSessionPaused === false && unresponsive === true) {
+                this.cyclingCadenceSensor.restore()
+            }
         }).catch((err) => console.error(err))
     }
 

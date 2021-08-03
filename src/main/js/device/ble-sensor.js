@@ -16,7 +16,8 @@ export default class BleSensor {
 
         this.retryTimer = null;
         this.unresponsiveTimer = null;
-        this.connectedDeviceAddress = null;
+        /**@type Device */
+        this.connectedDevice = null;
         this.type = type;
     }
 
@@ -24,6 +25,7 @@ export default class BleSensor {
         const self = this;
         clearInterval(self.retryTimer);
         clearInterval(self.unresponsiveTimer);
+        self.originalCallback = callback;
 
         if (self.devices.length === 0) {
             return;
@@ -37,39 +39,15 @@ export default class BleSensor {
             await self.bluetooth.initialize();
             console.log('ble is ready', this.type, this.devices);
 
-            Utils.loopAsync(self.devices, function (iterator) {
+            Utils.loopAsync(self.devices, async function (iterator) {
                 /**@type Device */
                 const device = iterator.current();
-                let updated = false;
                 const uuid = Utils.guid();
                 console.log(`[${uuid}] attempt to connect to ${device.name} (${device.address})`);
-
-                self.bluetooth.listen(device, function (value) {
-//                    console.log(`[${uuid}] connected to ${device.name} (${device.address})`);
-                    iterator.finish();
-                    self.connectedDeviceAddress = device.address;
-
-                    if (updated === false) {
-                        Device.updateLastSeen(device.address);
-                        updated = true;
-
-                        clearInterval(self.unresponsiveTimer);
-                        self.unresponsiveTimer = setInterval(function () {
-                            let diff = Date.now() - self.lastEventAt;
-                            if (diff > 15000) {
-                                console.log('unresponsiveTimer', uuid, diff > 15000, diff, new Date(self.lastEventAt));
-                                callback(0);
-                            }
-                        }, 5000);
-                    }
-
-                    self.lastEventAt = Date.now();
-                    callback(value);
-                }, function onError(err) {
-                    console.log(`[${uuid}] failed to connect to ${device.name} (${device.address})`, err);
-
+                try {
+                    await self.subscribe(device, callback, true)
+                } catch (err) {
                     if (iterator.isFinished()) {
-
                         setTimeout(function(){
                             console.log(`[${uuid}] no more devices of this type... restarting process ${device.name} (${device.address})`, err);
                             iterator.restart();
@@ -78,9 +56,8 @@ export default class BleSensor {
 
                         return;
                     }
-
                     iterator.next();
-                }, /* retry 3 times = */ 3);
+                }
             });
 
         } catch (err) {
@@ -94,12 +71,59 @@ export default class BleSensor {
         }
     }
 
+    /**
+     *
+     * @param {Device} device
+     * @param callback
+     * @param discover
+     * @returns {Promise<unknown>}
+     */
+    subscribe(device, callback, discover = true) {
+        const self = this;
+        return new Promise((resolve, reject) => {
+            let updated = false;
+            self.bluetooth.listen(device, function (value) {
+                self.connectedDevice = device;
+                if (updated === false) {
+                    Device.updateLastSeen(device.address);
+                    updated = true;
+
+                    clearInterval(self.unresponsiveTimer);
+                    self.unresponsiveTimer = setInterval(function () {
+                        let diff = Date.now() - self.lastEventAt;
+                        if (diff > 15000) {
+                            console.log('unresponsiveTimer', diff > 15000, diff, new Date(self.lastEventAt));
+                            callback(0, true);
+                        }
+                    }, 5000);
+                }
+
+                self.lastEventAt = Date.now();
+                callback(value);
+                resolve()
+            }, function onError(err) {
+                reject(err)
+                console.log(`[failed to connect to ${device.name} (${device.address})`, err);
+            }, /* retry 3 times = */ 3, discover);
+        })
+    }
+
     stop() {
         const self = this;
         clearInterval(self.unresponsiveTimer);
         clearInterval(self.retryTimer);
-        self.bluetooth.disconnect(self.connectedDeviceAddress)
+        if (self.connectedDevice === null) return
+        self.bluetooth.disconnect(self.connectedDevice.address)
             .then(() => console.log('disconnected', this.type))
             .catch((err) => console.error(err));
+    }
+
+    restore() {
+        this.subscribe(this.connectedDevice, this.originalCallback).then(() => {
+            console.log('connection restored')
+        }).catch((err) => {
+            console.log('failed to reconnect to device')
+            console.error(err)
+        })
     }
 }

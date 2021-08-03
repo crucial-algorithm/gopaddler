@@ -87,6 +87,7 @@ class BluetoothView {
         this.bluetooth
             .initialize()
             .then(function () {
+                console.log('ble initialized');
                 self.startScan();
             }).catch(function (err) {
             console.log('error initializing bluetooth', err)

@@ -1,6 +1,7 @@
 'use strict';
 
 import Device from '../model/device';
+import AppSettings from "../utils/app-settings";
 
 
 /**
@@ -78,12 +79,12 @@ class Bluetooth {
         let params = {
             "request": true,
             "statusReceiver": true,
-            "restoreKey": "gopaddler-app"
+            "restoreKey": `${AppSettings.app()}-app`
         };
 
         return new Promise(function (resolve, reject) {
             if (isBluetoothInitialized) {
-                console.log('ble initalized... resolve');
+                console.log('ble initialized... resolve');
                 setTimeout(() => resolve(), 20);
             } else {
 
@@ -101,23 +102,22 @@ class Bluetooth {
 
     startScan(onFind, onError) {
         let self = this;
-        let addresss = {};
+        let scannedDevicesAddress = {};
         bluetoothle.startScan(async function (device) {
 
             if (device.status === 'scanStarted') {
                 console.log('scanStarted');
-                return;
             }
 
             if (!device.name) {
                 return;
             }
 
-            if (addresss.hasOwnProperty(device.address)) {
+            if (scannedDevicesAddress.hasOwnProperty(device.address)) {
                 return;
             }
 
-            addresss[device.address] = true;
+            scannedDevicesAddress[device.address] = true;
 
             console.log('new device found', device.name, device.address);
 
@@ -137,7 +137,11 @@ class Bluetooth {
     }
 
     stopScan() {
-        bluetoothle.stopScan();
+        bluetoothle.stopScan(function stopScanSuccess(result) {
+            console.log('stop scan succeeded', result)
+        }, function stopScanError(error) {
+            console.error('stop scan failed', error)
+        });
     }
 
     /**

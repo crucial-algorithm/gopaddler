@@ -346,6 +346,7 @@ const BASE_EN = {
         , profile_name_placeholder: "name"
         , profile_email_placeholder: "e-mail"
         , profile_update_action: "update"
+        , profile_logout_action: "Logout"
         , profile_update_error_coach_exists_title: "Duplicate account"
         , profile_update_error_coach_exists_message: "There is a coach account with that email address. <br/><br/>Please use other email address to create an athlete account"
         , profile_update_error_coach_exists_acknowledge: "OK"

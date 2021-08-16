@@ -338,8 +338,9 @@ if (environment === 'prod') {
     emulateCordova();
     let universalLinkDefer = $.Deferred();
 //    setTimeout(function () {universalLinkDefer.resolve(/* Token = */'nv69Mc4tTLnakQgjH');}, 1000);
-    loadDb();
-    loadUi(universalLinkDefer.promise());
+    loadDb(true).then(() => {
+        loadUi(universalLinkDefer.promise());
+    })
 }
 
 function loadDb() {

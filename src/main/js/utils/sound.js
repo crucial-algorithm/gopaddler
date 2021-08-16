@@ -56,3 +56,7 @@ class Sound {
 
 
 export default Sound;
+
+// Adicionar opção para terminar treino programado sem desligar o treino
+// Adicionar opção para calibrar durante o treino
+// Verificar o que se passa com a cadência em sessões programadas - está muito baixa!!

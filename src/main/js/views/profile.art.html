@@ -1,7 +1,5 @@
 {{if isPortraitMode}}
     <link rel="stylesheet" href="css/portrait.css">
-{{else}}
-    <link rel="stylesheet" href="css/manage.coach.landscape.css">
 {{/if}}
 
 <div class="{{if isPortraitMode}} portrait-paddler-topbar {{/if}} app-topbar paddler-topbar">
@@ -19,8 +17,10 @@
                 <input id="email" type="email" placeholder="{{"profile_email_placeholder" | translate}}" name="email" value="{{email}}"/>
                 <input id="name" type="text" placeholder="{{"profile_name_placeholder" | translate}}" name="name" value="{{name}}"/>
                 <button class="button disabled" id="update">{{"profile_update_action" | translate}}</button>
-
             </form>
+          {{if email}}
+            <button class="button button-logout" id="logout">{{"profile_logout_action" | translate}}</button>
+          {{/if}}
         </div>
     </div>
 </div>

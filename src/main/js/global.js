@@ -17,86 +17,20 @@ if (!window.sqlitePlugin) {
 }
 
 function emulateCordova () {
-    var _open = window.openDatabase;
-    var sessions = generateHistorySessions();
-    window.sqlitePlugin = window;
+    window.sqlitePlugin = {
+        openDatabase: (a = {}) => {
+            const db = window.openDatabase('utter', '1.0', 'utter sports db', 10 * 1024 * 1024);
+            db.executeSql = (sql = '', args = [], success = () => {}, error = () => {}) => {
+                db.transaction((tx) => {
+                    tx.executeSql(sql, args, (tx, rs) => { success(rs) }, error);
+                })
+            }
+            return db;
+        }
+    };
 
     window.cordova = {
         InAppBrowser: {open: window.open}
-    };
-
-    var executeSql = function (sql, args, success, error) {
-        var data =[];
-        success = success || function(){};
-
-        // INSERT
-        if (sql.toLowerCase().substr(0, 6) === 'insert') {
-            success({insertId: 1234});
-            return;
-        }
-
-        // ALTER TABLE
-        if (sql.toLowerCase().substr(0, 5) === 'alter') {
-            success({insertId: 1234});
-            return;
-        }
-
-
-        // SELECT SETTINGS
-        if (sql.toLowerCase().indexOf("settings") >= 0) {
-            data = [
-                {version: 2000, units: 'K', show_touch_events_tips: 1, black_and_white: false, restore_layout: true, portrait_mode: __IS_PORTRAIT_MODE__
-                    , gps_rate: 0, max_heart_rate: 186, resting_heart_rate: 58}
-            ];
-            success({
-                rows: {
-                    length: 14, item: function (index) {
-                        return data[index];
-                    }
-                }
-            });
-
-            return;
-        }
-
-        // SELECT SESSION_DATA
-        if (sql.indexOf("session_data") >= 0) {
-            var sessionId = args[0], session = null;
-
-            for (var s = 0, l = sessions.length; s < l; s++) {
-                if (sessions[s].id === sessionId) {
-                    session = sessions[s];
-                }
-            }
-
-            if (!session) session = sessions[0];
-
-            success({rows: {length: session.data.length, item: function (index) {
-                if (!session)
-                    return null;
-
-                return session.data[index]
-            }}});
-
-            return;
-
-        }
-
-        // SELECT SESSION
-        success({rows: {length: sessions.length, item: function (index) {
-            return sessions[index];
-        }}})
-    };
-
-    window.sqlitePlugin.openDatabase = function (args) {
-        return {
-            executeSql: executeSql,
-            transaction: function (callback) {
-                setTimeout(function () {
-                    callback({executeSql: executeSql});
-                }, 0);
-            }
-        }
     };
 
     if (!navigator.connection) {

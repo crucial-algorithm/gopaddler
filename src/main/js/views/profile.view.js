@@ -33,6 +33,7 @@ export default class ProfileView {
         this.$name = $page.find('#name');
         this.$email = $page.find('#email');
         this.$update = $page.find('#update');
+        this.$logout = $page.find('#logout');
 
         this.$update.off('tap').on('tap', function (e) {
             e.preventDefault();
@@ -66,6 +67,12 @@ export default class ProfileView {
                 }
                 context.ui.modal.alert(context.translate(title), '<p>' + context.translate(message) + '</p>'
                     , {text: context.translate(button)});
+            });
+        });
+
+        this.$logout.off('tap').on('tap', () => {
+            Api.Auth.logout().catch(() => {
+                Api.Auth.resetUserInfo();
             });
         });
 

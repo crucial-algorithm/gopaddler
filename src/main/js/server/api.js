@@ -485,15 +485,7 @@ let Auth = {
 
         asteroid.logout().then(function () {
 
-            _storePreviousKnownUser();
-
-            // remove from local storage
-            localStorage.removeItem('user');
-            localStorage.removeItem('login_method');
-
-            // set values to undefined
-            asteroid.user = undefined;
-
+            Auth.resetUserInfo();
             defer.resolve();
 
         }).catch(function (err) {
@@ -503,6 +495,16 @@ let Auth = {
 
 
         return defer.promise();
+    },
+
+    resetUserInfo: function () {
+        _storePreviousKnownUser();
+        // remove from local storage
+        localStorage.removeItem('user');
+        localStorage.removeItem('login_method');
+
+        // set values to undefined
+        asteroid.user = undefined;
     },
 
     createAccount: function () {

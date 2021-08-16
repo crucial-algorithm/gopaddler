@@ -346,6 +346,7 @@ const BASE_PT = {
         , profile_name_placeholder: "nome"
         , profile_email_placeholder: "e-mail"
         , profile_update_action: "Actualizar"
+        , profile_logout_action: "Logout"
         , profile_update_error_coach_exists_title: "Conta duplicada"
         , profile_update_error_coach_exists_message: "Já existe uma conta de treinador com esse email. <br/> <br/> Por favor utilize outro email para criar uma conta de atleta"
         , profile_update_error_coach_exists_acknowledge: "OK"

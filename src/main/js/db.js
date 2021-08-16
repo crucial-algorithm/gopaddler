@@ -179,31 +179,28 @@ function determineDbVersion() {
 
 
 let connection;
-
 class Database {
-
     static init() {
+        return new Promise((resolve, reject) => {
+            connection = window.sqlitePlugin.openDatabase({name: AppSettings.databaseName()
+                , location: AppSettings.databaseLocation()})
+            console.log(connection);
 
-        const defer = $.Deferred();
-        connection = window.sqlitePlugin.openDatabase({name: AppSettings.databaseName()
-            , location: AppSettings.databaseLocation()});
+            determineDbVersion().then(function (version) {
+                connection.transaction(function (tx) {
+                    let sql;
+                    for (let d = version; d < ddl.length; d++) {
 
-        determineDbVersion().then(function (version) {
-            connection.transaction(function (tx) {
-                let sql;
-                for (let d = version; d < ddl.length; d++) {
-
-                    for (let i = 0; i < ddl[d].length; i++) {
-                        sql = ddl[d][i].join('');
-                        tx.executeSql(sql, [], success, error);
+                        for (let i = 0; i < ddl[d].length; i++) {
+                            sql = ddl[d][i].join('');
+                            tx.executeSql(sql, [], success, error);
+                        }
                     }
-                }
 
-                defer.resolve();
+                    resolve();
+                });
             });
-        });
-
-        return defer.promise();
+        })
     }
 
     static getConnection() {

@@ -31,7 +31,8 @@ const ERROR = {
     CONNECT_ERROR: 'CONNECT_ERROR',
     SUBSCRIBE_ERROR: 'SUBSCRIBE_ERROR',
     PAIRING_ERROR: 'PAIRING/BOND ERROR',
-    DISCONNECT_ERROR: 'DISCONNECT ERROR'
+    DISCONNECT_ERROR: 'DISCONNECT ERROR',
+    CLOSE_ERROR: 'CLOSE ERROR'
 };
 
 const BLE_PROFILES = {
@@ -107,6 +108,7 @@ class Bluetooth {
 
             if (device.status === 'scanStarted') {
                 console.log('scanStarted');
+                return
             }
 
             if (!device.name) {
@@ -144,7 +146,29 @@ class Bluetooth {
         });
     }
 
+    async checkAvailableDevices() {
+        console.log('signaling devices that we are about to try to connect to them')
+        return new Promise((resolve, reject) => {
+            const devicesFound = [];
+            setTimeout(async () => {
+                await this.stopScan();
+                resolve(devicesFound)
+            }, 20000)
+            bluetoothle.startScan((scanResult) => {
+                if (scanResult.status === 'scanStarted') {
+                    console.log('looking for available devices')
+                    return
+                }
+                devicesFound.push(device.address)
+            }, (error) => {
+                console.error('no devices found', error.message)
+                resolve([])
+            }, {services: [BLE_PROFILES.CYCLING_CADENCE.SERVICE_UUID, BLE_PROFILES.HR.SERVICE_UUID]})
+        })
+    }
+
     /**
+     * Scan for devices process
      * Evaluate if this device is relevant to us
      * @private
      *
@@ -180,20 +204,26 @@ class Bluetooth {
      * @return {Promise<unknown>}
      */
     async connect(address) {
-        const self = this;
         return new Promise((resolve, reject) => {
-            bluetoothle.connect( function () {
+            bluetoothle.connect(() => {
                 resolve();
-            }, async function (err) {
+            }, async (err) => {
                 console.log('something wrong with the connection to ', address, err);
                 if (err.message === "Device previously connected, reconnect or close for new device") {
-                    await self.disconnect(address);
+                    console.log('Device already connected, try to disconnect before next attempt');
+                    try {
+                        await this.disconnect(address);
+                    } catch (err) {
+                        // intentionally left blank
+                    }
                 }
                 reject({type: ERROR.CONNECT_ERROR, err});
             }, {
                 address: address,
-                autoConnect: true
+                autoConnect: false
             });
+        }, {
+
         });
     }
 
@@ -203,15 +233,14 @@ class Bluetooth {
      * @return {Promise<{address: string, service: BleService, characteristic: BleCharacteristic}>}
      */
     async discover(address) {
-        const self = this;
         return new Promise((resolve, reject) => {
-            bluetoothle.discover(function success(discovered) {
+            bluetoothle.discover((discovered) => {
 
-                let service = self.scanServices(discovered.services);
+                let service = this.scanServices(discovered.services);
                 // noinspection JSIncompatibleTypesComparison
                 if (service === null) return reject({type: ERROR.UNKNOWN_DEVICE_TYPE});
 
-                let characteristic = self.scanCharacteristics(service.characteristics);
+                let characteristic = this.scanCharacteristics(service.characteristics);
                 // noinspection JSIncompatibleTypesComparison
                 if (characteristic === null) return reject({type: ERROR.UNKNOWN_DEVICE_TYPE});
 
@@ -221,9 +250,10 @@ class Bluetooth {
                     console.log("discover complete", address);
 
             }, (err) => {
+                console.log(`ble discover failed with error ${err.message}`);
                 if (err.error === "neverConnected") {
                     // try to reconnect
-                    self.evaluateDeviceFoundOnScan(address);
+                    this.evaluateDeviceFoundOnScan(address);
                 } else {
                     reject({type: ERROR.UNKNOWN_ERROR, error: err});
                 }
@@ -244,6 +274,8 @@ class Bluetooth {
         const self = this;
         const address = device.address;
         try {
+            await self.isLocationEnabled();
+            console.log(`ble location enabled ${device.name} (${device.address})`);
             await self.connect(address);
             console.log(`ble connection established ${device.name} (${device.address})`);
             await self.discover(address);
@@ -258,7 +290,32 @@ class Bluetooth {
         self.address = address;
     }
 
+    async isLocationEnabled() {
+        return new Promise((resolve, reject) => {
+            bluetoothle.isLocationEnabled(async (status) => {
+                if (status.isLocationEnabled === true) return resolve()
+                await this.requestLocation();
+                resolve()
+            }, (err) => {
+                console.log(`ble location enabled check failed ${err.message}`);
+                reject(err)
+            });
+        })
+    }
 
+    async requestLocation() {
+        return new Promise((resolve, reject) => {
+            bluetoothle.requestLocation((status) => {
+                if (status.requestLocation === true)
+                    resolve()
+                else
+                    reject()
+            }, (err) => {
+                console.log(`ble request location failed ${err.message}`);
+                reject()
+            });
+        })
+    }
 
     /**
      * Subscribe to characteristic
@@ -374,16 +431,50 @@ class Bluetooth {
     }
 
     async disconnect(address) {
-        let self = this;
-        this._wasDisconnectIssued = true;
-        return new Promise((resolve, reject) => {
-            if (!address && self.address === null) resolve();
-            address = address || self.address;
-            bluetoothle.close(function () {
+        return new Promise(async (resolve, reject) => {
+
+            const disconnect = (address) => new Promise((resolve, reject) => {
+                bluetoothle.disconnect(function () {
+                    console.log(`disconnecting from ${address} succeeded`)
+                    resolve();
+                }, function (error) {
+                    console.log(`disconnecting from ${address} failed: ${error.message}`)
+                    reject({type: ERROR.DISCONNECT_ERROR, error});
+                }, {address: address});
+            });
+
+            const close = (address) => new Promise((resolve, reject) => {
+                bluetoothle.close(function () {
+                    console.log(`closed ${address}`)
+                    resolve();
+                }, function (error) {
+                    console.log(`closing ${address} failed`)
+                    reject({type: ERROR.CLOSE_ERROR, error});
+                }, {address: address});
+            });
+
+            console.log(`disconnecting from ${address}`)
+            this._wasDisconnectIssued = true;
+            if (!address && this.address === null) {
+                console.log(`disconnecting from ${address} not going through... no known address`)
                 resolve();
-            }, function (error) {
-                reject({type: ERROR.DISCONNECT_ERROR, error});
-            }, {address: address});
+            }
+            address = address || this.address;
+
+            try {
+                await disconnect(address);
+            } catch (err) {
+                // intentionally left blank
+                console.log(err)
+            }
+
+            try {
+                await close(address);
+            } catch (err) {
+                reject(err)
+            }
+            resolve()
+
         })
     }
 
@@ -449,7 +540,7 @@ class CyclingCadenceMetricCalculator {
         }
 
         cadence = Math.round(cadence);
-        return this.cadence({
+        return this.cadence(previous = {
             cumulativeCrankRevolutions: cumulativeCrankRevolutions,
             lastCrankEventTime: lastCrankEventTime,
             crankTimeDiff: crankTimeDiff,

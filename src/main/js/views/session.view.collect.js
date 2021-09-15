@@ -170,11 +170,15 @@ export default class SessionViewCollectMetrics {
     pause() {
         this.isSessionPaused = true;
         this.sessionPausedAt = Date.now();
+        this.heartRateSensor.pause();
+        if (this.cyclingCadenceSensor) this.cyclingCadenceSensor.pause();
     }
 
     resume() {
         this.isSessionPaused = false;
         this.pausedDuration += Date.now() - this.sessionPausedAt;
+        this.heartRateSensor.resume();
+        if (this.cyclingCadenceSensor) this.cyclingCadenceSensor.resume();
     }
 
     /**
@@ -315,12 +319,9 @@ export default class SessionViewCollectMetrics {
      */
     startUtterCycling(startAt) {
         this.cyclingCadenceSensor = new BleSensor(BleSensor.TYPES().CYCLING_CADENCE);
-        this.cyclingCadenceSensor.listen((value, unresponsive) => {
+        this.cyclingCadenceSensor.listen((value) => {
             if (value > 300) value = 0;
             this.cadence = {value: value, interval: 0, total: 0};
-            if (this.isSessionPaused === false && unresponsive === true) {
-                this.cyclingCadenceSensor.restore()
-            }
         }).catch((err) => console.error(err))
     }
 

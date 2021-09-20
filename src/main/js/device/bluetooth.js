@@ -138,20 +138,35 @@ class Bluetooth {
         }, {services: SERVICES});
     }
 
-    stopScan() {
+    stopScan(callback) {
         bluetoothle.stopScan(function stopScanSuccess(result) {
             console.log('stop scan succeeded', result)
+            if (callback) callback()
         }, function stopScanError(error) {
             console.error('stop scan failed', error)
         });
     }
 
-    async checkAvailableDevices() {
-        console.log('signaling devices that we are about to try to connect to them')
+    /**
+     * @private
+     * @param types
+     */
+    getServiceUUIDsForTypes(types) {
+       const uuids = [];
+       Object.keys(BLE_PROFILES).map((type) => {
+           types.includes(type) && uuids.push(BLE_PROFILES[type].SERVICE_UUID)
+       })
+        return uuids
+    }
+
+    async availableDevices(devices, fromTypes) {
+        console.log(`scanning for devices nearby from ${fromTypes.join()} - ${this.getServiceUUIDsForTypes(fromTypes)}`)
         return new Promise((resolve, reject) => {
             const devicesFound = [];
+            const types = {};
+            let scanStopped = false;
             setTimeout(async () => {
-                await this.stopScan();
+                if (!scanStopped) await this.stopScan();
                 resolve(devicesFound)
             }, 20000)
             bluetoothle.startScan((scanResult) => {
@@ -159,11 +174,34 @@ class Bluetooth {
                     console.log('looking for available devices')
                     return
                 }
-                devicesFound.push(device.address)
+
+                /**@type Device */
+                const knownDevice = devices.find((d) => d.address === scanResult.address);
+                if (knownDevice === undefined) {
+                    console.log('found an unknown device... ignore', scanResult.address, scanResult)
+                    return
+                }
+
+                if (types[knownDevice.type] === true) {
+                    console.log('found a device for which we have a previous known device', scanResult.address)
+                    return;
+                }
+
+                if (!devicesFound.find((d) => d.address === knownDevice.address)) devicesFound.push(knownDevice);
+                types[knownDevice.type] = knownDevice.type;
+                console.log(`device ${scanResult.address} is nearby`);
+
+                if (Object.keys(types).length === Object.keys(Bluetooth.TYPES()).length) {
+                    console.log('found 1 device for each device type... exiting')
+                    this.stopScan(() => {
+                        scanStopped = true;
+                        resolve(devicesFound)
+                    })
+                }
             }, (error) => {
                 console.error('no devices found', error.message)
                 resolve([])
-            }, {services: [BLE_PROFILES.CYCLING_CADENCE.SERVICE_UUID, BLE_PROFILES.HR.SERVICE_UUID]})
+            }, {services: this.getServiceUUIDsForTypes(fromTypes)})
         })
     }
 
@@ -220,10 +258,8 @@ class Bluetooth {
                 reject({type: ERROR.CONNECT_ERROR, err});
             }, {
                 address: address,
-                autoConnect: false
+                autoConnect: true
             });
-        }, {
-
         });
     }
 
@@ -268,9 +304,8 @@ class Bluetooth {
      * @param {Device} device
      * @param callback
      * @param onError
-     * @param attemptsLimit
      */
-    async listen(device, callback, onError, attemptsLimit = 1) {
+    async listen(device, callback, onError) {
         const self = this;
         const address = device.address;
         try {

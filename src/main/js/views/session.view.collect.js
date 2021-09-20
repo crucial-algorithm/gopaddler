@@ -16,6 +16,7 @@ import {SessionViewSplits} from "./session.view.splits";
 import Session from "../model/session";
 import AppSettings from "../utils/app-settings"
 import SessionViewCollectMetricsBackground from "./session.view.collect.background";
+import BleManager from "../device/ble-manager";
 
 /**
  * @typedef {Object} Location
@@ -91,8 +92,10 @@ export default class SessionViewCollectMetrics {
         };
 
         // sensors
+        /**@type BleManager */
+        this.bleManager = new BleManager();
         /**@type BleSensor */
-        this._heartRateSensor = new BleSensor(BleSensor.TYPES().HR);
+        this._heartRateSensor = this.bleManager.getBleSensor(BleSensor.TYPES().HR);
         /**@type GPS */
         this._gpsSensor = new GPS(context);
         /**@type MotionSensor */
@@ -165,20 +168,19 @@ export default class SessionViewCollectMetrics {
 
         this.splitsDefinition = splitsDefinition;
         this.expression = expression;
+        this.bleManager.start().then();
     }
 
     pause() {
         this.isSessionPaused = true;
         this.sessionPausedAt = Date.now();
-        this.heartRateSensor.pause();
-        if (this.cyclingCadenceSensor) this.cyclingCadenceSensor.pause();
+        this.bleManager.pause();
     }
 
     resume() {
         this.isSessionPaused = false;
         this.pausedDuration += Date.now() - this.sessionPausedAt;
-        this.heartRateSensor.resume();
-        if (this.cyclingCadenceSensor) this.cyclingCadenceSensor.resume();
+        this.bleManager.resume();
     }
 
     /**
@@ -186,11 +188,10 @@ export default class SessionViewCollectMetrics {
      * @return {Promise}
      */
     stop() {
-        this.heartRateSensor.stop();
         this.gpsSensor.stop();
         if (this.motionSensor) this.motionSensor.stop();
         if (this.strokeDetectorSensor) this.strokeDetectorSensor.stop();
-        if (this.cyclingCadenceSensor) this.cyclingCadenceSensor.stop();
+        this.bleManager.stop();
         this.flushDebugBuffer();
         this.background.stop();
         return this.session.finish(this.splitsDefinition, this.expression, this.pausedDuration)
@@ -318,7 +319,7 @@ export default class SessionViewCollectMetrics {
      * @param {number} startAt
      */
     startUtterCycling(startAt) {
-        this.cyclingCadenceSensor = new BleSensor(BleSensor.TYPES().CYCLING_CADENCE);
+        this.cyclingCadenceSensor = this.bleManager.getBleSensor(BleSensor.TYPES().CYCLING_CADENCE);
         this.cyclingCadenceSensor.listen((value) => {
             if (value > 300) value = 0;
             this.cadence = {value: value, interval: 0, total: 0};

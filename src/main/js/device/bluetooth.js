@@ -70,7 +70,8 @@ class Bluetooth {
         this.characteristic = profile.CHARACTERISTIC_UUID;
         /**@type CyclingCadenceMetricCalculator */
         this._cyclingCandenceCalculator = null;
-        this._wasDisconnectIssued = false;
+        this.successfulConnections = 0;
+        this._disconnecting = false;
     }
 
     /**
@@ -168,7 +169,7 @@ class Bluetooth {
             setTimeout(async () => {
                 if (!scanStopped) await this.stopScan();
                 resolve(devicesFound)
-            }, 20000)
+            }, 7000)
             bluetoothle.startScan((scanResult) => {
                 if (scanResult.status === 'scanStarted') {
                     console.log('looking for available devices')
@@ -239,12 +240,30 @@ class Bluetooth {
     /**
      * @private
      * @param address
+     * @param [onDeviceDisconnected]
      * @return {Promise<unknown>}
      */
-    async connect(address) {
+    async connect(address, onDeviceDisconnected = () => {}) {
         return new Promise((resolve, reject) => {
             bluetoothle.connect(() => {
-                resolve();
+                this.successfulConnections++
+                if (this.successfulConnections === 1) {
+                    resolve();
+                    return
+                }
+
+                // disconnected: when callback is called more than once,
+                // it's because the state of the connection changed
+                if (this.disconnecting) {
+                    return; // disconnect was triggered by "us"
+                }
+
+                // connect callback is called 2nd time for disconnect events
+                console.log('connection closed by the device... disconnect and notify sensor to start reconnect protocol')
+                this.disconnect(address).finally(() => {
+                    this.successfulConnections = 0;
+                    onDeviceDisconnected();
+                });
             }, async (err) => {
                 console.log('something wrong with the connection to ', address, err);
                 if (err.message === "Device previously connected, reconnect or close for new device") {
@@ -258,7 +277,7 @@ class Bluetooth {
                 reject({type: ERROR.CONNECT_ERROR, err});
             }, {
                 address: address,
-                autoConnect: true
+                autoConnect: false
             });
         });
     }
@@ -304,14 +323,13 @@ class Bluetooth {
      * @param {Device} device
      * @param callback
      * @param onError
+     * @param onDeviceDisconnected
      */
-    async listen(device, callback, onError) {
+    async listen(device, callback, onError, onDeviceDisconnected = () => {}) {
         const self = this;
         const address = device.address;
         try {
-            await self.isLocationEnabled();
-            console.log(`ble location enabled ${device.name} (${device.address})`);
-            await self.connect(address);
+            await self.connect(address, onDeviceDisconnected);
             console.log(`ble connection established ${device.name} (${device.address})`);
             await self.discover(address);
             console.log(`ble discovery finished established ${device.name} (${device.address})`);
@@ -466,8 +484,8 @@ class Bluetooth {
     }
 
     async disconnect(address) {
+        this.disconnecting = true;
         return new Promise(async (resolve, reject) => {
-
             const disconnect = (address) => new Promise((resolve, reject) => {
                 bluetoothle.disconnect(function () {
                     console.log(`disconnecting from ${address} succeeded`)
@@ -489,9 +507,9 @@ class Bluetooth {
             });
 
             console.log(`disconnecting from ${address}`)
-            this._wasDisconnectIssued = true;
             if (!address && this.address === null) {
                 console.log(`disconnecting from ${address} not going through... no known address`)
+                this.disconnecting = false;
                 resolve();
             }
             address = address || this.address;
@@ -506,10 +524,11 @@ class Bluetooth {
             try {
                 await close(address);
             } catch (err) {
+                this.disconnecting = false;
                 reject(err)
             }
+            this.disconnecting = false;
             resolve()
-
         })
     }
 
@@ -534,6 +553,15 @@ class Bluetooth {
         bluetoothle.close(function () {
         }, function () {
         }, {address: address});
+    }
+
+
+    get disconnecting() {
+        return this._disconnecting;
+    }
+
+    set disconnecting(value) {
+        this._disconnecting = value;
     }
 }
 

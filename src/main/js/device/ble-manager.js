@@ -18,7 +18,10 @@ export default class BleManager {
             CYCLING_CADENCE: null
         };
         this._retryTimeOut = -1;
-        this._connected = []
+        this._connected = [];
+        this._retryTimerBounceBack =  [...RETRY_TIMER_BOUNCE_BACK_SECONDS];
+        this._isPaused = true;
+        this._reconnectTimeOuts = [];
 
     }
 
@@ -27,16 +30,24 @@ export default class BleManager {
     }
 
     async start() {
-        const retries = [...RETRY_TIMER_BOUNCE_BACK_SECONDS];
-        const connectAttempt = async () => {
-            console.log(`... connection attempt ${RETRY_TIMER_BOUNCE_BACK_SECONDS.length - retries.length + 1}`);
-            const result = await this.connect();
-            if (result === false) return;
-            this._retryTimeOut = setTimeout(() => connectAttempt(), retries.shift() * 1000)
-        }
-
+        this.isPaused = false;
+        await this.bluetooth.isLocationEnabled();
         await this.bluetooth.initialize();
-        await connectAttempt();
+        await this.startConnectionLoop();
+    }
+
+    async startConnectionLoop() {
+        if (this.isPaused) {
+            setTimeout(() => this.startConnectionLoop(), 10000);
+            return
+        }
+        console.log(`... connection attempt ${RETRY_TIMER_BOUNCE_BACK_SECONDS.length - this.retryTimerBounceBack.length + 1}`);
+        const result = await this.connect();
+        if (result === false) {
+            clearTimeout(this.retryTimeOut);
+            this.retryTimeOut = -1;
+        }
+        this.retryTimeOut = setTimeout(() => this.startConnectionLoop(), this.retryTimerBounceBack.shift() * 1000)
     }
 
     /**
@@ -68,11 +79,11 @@ export default class BleManager {
         return Promise.all(this.sensors.map((sensor) => {
             return new Promise(async (resolve, reject) => {
                 const address = this.available[sensor.type];
-                if (!address) return
+                if (!address) return resolve()
                 try {
                     const device = this.devices.find((d) => d.address === address);
                     await sensor.connectTo(device);
-                    console.log(`connected to ${address} of type ${device.type}`);
+                    console.log(`connected to ${address} of type ${sensor.type}`);
                     resolve();
                 } catch (err) {
                     console.log('failed subscribe to device', err)
@@ -85,20 +96,22 @@ export default class BleManager {
     }
 
     stop() {
-        clearInterval(this._retryTimeOut);
+        clearTimeout(this.retryTimeOut);
         this.sensors.map((s) => s.stop());
     }
 
     pause() {
         this.sensors.map((s) => s.pause())
+        this.isPaused = true;
     }
 
     resume() {
         this.sensors.map((s) => s.resume())
+        this.isPaused = false;
     }
 
     getBleSensor(type) {
-        const sensor = new BleSensor(type);
+        const sensor = new BleSensor(type, RETRY_TIMER_BOUNCE_BACK_SECONDS);
         this.sensors.push(sensor);
         return sensor;
     }
@@ -143,5 +156,37 @@ export default class BleManager {
 
     set connected(value) {
         this._connected = value;
+    }
+
+    get retryTimeOut() {
+        return this._retryTimeOut;
+    }
+
+    set retryTimeOut(value) {
+        this._retryTimeOut = value;
+    }
+
+    get retryTimerBounceBack() {
+        return this._retryTimerBounceBack;
+    }
+
+    set retryTimerBounceBack(value) {
+        this._retryTimerBounceBack = value;
+    }
+
+    get isPaused() {
+        return this._isPaused;
+    }
+
+    set isPaused(value) {
+        this._isPaused = value;
+    }
+
+    get reconnectTimeOuts() {
+        return this._reconnectTimeOuts;
+    }
+
+    set reconnectTimeOuts(value) {
+        this._reconnectTimeOuts = value;
     }
 }

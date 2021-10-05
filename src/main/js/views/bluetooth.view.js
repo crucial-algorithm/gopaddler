@@ -40,7 +40,14 @@ class BluetoothView {
                 const $ev = $(ev.currentTarget);
                 const address = $ev.data('address');
 
-                await self.bluetooth.unpair(address);
+                try {
+                    await self.bluetooth.unpair(address);
+                } catch (err) {
+                    context.ui.modal.alert(context.translate('blt_error_disconnecting_title')
+                      , context.translate('blt_error_disconnecting_message')
+                      , context.translate('blt_error_disconnecting_action', err.message));
+                    return;
+                }
                 Device.remove(address);
                 if (Device.count() === 0) {
                     self.list.destroy();
@@ -80,6 +87,7 @@ class BluetoothView {
         this.bluetooth
             .initialize()
             .then(function () {
+                console.log('ble initialized');
                 self.startScan();
             }).catch(function (err) {
             console.log('error initializing bluetooth', err)

@@ -1,6 +1,7 @@
 'use strict';
 
 import Device from '../model/device';
+import AppSettings from "../utils/app-settings";
 
 
 /**
@@ -30,7 +31,8 @@ const ERROR = {
     CONNECT_ERROR: 'CONNECT_ERROR',
     SUBSCRIBE_ERROR: 'SUBSCRIBE_ERROR',
     PAIRING_ERROR: 'PAIRING/BOND ERROR',
-    DISCONNECT_ERROR: 'DISCONNECT ERROR'
+    DISCONNECT_ERROR: 'DISCONNECT ERROR',
+    CLOSE_ERROR: 'CLOSE ERROR'
 };
 
 const BLE_PROFILES = {
@@ -68,7 +70,8 @@ class Bluetooth {
         this.characteristic = profile.CHARACTERISTIC_UUID;
         /**@type CyclingCadenceMetricCalculator */
         this._cyclingCandenceCalculator = null;
-        this._wasDisconnectIssued = false;
+        this.successfulConnections = 0;
+        this._disconnecting = false;
     }
 
     /**
@@ -78,12 +81,12 @@ class Bluetooth {
         let params = {
             "request": true,
             "statusReceiver": true,
-            "restoreKey": "gopaddler-app"
+            "restoreKey": `${AppSettings.app()}-app`
         };
 
         return new Promise(function (resolve, reject) {
             if (isBluetoothInitialized) {
-                console.log('ble initalized... resolve');
+                console.log('ble initialized... resolve');
                 setTimeout(() => resolve(), 20);
             } else {
 
@@ -101,23 +104,23 @@ class Bluetooth {
 
     startScan(onFind, onError) {
         let self = this;
-        let addresss = {};
+        let scannedDevicesAddress = {};
         bluetoothle.startScan(async function (device) {
 
             if (device.status === 'scanStarted') {
                 console.log('scanStarted');
-                return;
+                return
             }
 
             if (!device.name) {
                 return;
             }
 
-            if (addresss.hasOwnProperty(device.address)) {
+            if (scannedDevicesAddress.hasOwnProperty(device.address)) {
                 return;
             }
 
-            addresss[device.address] = true;
+            scannedDevicesAddress[device.address] = true;
 
             console.log('new device found', device.name, device.address);
 
@@ -136,11 +139,75 @@ class Bluetooth {
         }, {services: SERVICES});
     }
 
-    stopScan() {
-        bluetoothle.stopScan();
+    stopScan(callback) {
+        bluetoothle.stopScan(function stopScanSuccess(result) {
+            console.log('stop scan succeeded', result)
+            if (callback) callback()
+        }, function stopScanError(error) {
+            console.error('stop scan failed', error)
+        });
     }
 
     /**
+     * @private
+     * @param types
+     */
+    getServiceUUIDsForTypes(types) {
+       const uuids = [];
+       Object.keys(BLE_PROFILES).map((type) => {
+           types.includes(type) && uuids.push(BLE_PROFILES[type].SERVICE_UUID)
+       })
+        return uuids
+    }
+
+    async availableDevices(devices, fromTypes) {
+        console.log(`scanning for devices nearby from ${fromTypes.join()} - ${this.getServiceUUIDsForTypes(fromTypes)}`)
+        return new Promise((resolve, reject) => {
+            const devicesFound = [];
+            const types = {};
+            let scanStopped = false;
+            setTimeout(async () => {
+                if (!scanStopped) await this.stopScan();
+                resolve(devicesFound)
+            }, 7000)
+            bluetoothle.startScan((scanResult) => {
+                if (scanResult.status === 'scanStarted') {
+                    console.log('looking for available devices')
+                    return
+                }
+
+                /**@type Device */
+                const knownDevice = devices.find((d) => d.address === scanResult.address);
+                if (knownDevice === undefined) {
+                    console.log('found an unknown device... ignore', scanResult.address, scanResult)
+                    return
+                }
+
+                if (types[knownDevice.type] === true) {
+                    console.log('found a device for which we have a previous known device', scanResult.address)
+                    return;
+                }
+
+                if (!devicesFound.find((d) => d.address === knownDevice.address)) devicesFound.push(knownDevice);
+                types[knownDevice.type] = knownDevice.type;
+                console.log(`device ${scanResult.address} is nearby`);
+
+                if (Object.keys(types).length === Object.keys(Bluetooth.TYPES()).length) {
+                    console.log('found 1 device for each device type... exiting')
+                    this.stopScan(() => {
+                        scanStopped = true;
+                        resolve(devicesFound)
+                    })
+                }
+            }, (error) => {
+                console.error('no devices found', error.message)
+                resolve([])
+            }, {services: this.getServiceUUIDsForTypes(fromTypes)})
+        })
+    }
+
+    /**
+     * Scan for devices process
      * Evaluate if this device is relevant to us
      * @private
      *
@@ -173,22 +240,44 @@ class Bluetooth {
     /**
      * @private
      * @param address
+     * @param [onDeviceDisconnected]
      * @return {Promise<unknown>}
      */
-    async connect(address) {
-        const self = this;
+    async connect(address, onDeviceDisconnected = () => {}) {
         return new Promise((resolve, reject) => {
-            bluetoothle.connect(function () {
-                resolve();
-            }, function (err) {
+            bluetoothle.connect(() => {
+                this.successfulConnections++
+                if (this.successfulConnections === 1) {
+                    resolve();
+                    return
+                }
+
+                // disconnected: when callback is called more than once,
+                // it's because the state of the connection changed
+                if (this.disconnecting) {
+                    return; // disconnect was triggered by "us"
+                }
+
+                // connect callback is called 2nd time for disconnect events
+                console.log('connection closed by the device... disconnect and notify sensor to start reconnect protocol')
+                this.disconnect(address).finally(() => {
+                    this.successfulConnections = 0;
+                    onDeviceDisconnected();
+                });
+            }, async (err) => {
                 console.log('something wrong with the connection to ', address, err);
                 if (err.message === "Device previously connected, reconnect or close for new device") {
-                    self.disconnect(address).then(resolve);
+                    console.log('Device already connected, try to disconnect before next attempt');
+                    try {
+                        await this.disconnect(address);
+                    } catch (err) {
+                        // intentionally left blank
+                    }
                 }
                 reject({type: ERROR.CONNECT_ERROR, err});
             }, {
                 address: address,
-                autoConnect: true
+                autoConnect: false
             });
         });
     }
@@ -199,15 +288,14 @@ class Bluetooth {
      * @return {Promise<{address: string, service: BleService, characteristic: BleCharacteristic}>}
      */
     async discover(address) {
-        const self = this;
         return new Promise((resolve, reject) => {
-            bluetoothle.discover(function success(discovered) {
+            bluetoothle.discover((discovered) => {
 
-                let service = self.scanServices(discovered.services);
+                let service = this.scanServices(discovered.services);
                 // noinspection JSIncompatibleTypesComparison
                 if (service === null) return reject({type: ERROR.UNKNOWN_DEVICE_TYPE});
 
-                let characteristic = self.scanCharacteristics(service.characteristics);
+                let characteristic = this.scanCharacteristics(service.characteristics);
                 // noinspection JSIncompatibleTypesComparison
                 if (characteristic === null) return reject({type: ERROR.UNKNOWN_DEVICE_TYPE});
 
@@ -217,9 +305,10 @@ class Bluetooth {
                     console.log("discover complete", address);
 
             }, (err) => {
+                console.log(`ble discover failed with error ${err.message}`);
                 if (err.error === "neverConnected") {
                     // try to reconnect
-                    self.evaluateDeviceFoundOnScan(address);
+                    this.evaluateDeviceFoundOnScan(address);
                 } else {
                     reject({type: ERROR.UNKNOWN_ERROR, error: err});
                 }
@@ -234,13 +323,13 @@ class Bluetooth {
      * @param {Device} device
      * @param callback
      * @param onError
-     * @param attemptsLimit
+     * @param onDeviceDisconnected
      */
-    async listen(device, callback, onError, attemptsLimit = 1) {
+    async listen(device, callback, onError, onDeviceDisconnected = () => {}) {
         const self = this;
         const address = device.address;
         try {
-            await self.connect(address);
+            await self.connect(address, onDeviceDisconnected);
             console.log(`ble connection established ${device.name} (${device.address})`);
             await self.discover(address);
             console.log(`ble discovery finished established ${device.name} (${device.address})`);
@@ -254,7 +343,32 @@ class Bluetooth {
         self.address = address;
     }
 
+    async isLocationEnabled() {
+        return new Promise((resolve, reject) => {
+            bluetoothle.isLocationEnabled(async (status) => {
+                if (status.isLocationEnabled === true) return resolve()
+                await this.requestLocation();
+                resolve()
+            }, (err) => {
+                console.log(`ble location enabled check failed ${err.message}`);
+                reject(err)
+            });
+        })
+    }
 
+    async requestLocation() {
+        return new Promise((resolve, reject) => {
+            bluetoothle.requestLocation((status) => {
+                if (status.requestLocation === true)
+                    resolve()
+                else
+                    reject()
+            }, (err) => {
+                console.log(`ble request location failed ${err.message}`);
+                reject()
+            });
+        })
+    }
 
     /**
      * Subscribe to characteristic
@@ -344,6 +458,9 @@ class Bluetooth {
                 if (result.status === 'unbonded')
                     resolve();
             }, function (error) {
+                if (error.message === 'Device already unbonded') {
+                    return resolve();
+                }
                 reject(error)
             }, {address: address});
         });
@@ -366,17 +483,52 @@ class Bluetooth {
         }
     }
 
-    disconnect(address) {
-        let self = this;
-        this._wasDisconnectIssued = true;
-        return new Promise((resolve, reject) => {
-            if (!address && self.address === null) resolve();
-            address = address || self.address;
-            bluetoothle.close(function () {
+    async disconnect(address) {
+        this.disconnecting = true;
+        return new Promise(async (resolve, reject) => {
+            const disconnect = (address) => new Promise((resolve, reject) => {
+                bluetoothle.disconnect(function () {
+                    console.log(`disconnecting from ${address} succeeded`)
+                    resolve();
+                }, function (error) {
+                    console.log(`disconnecting from ${address} failed: ${error.message}`)
+                    reject({type: ERROR.DISCONNECT_ERROR, error});
+                }, {address: address});
+            });
+
+            const close = (address) => new Promise((resolve, reject) => {
+                bluetoothle.close(function () {
+                    console.log(`closed ${address}`)
+                    resolve();
+                }, function (error) {
+                    console.log(`closing ${address} failed`)
+                    reject({type: ERROR.CLOSE_ERROR, error});
+                }, {address: address});
+            });
+
+            console.log(`disconnecting from ${address}`)
+            if (!address && this.address === null) {
+                console.log(`disconnecting from ${address} not going through... no known address`)
+                this.disconnecting = false;
                 resolve();
-            }, function (error) {
-                reject({type: ERROR.DISCONNECT_ERROR, error});
-            }, {address: address});
+            }
+            address = address || this.address;
+
+            try {
+                await disconnect(address);
+            } catch (err) {
+                // intentionally left blank
+                console.log(err)
+            }
+
+            try {
+                await close(address);
+            } catch (err) {
+                this.disconnecting = false;
+                reject(err)
+            }
+            this.disconnecting = false;
+            resolve()
         })
     }
 
@@ -401,6 +553,15 @@ class Bluetooth {
         bluetoothle.close(function () {
         }, function () {
         }, {address: address});
+    }
+
+
+    get disconnecting() {
+        return this._disconnecting;
+    }
+
+    set disconnecting(value) {
+        this._disconnecting = value;
     }
 }
 
@@ -442,7 +603,7 @@ class CyclingCadenceMetricCalculator {
         }
 
         cadence = Math.round(cadence);
-        return this.cadence({
+        return this.cadence(previous = {
             cumulativeCrankRevolutions: cumulativeCrankRevolutions,
             lastCrankEventTime: lastCrankEventTime,
             crankTimeDiff: crankTimeDiff,

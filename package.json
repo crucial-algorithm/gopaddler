@@ -14,7 +14,8 @@
     "chartjs-plugin-datalabels": "^0.5.0",
     "cordova": "^10.0.0",
     "cordova-plugin-background-mode-bluetooth-central": "^1.0.0",
-    "cordova-plugin-bluetoothle": "^4.5.13",
+    "cordova-plugin-bluetoothle": "^6.6.1",
+    "cordova-plugin-compat": "^1.2.0",
     "cordova-plugin-deeplinks": "^1.1.1",
     "cordova-plugin-device": "^1.1.7",
     "cordova-plugin-device-motion": "^1.2.5",
@@ -56,13 +57,13 @@
     "@babel/plugin-transform-runtime": "^7.11.5",
     "@babel/preset-env": "^7.6.0",
     "babel-loader": "^8.0.6",
-    "cordova-android": "^9.0.0",
+    "cordova-android": "^9.1.0",
     "cordova-ios": "^6.1.1",
+    "cordova-plugin-file": "^4.3.3",
     "cordova-plugin-geolocation": "^4.1.0",
     "gm": "^1.23.1",
     "webpack": "^4.27.1",
-    "webpack-cli": "^3.1.2",
-    "cordova-plugin-file": "^4.3.3"
+    "webpack-cli": "^3.1.2"
   },
   "repository": {
     "type": "git",
@@ -98,7 +99,6 @@
         "FACEBOOK_ANDROID_SDK_VERSION": "5.5.2"
       },
       "cordova-plugin-deeplinks": {},
-      "cordova-plugin-bluetoothle": {},
       "cordova-plugin-screen-orientation": {},
       "cordova-plugin-background-geolocation": {
         "GOOGLE_PLAY_SERVICES_VERSION": "11+",
@@ -106,13 +106,18 @@
         "ICON": "@mipmap/ic_launcher",
         "SMALL_ICON": "@mipmap/ic_launcher",
         "ALWAYS_USAGE_DESCRIPTION": "App tracks speed and distance while in background",
-        "MOTION_USAGE_DESCRIPTION": "App requires motion detection"
+        "MOTION_USAGE_DESCRIPTION": "App requires motion detection",
+        "ACCOUNT_NAME": "@string/app_name",
+        "ACCOUNT_LABEL": "@string/app_name",
+        "ACCOUNT_TYPE": "$PACKAGE_NAME.account",
+        "CONTENT_AUTHORITY": "$PACKAGE_NAME"
       },
       "cordova-plugin-inappbrowser": {},
       "cordova-plugin-geolocation": {
         "GPS_REQUIRED": "true"
       },
-      "cordova-plugin-file": {}
+      "cordova-plugin-file": {},
+      "cordova-plugin-bluetoothle": {}
     }
   }
 }

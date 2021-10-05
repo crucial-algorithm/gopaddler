@@ -394,6 +394,71 @@ class Utils {
         return zeroPad(hour) + ':' + zeroPad(minute) + ':' + zeroPad(second) + (includeMilis ? "." + milisString : '');
     }
 
+    /**
+     *
+     * @param {number} step
+     * @param {Array<SessionDetail>} metrics
+     * @param {number} startAt
+     */
+    static collapseMetrics(step, metrics, startAt) {
+        if (metrics.length === 0) return [];
+        let collapsed = [metrics[0]];
+        let position = 0;
+
+        for (const metric of metrics) {
+
+            let stats = collapsed[position];
+
+            if (metric.distance * 1000 > position + step) {
+                position += step;
+                metric.timestamp = Utils.distanceToTime(stats, metric, position);
+                metric.distance = position / 1000;
+                metric.duration = metric.timestamp - startAt;
+                collapsed[position] = metric;
+                continue;
+            }
+
+            collapsed[position].speed = Math.max(metric.speed, collapsed[position].speed);
+            collapsed[position].spm = Math.max(metric.spm, collapsed[position].spm);
+            collapsed[position].efficiency = Math.max(metric.efficiency, collapsed[position].efficiency);
+            collapsed[position].heartRate = Math.max(metric.heartRate, collapsed[position].heartRate);
+        }
+
+        /**@type Array<SessionDetail> */
+        let output = [];
+        let previous = collapsed[0];
+        for (let record of collapsed) {
+            if (!record) continue;
+            output.push(record);
+            previous = record;
+        }
+
+        return output;
+    }
+
+    /**
+     *
+     * @param {SessionDetail} before
+     * @param {SessionDetail} after
+     * @param {number} distance     Distance in meters
+     * @return {number}
+     */
+    static distanceToTime(before, after, distance) {
+        if (!before) return after.distance * 1000;
+        let direction = -1, reference = after;
+
+        if (Math.abs(before.distance * 1000 - distance) < Math.abs(after.distance * 1000 - distance)) {
+            reference = before;
+            direction = 1;
+        }
+
+        // speed is in meters per second
+        const distInOneMili = reference.speed / 1000;
+        const gap = Math.abs(reference.distance * 1000 - distance);
+
+        return Math.round(reference.timestamp + (gap / distInOneMili * direction));
+    }
+
 }
 
 function zeroPad(value) {

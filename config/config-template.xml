@@ -30,7 +30,24 @@
         <preference name="CordovaWebViewEngine" value="CDVWKWebViewEngine" />
 
     </platform>
-    <splash src="res/{{APP}}/Default@2x~universal~anyany.png" />
+    <platform name="android">
+        <splash src="res/{{APP}}/drawable-land-hdpi.png" density="land-hdpi" />
+        <splash src="res/{{APP}}/drawable-land-ldpi.png" density="land-ldpi" />
+        <splash src="res/{{APP}}/drawable-land-mdpi.png" density="land-mdpi" />
+        <splash src="res/{{APP}}/drawable-land-xhdpi.png" density="land-xhdpi" />
+        <splash src="res/{{APP}}/drawable-land-xxhdpi.png" density="land-xxhdpi" />
+        <splash src="res/{{APP}}/drawable-land-xxxhdpi.png" density="land-xxxhdpi" />
+
+        <splash src="res/{{APP}}/drawable-port-hdpi.png" density="port-hdpi" />
+        <splash src="res/{{APP}}/drawable-port-ldpi.png" density="port-ldpi" />
+        <splash src="res/{{APP}}/drawable-port-mdpi.png" density="port-mdpi" />
+        <splash src="res/{{APP}}/drawable-port-xhdpi.png" density="port-xhdpi" />
+        <splash src="res/{{APP}}/drawable-port-xxhdpi.png" density="port-xxhdpi" />
+        <splash src="res/{{APP}}/drawable-port-xxxhdpi.png" density="port-xxxhdpi" />
+    </platform>
+    <platform name="ios">
+        <splash src="res/{{APP}}/Default@2x~universal~anyany.png" />
+    </platform>
     <feature name="Geolocation">
         <param name="android-package" value="org.apache.cordova.GeoBroker" />
     </feature>

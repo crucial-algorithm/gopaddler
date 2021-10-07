@@ -3,12 +3,19 @@
 GoPaddler mobile app instructions
 
 
-### Clone this repository ###
+### Setup project locally  ###
     > git clone https://kimile@bitbucket.org/kimile/paddler-app.git
     > npm install
     > cordova platform add android
     > cordova platform add ios
+    > echo '<appname[gopaddler|uttercycling]>' > .app
+    > cordova plugin rm @mauron85/cordova-plugin-background-geolocation
+    > node scripts/generate-config-for-app.js <gopaddler|uttercycling>
+    > cordova plugin add @mauron85/cordova-plugin-background-geolocation
+    > node scripts/generate-images.js
     > npm run build:dev [build:dev-remote-portrait|...]
+    > cordova run android
+    > Open android studio, but don't upgrade gradle version (unless cordova upgrades to gradle 7)
 
 ### Development process ###
     Build (watch for changes)
@@ -16,6 +23,14 @@ GoPaddler mobile app instructions
     Test in browser (by default, localhost:5000, user-agent: gp-dev-ck)
     > npm run www
     
+### Running in device ##
+    After doing the 1st step (cloning and running using _cordova run android_, open the project in Android Studio and manage execution from there).
+
+
+### Generate icons in Android ###
+    Use Resource Manager > + > Image Asset;
+    - Foreground Layer: Choose file from res/<app>/icon-foreground.png
+    - Background Layer: Choose color #df4750
 
 ### Updating iOS/Android platform  ###
     Updating requires removing and adding platform again

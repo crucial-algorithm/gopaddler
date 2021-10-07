@@ -6,8 +6,8 @@ module.exports = {
         author: "UtterCoach team",
         authorEmail: "filipe@uttercoach.com",
         authorHref: "https://uttercoach.com",
-        version: "0.9.0",
-        versionCode: "900",
+        version: "1.0.0",
+        versionCode: "1000",
     },
     src: {
         versioning: {

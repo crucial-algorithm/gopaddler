@@ -196,7 +196,7 @@ class Session {
                     AppSettings.switch(() => {
                         // intentionally left blank
                     }, () => {
-                        if (!splits && splits.length === 0) return;
+                        if (!splits || splits.length === 0) return;
 
                         // discard zeros from cadence
                         let spm = [];

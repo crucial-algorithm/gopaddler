@@ -25,7 +25,7 @@ module.exports = {
             },
             prod: {
                 server: "https://app.uttercoach.com",
-                endpoint: "wss://ws.uttercoach.com/websocket"
+                endpoint: "wss://app.uttercoach.com/websocket"
             }
         },
         distanceStep: 10,

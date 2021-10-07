@@ -6,16 +6,17 @@ GoPaddler mobile app instructions
 ### Setup project locally  ###
     > git clone https://kimile@bitbucket.org/kimile/paddler-app.git
     > npm install
+    > echo '<appname[gopaddler|uttercycling]>' > .app
+    > node scripts/generate-config-for-app.js
     > cordova platform add android
     > cordova platform add ios
-    > echo '<appname[gopaddler|uttercycling]>' > .app
     > cordova plugin rm @mauron85/cordova-plugin-background-geolocation
-    > node scripts/generate-config-for-app.js <gopaddler|uttercycling>
     > cordova plugin add @mauron85/cordova-plugin-background-geolocation
     > node scripts/generate-images.js
     > npm run build:dev [build:dev-remote-portrait|...]
     > cordova run android
     > Open android studio, but don't upgrade gradle version (unless cordova upgrades to gradle 7)
+    > Setup Icon (look section bellow in README)
 
 ### Development process ###
     Build (watch for changes)
@@ -30,7 +31,7 @@ GoPaddler mobile app instructions
 ### Generate icons in Android ###
     Use Resource Manager > + > Image Asset;
     - Foreground Layer: Choose file from res/<app>/icon-foreground.png
-    - Background Layer: Choose color #df4750
+    - Background Layer: Choose color #df4750 for Utter Cycling or #3D3D63 for GoPaddler
 
 ### Updating iOS/Android platform  ###
     Updating requires removing and adding platform again
@@ -72,6 +73,12 @@ Test cases are stored in local PostgreSQL database
    > cordova build android --release
 
 ### Frequent Issues ###
+
+### AAPT: error: resource mipmap/icon (aka com.gopaddler.app:mipmap/icon) not found. ###
+    > cordova plugin rm cordova-plugin-background-geolocation
+    > node scripts/generate-config-for-app.js
+    > cordova plugin add @mauron85/cordova-plugin-background-geolocation
+
 #### Lock orientation not working in IOS
 Make sure that plist hook is defining the accepted view modes:
 ```

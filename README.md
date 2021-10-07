@@ -45,6 +45,11 @@ GoPaddler mobile app instructions
 ### Release  ###
     Follow instructions on https://docs.google.com/spreadsheets/d/1ToKXbZJ-MfA47lgWT1xJlJshxDF8Np9Et8NNpjO1ddU/edit#gid=2058990100
 
+### Tagging Releases ###
+    Gopaddler tags up to 1.6.0 use just the version numbers; From 1.6.0 onwoards, use gp<a|i>-<build-number> instead (a = android, i = iOS); Example: gpa-1700 for GoPaddler android version 1.7.0
+
+    Uttercycling used cycling-<version> until version 0.9.0; After that, use uc<a|i>-<build-number>; Example: uca-1000 for Utter Cycling Android version 1.0.0; 
+
 ### Replace app images  ###
     Images are stored in res/{app-name}/[icon|splash].png. For iOS, splash must be available with the name Default@2x~universal~anyany.png
     Replacing iOS splash image requires removing and adding the platform

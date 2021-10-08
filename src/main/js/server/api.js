@@ -197,7 +197,7 @@ function _remoteLogin() {
                 });
             });
         }).fail(function (err) {
-            if (err.error !== 'not-authorized') {
+            if (err.error !== 'not-authorized:paddler') {
                 defer.reject(err);
                 return console.log(err);
             }

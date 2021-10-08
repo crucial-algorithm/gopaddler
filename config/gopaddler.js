@@ -20,8 +20,8 @@ module.exports = {
                 endpoint: "ws://local.gopaddler.com/websocket"
             },
             "remote-dev": {
-                server: "https://dev.gopaddler.com",
-                endpoint: "wss://dev.gopaddler.com/websocket"
+                server: "https://dev.uttercoach.com",
+                endpoint: "wss://dev.uttercoach.com/websocket"
             },
             prod: {
                 server: "https://app.uttercoach.com",

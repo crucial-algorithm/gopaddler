@@ -46,6 +46,7 @@ export default class BleManager {
         if (result === false) {
             clearTimeout(this.retryTimeOut);
             this.retryTimeOut = -1;
+            return;
         }
         this.retryTimeOut = setTimeout(() => this.startConnectionLoop(), this.retryTimerBounceBack.shift() * 1000)
     }

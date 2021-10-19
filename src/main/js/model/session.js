@@ -53,7 +53,7 @@ class Session {
             this._data = [];
             for (let d of data) {
                 this._data.push(new SessionDetail(this._id, d.timestamp, d.distance, d.speed, d.spm, d.efficiency
-                    , d.latitude, d.longitude, d.heart_rate, d.split, null, null, d.recovery, null));
+                    , d.latitude, d.longitude, 0, d.heart_rate, d.split, null, null, d.recovery, null));
             }
         }
         this._pausedDuration = pausedDuration;

@@ -56,7 +56,8 @@ class SessionSummaryView {
             $back = $page.find('#summary-back')
         ;
 
-        this.showSampleSessionSummary(session, isPastSession === true, context)
+        let sample = this.showSampleSessionSummary(session, isPastSession === true, context)
+        if (sample) session = sample
 
         // calculate stats
         let duration = moment.duration(session.sessionEnd - session.sessionStart - (session.pausedDuration || 0));
@@ -143,8 +144,10 @@ class SessionSummaryView {
 
         const modal = context.ui.modal.undecorated([
             '<div class="sessions-summary-sample-model">',
+            ' <div style="padding: 10px">',
             '   <div class="sessions-summary-sample-model-primary">' + context.translate('sessions_summary_modal_sample_session_primary') + '</div>',
             '   <div class="sessions-summary-sample-model-secondary">' + context.translate('sessions_summary_modal_sample_session_secondary') + '</div>',
+            ' </div>',
             '</div>',
         ].join(''));
 
@@ -166,6 +169,7 @@ class SessionSummaryView {
             // hide "show demo stats" modal
             modal.hide();
         }, 5000);
+        return session
     }
 
     /**

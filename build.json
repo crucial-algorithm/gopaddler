@@ -1,7 +1,7 @@
 {
     "android": {
         "release": {
-            "keystore": "../../data/keystore/deprecated/android.jks",
+            "keystore": "../keystore/deprecated/android.jks",
             "storePassword": "",
             "alias": "GoPaddlerAndroidKey",
             "password" : "",

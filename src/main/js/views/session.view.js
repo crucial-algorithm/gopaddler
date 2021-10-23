@@ -4,7 +4,6 @@ import Context from '../context';
 import Timer from '../measures/timer';
 import Field from '../measures/field';
 import Calibration from '../model/calibration';
-import Session from '../model/session';
 import DistanceProgressBar from '../utils/widgets/distance-progress-bar';
 import Dialog from '../utils/widgets/dialog';
 import template from './session.view.art.html';
@@ -13,7 +12,6 @@ import snippetFinishWarmUpControls from './session.view.warmup.controls.art.html
 import Unlock from '../utils/widgets/unlock';
 import Sound from '../utils/sound';
 import Api from '../server/api';
-import Splits from '../core/splits-handler';
 import SessionViewCollectMetrics from './session.view.collect';
 import {SessionViewSplits} from "./session.view.splits";
 import AppSettings from "../utils/app-settings";
@@ -306,7 +304,7 @@ class SessionView {
         this.$page.find(".session-small-measures").addClass('black-and-white');
         this.$page.find(".session-large-measure").addClass('black-and-white');
 
-        if (!context.isPortraitMode()) {
+        if (!this.appContext.isPortraitMode()) {
             let width = this.$page.width();
             this.$page.find(".session-large-measure").css({width: Math.floor(width / 2) - 1});
         }

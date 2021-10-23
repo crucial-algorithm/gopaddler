@@ -6,8 +6,8 @@ module.exports = {
         author: "GoPaddler Team",
         authorEmail: "joaquim.rego@gopaddler.com",
         authorHref: "https://gopaddler.com",
-        version: "1.7.0",
-        versionCode: "1700",
+        version: "1.7.1",
+        versionCode: "1710",
     },
     src: {
         versioning: {

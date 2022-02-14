@@ -14,6 +14,7 @@
 body {
     font-family: 'Roboto', sans-serif !important;
     background-color: #3B3D62;
+    height: 100vh;
 }
 
 body.utter-cycling [data-selector="gopaddler"] {

@@ -200,14 +200,9 @@ class HomeView {
     applyDimensionsToChart() {
         return new Promise((resolve, reject) => {
             const $canvas =  $("#home-chart-metrics");
-            this.calculateWithAndHeightForChart.apply(this, []).then((dimensions) => {
-                const $container = $('.home-user-info-chart');
-                let x = {
-                    height: dimensions.height * (this.context.isPortraitMode() ? 0.55 : 0.6666666666),
-                    width: dimensions.width
-                };
-                $container.css(x);
-                $canvas.css(x);
+            const $container = $('.home-user-info-chart');
+            this.calculateWithAndHeightForChart.apply(this, [$container]).then((dimensions) => {
+                $canvas.css(dimensions);
                 resolve($canvas);
             }).catch((err) => {
                 console.error(err);
@@ -220,15 +215,15 @@ class HomeView {
      *
      * @return {Promise<{width: number, height: number}>}
      */
-    calculateWithAndHeightForChart() {
+    calculateWithAndHeightForChart($container) {
         return new Promise((resolve, reject) => {
             this.isDeviceOrientationSet().then(() => {
                 // unfortunately, if browser does not support lock natively, plugin will call Android/ios native functions
                 // to handle orientation and resolve promise before actually it gets applied! So, we need to add a
                 // timeout and hope for the best
                 setTimeout(() => {
-                    const height = $(window).innerHeight();
-                    const width  = $(window).innerWidth();
+                    const height = $container.innerHeight();
+                    const width  = $container.innerWidth();
                     resolve({width: width, height: height});
                 }, 250);
             }).catch((err) => {

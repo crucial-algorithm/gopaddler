@@ -488,7 +488,7 @@ class SessionView {
      *
      * @return {boolean}
      */
-    confirmBeforeExit() {
+    confirmBeforeExit() {
         const self = this;
 
         if (self.tx) {

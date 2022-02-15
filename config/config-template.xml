@@ -56,7 +56,7 @@
     <platform name="android">
         <preference name="AndroidLaunchMode" value="singleInstance" />
         <preference name="android-minSdkVersion" value="22" />
-        <preference name="android-targetSdkVersion" value="29" />
+        <preference name="android-targetSdkVersion" value="30" />
     </platform>
     <platform name="ios">
         <hook src="src/cordova/ios/plist.js" type="before_build" />

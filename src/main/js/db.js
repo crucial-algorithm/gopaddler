@@ -182,9 +182,10 @@ let connection;
 class Database {
     static init() {
         return new Promise((resolve, reject) => {
-            connection = window.sqlitePlugin.openDatabase({name: AppSettings.databaseName()
-                , location: AppSettings.databaseLocation()})
-            console.log(connection);
+            connection = window.sqlitePlugin.openDatabase({
+                name: AppSettings.databaseName()
+                , location: 'default'
+            });
 
             determineDbVersion().then(function (version) {
                 connection.transaction(function (tx) {

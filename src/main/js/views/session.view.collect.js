@@ -280,8 +280,12 @@ export default class SessionViewCollectMetrics {
             this._handlers.finishedNotification.apply({}, []);
         });
 
-        this.background.onLocationChanged(this.locationUpdatedCallback.bind(this));
-        this.background.start();
+        try {
+            this.background.onLocationChanged(this.locationUpdatedCallback.bind(this));
+            this.background.start();
+        } catch (err) {
+            console.log('something went wrong starting background service', err)
+        }
     }
 
     locationUpdatedCallback(position) {

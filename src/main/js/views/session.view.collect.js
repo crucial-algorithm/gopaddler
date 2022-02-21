@@ -237,7 +237,6 @@ export default class SessionViewCollectMetrics {
         }).catch((err) => console.error(err));
 
         this.gpsSensor.listen(this.locationUpdatedCallback.bind(this));
-        this.background.onLocationChanged(this.locationUpdatedCallback.bind(this));
 
         this.splitsTools = new SessionViewSplits(startAt, this, splitsDefinition, wasStartedRemotely
             , this.distanceTools.distanceToTime.bind(this.distanceTools)
@@ -281,6 +280,7 @@ export default class SessionViewCollectMetrics {
             this._handlers.finishedNotification.apply({}, []);
         });
 
+        this.background.onLocationChanged(this.locationUpdatedCallback.bind(this));
         this.background.start();
     }
 

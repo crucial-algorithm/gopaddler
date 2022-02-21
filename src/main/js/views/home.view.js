@@ -222,8 +222,8 @@ class HomeView {
                 // to handle orientation and resolve promise before actually it gets applied! So, we need to add a
                 // timeout and hope for the best
                 setTimeout(() => {
-                    const height = $container.innerHeight();
-                    const width  = $container.innerWidth();
+                    const height = $container.innerHeight() - this.context.isAndroid() ? 20 : 0;
+                    const width  = $container.innerWidth() - this.context.isAndroid() ? 20 : 0;
                     resolve({width: width, height: height});
                 }, 250);
             }).catch((err) => {

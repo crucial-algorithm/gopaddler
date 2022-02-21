@@ -485,7 +485,7 @@ class SessionView {
     }
 
     /**
-     *
+     * Display Pause Modal!!
      * @return {boolean}
      */
     confirmBeforeExit() {

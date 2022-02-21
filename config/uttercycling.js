@@ -30,8 +30,7 @@ module.exports = {
         },
         distanceStep: 100,
         database: {
-            name: 'uttercycling.db',
-            location: 2
+            name: 'uttercycling.db'
         },
         sessionType: 'cycling'
     }

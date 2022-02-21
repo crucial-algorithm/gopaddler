@@ -29,9 +29,20 @@
     margin: auto;
 }
 
+body[platform="android"] .app-content.portrait-home .home-user-info-chart {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .app-content.portrait-home .home-user-info canvas {
     position: absolute;
     bottom: 0;
+}
+
+body[platform="android"] .app-content.portrait-home .home-user-info canvas {
+    position: unset;
+    bottom: unset;
 }
 
 .app-content.portrait-home .home-user-info-chart h1 {

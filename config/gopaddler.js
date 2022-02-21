@@ -6,8 +6,8 @@ module.exports = {
         author: "GoPaddler Team",
         authorEmail: "joaquim.rego@gopaddler.com",
         authorHref: "https://gopaddler.com",
-        version: "1.7.1",
-        versionCode: "1710",
+        version: "1.7.2",
+        versionCode: "1722",
     },
     src: {
         versioning: {
@@ -30,8 +30,7 @@ module.exports = {
         },
         distanceStep: 10,
         database: {
-            name: 'sessions.db',
-            location: 2
+            name: 'sessions.db'
         },
         sessionType: 'canoeing'
     }

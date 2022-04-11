@@ -6,8 +6,8 @@ module.exports = {
         author: "GoPaddler Team",
         authorEmail: "joaquim.rego@gopaddler.com",
         authorHref: "https://gopaddler.com",
-        version: "1.7.2",
-        versionCode: "1723", // latest version was released with this code but 1723 (changed directly in Android Studio)
+        version: "1.7.3",
+        versionCode: "1730", // latest version was released with this code but 1723 (changed directly in Android Studio)
     },
     src: {
         versioning: {

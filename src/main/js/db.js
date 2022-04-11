@@ -180,11 +180,17 @@ function determineDbVersion() {
 
 let connection;
 class Database {
-    static init() {
+    /**
+     *
+     * @param {'android' | 'ios'} platform
+     * @returns {Promise<unknown>}
+     */
+    static init(platform) {
         return new Promise((resolve, reject) => {
             connection = window.sqlitePlugin.openDatabase({
                 name: AppSettings.databaseName()
                 , location: 'default'
+                , androidDatabaseProvider: 'system'
             });
 
             determineDbVersion().then(function (version) {
